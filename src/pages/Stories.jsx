@@ -30,10 +30,10 @@ export default function Stories() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Stories</h1>
+        <h1 className="text-2xl font-bold text-foreground">Zines</h1>
         <Link to="/create-story">
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />Write a Story
+            <Plus className="w-4 h-4" />Write a Zine
           </Button>
         </Link>
       </div>
@@ -56,8 +56,8 @@ export default function Stories() {
           <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
             <BookOpen className="w-7 h-7 text-accent" />
           </div>
-          <h3 className="font-semibold text-foreground mb-1">No stories yet</h3>
-          <p className="text-sm text-muted-foreground">Be the first to share your story with Baltimore.</p>
+          <h3 className="font-semibold text-foreground mb-1">No zines yet</h3>
+          <p className="text-sm text-muted-foreground">Be the first to share your zine with Baltimore.</p>
         </div>
       ) : (
         <div className="space-y-4">

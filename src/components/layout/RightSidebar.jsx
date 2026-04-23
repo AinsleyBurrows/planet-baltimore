@@ -39,7 +39,7 @@ function SuggestionSection({ title, icon: Icon, items, type, badgeLabel }) {
   );
 }
 
-const suggestedStories = [
+const suggestedZines = [
   { name: 'The Baltimore Art Revival', subtitle: 'By Maya Johnson', image: '', tag: 'For You', link: '/stories' },
   { name: 'Hidden Gems: Remington', subtitle: 'Neighborhood Guide', image: '', tag: 'Explore', link: '/stories' },
 ];
@@ -63,7 +63,7 @@ export default function RightSidebar() {
   return (
     <aside className="hidden xl:block fixed right-0 top-0 h-screen w-[280px] bg-card border-l border-border overflow-y-auto z-30">
       <div className="p-5 pt-20">
-        <SuggestionSection title="Trending Stories" icon={TrendingUp} items={suggestedStories} badgeLabel="50% For You" />
+        <SuggestionSection title="Trending Zines" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" />
         <SuggestionSection title="Artists to Follow" icon={Sparkles} items={suggestedArtists} badgeLabel="50% Discover" />
         <SuggestionSection title="Upcoming Events" icon={MapPin} items={suggestedEvents} />
         <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} />

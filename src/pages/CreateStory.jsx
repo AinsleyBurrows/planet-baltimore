@@ -50,7 +50,7 @@ export default function CreateStory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast({ title: 'Story saved!' });
+      toast({ title: 'Zine saved!' });
       navigate('/stories');
     },
   });
@@ -59,7 +59,7 @@ export default function CreateStory() {
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
-        <h1 className="text-lg font-semibold">Write a Story</h1>
+        <h1 className="text-lg font-semibold">Write a Zine</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => createMutation.mutate('draft')} disabled={!form.title || createMutation.isPending} className="rounded-lg">
             Save Draft
@@ -91,7 +91,7 @@ export default function CreateStory() {
         </div>
 
         <div className="min-h-[300px]">
-          <ReactQuill value={form.content} onChange={(v) => updateForm('content', v)} placeholder="Start writing your story..." theme="snow" className="rounded-lg" />
+          <ReactQuill value={form.content} onChange={(v) => updateForm('content', v)} placeholder="Start writing your zine..." theme="snow" className="rounded-lg" />
         </div>
       </div>
     </div>

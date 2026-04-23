@@ -34,8 +34,8 @@ export default function StoryDetail() {
 
   if (!story) return (
     <div className="text-center py-16">
-      <h3 className="font-semibold text-foreground mb-1">Story not found</h3>
-      <Button variant="ghost" onClick={() => navigate('/stories')} className="mt-4">Back to Stories</Button>
+      <h3 className="font-semibold text-foreground mb-1">Zine not found</h3>
+      <Button variant="ghost" onClick={() => navigate('/stories')} className="mt-4">Back to Zines</Button>
     </div>
   );
 
@@ -94,7 +94,7 @@ export default function StoryDetail() {
           <AvatarFallback className="bg-accent/10 text-accent font-bold text-lg">{story.author_name?.charAt(0)}</AvatarFallback>
         </Avatar>
         <h3 className="font-semibold text-foreground">Written by {story.author_name}</h3>
-        <p className="text-sm text-muted-foreground mt-1">Follow for more stories from Baltimore</p>
+        <p className="text-sm text-muted-foreground mt-1">Follow for more zines from Baltimore</p>
         <Button className="mt-4 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg">Follow</Button>
       </div>
     </article>

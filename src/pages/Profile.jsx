@@ -17,7 +17,7 @@ import PostDetailModal from '@/components/shared/PostDetailModal';
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
   { id: 'feed', label: 'Feed', icon: Rss },
-  { id: 'stories', label: 'Stories', icon: BookOpen },
+  { id: 'stories', label: 'Zines', icon: BookOpen },
   { id: 'events', label: 'Events', icon: Calendar },
   { id: 'media', label: 'Media', icon: Image },
 ];
@@ -152,7 +152,7 @@ export default function Profile() {
           stories.length > 0 ? (
             stories.map(s => <StoryCard key={s.id} story={s} />)
           ) : (
-            <div className="text-center py-12 text-muted-foreground text-sm">No stories published yet.</div>
+            <div className="text-center py-12 text-muted-foreground text-sm">No zines published yet.</div>
           )
         )}
         {activeTab === 'events' && (
