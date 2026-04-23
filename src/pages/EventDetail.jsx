@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Calendar, Clock, MapPin, Users, Share2, Heart, ExternalLink, Navigation } from 'lucide-react';
+import { ArrowLeft, MapPin, Users, Share2, Heart, ExternalLink, Navigation, CalendarCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/components/ui/use-toast';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import AppImage from '@/components/shared/AppImage';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import RSVPButton from '@/components/events/RSVPButton';
 
 export default function EventDetail() {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
 
-  const urlParams = new URLSearchParams(window.location.search);
   const eventId = window.location.pathname.split('/events/')[1];
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
@@ -32,13 +29,14 @@ export default function EventDetail() {
     enabled: !!eventId,
   });
 
-  const rsvpMutation = useMutation({
-    mutationFn: () => base44.entities.RSVP.create({ user_id: user?.id, event_id: eventId, status: 'going' }),
-    onSuccess: () => {
-      toast({ title: 'RSVP confirmed!' });
-      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-    },
+  const { data: attendees = [] } = useQuery({
+    queryKey: ['rsvps', eventId],
+    queryFn: () => base44.entities.RSVP.filter({ event_id: eventId }),
+    enabled: !!eventId,
   });
+
+  const goingCount = attendees.filter(r => r.status === 'going').length;
+  const interestedCount = attendees.filter(r => r.status === 'interested').length;
 
   if (isLoading) return (
     <div className="space-y-4">
@@ -145,6 +143,22 @@ export default function EventDetail() {
         </div>
       )}
 
+      {/* Attendee count */}
+      {(goingCount > 0 || interestedCount > 0) && (
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <CalendarCheck className="w-4 h-4 text-accent" />
+            <span><strong className="text-foreground">{goingCount}</strong> going</span>
+          </span>
+          {interestedCount > 0 && (
+            <span className="flex items-center gap-1.5">
+              <Users className="w-4 h-4" />
+              <span><strong className="text-foreground">{interestedCount}</strong> interested</span>
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex gap-3 sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4">
         {event.ticket_url ? (
@@ -154,9 +168,7 @@ export default function EventDetail() {
             </Button>
           </a>
         ) : (
-          <Button onClick={() => rsvpMutation.mutate()} disabled={rsvpMutation.isPending} className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground gap-2 h-12 rounded-xl">
-            <Calendar className="w-4 h-4" />RSVP
-          </Button>
+          <RSVPButton eventId={eventId} rsvpCount={goingCount} />
         )}
         <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Share2 className="w-5 h-5" /></Button>
         <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Heart className="w-5 h-5" /></Button>
