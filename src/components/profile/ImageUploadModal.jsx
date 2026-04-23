@@ -1,6 +1,6 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Upload, Camera, ZoomIn, ZoomOut, Check, Loader2 } from 'lucide-react';
+import { X, Upload, Camera, ZoomIn, ZoomOut, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 
@@ -17,21 +17,31 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
-  const previewRef = useRef(null);
 
   const isBanner = type === 'banner';
-  const title = isBanner ? 'Update Banner Image' : 'Update Profile Picture';
-  const aspectClass = isBanner ? 'aspect-[3/1]' : 'aspect-square';
-  const containerClass = isBanner ? 'rounded-xl' : 'rounded-full';
+  const title = isBanner ? 'Edit Banner' : 'Edit Profile Picture';
+
+  // Auto-open picker on mount (social-platform UX)
+  useEffect(() => {
+    const t = setTimeout(() => fileInputRef.current?.click(), 80);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
 
   const handleFile = useCallback((f) => {
     setError('');
     if (!ACCEPTED.includes(f.type)) {
-      setError('Please upload a JPEG, PNG, WebP, or GIF image.');
+      setError('Please upload a JPEG, PNG, WebP, or GIF.');
       return;
     }
     if (f.size > MAX_SIZE_MB * 1024 * 1024) {
-      setError(`File must be under ${MAX_SIZE_MB}MB.`);
+      setError(`Image must be under ${MAX_SIZE_MB} MB.`);
       return;
     }
     setFile(f);
@@ -46,30 +56,37 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
     if (f) handleFile(f);
   }, [handleFile]);
 
+  // Mouse drag
   const handleMouseDown = (e) => {
     if (!preview) return;
+    e.preventDefault();
     setDragging(true);
     setDragStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
   };
-
   const handleMouseMove = useCallback((e) => {
     if (!dragging || !dragStart) return;
     setOffset({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
   }, [dragging, dragStart]);
+  const stopDrag = () => setDragging(false);
 
-  const handleMouseUp = () => setDragging(false);
-
+  // Touch drag
   const handleTouchStart = (e) => {
     if (!preview) return;
     const t = e.touches[0];
     setDragging(true);
     setDragStart({ x: t.clientX - offset.x, y: t.clientY - offset.y });
   };
-
   const handleTouchMove = (e) => {
     if (!dragging || !dragStart) return;
     const t = e.touches[0];
     setOffset({ x: t.clientX - dragStart.x, y: t.clientY - dragStart.y });
+  };
+
+  // Scroll to zoom
+  const handleWheel = (e) => {
+    if (!preview) return;
+    e.preventDefault();
+    setZoom(z => Math.min(3, Math.max(1, z - e.deltaY * 0.002)));
   };
 
   const handleSave = async () => {
@@ -83,132 +100,131 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
     setUploading(false);
   };
 
+  const previewShape = isBanner
+    ? 'aspect-[3/1] rounded-xl'
+    : 'aspect-square rounded-full max-w-[240px] mx-auto';
+
   return (
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+        transition={{ duration: 0.18 }}
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
-          initial={{ scale: 0.95, opacity: 0, y: 10 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.95, opacity: 0, y: 10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-lg bg-card rounded-2xl shadow-2xl overflow-hidden"
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 40, opacity: 0 }}
+          transition={{ type: 'spring', damping: 28, stiffness: 320 }}
+          className="relative w-full sm:max-w-md bg-card sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-            <h2 className="font-semibold text-foreground">{title}</h2>
-            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
-              <X className="w-4 h-4 text-muted-foreground" />
+            <button
+              onClick={onClose}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
+            >
+              Cancel
             </button>
+            <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+            <Button
+              size="sm"
+              onClick={handleSave}
+              disabled={!preview || uploading}
+              className="rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground h-8 px-4 text-xs font-semibold"
+            >
+              {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save'}
+            </Button>
           </div>
 
           <div className="p-5 space-y-4">
-            {/* Preview area */}
+            {/* Preview / drop zone */}
             <div
-              className={`relative overflow-hidden bg-muted cursor-grab active:cursor-grabbing select-none ${aspectClass} ${containerClass} border-2 border-dashed border-border`}
+              className={`relative overflow-hidden bg-muted border-2 border-dashed border-border select-none ${previewShape} ${preview ? 'cursor-grab active:cursor-grabbing border-solid' : 'cursor-pointer'}`}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
+              onMouseUp={stopDrag}
+              onMouseLeave={stopDrag}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
-              onTouchEnd={handleMouseUp}
+              onTouchEnd={stopDrag}
               onDrop={handleDrop}
               onDragOver={e => e.preventDefault()}
-              ref={previewRef}
+              onWheel={handleWheel}
+              onClick={!preview ? () => fileInputRef.current?.click() : undefined}
             >
               {preview ? (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                  style={{
-                    transform: `scale(${zoom}) translate(${offset.x / zoom}px, ${offset.y / zoom}px)`,
-                    transformOrigin: 'center',
-                    transition: dragging ? 'none' : 'transform 0.1s',
-                  }}
-                />
+                <>
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    draggable={false}
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                    style={{
+                      transform: `scale(${zoom}) translate(${offset.x / zoom}px, ${offset.y / zoom}px)`,
+                      transformOrigin: 'center',
+                      transition: dragging ? 'none' : 'transform 0.08s',
+                    }}
+                  />
+                  {/* Replace button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                    className="absolute top-2 right-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/70 text-white text-xs font-medium backdrop-blur-sm transition-colors"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Change
+                  </button>
+                </>
               ) : (
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground hover:text-accent transition-colors"
-                >
-                  <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center">
-                    <Upload className="w-6 h-6" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+                    <Upload className="w-5 h-5" />
                   </div>
-                  <div className="text-center">
-                    <p className="text-sm font-medium">Click to upload or drag & drop</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">JPEG, PNG, WebP · Max {MAX_SIZE_MB}MB</p>
+                  <div className="text-center px-4">
+                    <p className="text-sm font-medium text-foreground">Choose a photo</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">or drag & drop · JPEG, PNG, WebP · {MAX_SIZE_MB} MB max</p>
                   </div>
-                </button>
-              )}
-
-              {/* Change image overlay when preview exists */}
-              {preview && (
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-2 right-2 p-2 rounded-lg bg-black/50 text-white hover:bg-black/70 transition-colors backdrop-blur-sm"
-                >
-                  <Camera className="w-4 h-4" />
-                </button>
+                </div>
               )}
             </div>
 
-            {/* Zoom controls */}
+            {/* Zoom slider — only when image loaded */}
             {preview && (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setZoom(z => Math.max(1, z - 0.1))}
-                  className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
-                >
-                  <ZoomOut className="w-4 h-4 text-foreground" />
-                </button>
-                <input
-                  type="range"
-                  min="1"
-                  max="3"
-                  step="0.05"
-                  value={zoom}
-                  onChange={e => setZoom(parseFloat(e.target.value))}
-                  className="flex-1 accent-accent"
-                />
-                <button
-                  onClick={() => setZoom(z => Math.min(3, z + 0.1))}
-                  className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
-                >
-                  <ZoomIn className="w-4 h-4 text-foreground" />
-                </button>
-                <span className="text-xs text-muted-foreground w-10 text-right">{Math.round(zoom * 100)}%</span>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setZoom(z => Math.max(1, parseFloat((z - 0.1).toFixed(2))))}
+                    className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+                  <input
+                    type="range"
+                    min="1"
+                    max="3"
+                    step="0.02"
+                    value={zoom}
+                    onChange={e => setZoom(parseFloat(e.target.value))}
+                    className="flex-1 accent-accent h-1.5 cursor-pointer"
+                  />
+                  <button
+                    onClick={() => setZoom(z => Math.min(3, parseFloat((z + 0.1).toFixed(2))))}
+                    className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-center text-xs text-muted-foreground">Drag to reposition · scroll or slide to zoom</p>
               </div>
             )}
 
-            {preview && (
-              <p className="text-xs text-muted-foreground text-center -mt-1">Drag to reposition · Scroll to zoom</p>
+            {error && (
+              <p className="text-sm text-destructive text-center font-medium">{error}</p>
             )}
-
-            {error && <p className="text-sm text-destructive text-center">{error}</p>}
-
-            {/* Actions */}
-            <div className="flex gap-2 pt-1">
-              <Button variant="outline" onClick={onClose} className="flex-1 rounded-xl">Cancel</Button>
-              <Button
-                onClick={handleSave}
-                disabled={!preview || uploading}
-                className="flex-1 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground gap-2"
-              >
-                {uploading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" />Saving…</>
-                ) : (
-                  <><Check className="w-4 h-4" />Save</>
-                )}
-              </Button>
-            </div>
           </div>
         </motion.div>
 

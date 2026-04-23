@@ -65,32 +65,31 @@ export default function Profile() {
     <>
     <div className="space-y-0">
       {/* Banner */}
-      <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20 group">
-        {user.banner_url && <AppImage src={user.banner_url} className="w-full h-full" clickable={false} />}
+      <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
+        {user.banner_url && <img src={user.banner_url} alt="Banner" className="w-full h-full object-cover" />}
         <button
           onClick={() => setEditingImage('banner')}
-          className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-200"
+          className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors shadow-sm"
         >
-          <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 px-4 py-2 rounded-xl bg-black/60 text-white text-sm font-medium backdrop-blur-sm">
-            <Camera className="w-4 h-4" />
-            {user.banner_url ? 'Change Banner' : 'Add Banner'}
-          </span>
+          <Camera className="w-3.5 h-3.5" />
+          {user.banner_url ? 'Edit banner' : 'Add banner'}
         </button>
       </div>
 
       {/* Profile Info */}
       <div className="relative px-1 -mt-12">
         <div className="flex items-end justify-between">
-          <div className="relative group cursor-pointer" onClick={() => setEditingImage('avatar')}>
+          <div className="relative cursor-pointer" onClick={() => setEditingImage('avatar')}>
             <Avatar className="w-24 h-24 border-4 border-background">
               <AvatarImage src={user.avatar_url} />
               <AvatarFallback className="text-2xl font-bold bg-accent/10 text-accent">
                 {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center border-4 border-background rounded-full">
-              <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
+            {/* Always-visible camera badge — like Twitter/Instagram */}
+            <span className="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm">
+              <Camera className="w-3.5 h-3.5 text-background" />
+            </span>
           </div>
           <div className="flex gap-2 mb-1">
             <Link to="/create-post">
