@@ -1,0 +1,68 @@
+{
+  "name": "NotificationPreference",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "new_follower": {
+      "type": "boolean",
+      "default": true
+    },
+    "new_comment": {
+      "type": "boolean",
+      "default": true
+    },
+    "new_like": {
+      "type": "boolean",
+      "default": true
+    },
+    "new_mention": {
+      "type": "boolean",
+      "default": true
+    },
+    "event_from_followed": {
+      "type": "boolean",
+      "default": true
+    },
+    "zine_from_followed": {
+      "type": "boolean",
+      "default": true
+    },
+    "community_updates": {
+      "type": "boolean",
+      "default": true
+    },
+    "mass_messages": {
+      "type": "boolean",
+      "default": true
+    },
+    "email_new_follower": {
+      "type": "boolean",
+      "default": false
+    },
+    "email_new_comment": {
+      "type": "boolean",
+      "default": false
+    },
+    "email_event_from_followed": {
+      "type": "boolean",
+      "default": true
+    },
+    "email_zine_from_followed": {
+      "type": "boolean",
+      "default": true
+    },
+    "email_community_updates": {
+      "type": "boolean",
+      "default": true
+    },
+    "email_mass_messages": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

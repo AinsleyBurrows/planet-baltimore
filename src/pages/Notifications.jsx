@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Bell, Heart, MessageCircle, Users, Calendar, Check } from 'lucide-react';
+import { Bell, Heart, MessageCircle, Users, Calendar, Check, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,11 +38,16 @@ export default function Notifications() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
-        {unreadCount > 0 && (
-          <Button variant="ghost" size="sm" className="text-accent text-sm" onClick={() => notifications.filter(n => !n.is_read).forEach(n => markReadMutation.mutate(n.id))}>
-            <Check className="w-4 h-4 mr-1" /> Mark all read
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <Button variant="ghost" size="sm" className="text-accent text-sm" onClick={() => notifications.filter(n => !n.is_read).forEach(n => markReadMutation.mutate(n.id))}>
+              <Check className="w-4 h-4 mr-1" /> Mark all read
+            </Button>
+          )}
+          <Link to="/notification-settings">
+            <Button variant="ghost" size="icon" className="rounded-full"><Settings className="w-4 h-4" /></Button>
+          </Link>
+        </div>
       </div>
 
       {isLoading ? (

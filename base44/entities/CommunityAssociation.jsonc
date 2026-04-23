@@ -1,0 +1,114 @@
+{
+  "name": "CommunityAssociation",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "neighborhood_id": {
+      "type": "string"
+    },
+    "neighborhood_name": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "bylaws_text": {
+      "type": "string",
+      "description": "Full text of bylaws"
+    },
+    "bylaws_doc_url": {
+      "type": "string",
+      "description": "PDF/document URL for bylaws"
+    },
+    "bylaws_updated_at": {
+      "type": "string"
+    },
+    "bylaws_visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "members_only"
+      ],
+      "default": "public"
+    },
+    "members_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_official": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "social_links": {
+      "type": "object"
+    },
+    "admins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user IDs who are admins"
+    },
+    "moderators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of user IDs who are moderators"
+    },
+    "mass_message_log": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Log of mass messages sent"
+    },
+    "last_mass_message_at": {
+      "type": "string",
+      "description": "Timestamp of last mass message for rate limiting"
+    }
+  },
+  "required": [
+    "name",
+    "owner_id"
+  ]
+}

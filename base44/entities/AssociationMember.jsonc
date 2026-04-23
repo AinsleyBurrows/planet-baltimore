@@ -1,0 +1,50 @@
+{
+  "name": "AssociationMember",
+  "type": "object",
+  "properties": {
+    "association_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_avatar": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "member",
+        "volunteer",
+        "committee",
+        "board"
+      ],
+      "default": "member"
+    },
+    "joined_at": {
+      "type": "string"
+    },
+    "notifications_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "email_notifications": {
+      "type": "boolean",
+      "default": true
+    },
+    "muted": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "association_id",
+    "user_id"
+  ]
+}

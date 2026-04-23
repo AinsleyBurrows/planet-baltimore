@@ -2,22 +2,34 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Plus, Users, Shield } from 'lucide-react';
+import { Plus, Users, Shield, Search, Building } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 
 const categories = ['All', 'Neighborhood', 'Arts', 'Activism', 'Wellness', 'Education', 'Social', 'Civic'];
+const SORTS = [
+  { value: '-created_date', label: 'Newest' },
+  { value: '-members_count', label: 'Most Members' },
+];
 
 export default function Communities() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [sort, setSort] = useState('-created_date');
+  const [search, setSearch] = useState('');
+
   const { data: communities = [], isLoading } = useQuery({
-    queryKey: ['communities'],
-    queryFn: () => base44.entities.Community.list('-created_date', 50),
+    queryKey: ['communities', sort],
+    queryFn: () => base44.entities.Community.list(sort, 80),
   });
 
-  const filtered = activeCategory === 'All' ? communities : communities.filter(c => c.category === activeCategory.toLowerCase());
+  const filtered = communities.filter(c => {
+    const catMatch = activeCategory === 'All' || c.category === activeCategory.toLowerCase();
+    const searchMatch = !search || c.name?.toLowerCase().includes(search.toLowerCase()) || c.neighborhood_name?.toLowerCase().includes(search.toLowerCase());
+    return catMatch && searchMatch;
+  });
 
   return (
     <div className="space-y-6">
@@ -28,6 +40,25 @@ export default function Communities() {
             <Plus className="w-4 h-4" />Create Community
           </Button>
         </Link>
+      </div>
+
+      {/* Link to Associations */}
+      <Link to="/community-associations" className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-xl hover:bg-primary/10 transition-colors">
+        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0"><Building className="w-4 h-4 text-primary" /></div>
+        <div>
+          <p className="text-sm font-semibold text-primary">Neighborhood Associations</p>
+          <p className="text-xs text-muted-foreground">Official governance hubs for your neighborhood</p>
+        </div>
+      </Link>
+
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input className="pl-9 rounded-xl" placeholder="Search communities..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <select value={sort} onChange={e => setSort(e.target.value)} className="text-sm border border-border rounded-xl px-3 bg-card text-foreground outline-none cursor-pointer">
+          {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+        </select>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">

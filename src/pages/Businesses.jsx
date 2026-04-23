@@ -2,21 +2,33 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Plus, Building2, MapPin, Shield } from 'lucide-react';
+import { Plus, Building2, MapPin, Shield, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 
 const categories = ['All', 'Restaurant', 'Retail', 'Service', 'Entertainment', 'Health', 'Creative', 'Nonprofit'];
+const SORTS = [
+  { value: '-created_date', label: 'Newest' },
+  { value: '-followers_count', label: 'Most Followed' },
+];
 
 export default function Businesses() {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [sort, setSort] = useState('-created_date');
+  const [search, setSearch] = useState('');
+
   const { data: businesses = [], isLoading } = useQuery({
-    queryKey: ['businesses'],
-    queryFn: () => base44.entities.BusinessPage.list('-created_date', 50),
+    queryKey: ['businesses', sort],
+    queryFn: () => base44.entities.BusinessPage.list(sort, 80),
   });
 
-  const filtered = activeCategory === 'All' ? businesses : businesses.filter(b => b.category === activeCategory.toLowerCase());
+  const filtered = businesses.filter(b => {
+    const catMatch = activeCategory === 'All' || b.category === activeCategory.toLowerCase();
+    const searchMatch = !search || b.name?.toLowerCase().includes(search.toLowerCase()) || b.neighborhood_name?.toLowerCase().includes(search.toLowerCase());
+    return catMatch && searchMatch;
+  });
 
   return (
     <div className="space-y-6">
@@ -27,6 +39,16 @@ export default function Businesses() {
             <Plus className="w-4 h-4" />Create Business
           </Button>
         </Link>
+      </div>
+
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input className="pl-9 rounded-xl" placeholder="Search businesses..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <select value={sort} onChange={e => setSort(e.target.value)} className="text-sm border border-border rounded-xl px-3 bg-card text-foreground outline-none cursor-pointer">
+          {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+        </select>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">

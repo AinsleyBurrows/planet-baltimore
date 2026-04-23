@@ -32,6 +32,10 @@ import BusinessDetail from '@/pages/BusinessDetail';
 import ArtsOrganizations from '@/pages/ArtsOrganizations';
 import ArtsOrgDetail from '@/pages/ArtsOrgDetail';
 import CreateArtsOrg from '@/pages/CreateArtsOrg';
+import CommunityAssociations from '@/pages/CommunityAssociations';
+import CommunityAssociationDetail from '@/pages/CommunityAssociationDetail';
+import CreateCommunityAssociation from '@/pages/CreateCommunityAssociation';
+import NotificationSettings from '@/pages/NotificationSettings';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -76,6 +80,10 @@ const AuthenticatedApp = () => {
         <Route path="/arts-organizations" element={<ArtsOrganizations />} />
         <Route path="/arts-organizations/:id" element={<ArtsOrgDetail />} />
         <Route path="/create-arts-org" element={<CreateArtsOrg />} />
+        <Route path="/community-associations" element={<CommunityAssociations />} />
+        <Route path="/community-associations/:id" element={<CommunityAssociationDetail />} />
+        <Route path="/create-community-association" element={<CreateCommunityAssociation />} />
+        <Route path="/notification-settings" element={<NotificationSettings />} />
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:id" element={<StoryDetail />} />
         <Route path="/profile" element={<Profile />} />

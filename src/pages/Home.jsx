@@ -6,10 +6,11 @@ import StoryCard from '@/components/shared/StoryCard';
 import EventCard from '@/components/shared/EventCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
-import { Users } from 'lucide-react';
+import { Users, Sparkles, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import DiscoverCard from '@/components/discovery/DiscoverCard';
 
-const FILTERS = ['For You', 'Following', 'Nearby'];
+const FILTERS = ['For You', 'Following', 'Nearby', 'Discover'];
 
 function FeedSkeleton() {
   return Array(3).fill(0).map((_, i) => (
@@ -24,33 +25,35 @@ function FeedSkeleton() {
   ));
 }
 
+// Simple Fisher-Yates shuffle to surface serendipitous content
+function shuffleSeed(arr, seed = 1) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.abs((seed * 1103515245 + 12345) % (i + 1));
+    seed = j;
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default function Home() {
   const [activeFilter, setActiveFilter] = useState('For You');
   const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => {
-    base44.auth.me().then(setCurrentUser);
-  }, []);
+  useEffect(() => { base44.auth.me().then(setCurrentUser); }, []);
 
-  // All posts
   const { data: posts = [], isLoading: loadingPosts } = useQuery({
     queryKey: ['home-posts'],
-    queryFn: () => base44.entities.Post.list('-created_date', 50),
+    queryFn: () => base44.entities.Post.list('-created_date', 60),
   });
-
-  // All stories (published)
   const { data: stories = [], isLoading: loadingStories } = useQuery({
     queryKey: ['home-stories'],
-    queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-created_date', 20),
+    queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-created_date', 30),
   });
-
-  // Upcoming events
   const { data: events = [], isLoading: loadingEvents } = useQuery({
     queryKey: ['home-events'],
-    queryFn: () => base44.entities.Event.filter({ status: 'upcoming' }, '-date', 20),
+    queryFn: () => base44.entities.Event.filter({ status: 'upcoming' }, 'date', 30),
   });
-
-  // Current user's follows
   const { data: follows = [], isLoading: loadingFollows } = useQuery({
     queryKey: ['follows', currentUser?.id],
     queryFn: () => base44.entities.Follow.filter({ follower_id: currentUser.id }),
@@ -59,55 +62,79 @@ export default function Home() {
 
   const isLoading = loadingPosts || loadingStories || loadingEvents || (activeFilter === 'Following' && loadingFollows);
 
-  // Build a unified feed sorted by date
   const feedItems = useMemo(() => {
     const followedNames = new Set(follows.map(f => f.target_name).filter(Boolean));
     const followedIds = new Set(follows.map(f => f.target_id).filter(Boolean));
-
     const filteredPosts = posts.filter(p => !p.is_deleted);
-    const filteredStories = stories;
-    const filteredEvents = events;
 
     let items = [];
 
     if (activeFilter === 'For You') {
-      // Mix everything
-      items = [
-        ...filteredPosts.map(p => ({ type: 'post', date: p.created_date, data: p })),
-        ...filteredStories.map(s => ({ type: 'story', date: s.published_at || s.created_date, data: s })),
-        ...filteredEvents.map(e => ({ type: 'event', date: e.created_date, data: e })),
+      // Interleave followed + trending content; every 4th item is from a new category
+      const followedPosts = filteredPosts.filter(p => followedIds.has(p.author_id) || followedNames.has(p.author_name));
+      const otherPosts = filteredPosts.filter(p => !followedIds.has(p.author_id) && !followedNames.has(p.author_name));
+      const followedEvents = events.filter(e => followedIds.has(e.organizer_id) || followedNames.has(e.organizer_name));
+      const discoverEvents = events.filter(e => !followedIds.has(e.organizer_id) && !followedNames.has(e.organizer_name));
+
+      // Mix: 2 followed, 1 discover, 2 followed, 1 event...
+      const followed = [
+        ...followedPosts.map(p => ({ type: 'post', date: p.created_date, data: p, reason: 'Following' })),
+        ...stories.slice(0, 10).map(s => ({ type: 'story', date: s.published_at || s.created_date, data: s, reason: '' })),
+        ...followedEvents.map(e => ({ type: 'event', date: e.created_date, data: e, reason: 'From someone you follow' })),
+      ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      const discover = [
+        ...otherPosts.slice(0, 20).map(p => ({ type: 'post', date: p.created_date, data: p, isNew: true })),
+        ...discoverEvents.slice(0, 8).map(e => ({ type: 'event', date: e.created_date, data: e, isNew: true })),
       ];
+
+      // Weave discover items in every ~3 followed items
+      const merged = [];
+      let di = 0;
+      followed.forEach((item, idx) => {
+        merged.push(item);
+        if ((idx + 1) % 3 === 0 && di < discover.length) {
+          merged.push(discover[di++]);
+        }
+      });
+      // Add remaining discover
+      while (di < discover.length) merged.push(discover[di++]);
+      items = merged.slice(0, 50);
+
     } else if (activeFilter === 'Following') {
-      // Only content from followed entities
-      const followedPosts = filteredPosts.filter(p =>
-        followedNames.has(p.author_name) || followedIds.has(p.author_id) || followedIds.has(p.page_id)
-      );
-      const followedStories = filteredStories.filter(s =>
-        followedNames.has(s.author_name) || followedIds.has(s.author_id)
-      );
-      const followedEvents = filteredEvents.filter(e =>
-        followedNames.has(e.organizer_name) || followedIds.has(e.organizer_id)
-      );
+      const fp = filteredPosts.filter(p => followedNames.has(p.author_name) || followedIds.has(p.author_id) || followedIds.has(p.page_id));
+      const fs = stories.filter(s => followedNames.has(s.author_name) || followedIds.has(s.author_id));
+      const fe = events.filter(e => followedNames.has(e.organizer_name) || followedIds.has(e.organizer_id));
       items = [
-        ...followedPosts.map(p => ({ type: 'post', date: p.created_date, data: p })),
-        ...followedStories.map(s => ({ type: 'story', date: s.published_at || s.created_date, data: s })),
-        ...followedEvents.map(e => ({ type: 'event', date: e.created_date, data: e })),
+        ...fp.map(p => ({ type: 'post', date: p.created_date, data: p })),
+        ...fs.map(s => ({ type: 'story', date: s.published_at || s.created_date, data: s })),
+        ...fe.map(e => ({ type: 'event', date: e.created_date, data: e })),
       ];
+
     } else if (activeFilter === 'Nearby') {
       const neighborhood = currentUser?.neighborhood_names?.[0];
-      const nearbyPosts = neighborhood
-        ? filteredPosts.filter(p => p.neighborhood_name === neighborhood)
-        : filteredPosts;
-      const nearbyEvents = neighborhood
-        ? filteredEvents.filter(e => e.neighborhood_name === neighborhood)
-        : filteredEvents;
+      const np = neighborhood ? filteredPosts.filter(p => p.neighborhood_name === neighborhood) : filteredPosts.slice(0, 20);
+      const ne = neighborhood ? events.filter(e => e.neighborhood_name === neighborhood) : events.slice(0, 10);
       items = [
-        ...nearbyPosts.map(p => ({ type: 'post', date: p.created_date, data: p })),
-        ...nearbyEvents.map(e => ({ type: 'event', date: e.created_date, data: e })),
+        ...np.map(p => ({ type: 'post', date: p.created_date, data: p })),
+        ...ne.map(e => ({ type: 'event', date: e.created_date, data: e })),
       ];
+
+    } else if (activeFilter === 'Discover') {
+      // Pure serendipity: shuffle everything, surface things user hasn't seen yet
+      const allItems = [
+        ...filteredPosts.map(p => ({ type: 'post', date: p.created_date, data: p, isNew: true })),
+        ...stories.map(s => ({ type: 'story', date: s.published_at || s.created_date, data: s, isNew: true })),
+        ...events.map(e => ({ type: 'event', date: e.created_date, data: e, isNew: true })),
+      ];
+      const dayOfYear = Math.floor(Date.now() / 86400000);
+      items = shuffleSeed(allItems, dayOfYear).slice(0, 40);
     }
 
-    return items.sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (activeFilter !== 'Discover' && activeFilter !== 'For You') {
+      items = items.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+    return items;
   }, [activeFilter, posts, stories, events, follows, currentUser]);
 
   const isEmpty = !isLoading && feedItems.length === 0;
@@ -118,46 +145,44 @@ export default function Home() {
         <h1 className="text-2xl font-bold text-foreground">Home</h1>
       </div>
 
-      {/* Filters */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
         {FILTERS.map((filter) => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-              activeFilter === filter
-                ? 'bg-foreground text-background'
-                : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+              activeFilter === filter ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
             }`}
           >
+            {filter === 'Discover' && <Compass className="w-3.5 h-3.5" />}
             {filter}
           </button>
         ))}
       </div>
 
-      {/* Feed */}
+      {activeFilter === 'Discover' && (
+        <div className="flex items-center gap-2 p-3 bg-accent/5 border border-accent/20 rounded-xl text-sm text-muted-foreground">
+          <Sparkles className="w-4 h-4 text-accent flex-shrink-0" />
+          <span>Broadening your world — content from across Baltimore you haven't seen yet.</span>
+        </div>
+      )}
+
       <div className="space-y-4">
         {isLoading ? (
           <FeedSkeleton />
         ) : isEmpty ? (
           <div className="text-center py-16">
             <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
-              {activeFilter === 'Following' ? (
-                <Users className="w-7 h-7 text-accent" />
-              ) : (
-                <span className="text-2xl">🏙️</span>
-              )}
+              {activeFilter === 'Following' ? <Users className="w-7 h-7 text-accent" /> : <span className="text-2xl">🏙️</span>}
             </div>
             <h3 className="font-semibold text-foreground mb-1">
               {activeFilter === 'Following' ? 'No activity from people you follow' : 'Your feed is quiet'}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {activeFilter === 'Following'
-                ? 'Follow artists, businesses, and organizations to see their updates here.'
-                : 'Explore Baltimore communities to fill your feed.'}
+              {activeFilter === 'Following' ? 'Follow artists, businesses, and organizations to see their updates here.' : 'Explore Baltimore communities to fill your feed.'}
             </p>
             {activeFilter === 'Following' && (
-              <div className="flex gap-3 justify-center mt-5">
+              <div className="flex gap-3 justify-center mt-5 flex-wrap">
                 <Link to="/artists"><Button variant="outline" size="sm" className="rounded-lg">Browse Artists</Button></Link>
                 <Link to="/arts-organizations"><Button variant="outline" size="sm" className="rounded-lg">Browse Orgs</Button></Link>
                 <Link to="/businesses"><Button variant="outline" size="sm" className="rounded-lg">Browse Businesses</Button></Link>
@@ -166,34 +191,35 @@ export default function Home() {
           </div>
         ) : (
           feedItems.map((item, idx) => {
-            if (item.type === 'post') {
-              return <PostCard key={`post-${item.data.id}`} post={item.data} currentUserId={currentUser?.id} />;
-            }
-            if (item.type === 'story') {
-              return (
-                <div key={`story-${item.data.id}`} className="relative">
+            const cardContent = (() => {
+              if (item.type === 'post') return <PostCard key={`post-${item.data.id}-${idx}`} post={item.data} currentUserId={currentUser?.id} />;
+              if (item.type === 'story') return (
+                <div className="relative">
                   <div className="absolute -top-1 left-4 z-10">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-accent bg-accent/10 px-2 py-0.5 rounded-full">Zine</span>
                   </div>
-                  <div className="pt-3">
-                    <StoryCard story={item.data} />
-                  </div>
+                  <div className="pt-3"><StoryCard story={item.data} /></div>
                 </div>
               );
-            }
-            if (item.type === 'event') {
-              return (
-                <div key={`event-${item.data.id}`} className="relative">
+              if (item.type === 'event') return (
+                <div className="relative">
                   <div className="absolute -top-1 left-4 z-10">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">Event</span>
                   </div>
-                  <div className="pt-3">
-                    <EventCard event={item.data} />
-                  </div>
+                  <div className="pt-3"><EventCard event={item.data} /></div>
                 </div>
               );
+              return null;
+            })();
+
+            if (item.isNew || item.reason) {
+              return (
+                <DiscoverCard key={`${item.type}-${item.data.id}-${idx}`} isNew={item.isNew} reason={item.reason}>
+                  {cardContent}
+                </DiscoverCard>
+              );
             }
-            return null;
+            return <React.Fragment key={`${item.type}-${item.data.id}-${idx}`}>{cardContent}</React.Fragment>;
           })
         )}
       </div>
