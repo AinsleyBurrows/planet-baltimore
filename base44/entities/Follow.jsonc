@@ -1,0 +1,30 @@
+{
+  "name": "Follow",
+  "type": "object",
+  "properties": {
+    "follower_id": {
+      "type": "string"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "artist",
+        "business",
+        "community",
+        "event"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "target_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "follower_id",
+    "target_type",
+    "target_id"
+  ]
+}

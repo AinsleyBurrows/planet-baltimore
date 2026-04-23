@@ -1,0 +1,26 @@
+{
+  "name": "Like",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "event",
+        "story",
+        "comment"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "target_type",
+    "target_id"
+  ]
+}

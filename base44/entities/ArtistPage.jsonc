@@ -1,0 +1,71 @@
+{
+  "name": "ArtistPage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "visual_art",
+        "music",
+        "video",
+        "photography",
+        "performance",
+        "literary",
+        "mixed_media",
+        "digital",
+        "other"
+      ]
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "neighborhood_id": {
+      "type": "string"
+    },
+    "neighborhood_name": {
+      "type": "string"
+    },
+    "portfolio_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "website": {
+      "type": "string"
+    },
+    "social_links": {
+      "type": "object"
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "owner_id"
+  ]
+}

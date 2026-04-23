@@ -1,0 +1,75 @@
+{
+  "name": "BusinessPage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "restaurant",
+        "retail",
+        "service",
+        "entertainment",
+        "health",
+        "education",
+        "technology",
+        "creative",
+        "nonprofit",
+        "other"
+      ]
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "neighborhood_id": {
+      "type": "string"
+    },
+    "neighborhood_name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "hours": {
+      "type": "string"
+    },
+    "social_links": {
+      "type": "object"
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "owner_id"
+  ]
+}

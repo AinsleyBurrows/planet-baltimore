@@ -1,0 +1,55 @@
+{
+  "name": "Neighborhood",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Official neighborhood name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
+    "region": {
+      "type": "string",
+      "enum": [
+        "North Baltimore",
+        "South Baltimore",
+        "East Baltimore",
+        "West Baltimore",
+        "Central/Downtown"
+      ],
+      "description": "Geographic region"
+    },
+    "zip_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Associated zip codes"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "image_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "slug",
+    "region"
+  ]
+}

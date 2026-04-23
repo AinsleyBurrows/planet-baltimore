@@ -1,0 +1,79 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "account_type": {
+      "type": "string",
+      "enum": [
+        "resident",
+        "artist",
+        "event_producer",
+        "business_owner",
+        "community_leader"
+      ],
+      "default": "resident"
+    },
+    "neighborhoods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Selected neighborhood IDs"
+    },
+    "neighborhood_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "website": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_onboarded": {
+      "type": "boolean",
+      "default": false
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "following_count": {
+      "type": "number",
+      "default": 0
+    },
+    "posts_count": {
+      "type": "number",
+      "default": 0
+    }
+  }
+}

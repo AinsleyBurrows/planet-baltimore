@@ -1,0 +1,166 @@
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { ArrowLeft, Calendar, Clock, MapPin, Users, Share2, Heart, ExternalLink, Navigation } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
+import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+import AppImage from '@/components/shared/AppImage';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
+export default function EventDetail() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const eventId = window.location.pathname.split('/events/')[1];
+
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+
+  const { data: event, isLoading } = useQuery({
+    queryKey: ['event', eventId],
+    queryFn: async () => {
+      const events = await base44.entities.Event.filter({ id: eventId });
+      return events[0];
+    },
+    enabled: !!eventId,
+  });
+
+  const rsvpMutation = useMutation({
+    mutationFn: () => base44.entities.RSVP.create({ user_id: user?.id, event_id: eventId, status: 'going' }),
+    onSuccess: () => {
+      toast({ title: 'RSVP confirmed!' });
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+    },
+  });
+
+  if (isLoading) return (
+    <div className="space-y-4">
+      <Skeleton className="aspect-[16/9] rounded-xl" />
+      <Skeleton className="h-8 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+    </div>
+  );
+
+  if (!event) return (
+    <div className="text-center py-16">
+      <h3 className="font-semibold text-foreground mb-1">Event not found</h3>
+      <Button variant="ghost" onClick={() => navigate('/events')} className="mt-4">Back to Events</Button>
+    </div>
+  );
+
+  const eventDate = event.date ? new Date(event.date) : null;
+  const hasLocation = event.latitude && event.longitude;
+  const mapsUrl = event.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.address)}` : '';
+
+  return (
+    <div className="space-y-6">
+      <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
+
+      {/* Hero Image */}
+      {event.image_url && (
+        <div className="aspect-[16/9] rounded-xl overflow-hidden">
+          <AppImage src={event.image_url} className="w-full h-full" />
+        </div>
+      )}
+
+      {/* Header */}
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          {event.category && <Badge className="bg-accent/10 text-accent border-0 capitalize">{event.category}</Badge>}
+          {event.is_free && <Badge className="bg-green-500/10 text-green-600 border-0">Free</Badge>}
+        </div>
+        <h1 className="text-2xl font-bold text-foreground">{event.title}</h1>
+      </div>
+
+      {/* Date/Time */}
+      <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl">
+        <div className="w-14 h-14 bg-accent/10 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
+          {eventDate && (
+            <>
+              <span className="text-xs font-bold text-accent uppercase">{format(eventDate, 'MMM')}</span>
+              <span className="text-xl font-bold text-foreground">{format(eventDate, 'd')}</span>
+            </>
+          )}
+        </div>
+        <div>
+          <p className="font-medium text-foreground">{eventDate ? format(eventDate, 'EEEE, MMMM d, yyyy') : 'Date TBD'}</p>
+          <p className="text-sm text-muted-foreground">{eventDate ? format(eventDate, 'h:mm a') : ''}{event.end_date ? ` – ${format(new Date(event.end_date), 'h:mm a')}` : ''}</p>
+        </div>
+      </div>
+
+      {/* Location */}
+      {(event.venue_name || event.address) && (
+        <div className="space-y-3">
+          <div className="flex items-start gap-3 p-4 bg-secondary/50 rounded-xl">
+            <MapPin className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              {event.venue_name && <p className="font-medium text-foreground">{event.venue_name}</p>}
+              {event.address && <p className="text-sm text-muted-foreground">{event.address}</p>}
+            </div>
+            {mapsUrl && (
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm text-accent hover:underline flex-shrink-0">
+                <Navigation className="w-4 h-4" />Directions
+              </a>
+            )}
+          </div>
+
+          {/* Map */}
+          {hasLocation && (
+            <div className="h-48 rounded-xl overflow-hidden border border-border">
+              <MapContainer center={[event.latitude, event.longitude]} zoom={15} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker position={[event.latitude, event.longitude]}>
+                  <Popup>{event.venue_name || event.title}</Popup>
+                </Marker>
+              </MapContainer>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Organizer */}
+      <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl">
+        <Avatar className="w-10 h-10">
+          <AvatarImage src={event.organizer_avatar} />
+          <AvatarFallback className="bg-accent/10 text-accent">{event.organizer_name?.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="text-sm text-muted-foreground">Hosted by</p>
+          <p className="font-medium text-foreground">{event.organizer_name}</p>
+        </div>
+      </div>
+
+      {/* Description */}
+      {event.description && (
+        <div>
+          <h2 className="font-semibold text-foreground mb-2">About this event</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{event.description}</p>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-3 sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4">
+        {event.ticket_url ? (
+          <a href={event.ticket_url} target="_blank" rel="noopener noreferrer" className="flex-1">
+            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground gap-2 h-12 rounded-xl">
+              <ExternalLink className="w-4 h-4" />Get Tickets
+            </Button>
+          </a>
+        ) : (
+          <Button onClick={() => rsvpMutation.mutate()} disabled={rsvpMutation.isPending} className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground gap-2 h-12 rounded-xl">
+            <Calendar className="w-4 h-4" />RSVP
+          </Button>
+        )}
+        <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Share2 className="w-5 h-5" /></Button>
+        <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Heart className="w-5 h-5" /></Button>
+      </div>
+    </div>
+  );
+}

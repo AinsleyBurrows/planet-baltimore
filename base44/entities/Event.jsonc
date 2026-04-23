@@ -1,0 +1,119 @@
+{
+  "name": "Event",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "venue_name": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "neighborhood_id": {
+      "type": "string"
+    },
+    "neighborhood_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "music",
+        "art",
+        "community",
+        "nightlife",
+        "food",
+        "wellness",
+        "education",
+        "activism",
+        "family",
+        "sports",
+        "networking",
+        "festival",
+        "other"
+      ]
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "organizer_id": {
+      "type": "string"
+    },
+    "organizer_name": {
+      "type": "string"
+    },
+    "organizer_avatar": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "unlisted"
+      ],
+      "default": "public"
+    },
+    "ticket_url": {
+      "type": "string"
+    },
+    "is_free": {
+      "type": "boolean",
+      "default": true
+    },
+    "price_range": {
+      "type": "string"
+    },
+    "rsvp_count": {
+      "type": "number",
+      "default": 0
+    },
+    "capacity": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "ongoing",
+        "completed",
+        "cancelled"
+      ],
+      "default": "upcoming"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "date",
+    "organizer_id"
+  ]
+}

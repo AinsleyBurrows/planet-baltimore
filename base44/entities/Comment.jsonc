@@ -1,0 +1,44 @@
+{
+  "name": "Comment",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string"
+    },
+    "author_id": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_avatar": {
+      "type": "string"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "event",
+        "story",
+        "community"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_deleted": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "content",
+    "author_id",
+    "target_type",
+    "target_id"
+  ]
+}

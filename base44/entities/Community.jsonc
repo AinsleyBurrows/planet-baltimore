@@ -1,0 +1,74 @@
+{
+  "name": "Community",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "neighborhood",
+        "arts",
+        "activism",
+        "wellness",
+        "education",
+        "business",
+        "social",
+        "sports",
+        "faith",
+        "civic",
+        "other"
+      ]
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "neighborhood_id": {
+      "type": "string"
+    },
+    "neighborhood_name": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "members_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_official": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "website": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "owner_id"
+  ]
+}
