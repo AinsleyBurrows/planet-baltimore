@@ -95,6 +95,37 @@
   }
 }
 
+/* ─── Global Interaction Tokens ─────────────────────────────────── */
+@layer components {
+  /* Clickable card — applied to any card that navigates */
+  .interactive-card {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  /* Pill / chip toggle */
+  .pill-btn {
+    @apply px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150
+           hover:ring-1 hover:ring-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
+           active:scale-95;
+  }
+
+  /* Icon-only action button */
+  .icon-btn {
+    @apply p-2 rounded-full transition-all duration-150 hover:bg-secondary active:scale-95
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1;
+  }
+
+  /* Sidebar / nav link */
+  .nav-link {
+    @apply flex items-center gap-3 px-3 h-11 rounded-lg transition-all duration-150 text-sm font-medium
+           hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
+}
+
+/* Ensure all <button> have cursor-pointer */
+button:not(:disabled) { cursor: pointer; }
+a { cursor: pointer; }
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

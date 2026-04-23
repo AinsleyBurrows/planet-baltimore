@@ -55,7 +55,7 @@ export default function CommunityAssociations() {
       ) : (
         <div className="space-y-3">
           {filtered.map(assoc => (
-            <Link key={assoc.id} to={`/community-associations/${assoc.id}`} className="flex gap-4 p-4 bg-card border border-border rounded-xl hover:shadow-sm transition-all group">
+            <Link key={assoc.id} to={`/community-associations/${assoc.id}`} className="flex gap-4 p-4 bg-card border border-border rounded-xl hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Avatar className="w-16 h-16 rounded-xl flex-shrink-0">
                 <AvatarImage src={assoc.image_url} />
                 <AvatarFallback className="rounded-xl bg-primary/10 text-primary font-bold text-xl">{assoc.name?.charAt(0)}</AvatarFallback>

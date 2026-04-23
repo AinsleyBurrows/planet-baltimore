@@ -81,8 +81,12 @@ export default function LeftSidebar() {
             }
 
             return (
-              <Link key={item.path} to={item.path} className={`flex items-center gap-3 px-3 h-11 rounded-lg transition-all text-sm font-medium ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}>
-                <Icon className="w-5 h-5 flex-shrink-0" />
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 h-11 rounded-lg transition-all duration-150 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+              >
+                <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-150 ${isActive ? 'scale-110' : ''}`} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -91,7 +95,7 @@ export default function LeftSidebar() {
 
         {/* Collapse Toggle */}
         <div className="border-t border-border p-3">
-          <button onClick={() => setCollapsed(!collapsed)} className="flex items-center justify-center w-full h-9 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-all">
+          <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="flex items-center justify-center w-full h-9 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>

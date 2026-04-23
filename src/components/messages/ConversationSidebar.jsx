@@ -39,7 +39,7 @@ export default function ConversationSidebar({ conversations, activeId, onSelect,
               <button
                 key={convo.conversation_id}
                 onClick={() => onSelect(convo)}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors border-b border-border/50 hover:bg-secondary/60 ${isActive ? 'bg-accent/8 border-l-2 border-l-accent' : ''}`}
+                className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-all duration-150 border-b border-border/50 hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:bg-secondary ${isActive ? 'bg-accent/10 border-l-2 border-l-accent' : ''}`}
               >
                 <div className="relative flex-shrink-0">
                   <Avatar className="w-11 h-11">

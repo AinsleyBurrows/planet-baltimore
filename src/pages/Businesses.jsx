@@ -53,7 +53,7 @@ export default function Businesses() {
 
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
         {categories.map((cat) => (
-          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === cat ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>
+          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeCategory === cat ? 'bg-foreground text-background shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'}`}>
             {cat}
           </button>
         ))}
@@ -74,7 +74,7 @@ export default function Businesses() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filtered.map((biz) => (
-            <Link key={biz.id} to={`/businesses/${biz.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-sm transition-all group">
+            <Link key={biz.id} to={`/businesses/${biz.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="h-24 bg-muted overflow-hidden">
                 {biz.banner_url ? (
                   <img src={biz.banner_url} alt="" className="w-full h-full object-cover" />

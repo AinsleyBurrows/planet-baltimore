@@ -60,7 +60,7 @@ export default function EventDetail() {
 
   return (
     <div className="space-y-6">
-      <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
+      <button onClick={() => navigate(-1)} aria-label="Go back" className="p-2 rounded-full hover:bg-secondary active:scale-90 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ArrowLeft className="w-5 h-5" /></button>
 
       {/* Hero Image */}
       {event.image_url && (
@@ -157,8 +157,18 @@ export default function EventDetail() {
           </a>
         )}
         <RSVPButton eventId={eventId} rsvpCount={goingCount} />
-        <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Share2 className="w-5 h-5" /></Button>
-        <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Heart className="w-5 h-5" /></Button>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Share event"
+          onClick={() => navigator.share?.({ title: event.title, url: window.location.href }).catch(() => {})}
+          className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95"
+        >
+          <Share2 className="w-5 h-5" />
+        </Button>
+        <Button variant="outline" size="icon" aria-label="Save event" className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95">
+          <Heart className="w-5 h-5" />
+        </Button>
       </div>
     </div>
   );

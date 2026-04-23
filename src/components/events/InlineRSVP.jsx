@@ -54,7 +54,7 @@ export default function InlineRSVP({ eventId, onClick }) {
     <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border">
       <button
         onClick={(e) => handleClick(e, 'going')}
-        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           currentStatus === 'going'
             ? 'bg-accent text-accent-foreground'
             : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground'
@@ -67,7 +67,7 @@ export default function InlineRSVP({ eventId, onClick }) {
 
       <button
         onClick={(e) => handleClick(e, 'interested')}
-        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           currentStatus === 'interested'
             ? 'bg-yellow-500/15 text-yellow-600 border border-yellow-400/40'
             : 'bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground'

@@ -22,8 +22,8 @@ export default function MobileNav() {
 
           if (item.isCreate) {
             return (
-              <Link key={item.path} to={item.path} className="flex items-center justify-center">
-                <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center shadow-lg shadow-accent/25">
+              <Link key={item.path} to={item.path} className="flex items-center justify-center focus-visible:outline-none" aria-label="Create post">
+                <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center shadow-lg shadow-accent/25 transition-all duration-150 hover:scale-105 active:scale-95">
                   <Icon className="w-5 h-5 text-accent-foreground" />
                 </div>
               </Link>
@@ -31,8 +31,13 @@ export default function MobileNav() {
           }
 
           return (
-            <Link key={item.path} to={item.path} className={`flex flex-col items-center gap-1 min-w-[56px] py-1 transition-colors ${isActive ? 'text-accent' : 'text-muted-foreground'}`}>
-              <Icon className="w-5 h-5" />
+            <Link
+              key={item.path}
+              to={item.path}
+              aria-label={item.label}
+              className={`flex flex-col items-center gap-1 min-w-[56px] py-1 transition-all duration-150 active:scale-95 focus-visible:outline-none ${isActive ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <Icon className={`w-5 h-5 transition-transform duration-150 ${isActive ? 'scale-110' : ''}`} />
               <span className="text-[10px] font-medium">{item.label}</span>
             </Link>
           );

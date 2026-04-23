@@ -123,7 +123,7 @@ export default function CommunityAssociationDetail() {
 
   return (
     <div className="space-y-0">
-      <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary mb-2 block">
+      <button onClick={() => navigate(-1)} aria-label="Go back" className="p-2 rounded-full hover:bg-secondary active:scale-90 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mb-2 block">
         <ArrowLeft className="w-5 h-5" />
       </button>
 

@@ -67,7 +67,7 @@ export default function ArtsOrgDetail() {
           </Avatar>
           <div className="flex gap-2 mb-1">
             {org && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
-            <Button size="sm" variant="outline" className="rounded-lg"><Share2 className="w-4 h-4" /></Button>
+            <Button size="sm" variant="outline" className="rounded-lg transition-all duration-150 active:scale-95" aria-label="Share"><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
 

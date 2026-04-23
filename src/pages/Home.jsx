@@ -150,8 +150,8 @@ export default function Home() {
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-              activeFilter === filter ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+              activeFilter === filter ? 'bg-foreground text-background shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
             }`}
           >
             {filter === 'Discover' && <Compass className="w-3.5 h-3.5" />}

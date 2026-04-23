@@ -35,7 +35,7 @@ export default function Discover() {
       {/* Categories */}
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
         {categories.map((cat) => (
-          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === cat ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>
+          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeCategory === cat ? 'bg-foreground text-background shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'}`}>
             {cat}
           </button>
         ))}
@@ -63,7 +63,7 @@ export default function Discover() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {artists.slice(0, 6).map((artist) => (
-              <Link key={artist.id} to={`/artists/${artist.id}`} className="bg-card border border-border rounded-xl p-4 text-center hover:shadow-sm transition-all group">
+              <Link key={artist.id} to={`/artists/${artist.id}`} className="bg-card border border-border rounded-xl p-4 text-center hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <Avatar className="w-16 h-16 mx-auto mb-3">
                   <AvatarImage src={artist.image_url} />
                   <AvatarFallback className="bg-accent/10 text-accent font-bold">{artist.name?.charAt(0)}</AvatarFallback>

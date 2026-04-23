@@ -18,7 +18,7 @@ function SuggestionSection({ title, icon: Icon, items, type, badgeLabel }) {
       </div>
       <div className="space-y-3">
         {items.map((item, idx) => (
-          <Link key={idx} to={item.link || '#'} className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/50 transition-all group">
+          <Link key={idx} to={item.link || '#'} className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/60 active:bg-secondary transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Avatar className="w-10 h-10 rounded-lg">
               <AvatarImage src={item.image} />
               <AvatarFallback className="rounded-lg bg-accent/10 text-accent text-xs font-bold">
@@ -69,9 +69,9 @@ export default function RightSidebar() {
         <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} />
         
         <div className="mt-4 pt-4 border-t border-border">
-          <Link to="/discover" className="flex items-center gap-2 text-sm text-accent hover:text-accent/80 font-medium transition-colors">
+          <Link to="/discover" className="flex items-center gap-2 text-sm text-accent hover:text-accent/80 font-medium transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md p-0.5">
             Explore more of Baltimore
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-0.5" />
           </Link>
         </div>
         

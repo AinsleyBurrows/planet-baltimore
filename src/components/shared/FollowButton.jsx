@@ -21,10 +21,10 @@ export default function FollowButton({ targetType, targetId, targetName, size = 
       size={size}
       disabled={isPending}
       onClick={() => toggle(targetType, targetId, targetName)}
-      className={`rounded-lg gap-2 transition-all ${
+      className={`rounded-lg gap-2 transition-all duration-150 active:scale-95 focus-visible:ring-2 focus-visible:ring-ring ${
         following
           ? 'bg-secondary text-foreground hover:bg-destructive/10 hover:text-destructive border border-border'
-          : 'bg-accent hover:bg-accent/90 text-accent-foreground'
+          : 'bg-accent hover:bg-accent/90 text-accent-foreground shadow-sm hover:shadow-md'
       }`}
     >
       {following ? (

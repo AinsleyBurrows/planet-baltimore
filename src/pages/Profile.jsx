@@ -116,8 +116,16 @@ export default function Profile() {
                 <Plus className="w-4 h-4" />Create Post
               </Button>
             </Link>
-            <Button size="sm" variant="outline" className="rounded-lg"><Settings className="w-4 h-4" /></Button>
-            <Button size="sm" variant="outline" className="rounded-lg"><Share2 className="w-4 h-4" /></Button>
+            <Button size="sm" variant="outline" aria-label="Settings" className="rounded-lg transition-all duration-150 active:scale-95"><Settings className="w-4 h-4" /></Button>
+            <Button
+              size="sm"
+              variant="outline"
+              aria-label="Share profile"
+              onClick={() => navigator.share?.({ title: user.full_name, url: window.location.href }).catch(() => {})}
+              className="rounded-lg transition-all duration-150 active:scale-95"
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
@@ -155,7 +163,7 @@ export default function Profile() {
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
               <Icon className="w-4 h-4" />{tab.label}
             </button>
           );

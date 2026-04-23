@@ -144,7 +144,7 @@ function OrgCard({ org, featured = false }) {
   return (
     <Link
       to={`/arts-organizations/${org.id}`}
-      className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-all group"
+      className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {featured && org.banner_url && (
         <div className="h-28 overflow-hidden bg-muted">

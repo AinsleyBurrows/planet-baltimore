@@ -55,7 +55,7 @@ export default function Artists() {
 
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
         {categories.map((cat) => (
-          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeCategory === cat ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>
+          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeCategory === cat ? 'bg-foreground text-background shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'}`}>
             {cat}
           </button>
         ))}
@@ -76,7 +76,7 @@ export default function Artists() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {filtered.map((artist) => (
-            <Link key={artist.id} to={`/artists/${artist.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-all group">
+            <Link key={artist.id} to={`/artists/${artist.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="aspect-square bg-muted overflow-hidden">
                 {artist.image_url ? (
                   <img src={artist.image_url} alt={artist.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />

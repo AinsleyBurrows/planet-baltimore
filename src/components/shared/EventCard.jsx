@@ -11,7 +11,7 @@ export default function EventCard({ event, compact = false }) {
 
   if (compact) {
     return (
-      <Link to={`/events/${event.id}`} className="flex gap-3 p-3 rounded-xl bg-card border border-border hover:shadow-sm transition-all group">
+      <Link to={`/events/${event.id}`} className="flex gap-3 p-3 rounded-xl bg-card border border-border hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-accent/10 flex flex-col items-center justify-center">
           {eventDate ? (
             <>
@@ -35,7 +35,7 @@ export default function EventCard({ event, compact = false }) {
   }
 
   return (
-    <Link to={`/events/${event.id}`} className="block rounded-xl bg-card border border-border overflow-hidden hover:shadow-md transition-all group">
+    <Link to={`/events/${event.id}`} className="block rounded-xl bg-card border border-border overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
       <div className="relative aspect-[16/9] bg-muted overflow-hidden">
         {event.image_url ? (
           <AppImage src={event.image_url} className="w-full h-full" clickable={false} aspectRatio="16:9" />

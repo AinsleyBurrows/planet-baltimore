@@ -18,10 +18,10 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
   };
 
   return (
-    <article className="bg-card rounded-xl border border-border overflow-hidden transition-all hover:shadow-sm">
+    <article className="bg-card rounded-xl border border-border overflow-hidden transition-all duration-200 hover:shadow-md">
       {/* Header */}
       <div className="flex items-center justify-between p-4">
-        <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 group">
+        <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg p-0.5">
           <Avatar className="w-10 h-10">
             <AvatarImage src={post.author_avatar} />
             <AvatarFallback className="bg-accent/10 text-accent font-semibold text-sm">
@@ -40,7 +40,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
           </div>
         </Link>
         <DropdownMenu>
-          <DropdownMenuTrigger className="p-2 rounded-full hover:bg-secondary transition-colors">
+          <DropdownMenuTrigger className="p-2 rounded-full hover:bg-secondary active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -89,19 +89,33 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
       {/* Actions */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-4">
-          <button onClick={handleLike} className={`flex items-center gap-1.5 text-sm transition-colors ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
-            <Heart className={`w-5 h-5 ${liked ? 'fill-accent' : ''}`} />
+          <button
+            onClick={handleLike}
+            aria-label={liked ? 'Unlike post' : 'Like post'}
+            className={`flex items-center gap-1.5 text-sm transition-all duration-150 active:scale-90 ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-accent' : ''}`} />
             <span>{(post.likes_count || 0) + (liked ? 1 : 0)}</span>
           </button>
-          <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            aria-label="Comment on post"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-150"
+          >
             <MessageCircle className="w-5 h-5" />
             <span>{post.comments_count || 0}</span>
           </button>
-          <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            aria-label="Share post"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-150"
+          >
             <Share2 className="w-5 h-5" />
           </button>
         </div>
-        <button onClick={() => setSaved(!saved)} className={`transition-colors ${saved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
+        <button
+          onClick={() => setSaved(!saved)}
+          aria-label={saved ? 'Unsave post' : 'Save post'}
+          className={`transition-all duration-150 active:scale-90 ${saved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+        >
           <Bookmark className={`w-5 h-5 ${saved ? 'fill-accent' : ''}`} />
         </button>
       </div>

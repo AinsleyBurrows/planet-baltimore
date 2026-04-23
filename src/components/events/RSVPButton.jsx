@@ -72,7 +72,7 @@ export default function RSVPButton({ eventId, rsvpCount = 0 }) {
       <Button
         onClick={() => rsvpMutation.mutate('going')}
         disabled={rsvpMutation.isPending}
-        className={`flex-1 h-12 rounded-l-xl rounded-r-none gap-2 font-semibold ${
+        className={`flex-1 h-12 rounded-l-xl rounded-r-none gap-2 font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring ${
           currentStatus === 'going'
             ? 'bg-accent hover:bg-accent/90 text-accent-foreground'
             : 'bg-secondary hover:bg-secondary/80 text-foreground'

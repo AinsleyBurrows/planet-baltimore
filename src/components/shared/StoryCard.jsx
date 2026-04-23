@@ -8,7 +8,7 @@ import AppImage from './AppImage';
 export default function StoryCard({ story, featured = false }) {
   if (featured) {
     return (
-      <Link to={`/stories/${story.id}`} className="block rounded-xl bg-card border border-border overflow-hidden hover:shadow-md transition-all group">
+      <Link to={`/stories/${story.id}`} className="block rounded-xl bg-card border border-border overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         <div className="relative aspect-[2/1] bg-muted overflow-hidden">
           {story.cover_image ? (
             <AppImage src={story.cover_image} className="w-full h-full" clickable={false} />
@@ -39,7 +39,7 @@ export default function StoryCard({ story, featured = false }) {
   }
 
   return (
-    <Link to={`/stories/${story.id}`} className="flex gap-4 p-4 rounded-xl bg-card border border-border hover:shadow-sm transition-all group">
+    <Link to={`/stories/${story.id}`} className="flex gap-4 p-4 rounded-xl bg-card border border-border hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-2">
           <Avatar className="w-6 h-6">
