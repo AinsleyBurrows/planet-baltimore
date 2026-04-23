@@ -1,0 +1,159 @@
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Heart, Users, Navigation } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useNavigate } from 'react-router-dom';
+import AppImage from '@/components/shared/AppImage';
+import PostCard from '@/components/shared/PostCard';
+
+const categoryLabels = {
+  restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
+  health: 'Health', education: 'Education', technology: 'Technology', creative: 'Creative', nonprofit: 'Nonprofit', other: 'Other'
+};
+
+export default function BusinessDetail() {
+  const navigate = useNavigate();
+  const [following, setFollowing] = useState(false);
+  const businessId = window.location.pathname.split('/businesses/')[1];
+
+  const { data: business, isLoading } = useQuery({
+    queryKey: ['business', businessId],
+    queryFn: async () => {
+      const results = await base44.entities.BusinessPage.filter({ id: businessId });
+      return results[0];
+    },
+    enabled: !!businessId,
+  });
+
+  const { data: posts = [] } = useQuery({
+    queryKey: ['business-posts', business?.name],
+    queryFn: () => base44.entities.Post.filter({ author_name: business.name }, '-created_date', 10),
+    enabled: !!business?.name,
+  });
+
+  if (isLoading) return (
+    <div className="space-y-4">
+      <Skeleton className="h-48 rounded-xl" />
+      <div className="px-4 flex gap-4 items-end">
+        <Skeleton className="w-20 h-20 rounded-xl -mt-10" />
+        <Skeleton className="h-8 w-40" />
+      </div>
+    </div>
+  );
+
+  if (!business) return (
+    <div className="text-center py-16">
+      <p className="text-muted-foreground">Business not found</p>
+      <Button variant="ghost" onClick={() => navigate('/businesses')} className="mt-4">Back</Button>
+    </div>
+  );
+
+  const mapsUrl = business.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}` : '';
+
+  return (
+    <div>
+      <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary mb-2 block">
+        <ArrowLeft className="w-5 h-5" />
+      </button>
+
+      {/* Banner */}
+      <div className="relative h-48 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10">
+        {business.banner_url && <AppImage src={business.banner_url} className="w-full h-full" clickable={false} />}
+      </div>
+
+      {/* Profile */}
+      <div className="px-1 pb-4">
+        <div className="flex items-end justify-between -mt-10 mb-4">
+          <Avatar className="w-20 h-20 rounded-xl border-4 border-background shadow-lg">
+            <AvatarImage src={business.image_url} className="object-cover" />
+            <AvatarFallback className="rounded-xl bg-primary/10 text-primary text-2xl font-bold">{business.name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex gap-2 mb-1">
+            <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
+            <Button
+              onClick={() => setFollowing(!following)}
+              className={`rounded-lg h-9 px-4 gap-2 ${following ? 'bg-secondary text-foreground' : 'bg-accent hover:bg-accent/90 text-accent-foreground'}`}
+            >
+              {following ? <><Heart className="w-4 h-4 fill-current" />Following</> : <><Heart className="w-4 h-4" />Follow</>}
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 mb-1">
+          <h1 className="text-xl font-bold text-foreground">{business.name}</h1>
+          {business.is_verified && <CheckCircle className="w-5 h-5 text-accent fill-accent/20" />}
+        </div>
+
+        {business.category && (
+          <Badge variant="secondary" className="mb-2">{categoryLabels[business.category] || business.category}</Badge>
+        )}
+
+        {business.description && <p className="text-sm text-muted-foreground leading-relaxed mt-2">{business.description}</p>}
+
+        {/* Contact Info */}
+        <div className="mt-4 space-y-2">
+          {business.address && (
+            <div className="flex items-start gap-2 text-sm">
+              <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <span className="text-muted-foreground">{business.address}</span>
+              {mapsUrl && <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent text-xs hover:underline ml-auto"><Navigation className="w-3 h-3" />Directions</a>}
+            </div>
+          )}
+          {business.phone && (
+            <a href={`tel:${business.phone}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-accent transition-colors">
+              <Phone className="w-4 h-4" />{business.phone}
+            </a>
+          )}
+          {business.hours && (
+            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" /><span>{business.hours}</span>
+            </div>
+          )}
+          {business.website && (
+            <a href={business.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-accent hover:underline">
+              <Globe className="w-4 h-4" />{business.website}
+            </a>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1"><Users className="w-4 h-4" />{(business.followers_count || 0).toLocaleString()} followers</span>
+          {business.neighborhood_name && <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{business.neighborhood_name}</span>}
+        </div>
+
+        {business.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {business.tags.map((tag, i) => <Badge key={i} variant="secondary" className="text-xs">#{tag}</Badge>)}
+          </div>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="posts">
+        <TabsList className="w-full bg-secondary/50 rounded-xl">
+          <TabsTrigger value="posts" className="flex-1 rounded-lg">Updates</TabsTrigger>
+          <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="posts" className="mt-4 space-y-4">
+          {posts.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground text-sm">No updates yet from this business.</div>
+          ) : posts.map(post => <PostCard key={post.id} post={post} />)}
+        </TabsContent>
+
+        <TabsContent value="about" className="mt-4">
+          <div className="bg-card rounded-xl border border-border p-5 space-y-4 text-sm">
+            {business.description && <div><h3 className="font-semibold text-foreground mb-1">About</h3><p className="text-muted-foreground">{business.description}</p></div>}
+            {business.neighborhood_name && <div><h3 className="font-semibold text-foreground mb-1">Neighborhood</h3><p className="text-muted-foreground">{business.neighborhood_name}</p></div>}
+            {business.hours && <div><h3 className="font-semibold text-foreground mb-1">Hours</h3><p className="text-muted-foreground">{business.hours}</p></div>}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

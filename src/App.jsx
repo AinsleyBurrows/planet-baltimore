@@ -25,6 +25,9 @@ import CreateCommunity from '@/pages/CreateCommunity';
 import CreateArtist from '@/pages/CreateArtist';
 import CreateBusiness from '@/pages/CreateBusiness';
 import CreateStory from '@/pages/CreateStory';
+import CommunityDetail from '@/pages/CommunityDetail';
+import ArtistDetail from '@/pages/ArtistDetail';
+import BusinessDetail from '@/pages/BusinessDetail';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -60,8 +63,11 @@ const AuthenticatedApp = () => {
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/communities" element={<Communities />} />
+        <Route path="/communities/:id" element={<CommunityDetail />} />
         <Route path="/artists" element={<Artists />} />
+        <Route path="/artists/:id" element={<ArtistDetail />} />
         <Route path="/businesses" element={<Businesses />} />
+        <Route path="/businesses/:id" element={<BusinessDetail />} />
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:id" element={<StoryDetail />} />
         <Route path="/profile" element={<Profile />} />
