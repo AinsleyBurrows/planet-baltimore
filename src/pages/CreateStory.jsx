@@ -80,7 +80,7 @@ export default function CreateStory() {
           <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }}} />
         </label>
 
-        <Input value={form.title} onChange={(e) => updateForm('title', e.target.value)} placeholder="Your story title..." className="text-2xl font-serif font-bold border-0 bg-transparent h-auto py-2 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
+        <Input value={form.title} onChange={(e) => updateForm('title', e.target.value)} placeholder="Your zine title..." className="text-2xl font-serif font-bold border-0 bg-transparent h-auto py-2 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
         <Input value={form.subtitle} onChange={(e) => updateForm('subtitle', e.target.value)} placeholder="A brief subtitle..." className="text-lg border-0 bg-transparent h-auto py-1 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
 
         <div><Label>Category</Label>
