@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Heart, Users, Navigation } from 'lucide-react';
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import AppImage from '@/components/shared/AppImage';
 import PostCard from '@/components/shared/PostCard';
+import FollowButton from '@/components/shared/FollowButton';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -18,7 +19,6 @@ const categoryLabels = {
 
 export default function BusinessDetail() {
   const navigate = useNavigate();
-  const [following, setFollowing] = useState(false);
   const businessId = window.location.pathname.split('/businesses/')[1];
 
   const { data: business, isLoading } = useQuery({
@@ -75,12 +75,7 @@ export default function BusinessDetail() {
           </Avatar>
           <div className="flex gap-2 mb-1">
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
-            <Button
-              onClick={() => setFollowing(!following)}
-              className={`rounded-lg h-9 px-4 gap-2 ${following ? 'bg-secondary text-foreground' : 'bg-accent hover:bg-accent/90 text-accent-foreground'}`}
-            >
-              {following ? <><Heart className="w-4 h-4 fill-current" />Following</> : <><Heart className="w-4 h-4" />Follow</>}
-            </Button>
+            {business && <FollowButton targetType="business" targetId={business.id} targetName={business.name} />}
           </div>
         </div>
 

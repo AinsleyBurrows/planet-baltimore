@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
+import FollowButton from '@/components/shared/FollowButton';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -21,7 +22,7 @@ const ORG_TYPE_LABELS = {
 
 export default function ArtsOrgDetail() {
   const id = window.location.pathname.split('/').pop();
-  const [following, setFollowing] = useState(false);
+
 
   const { data: org, isLoading } = useQuery({
     queryKey: ['arts-org', id],
@@ -65,14 +66,7 @@ export default function ArtsOrgDetail() {
             <AvatarFallback className="rounded-xl text-2xl font-bold bg-accent/10 text-accent">{org.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex gap-2 mb-1">
-            <Button
-              size="sm"
-              variant={following ? 'outline' : 'default'}
-              onClick={() => setFollowing(f => !f)}
-              className={`rounded-lg ${!following ? 'bg-accent hover:bg-accent/90 text-accent-foreground' : ''}`}
-            >
-              {following ? 'Following' : 'Follow'}
-            </Button>
+            {org && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
             <Button size="sm" variant="outline" className="rounded-lg"><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
