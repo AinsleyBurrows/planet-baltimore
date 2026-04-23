@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, MapPin, Calendar, Users, Palette, Building2, BookOpen, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, BookOpen, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
@@ -11,6 +11,7 @@ const navItems = [
   { icon: Calendar, label: 'Events', path: '/events' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Palette, label: 'Artists', path: '/artists' },
+  { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
   { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },

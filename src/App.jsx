@@ -29,6 +29,9 @@ import Neighborhoods from '@/pages/Neighborhoods';
 import CommunityDetail from '@/pages/CommunityDetail';
 import ArtistDetail from '@/pages/ArtistDetail';
 import BusinessDetail from '@/pages/BusinessDetail';
+import ArtsOrganizations from '@/pages/ArtsOrganizations';
+import ArtsOrgDetail from '@/pages/ArtsOrgDetail';
+import CreateArtsOrg from '@/pages/CreateArtsOrg';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -70,6 +73,9 @@ const AuthenticatedApp = () => {
         <Route path="/artists/:id" element={<ArtistDetail />} />
         <Route path="/businesses" element={<Businesses />} />
         <Route path="/businesses/:id" element={<BusinessDetail />} />
+        <Route path="/arts-organizations" element={<ArtsOrganizations />} />
+        <Route path="/arts-organizations/:id" element={<ArtsOrgDetail />} />
+        <Route path="/create-arts-org" element={<CreateArtsOrg />} />
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:id" element={<StoryDetail />} />
         <Route path="/profile" element={<Profile />} />

@@ -1,0 +1,112 @@
+{
+  "name": "ArtsOrganization",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "mission": {
+      "type": "string"
+    },
+    "org_type": {
+      "type": "string",
+      "enum": [
+        "museum",
+        "gallery",
+        "studio_space",
+        "collective",
+        "residency",
+        "nonprofit",
+        "cultural_institution",
+        "performance_space",
+        "community_art_space",
+        "diy_space",
+        "art_school",
+        "other"
+      ]
+    },
+    "secondary_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "neighborhood_id": {
+      "type": "string"
+    },
+    "neighborhood_name": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "website": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "hours": {
+      "type": "string"
+    },
+    "social_links": {
+      "type": "object"
+    },
+    "programming_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "owner_id",
+    "org_type"
+  ]
+}

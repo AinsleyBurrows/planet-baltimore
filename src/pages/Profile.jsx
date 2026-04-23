@@ -11,6 +11,8 @@ import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
 import StoryCard from '@/components/shared/StoryCard';
 import AppImage from '@/components/shared/AppImage';
+import PostGridTile from '@/components/shared/PostGridTile';
+import PostDetailModal from '@/components/shared/PostDetailModal';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -23,6 +25,7 @@ const tabs = [
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('posts');
+  const [selectedPost, setSelectedPost] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setUser);
@@ -57,6 +60,7 @@ export default function Profile() {
   const allMedia = mediaPosts.flatMap(p => p.media_urls);
 
   return (
+    <>
     <div className="space-y-0">
       {/* Banner */}
       <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
@@ -128,7 +132,11 @@ export default function Profile() {
       <div className="mt-4 space-y-4">
         {activeTab === 'posts' && (
           posts.filter(p => !p.is_deleted).length > 0 ? (
-            posts.filter(p => !p.is_deleted).map(p => <PostCard key={p.id} post={p} currentUserId={user.id} />)
+            <div className="grid grid-cols-3 gap-0.5 rounded-xl overflow-hidden">
+              {posts.filter(p => !p.is_deleted).map(p => (
+                <PostGridTile key={p.id} post={p} onClick={setSelectedPost} />
+              ))}
+            </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">No posts yet. Share something with the community!</div>
           )
@@ -158,7 +166,7 @@ export default function Profile() {
         )}
         {activeTab === 'media' && (
           allMedia.length > 0 ? (
-            <div className="grid grid-cols-3 gap-1 rounded-xl overflow-hidden">
+            <div className="grid grid-cols-3 gap-0.5 rounded-xl overflow-hidden">
               {allMedia.map((url, idx) => (
                 <AppImage key={idx} src={url} images={allMedia} index={idx} className="aspect-square w-full" aspectRatio="square" />
               ))}
@@ -167,7 +175,11 @@ export default function Profile() {
             <div className="text-center py-12 text-muted-foreground text-sm">No media shared yet.</div>
           )
         )}
+
       </div>
     </div>
+
+    {selectedPost && <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
+    </>
   );
 }

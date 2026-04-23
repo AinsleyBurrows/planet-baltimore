@@ -3,8 +3,7 @@
   "type": "object",
   "properties": {
     "author_id": {
-      "type": "string",
-      "description": "User ID of the author"
+      "type": "string"
     },
     "author_name": {
       "type": "string"
@@ -24,8 +23,7 @@
       "default": "user"
     },
     "page_id": {
-      "type": "string",
-      "description": "Associated page ID if posted from a page"
+      "type": "string"
     },
     "page_type": {
       "type": "string",
@@ -55,6 +53,14 @@
         "mixed"
       ],
       "default": "text"
+    },
+    "bg_color": {
+      "type": "string",
+      "description": "Background color for text-only posts"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Custom thumbnail for video posts"
     },
     "tags": {
       "type": "array",

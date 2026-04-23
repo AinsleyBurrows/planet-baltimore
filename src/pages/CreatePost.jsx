@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Image, Video, Type, Music, X, ArrowLeft, MapPin, Tag, Calendar, Users, Loader2 } from 'lucide-react';
+import { Image, Video, Type, Music, X, ArrowLeft, Tag, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
+import TextBgPicker, { getTextColor } from '@/components/shared/TextBgPicker';
 
 const postTypes = [
   { id: 'image', label: 'Photo', icon: Image },
@@ -28,6 +29,7 @@ export default function CreatePost() {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [bgColor, setBgColor] = useState('#1a1a2e');
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
 
@@ -71,6 +73,7 @@ export default function CreatePost() {
         media_urls: mediaUrls,
         media_type: mediaUrls.length > 0 ? activeType : 'text',
         tags,
+        bg_color: activeType === 'text' && mediaUrls.length === 0 ? bgColor : undefined,
         visibility: 'public',
         post_type: 'standard',
         neighborhood_name: user.neighborhood_names?.[0],
@@ -115,8 +118,27 @@ export default function CreatePost() {
         })}
       </div>
 
-      {/* Content Area */}
-      <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="What's happening in Baltimore?" className="min-h-[120px] text-base border-0 bg-transparent resize-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/60" />
+      {/* Content Area — text posts get live bg preview */}
+      {activeType === 'text' ? (
+        <div className="space-y-4">
+          <div
+            className="rounded-xl p-6 min-h-[160px] flex items-center justify-center transition-colors"
+            style={{ backgroundColor: bgColor }}
+          >
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Say something meaningful..."
+              className="w-full bg-transparent border-none resize-none focus:outline-none text-center text-xl font-serif leading-relaxed placeholder:opacity-50"
+              style={{ color: getTextColor(bgColor) }}
+              rows={4}
+            />
+          </div>
+          <TextBgPicker value={bgColor} onChange={setBgColor} />
+        </div>
+      ) : (
+        <Textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="What's happening in Baltimore?" className="min-h-[120px] text-base border-0 bg-transparent resize-none focus-visible:ring-0 p-0 placeholder:text-muted-foreground/60" />
+      )}
 
       {/* Media Preview */}
       {mediaPreviews.length > 0 && (
