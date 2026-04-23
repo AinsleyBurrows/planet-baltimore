@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Settings, Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera } from 'lucide-react';
+import { Settings, Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +19,8 @@ const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
   { id: 'feed', label: 'Feed', icon: Rss },
   { id: 'stories', label: 'Zines', icon: BookOpen },
-  { id: 'events', label: 'Events', icon: Calendar },
+  { id: 'events', label: 'My Events', icon: CalendarCheck },
+  { id: 'created_events', label: 'Organized', icon: Calendar },
   { id: 'media', label: 'Media', icon: Image },
 ];
 
@@ -45,10 +46,28 @@ export default function Profile() {
     enabled: !!user?.id,
   });
 
-  const { data: events = [] } = useQuery({
-    queryKey: ['my-events', user?.id],
+  const { data: createdEvents = [] } = useQuery({
+    queryKey: ['my-created-events', user?.id],
     queryFn: () => base44.entities.Event.filter({ organizer_id: user.id }, '-date', 20),
     enabled: !!user?.id,
+  });
+
+  const { data: myRsvps = [] } = useQuery({
+    queryKey: ['my-rsvps', user?.id],
+    queryFn: () => base44.entities.RSVP.filter({ user_id: user.id }),
+    enabled: !!user?.id,
+  });
+
+  const rsvpEventIds = myRsvps.map(r => r.event_id);
+
+  const { data: rsvpedEvents = [] } = useQuery({
+    queryKey: ['rsvped-events', rsvpEventIds.join(',')],
+    queryFn: async () => {
+      if (!rsvpEventIds.length) return [];
+      const all = await base44.entities.Event.list('date', 200);
+      return all.filter(e => rsvpEventIds.includes(e.id));
+    },
+    enabled: rsvpEventIds.length > 0,
   });
 
   if (!user) return (
@@ -171,12 +190,41 @@ export default function Profile() {
           )
         )}
         {activeTab === 'events' && (
-          events.length > 0 ? (
+          (() => {
+            const going = myRsvps.filter(r => r.status === 'going').map(r => r.event_id);
+            const interested = myRsvps.filter(r => r.status === 'interested').map(r => r.event_id);
+            const goingEvents = rsvpedEvents.filter(e => going.includes(e.id));
+            const interestedEvents = rsvpedEvents.filter(e => interested.includes(e.id));
+            if (!rsvpedEvents.length) return <div className="text-center py-12 text-muted-foreground text-sm">No RSVPs yet. Find events to attend!</div>;
+            return (
+              <div className="space-y-6">
+                {goingEvents.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-accent mb-3 flex items-center gap-1.5"><CalendarCheck className="w-4 h-4" />Going ({goingEvents.length})</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {goingEvents.map(e => <EventCard key={e.id} event={e} />)}
+                    </div>
+                  </div>
+                )}
+                {interestedEvents.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-muted-foreground mb-3">Interested ({interestedEvents.length})</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {interestedEvents.map(e => <EventCard key={e.id} event={e} />)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()
+        )}
+        {activeTab === 'created_events' && (
+          createdEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {events.map(e => <EventCard key={e.id} event={e} />)}
+              {createdEvents.map(e => <EventCard key={e.id} event={e} />)}
             </div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground text-sm">No events created yet.</div>
+            <div className="text-center py-12 text-muted-foreground text-sm">No events organized yet.</div>
           )
         )}
         {activeTab === 'media' && (

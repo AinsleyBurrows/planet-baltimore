@@ -4,6 +4,7 @@ import { Calendar, MapPin, Users, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import AppImage from './AppImage';
+import InlineRSVP from '@/components/events/InlineRSVP';
 
 export default function EventCard({ event, compact = false }) {
   const eventDate = event.date ? new Date(event.date) : null;
@@ -58,18 +59,11 @@ export default function EventCard({ event, compact = false }) {
         </div>
         <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-2">{event.title}</h3>
         {event.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{event.description}</p>}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="w-3 h-3" />
-            <span>{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
-          </div>
-          {event.rsvp_count > 0 && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Users className="w-3 h-3" />
-              <span>{event.rsvp_count} going</span>
-            </div>
-          )}
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-3">
+          <MapPin className="w-3 h-3" />
+          <span>{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
         </div>
+        <InlineRSVP eventId={event.id} />
       </div>
     </Link>
   );

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import AppImage from '@/components/shared/AppImage';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import RSVPButton from '@/components/events/RSVPButton';
+import AttendeeList from '@/components/events/AttendeeList';
 
 export default function EventDetail() {
   const navigate = useNavigate();
@@ -143,33 +144,19 @@ export default function EventDetail() {
         </div>
       )}
 
-      {/* Attendee count */}
-      {(goingCount > 0 || interestedCount > 0) && (
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <CalendarCheck className="w-4 h-4 text-accent" />
-            <span><strong className="text-foreground">{goingCount}</strong> going</span>
-          </span>
-          {interestedCount > 0 && (
-            <span className="flex items-center gap-1.5">
-              <Users className="w-4 h-4" />
-              <span><strong className="text-foreground">{interestedCount}</strong> interested</span>
-            </span>
-          )}
-        </div>
-      )}
+      {/* Attendee list */}
+      <AttendeeList eventId={eventId} />
 
       {/* Actions */}
       <div className="flex gap-3 sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4">
-        {event.ticket_url ? (
-          <a href={event.ticket_url} target="_blank" rel="noopener noreferrer" className="flex-1">
-            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground gap-2 h-12 rounded-xl">
+        {event.ticket_url && (
+          <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
+            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 h-12 rounded-xl">
               <ExternalLink className="w-4 h-4" />Get Tickets
             </Button>
           </a>
-        ) : (
-          <RSVPButton eventId={eventId} rsvpCount={goingCount} />
         )}
+        <RSVPButton eventId={eventId} rsvpCount={goingCount} />
         <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Share2 className="w-5 h-5" /></Button>
         <Button variant="outline" size="icon" className="h-12 w-12 rounded-xl"><Heart className="w-5 h-5" /></Button>
       </div>
