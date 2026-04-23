@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Settings, Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image } from 'lucide-react';
+import { Settings, Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ import StoryCard from '@/components/shared/StoryCard';
 import AppImage from '@/components/shared/AppImage';
 import PostGridTile from '@/components/shared/PostGridTile';
 import PostDetailModal from '@/components/shared/PostDetailModal';
+import ImageUploadModal from '@/components/profile/ImageUploadModal';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -26,6 +27,7 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('posts');
   const [selectedPost, setSelectedPost] = useState(null);
+  const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
 
   useEffect(() => {
     base44.auth.me().then(setUser);
@@ -63,19 +65,33 @@ export default function Profile() {
     <>
     <div className="space-y-0">
       {/* Banner */}
-      <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
-        {user.banner_url && <AppImage src={user.banner_url} className="w-full h-full" clickable={true} />}
+      <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20 group">
+        {user.banner_url && <AppImage src={user.banner_url} className="w-full h-full" clickable={false} />}
+        <button
+          onClick={() => setEditingImage('banner')}
+          className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-200"
+        >
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 px-4 py-2 rounded-xl bg-black/60 text-white text-sm font-medium backdrop-blur-sm">
+            <Camera className="w-4 h-4" />
+            {user.banner_url ? 'Change Banner' : 'Add Banner'}
+          </span>
+        </button>
       </div>
 
       {/* Profile Info */}
       <div className="relative px-1 -mt-12">
         <div className="flex items-end justify-between">
-          <Avatar className="w-24 h-24 border-4 border-background">
-            <AvatarImage src={user.avatar_url} />
-            <AvatarFallback className="text-2xl font-bold bg-accent/10 text-accent">
-              {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative group cursor-pointer" onClick={() => setEditingImage('avatar')}>
+            <Avatar className="w-24 h-24 border-4 border-background">
+              <AvatarImage src={user.avatar_url} />
+              <AvatarFallback className="text-2xl font-bold bg-accent/10 text-accent">
+                {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center border-4 border-background rounded-full">
+              <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          </div>
           <div className="flex gap-2 mb-1">
             <Link to="/create-post">
               <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-1.5 rounded-lg">
@@ -180,6 +196,20 @@ export default function Profile() {
     </div>
 
     {selectedPost && <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
+
+    {editingImage && (
+      <ImageUploadModal
+        type={editingImage}
+        onSave={(url) => {
+          setUser(prev => ({
+            ...prev,
+            [editingImage === 'avatar' ? 'avatar_url' : 'banner_url']: url,
+          }));
+          setEditingImage(null);
+        }}
+        onClose={() => setEditingImage(null)}
+      />
+    )}
     </>
   );
 }
