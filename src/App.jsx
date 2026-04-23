@@ -25,6 +25,7 @@ import CreateCommunity from '@/pages/CreateCommunity';
 import CreateArtist from '@/pages/CreateArtist';
 import CreateBusiness from '@/pages/CreateBusiness';
 import CreateStory from '@/pages/CreateStory';
+import Neighborhoods from '@/pages/Neighborhoods';
 import CommunityDetail from '@/pages/CommunityDetail';
 import ArtistDetail from '@/pages/ArtistDetail';
 import BusinessDetail from '@/pages/BusinessDetail';
@@ -60,6 +61,7 @@ const AuthenticatedApp = () => {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/discover" element={<Discover />} />
+        <Route path="/neighborhoods" element={<Neighborhoods />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
         <Route path="/communities" element={<Communities />} />
