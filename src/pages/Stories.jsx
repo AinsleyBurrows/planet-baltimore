@@ -30,7 +30,7 @@ export default function Stories() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Zines</h1>
+        <h1 className="text-2xl font-bold text-foreground">Your Story</h1>
         <Link to="/create-story">
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
             <Plus className="w-4 h-4" />Write a Zine
