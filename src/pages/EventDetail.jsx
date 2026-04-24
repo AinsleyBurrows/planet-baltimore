@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, MapPin, Users, Share2, Heart, ExternalLink, Navigation, CalendarCheck } from 'lucide-react';
+import { ArrowLeft, MapPin, Share2, Heart, ExternalLink, Navigation, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,7 +38,11 @@ export default function EventDetail() {
   });
 
   const goingCount = attendees.filter(r => r.status === 'going').length;
-  const interestedCount = attendees.filter(r => r.status === 'interested').length;
+
+  const deleteMutation = useMutation({
+    mutationFn: () => base44.entities.Event.delete(eventId),
+    onSuccess: () => navigate('/events'),
+  });
 
   if (isLoading) return (
     <div className="space-y-4">
@@ -175,6 +179,17 @@ export default function EventDetail() {
         <Button variant="outline" size="icon" aria-label="Save event" className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95">
           <Heart className="w-5 h-5" />
         </Button>
+        {user?.id === event.organizer_id && (
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Delete event"
+            onClick={() => { if (window.confirm('Delete this event?')) deleteMutation.mutate(); }}
+            className="h-12 w-12 rounded-xl text-destructive hover:bg-destructive/10 hover:border-destructive transition-all duration-150 active:scale-95"
+          >
+            <Trash2 className="w-5 h-5" />
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Settings, Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck } from 'lucide-react';
+import { Settings, Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,10 +29,28 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('posts');
   const [selectedPost, setSelectedPost] = useState(null);
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser);
   }, []);
+
+  const handleDeletePost = async (postId) => {
+    await base44.entities.Post.delete(postId);
+    queryClient.invalidateQueries({ queryKey: ['my-posts', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['home-posts'] });
+  };
+
+  const handleDeleteStory = async (storyId) => {
+    await base44.entities.Story.delete(storyId);
+    queryClient.invalidateQueries({ queryKey: ['my-stories', user?.id] });
+    queryClient.invalidateQueries({ queryKey: ['stories'] });
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    await base44.entities.Event.delete(eventId);
+    queryClient.invalidateQueries({ queryKey: ['my-created-events', user?.id] });
+  };
 
   const { data: posts = [] } = useQuery({
     queryKey: ['my-posts', user?.id],
@@ -187,14 +205,25 @@ export default function Profile() {
         )}
         {activeTab === 'feed' && (
           posts.filter(p => !p.is_deleted).length > 0 ? (
-            posts.filter(p => !p.is_deleted).map(p => <PostCard key={p.id} post={p} currentUserId={user.id} />)
+            posts.filter(p => !p.is_deleted).map(p => <PostCard key={p.id} post={p} currentUserId={user.id} onDelete={handleDeletePost} />)
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">Your activity feed is empty.</div>
           )
         )}
         {activeTab === 'stories' && (
           stories.length > 0 ? (
-            stories.map(s => <StoryCard key={s.id} story={s} />)
+            stories.map(s => (
+              <div key={s.id} className="relative group">
+                <StoryCard story={s} />
+                <button
+                  onClick={() => { if (window.confirm('Delete this story?')) handleDeleteStory(s.id); }}
+                  className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                  aria-label="Delete story"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">No stories published yet.</div>
           )
@@ -231,7 +260,18 @@ export default function Profile() {
         {activeTab === 'created_events' && (
           createdEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {createdEvents.map(e => <EventCard key={e.id} event={e} />)}
+              {createdEvents.map(e => (
+                <div key={e.id} className="relative group">
+                  <EventCard event={e} />
+                  <button
+                    onClick={() => { if (window.confirm('Delete this event?')) handleDeleteEvent(e.id); }}
+                    className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                    aria-label="Delete event"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">No events organized yet.</div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Clock, Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
+import { ArrowLeft, Clock, Heart, MessageCircle, Share2, Bookmark, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,14 @@ import CommentSection from '@/components/shared/CommentSection';
 export default function StoryDetail() {
   const navigate = useNavigate();
   const storyId = window.location.pathname.split('/stories/')[1];
+  const [user, setUser] = useState(null);
+
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+
+  const deleteMutation = useMutation({
+    mutationFn: () => base44.entities.Story.delete(storyId),
+    onSuccess: () => navigate('/stories'),
+  });
 
   const { data: story, isLoading } = useQuery({
     queryKey: ['story', storyId],
@@ -83,8 +91,18 @@ export default function StoryDetail() {
           <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent transition-colors"><MessageCircle className="w-5 h-5" />{story.comments_count || 0}</button>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon"><Share2 className="w-5 h-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => navigator.share?.({ title: story.title, url: window.location.href }).catch(() => {})}><Share2 className="w-5 h-5" /></Button>
           <Button variant="ghost" size="icon"><Bookmark className="w-5 h-5" /></Button>
+          {user?.id === story.author_id && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => { if (window.confirm('Delete this story?')) deleteMutation.mutate(); }}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="w-5 h-5" />
+            </Button>
+          )}
         </div>
       </div>
 

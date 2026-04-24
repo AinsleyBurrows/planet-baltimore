@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import PostCard from '@/components/shared/PostCard';
 import StoryCard from '@/components/shared/StoryCard';
@@ -40,8 +40,14 @@ function shuffleSeed(arr, seed = 1) {
 export default function Home() {
   const [activeFilter, setActiveFilter] = useState('For You');
   const [currentUser, setCurrentUser] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => { base44.auth.me().then(setCurrentUser); }, []);
+
+  const handleDeletePost = async (postId) => {
+    await base44.entities.Post.delete(postId);
+    queryClient.invalidateQueries({ queryKey: ['home-posts'] });
+  };
 
   const { data: posts = [], isLoading: loadingPosts } = useQuery({
     queryKey: ['home-posts'],
@@ -198,7 +204,7 @@ export default function Home() {
         ) : (
           feedItems.map((item, idx) => {
             const cardContent = (() => {
-              if (item.type === 'post') return <PostCard key={`post-${item.data.id}-${idx}`} post={item.data} currentUserId={currentUser?.id} />;
+              if (item.type === 'post') return <PostCard key={`post-${item.data.id}-${idx}`} post={item.data} currentUserId={currentUser?.id} onDelete={handleDeletePost} />;
               if (item.type === 'story') return (
                 <div className="relative">
                   <div className="absolute -top-1 left-4 z-10">
