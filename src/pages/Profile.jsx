@@ -14,6 +14,7 @@ import AppImage from '@/components/shared/AppImage';
 import PostGridTile from '@/components/shared/PostGridTile';
 import PostDetailModal from '@/components/shared/PostDetailModal';
 import ImageUploadModal from '@/components/profile/ImageUploadModal';
+import ShareModal from '@/components/shared/ShareModal';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -29,6 +30,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('posts');
   const [selectedPost, setSelectedPost] = useState(null);
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
+  const [showShare, setShowShare] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -139,7 +141,7 @@ export default function Profile() {
               size="sm"
               variant="outline"
               aria-label="Share profile"
-              onClick={() => navigator.share?.({ title: user.full_name, url: window.location.href }).catch(() => {})}
+              onClick={() => setShowShare(true)}
               className="rounded-lg transition-all duration-150 active:scale-95"
             >
               <Share2 className="w-4 h-4" />
@@ -295,6 +297,14 @@ export default function Profile() {
     </div>
 
     {selectedPost && <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
+
+    <ShareModal
+      isOpen={showShare}
+      onClose={() => setShowShare(false)}
+      url={window.location.href}
+      title={user?.display_name || user?.full_name}
+      description={user?.bio}
+    />
 
     {editingImage && (
       <ImageUploadModal
