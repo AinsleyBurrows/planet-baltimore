@@ -79,18 +79,14 @@
       ],
       "default": "public"
     },
-    "ticket_url": {
-      "type": "string"
-    },
     "ticketing_mode": {
       "type": "string",
       "enum": [
-        "external",
         "rsvp_only",
         "platform"
       ],
-      "default": "external",
-      "description": "external=external link, rsvp_only=RSVP without tickets, platform=built-in ticketing"
+      "default": "rsvp_only",
+      "description": "rsvp_only=RSVP without tickets, platform=built-in ticketing"
     },
     "allow_donations": {
       "type": "boolean",
@@ -99,9 +95,6 @@
     "is_free": {
       "type": "boolean",
       "default": true
-    },
-    "price_range": {
-      "type": "string"
     },
     "rsvp_count": {
       "type": "number",

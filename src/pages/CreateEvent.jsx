@@ -22,8 +22,8 @@ export default function CreateEvent() {
   const [imagePreview, setImagePreview] = useState('');
   const [form, setForm] = useState({
     title: '', description: '', date: '', end_date: '', venue_name: '', address: '',
-    category: 'community', is_free: true, price_range: '', ticket_url: '', capacity: '',
-    ticketing_mode: 'external', allow_donations: false,
+    category: 'community', capacity: '',
+    ticketing_mode: 'rsvp_only', allow_donations: false,
   });
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
@@ -107,19 +107,11 @@ export default function CreateEvent() {
           <Select value={form.ticketing_mode} onValueChange={(v) => updateForm('ticketing_mode', v)}>
             <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="external">External Link (Eventbrite, etc.)</SelectItem>
-              <SelectItem value="rsvp_only">RSVP Only (No Tickets)</SelectItem>
-              <SelectItem value="platform">Platform Tickets (Built-in)</SelectItem>
+              <SelectItem value="rsvp_only">RSVP Only</SelectItem>
+              <SelectItem value="platform">Platform Tickets</SelectItem>
             </SelectContent>
           </Select>
         </div>
-
-        {form.ticketing_mode === 'external' && (
-          <div className="grid grid-cols-2 gap-4">
-            <div><Label>Price Range</Label><Input value={form.price_range} onChange={(e) => updateForm('price_range', e.target.value)} placeholder="$10-$25" className="mt-1.5" /></div>
-            <div><Label>Ticket URL</Label><Input value={form.ticket_url} onChange={(e) => updateForm('ticket_url', e.target.value)} placeholder="https://..." className="mt-1.5" /></div>
-          </div>
-        )}
 
         {form.ticketing_mode === 'platform' && (
           <div className="flex items-center justify-between p-3 bg-secondary/40 rounded-lg">

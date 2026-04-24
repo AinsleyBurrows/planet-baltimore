@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Heart, Share2, Gift } from 'lucide-react';
+import { Heart, Share2, Gift } from 'lucide-react';
 import RSVPButton from './RSVPButton';
 
 export default function EventTicketing({ event, rsvpCount, onShare, user }) {
@@ -172,30 +172,4 @@ export default function EventTicketing({ event, rsvpCount, onShare, user }) {
       </div>
     );
   }
-
-  // External ticketing mode (legacy)
-  return (
-    <div className="sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4 flex gap-3">
-      {event.ticket_url && (
-        <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
-          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 h-12 rounded-xl">
-            <ExternalLink className="w-4 h-4" />Get Tickets
-          </Button>
-        </a>
-      )}
-      <RSVPButton eventId={event.id} rsvpCount={rsvpCount} />
-      <Button
-        variant="outline"
-        size="icon"
-        aria-label="Share event"
-        onClick={onShare}
-        className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95"
-      >
-        <Share2 className="w-5 h-5" />
-      </Button>
-      <Button variant="outline" size="icon" aria-label="Save event" className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95">
-        <Heart className="w-5 h-5" />
-      </Button>
-    </div>
-  );
 }
