@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
+import ShareModal from './ShareModal';
 
 const TEXT_BG_TEXT_COLORS = {
   '#1a1a2e': '#ffffff', '#16213e': '#ffffff', '#0f3460': '#ffffff',
@@ -22,6 +23,7 @@ export default function PostDetailModal({ post, onClose }) {
   const [imgIndex, setImgIndex] = useState(0);
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   const images = post?.media_urls || [];
   const isImage = post?.media_type === 'image' || (images.length > 0 && !post?.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i));
@@ -193,7 +195,10 @@ export default function PostDetailModal({ post, onClose }) {
                   <MessageCircle className="w-5 h-5" />
                   <span>{post.comments_count || 0}</span>
                 </button>
-                <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button
+                  onClick={() => setShowShare(true)}
+                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
                   <Share2 className="w-5 h-5" />
                 </button>
               </div>
@@ -212,6 +217,13 @@ export default function PostDetailModal({ post, onClose }) {
           </div>
         </motion.div>
       </motion.div>
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        url={`${window.location.origin}/profile/${post.author_id}`}
+        title={post.content ? post.content.slice(0, 100) : `Post by ${post.author_name}`}
+        description={post.content}
+      />
     </AnimatePresence>
   );
 }
