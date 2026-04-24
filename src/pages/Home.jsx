@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { Users, Sparkles, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DiscoverCard from '@/components/discovery/DiscoverCard';
+import StoryBar from '@/components/stories/StoryBar.jsx';
 
 const FILTERS = ['For You', 'Following', 'Nearby', 'Discover'];
 
@@ -158,6 +159,11 @@ export default function Home() {
             {filter}
           </button>
         ))}
+      </div>
+
+      {/* Stories bar — always visible */}
+      <div className="bg-card border border-border rounded-xl px-4 py-3">
+        <StoryBar currentUser={currentUser} />
       </div>
 
       {activeFilter === 'Discover' && (
