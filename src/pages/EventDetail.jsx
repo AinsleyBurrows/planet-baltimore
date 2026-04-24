@@ -12,6 +12,7 @@ import AppImage from '@/components/shared/AppImage';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import RSVPButton from '@/components/events/RSVPButton';
 import AttendeeList from '@/components/events/AttendeeList';
+import CommentSection from '@/components/shared/CommentSection';
 
 export default function EventDetail() {
   const navigate = useNavigate();
@@ -146,6 +147,11 @@ export default function EventDetail() {
 
       {/* Attendee list */}
       <AttendeeList eventId={eventId} />
+
+      {/* Comments */}
+      <div className="border-t border-border pt-6">
+        <CommentSection targetType="event" targetId={eventId} />
+      </div>
 
       {/* Actions */}
       <div className="flex gap-3 sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4">

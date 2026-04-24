@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import AppImage from '@/components/shared/AppImage';
+import CommentSection from '@/components/shared/CommentSection';
 
 export default function StoryDetail() {
   const navigate = useNavigate();
@@ -85,6 +86,11 @@ export default function StoryDetail() {
           <Button variant="ghost" size="icon"><Share2 className="w-5 h-5" /></Button>
           <Button variant="ghost" size="icon"><Bookmark className="w-5 h-5" /></Button>
         </div>
+      </div>
+
+      {/* Comments */}
+      <div className="mt-10 border-t border-border pt-8">
+        <CommentSection targetType="story" targetId={storyId} />
       </div>
 
       {/* Author CTA */}

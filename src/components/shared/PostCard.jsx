@@ -5,11 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import AppImage from './AppImage';
+import CommentSection from './CommentSection';
 import { format } from 'date-fns';
 
 export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const isOwner = currentUserId === post.author_id;
 
   const handleLike = () => {
@@ -98,10 +100,11 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
             <span>{(post.likes_count || 0) + (liked ? 1 : 0)}</span>
           </button>
           <button
+            onClick={() => setShowComments(v => !v)}
             aria-label="Comment on post"
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-150"
+            className={`flex items-center gap-1.5 text-sm active:scale-90 transition-all duration-150 ${showComments ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <MessageCircle className="w-5 h-5" />
+            <MessageCircle className={`w-5 h-5 ${showComments ? 'fill-accent/20' : ''}`} />
             <span>{post.comments_count || 0}</span>
           </button>
           <button
@@ -119,6 +122,13 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
           <Bookmark className={`w-5 h-5 ${saved ? 'fill-accent' : ''}`} />
         </button>
       </div>
+
+      {/* Comments */}
+      {showComments && (
+        <div className="px-4 pb-4 border-t border-border pt-4">
+          <CommentSection targetType="post" targetId={post.id} />
+        </div>
+      )}
     </article>
   );
 }
