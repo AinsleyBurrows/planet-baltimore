@@ -37,6 +37,7 @@ import CommunityAssociationDetail from '@/pages/CommunityAssociationDetail';
 import CreateCommunityAssociation from '@/pages/CreateCommunityAssociation';
 import NotificationSettings from '@/pages/NotificationSettings';
 import CityMap from '@/pages/CityMap';
+import OrganizerStudio from '@/pages/OrganizerStudio';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -86,6 +87,7 @@ const AuthenticatedApp = () => {
         <Route path="/create-community-association" element={<CreateCommunityAssociation />} />
         <Route path="/notification-settings" element={<NotificationSettings />} />
         <Route path="/map" element={<CityMap />} />
+        <Route path="/organizer-studio" element={<OrganizerStudio />} />
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:id" element={<StoryDetail />} />
         <Route path="/profile" element={<Profile />} />
