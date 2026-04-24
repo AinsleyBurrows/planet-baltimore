@@ -114,8 +114,10 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
       {/* Content + Media */}
       {(() => {
         const hasText = !!post.content && !post.bg_color;
-        const hasImages = post.media_urls?.length > 0 && post.media_type !== 'video';
-        const isVideo = post.media_urls?.length > 0 && post.media_type === 'video';
+        const firstUrl = post.media_urls?.[0] || '';
+        const isVideoUrl = /\.(mp4|webm|mov|avi)/i.test(firstUrl);
+        const isVideo = post.media_urls?.length > 0 && (post.media_type === 'video' || isVideoUrl);
+        const hasImages = post.media_urls?.length > 0 && !isVideo;
         const singleImage = hasImages && post.media_urls.length === 1;
 
         // Colored text frame post
