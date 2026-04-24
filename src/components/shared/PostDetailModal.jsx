@@ -81,7 +81,7 @@ export default function PostDetailModal({ post, onClose }) {
 
           {/* LEFT: Media or text bg */}
           {!isText ? (
-            <div className="relative md:w-[60%] bg-black flex items-center justify-center min-h-[300px] md:min-h-full">
+            <div className="relative md:w-[60%] bg-white flex items-center justify-center min-h-[300px] md:min-h-full">
               {isVideo ? (
                 <video
                   src={images[0]}
