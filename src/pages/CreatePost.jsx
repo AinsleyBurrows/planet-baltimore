@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Image, Video, Type, Music, X, ArrowLeft, Tag, Loader2 } from 'lucide-react';
+import { Image, Video, Type, Music, X, ArrowLeft, Tag, Loader2, Camera, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,9 @@ export default function CreatePost() {
   const [tags, setTags] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [bgColor, setBgColor] = useState('#1a1a2e');
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const videoRef = useRef(null);
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
 
@@ -40,6 +43,35 @@ export default function CreatePost() {
     const previews = files.map(f => URL.createObjectURL(f));
     setMediaPreviews(prev => [...prev, ...previews]);
     setMediaFiles(prev => [...prev, ...files]);
+
+    // Auto-generate thumbnail from first video file
+    if (activeType === 'video' && files[0]) {
+      generateVideoThumbnail(files[0]);
+    }
+  };
+
+  const generateVideoThumbnail = (videoFile) => {
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(videoFile);
+    video.currentTime = 1;
+    video.onloadeddata = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      canvas.toBlob((blob) => {
+        const file = new File([blob], 'thumbnail.jpg', { type: 'image/jpeg' });
+        setThumbnailFile(file);
+        setThumbnailPreview(canvas.toDataURL('image/jpeg'));
+      }, 'image/jpeg', 0.85);
+    };
+  };
+
+  const handleThumbnailUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setThumbnailFile(file);
+    setThumbnailPreview(URL.createObjectURL(file));
   };
 
   const removeMedia = (index) => {
@@ -65,6 +97,12 @@ export default function CreatePost() {
         mediaUrls.push(result.file_url);
       }
 
+      let thumbnailUrl;
+      if (activeType === 'video' && thumbnailFile) {
+        const thumbResult = await base44.integrations.Core.UploadFile({ file: thumbnailFile });
+        thumbnailUrl = thumbResult.file_url;
+      }
+
       return base44.entities.Post.create({
         author_id: user.id,
         author_name: user.display_name || user.full_name,
@@ -74,6 +112,7 @@ export default function CreatePost() {
         media_type: mediaUrls.length > 0 ? activeType : 'text',
         tags,
         bg_color: activeType === 'text' && mediaUrls.length === 0 ? bgColor : undefined,
+        thumbnail_url: thumbnailUrl,
         visibility: 'public',
         post_type: 'standard',
         neighborhood_name: user.neighborhood_names?.[0],
@@ -151,6 +190,39 @@ export default function CreatePost() {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Video Thumbnail Picker */}
+      {activeType === 'video' && mediaPreviews.length > 0 && (
+        <div className="mt-4 p-4 bg-secondary/40 rounded-xl space-y-2">
+          <p className="text-sm font-medium text-foreground">Thumbnail</p>
+          <div className="flex items-center gap-3">
+            <div className="w-20 h-14 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+              {thumbnailPreview ? (
+                <img src={thumbnailPreview} alt="thumbnail" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Camera className="w-5 h-5 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card border border-border text-sm text-foreground cursor-pointer hover:bg-secondary transition-colors">
+                <input type="file" accept="image/*" className="hidden" onChange={handleThumbnailUpload} />
+                <Camera className="w-3.5 h-3.5" />Upload
+              </label>
+              {mediaFiles[0] && (
+                <button
+                  onClick={() => generateVideoThumbnail(mediaFiles[0])}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card border border-border text-sm text-foreground hover:bg-secondary transition-colors"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />Auto
+                </button>
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">Upload a custom thumbnail or auto-generate from the video</p>
         </div>
       )}
 
