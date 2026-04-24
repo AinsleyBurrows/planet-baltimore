@@ -2,40 +2,64 @@
   "name": "Ticket",
   "type": "object",
   "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "Reference to TicketOrder"
+    },
+    "ticket_type_id": {
+      "type": "string"
+    },
     "event_id": {
       "type": "string"
     },
-    "name": {
+    "owner_id": {
       "type": "string",
-      "description": "Ticket type name (e.g., General Admission, VIP, Student)"
+      "description": "User ID of ticket holder"
     },
-    "description": {
+    "owner_email": {
       "type": "string"
     },
-    "price": {
-      "type": "number",
-      "description": "Price in dollars. 0 for free"
+    "unique_code": {
+      "type": "string",
+      "description": "Unique identifier for ticket verification/QR code"
     },
-    "quantity_total": {
-      "type": "number",
-      "description": "Total tickets available"
+    "qr_code_url": {
+      "type": "string",
+      "description": "URL to QR code image"
     },
-    "quantity_sold": {
-      "type": "number",
-      "default": 0
+    "ticket_number": {
+      "type": "string",
+      "description": "Sequential, e.g., Ticket #1 of 3"
     },
-    "is_active": {
+    "is_checked_in": {
       "type": "boolean",
-      "default": true
+      "default": false
     },
-    "sort_order": {
-      "type": "number",
-      "default": 0
+    "checked_in_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "checked_in_by": {
+      "type": "string",
+      "description": "Admin user ID who checked them in"
+    },
+    "is_transferred": {
+      "type": "boolean",
+      "default": false,
+      "description": "Future feature: ticket transfers"
+    },
+    "transferred_to": {
+      "type": "string",
+      "description": "User ID if transferred (future)"
     }
   },
   "required": [
+    "order_id",
+    "ticket_type_id",
     "event_id",
-    "name",
-    "price"
+    "owner_id",
+    "owner_email",
+    "unique_code",
+    "ticket_number"
   ]
 }

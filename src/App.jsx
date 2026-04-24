@@ -38,6 +38,8 @@ import CreateCommunityAssociation from '@/pages/CreateCommunityAssociation';
 import NotificationSettings from '@/pages/NotificationSettings';
 import CityMap from '@/pages/CityMap';
 import OrganizerStudio from '@/pages/OrganizerStudio';
+import EventTicketing from '@/pages/EventTicketing';
+import OrderConfirmation from '@/pages/OrderConfirmation';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -73,6 +75,8 @@ const AuthenticatedApp = () => {
         <Route path="/neighborhoods" element={<Neighborhoods />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/events/:id/tickets" element={<EventTicketing />} />
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/communities" element={<Communities />} />
         <Route path="/communities/:id" element={<CommunityDetail />} />
         <Route path="/artists" element={<Artists />} />

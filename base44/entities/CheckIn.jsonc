@@ -1,0 +1,47 @@
+{
+  "name": "CheckIn",
+  "type": "object",
+  "properties": {
+    "ticket_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "checked_in_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "checked_in_by": {
+      "type": "string",
+      "description": "Admin/staff user ID"
+    },
+    "check_in_method": {
+      "type": "string",
+      "enum": [
+        "qr_scan",
+        "manual_search",
+        "api"
+      ],
+      "description": "How check-in was performed"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "For fraud detection"
+    },
+    "location": {
+      "type": "string",
+      "description": "Optional lat/lon or venue location"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "ticket_id",
+    "event_id",
+    "checked_in_at",
+    "checked_in_by",
+    "check_in_method"
+  ]
+}

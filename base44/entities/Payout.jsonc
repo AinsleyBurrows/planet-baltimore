@@ -1,0 +1,65 @@
+{
+  "name": "Payout",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "organizer_id": {
+      "type": "string",
+      "description": "Event organizer/producer user ID"
+    },
+    "total_gross_sales": {
+      "type": "number",
+      "description": "Sum of all ticket order totals"
+    },
+    "platform_commission": {
+      "type": "number",
+      "description": "Total platform fees taken"
+    },
+    "platform_fee_breakdown": {
+      "type": "object",
+      "description": "e.g., {percentage_fee: 5, flat_fee_per_ticket: 0.50, total: 250}",
+      "additionalProperties": true
+    },
+    "net_payout": {
+      "type": "number",
+      "description": "gross_sales - platform_commission"
+    },
+    "stripe_account_id": {
+      "type": "string",
+      "description": "Producer's Stripe Connect account ID (future)"
+    },
+    "stripe_payout_id": {
+      "type": "string",
+      "description": "Stripe payout transaction ID"
+    },
+    "payout_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_transit",
+        "completed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "payout_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When payout was initiated"
+    },
+    "bank_arrival_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Estimated arrival to bank account"
+    }
+  },
+  "required": [
+    "event_id",
+    "organizer_id",
+    "total_gross_sales",
+    "platform_commission",
+    "net_payout"
+  ]
+}

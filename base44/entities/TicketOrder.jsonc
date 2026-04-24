@@ -1,0 +1,110 @@
+{
+  "name": "TicketOrder",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "ticket_type_id": {
+      "type": "string"
+    },
+    "buyer_id": {
+      "type": "string",
+      "description": "User ID of purchaser"
+    },
+    "buyer_email": {
+      "type": "string"
+    },
+    "buyer_name": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Number of tickets in this order"
+    },
+    "subtotal": {
+      "type": "number",
+      "description": "price \u00d7 quantity"
+    },
+    "taxes": {
+      "type": "number",
+      "description": "Calculated tax amount",
+      "default": 0
+    },
+    "platform_fee": {
+      "type": "number",
+      "description": "Platform commission amount"
+    },
+    "discount_applied": {
+      "type": "number",
+      "description": "Promo code discount amount",
+      "default": 0
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Final amount paid: subtotal + taxes + platform_fee - discount"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "payment_intent_id": {
+      "type": "string",
+      "description": "Stripe payment intent ID"
+    },
+    "order_number": {
+      "type": "string",
+      "description": "Human-readable order ID, e.g., ORD-2026-0001"
+    },
+    "payout_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "payout_id": {
+      "type": "string",
+      "description": "Reference to Payout record"
+    },
+    "refund_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "partial",
+        "full"
+      ],
+      "default": "none"
+    },
+    "refund_reason": {
+      "type": "string"
+    },
+    "refund_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "promo_code_used": {
+      "type": "string",
+      "description": "Promo code applied to this order"
+    }
+  },
+  "required": [
+    "event_id",
+    "ticket_type_id",
+    "buyer_id",
+    "buyer_email",
+    "buyer_name",
+    "quantity",
+    "subtotal",
+    "platform_fee",
+    "total_amount"
+  ]
+}

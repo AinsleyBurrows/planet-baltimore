@@ -1,0 +1,67 @@
+{
+  "name": "PromoCode",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Unique code, e.g., EARLYBIRD10"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Optional event ID; null means platform-wide"
+    },
+    "discount_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "fixed"
+      ],
+      "description": "percentage (e.g., 10%) or fixed (e.g., $5 off)"
+    },
+    "discount_value": {
+      "type": "number",
+      "description": "10 for 10%, or 5 for $5 off"
+    },
+    "usage_limit": {
+      "type": "number",
+      "description": "Maximum uses globally"
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Current uses"
+    },
+    "ticket_type_whitelist": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ticket type IDs eligible; null = all eligible"
+    },
+    "min_purchase_qty": {
+      "type": "number",
+      "description": "Minimum tickets to purchase"
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Admin or producer user ID"
+    }
+  },
+  "required": [
+    "code",
+    "discount_type",
+    "discount_value"
+  ]
+}

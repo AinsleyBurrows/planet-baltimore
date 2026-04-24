@@ -1,0 +1,31 @@
+{
+  "name": "PlatformSettings",
+  "type": "object",
+  "properties": {
+    "setting_name": {
+      "type": "string",
+      "description": "Unique identifier, e.g., commission_percentage"
+    },
+    "setting_value": {
+      "type": "string",
+      "description": "Store as JSON string for flexibility"
+    },
+    "description": {
+      "type": "string"
+    },
+    "data_type": {
+      "type": "string",
+      "enum": [
+        "string",
+        "number",
+        "boolean",
+        "json"
+      ],
+      "description": "Hint for UI"
+    }
+  },
+  "required": [
+    "setting_name",
+    "setting_value"
+  ]
+}

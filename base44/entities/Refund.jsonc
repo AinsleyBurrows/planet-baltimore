@@ -1,0 +1,62 @@
+{
+  "name": "Refund",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "refund_amount": {
+      "type": "number"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "requested_by_buyer",
+        "host_cancelled",
+        "event_cancelled",
+        "duplicate",
+        "fraud_suspected"
+      ],
+      "description": "Why refund was initiated"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "processed"
+      ],
+      "default": "pending"
+    },
+    "requested_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "processed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stripe_refund_id": {
+      "type": "string",
+      "description": "Stripe refund transaction ID"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes"
+    },
+    "requested_by": {
+      "type": "string",
+      "description": "User ID who requested refund"
+    }
+  },
+  "required": [
+    "order_id",
+    "event_id",
+    "refund_amount",
+    "reason"
+  ]
+}
