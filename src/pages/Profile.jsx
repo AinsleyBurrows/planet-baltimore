@@ -259,11 +259,9 @@ export default function Profile() {
     {editingImage && (
       <ImageUploadModal
         type={editingImage}
-        onSave={(url) => {
-          setUser(prev => ({
-            ...prev,
-            [editingImage === 'avatar' ? 'avatar_url' : 'banner_url']: url,
-          }));
+        onSave={async () => {
+          const updated = await base44.auth.me();
+          setUser(updated);
           setEditingImage(null);
         }}
         onClose={() => setEditingImage(null)}
