@@ -44,27 +44,56 @@ export default function CreatePost() {
     setMediaPreviews(prev => [...prev, ...previews]);
     setMediaFiles(prev => [...prev, ...files]);
 
-    // Auto-generate thumbnail from first video file
+    // Auto-generate thumbnail from first video or audio file
     if (activeType === 'video' && files[0]) {
       generateVideoThumbnail(files[0]);
+    } else if (activeType === 'audio') {
+      generateAudioThumbnail();
     }
   };
 
   const generateVideoThumbnail = (videoFile) => {
-    const video = document.createElement('video');
-    video.src = URL.createObjectURL(videoFile);
-    video.currentTime = 1;
-    video.onloadeddata = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0);
-      canvas.toBlob((blob) => {
-        const file = new File([blob], 'thumbnail.jpg', { type: 'image/jpeg' });
-        setThumbnailFile(file);
-        setThumbnailPreview(canvas.toDataURL('image/jpeg'));
-      }, 'image/jpeg', 0.85);
-    };
+   const video = document.createElement('video');
+   video.src = URL.createObjectURL(videoFile);
+   video.currentTime = 1;
+   video.onloadeddata = () => {
+     const canvas = document.createElement('canvas');
+     canvas.width = video.videoWidth;
+     canvas.height = video.videoHeight;
+     canvas.getContext('2d').drawImage(video, 0, 0);
+     canvas.toBlob((blob) => {
+       const file = new File([blob], 'thumbnail.jpg', { type: 'image/jpeg' });
+       setThumbnailFile(file);
+       setThumbnailPreview(canvas.toDataURL('image/jpeg'));
+     }, 'image/jpeg', 0.85);
+   };
+  };
+
+  const generateAudioThumbnail = () => {
+   const canvas = document.createElement('canvas');
+   canvas.width = 300;
+   canvas.height = 300;
+   const ctx = canvas.getContext('2d');
+
+   // Gradient background (music theme)
+   const gradient = ctx.createLinearGradient(0, 0, 300, 300);
+   gradient.addColorStop(0, '#6366f1');
+   gradient.addColorStop(1, '#8b5cf6');
+   ctx.fillStyle = gradient;
+   ctx.fillRect(0, 0, 300, 300);
+
+   // Music notes
+   ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+   ctx.font = 'bold 80px Arial';
+   ctx.textAlign = 'center';
+   ctx.textBaseline = 'middle';
+   ctx.fillText('♪', 150, 150);
+
+   canvas.toBlob((blob) => {
+     const file = new File([blob], 'audio-thumbnail.jpg', { type: 'image/jpeg' });
+     setThumbnailFile(file);
+     setThumbnailPreview(canvas.toDataURL('image/jpeg'));
+   }, 'image/jpeg', 0.85);
   };
 
   const handleThumbnailUpload = (e) => {
@@ -98,7 +127,7 @@ export default function CreatePost() {
       }
 
       let thumbnailUrl;
-      if (activeType === 'video' && thumbnailFile) {
+      if ((activeType === 'video' || activeType === 'audio') && thumbnailFile) {
         const thumbResult = await base44.integrations.Core.UploadFile({ file: thumbnailFile });
         thumbnailUrl = thumbResult.file_url;
       }
@@ -193,8 +222,8 @@ export default function CreatePost() {
         </div>
       )}
 
-      {/* Video Thumbnail Picker */}
-      {activeType === 'video' && mediaPreviews.length > 0 && (
+      {/* Video/Audio Thumbnail Picker */}
+      {(activeType === 'video' || activeType === 'audio') && mediaPreviews.length > 0 && (
         <div className="mt-4 p-4 bg-secondary/40 rounded-xl space-y-2">
           <p className="text-sm font-medium text-foreground">Thumbnail</p>
           <div className="flex items-center gap-3">
@@ -212,17 +241,15 @@ export default function CreatePost() {
                 <input type="file" accept="image/*" className="hidden" onChange={handleThumbnailUpload} />
                 <Camera className="w-3.5 h-3.5" />Upload
               </label>
-              {mediaFiles[0] && (
-                <button
-                  onClick={() => generateVideoThumbnail(mediaFiles[0])}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card border border-border text-sm text-foreground hover:bg-secondary transition-colors"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />Auto
-                </button>
-              )}
+              <button
+                onClick={() => activeType === 'video' ? generateVideoThumbnail(mediaFiles[0]) : generateAudioThumbnail()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card border border-border text-sm text-foreground hover:bg-secondary transition-colors"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />Auto
+              </button>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Upload a custom thumbnail or auto-generate from the video</p>
+          <p className="text-xs text-muted-foreground">Upload a custom thumbnail or auto-generate</p>
         </div>
       )}
 
