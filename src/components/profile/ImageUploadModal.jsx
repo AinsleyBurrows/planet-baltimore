@@ -93,11 +93,15 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
     if (!file) return;
     setUploading(true);
     setError('');
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    const field = isBanner ? 'banner_url' : 'avatar_url';
-    await base44.auth.updateMe({ [field]: file_url });
-    onSave(file_url);
-    setUploading(false);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const field = isBanner ? 'banner_url' : 'avatar_url';
+      await base44.auth.updateMe({ [field]: file_url });
+      onSave(file_url);
+    } catch (err) {
+      setError('Upload failed. Please try again.');
+      setUploading(false);
+    }
   };
 
   const previewShape = isBanner
