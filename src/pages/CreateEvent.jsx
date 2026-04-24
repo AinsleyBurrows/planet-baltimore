@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2, Image as ImageIcon, MapPin } from 'lucide-react';
+import { ArrowLeft, Loader2, Image as ImageIcon, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,6 +23,7 @@ export default function CreateEvent() {
   const [form, setForm] = useState({
     title: '', description: '', date: '', end_date: '', venue_name: '', address: '',
     category: 'community', is_free: true, price_range: '', ticket_url: '', capacity: '',
+    ticketing_mode: 'external', allow_donations: false,
   });
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
@@ -102,12 +103,28 @@ export default function CreateEvent() {
           </Select>
         </div>
 
-        <div className="flex items-center justify-between"><Label>Free Event</Label><Switch checked={form.is_free} onCheckedChange={(v) => updateForm('is_free', v)} /></div>
+        <div><Label>Ticketing Mode</Label>
+          <Select value={form.ticketing_mode} onValueChange={(v) => updateForm('ticketing_mode', v)}>
+            <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="external">External Link (Eventbrite, etc.)</SelectItem>
+              <SelectItem value="rsvp_only">RSVP Only (No Tickets)</SelectItem>
+              <SelectItem value="platform">Platform Tickets (Built-in)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        {!form.is_free && (
+        {form.ticketing_mode === 'external' && (
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Price Range</Label><Input value={form.price_range} onChange={(e) => updateForm('price_range', e.target.value)} placeholder="$10-$25" className="mt-1.5" /></div>
             <div><Label>Ticket URL</Label><Input value={form.ticket_url} onChange={(e) => updateForm('ticket_url', e.target.value)} placeholder="https://..." className="mt-1.5" /></div>
+          </div>
+        )}
+
+        {form.ticketing_mode === 'platform' && (
+          <div className="flex items-center justify-between p-3 bg-secondary/40 rounded-lg">
+            <Label className="mb-0">Allow Donations</Label>
+            <Switch checked={form.allow_donations} onCheckedChange={(v) => updateForm('allow_donations', v)} />
           </div>
         )}
 

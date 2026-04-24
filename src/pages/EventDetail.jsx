@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, MapPin, Share2, Heart, ExternalLink, Navigation, Trash2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Navigation, Trash2 } from 'lucide-react';
 import ShareModal from '@/components/shared/ShareModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import RSVPButton from '@/components/events/RSVPButton';
 import AttendeeList from '@/components/events/AttendeeList';
 import CommentSection from '@/components/shared/CommentSection';
+import EventTicketing from '@/components/events/EventTicketing';
 
 export default function EventDetail() {
   const navigate = useNavigate();
@@ -160,39 +161,27 @@ export default function EventDetail() {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4">
-        {event.ticket_url && (
-          <a href={event.ticket_url} target="_blank" rel="noopener noreferrer">
-            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 h-12 rounded-xl">
-              <ExternalLink className="w-4 h-4" />Get Tickets
-            </Button>
-          </a>
-        )}
-        <RSVPButton eventId={eventId} rsvpCount={goingCount} />
-        <Button
-          variant="outline"
-          size="icon"
-          aria-label="Share event"
-          onClick={() => setShowShare(true)}
-          className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95"
-        >
-          <Share2 className="w-5 h-5" />
-        </Button>
-        <Button variant="outline" size="icon" aria-label="Save event" className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95">
-          <Heart className="w-5 h-5" />
-        </Button>
-        {user?.id === event.organizer_id && (
+      <EventTicketing
+        event={event}
+        rsvpCount={goingCount}
+        onShare={() => setShowShare(true)}
+        user={user}
+      />
+
+      {user?.id === event.organizer_id && (
+        <div className="flex gap-3">
           <Button
             variant="outline"
-            size="icon"
+            size="sm"
             aria-label="Delete event"
             onClick={() => { if (window.confirm('Delete this event?')) deleteMutation.mutate(); }}
-            className="h-12 w-12 rounded-xl text-destructive hover:bg-destructive/10 hover:border-destructive transition-all duration-150 active:scale-95"
+            className="text-destructive hover:bg-destructive/10 hover:border-destructive transition-all duration-150"
           >
-            <Trash2 className="w-5 h-5" />
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Event
           </Button>
-        )}
-      </div>
+        </div>
+      )}
       <ShareModal
         isOpen={showShare}
         onClose={() => setShowShare(false)}
