@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Pencil, Trash2, Flag, Play } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -8,6 +8,41 @@ import AppImage from './AppImage';
 import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
 import { format } from 'date-fns';
+
+function FeedVideo({ src, thumbnail }) {
+  const [playing, setPlaying] = useState(false);
+  const videoRef = useRef(null);
+
+  const handlePlay = () => {
+    setPlaying(true);
+    videoRef.current?.play();
+  };
+
+  return (
+    <div className="relative bg-black aspect-video">
+      <video
+        ref={videoRef}
+        src={src}
+        poster={thumbnail || undefined}
+        className="w-full h-full object-cover"
+        controls={playing}
+        preload="metadata"
+        onPause={() => setPlaying(false)}
+        onEnded={() => setPlaying(false)}
+      />
+      {!playing && (
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer"
+          onClick={handlePlay}
+        >
+          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40 hover:bg-white/30 transition-colors">
+            <Play className="w-7 h-7 text-white fill-white ml-1" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const TEXT_COLOR_MAP = {
   '#1a1a2e': '#ffffff', '#16213e': '#ffffff', '#0f3460': '#ffffff',
@@ -122,20 +157,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
         // Video
         if (isVideo) {
-          return (
-            <div className="relative bg-black aspect-video">
-              {post.thumbnail_url ? (
-                <img src={post.thumbnail_url} alt="video thumbnail" className="w-full h-full object-cover" />
-              ) : (
-                <video src={post.media_urls[0]} className="w-full h-full object-cover" preload="metadata" />
-              )}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40">
-                  <Play className="w-7 h-7 text-white fill-white ml-1" />
-                </div>
-              </div>
-            </div>
-          );
+          return <FeedVideo src={post.media_urls[0]} thumbnail={post.thumbnail_url} />;
         }
 
         // Multiple images (no text above, or text already handled)
