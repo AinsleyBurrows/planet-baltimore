@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Settings, Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2 } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2, Menu, Home, Compass, Map, Bell, Users, Palette, Landmark, Building2, MessageCircle, User } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -136,7 +137,6 @@ export default function Profile() {
                 <Plus className="w-4 h-4" />Create Post
               </Button>
             </Link>
-            <Button size="sm" variant="outline" aria-label="Settings" className="rounded-lg transition-all duration-150 active:scale-95"><Settings className="w-4 h-4" /></Button>
             <Button
               size="sm"
               variant="outline"
@@ -146,6 +146,48 @@ export default function Profile() {
             >
               <Share2 className="w-4 h-4" />
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" aria-label="Navigation menu" className="rounded-lg transition-all duration-150 active:scale-95">
+                  <Menu className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                {[
+                  { icon: Home, label: 'Home', path: '/' },
+                  { icon: Compass, label: 'Discover', path: '/discover' },
+                  { icon: Map, label: 'City Map', path: '/map' },
+                  { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
+                  { icon: Calendar, label: 'Events', path: '/events' },
+                  { icon: Users, label: 'Communities', path: '/communities' },
+                  { icon: Shield, label: 'Associations', path: '/community-associations' },
+                  { icon: Palette, label: 'Artists', path: '/artists' },
+                  { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
+                  { icon: Building2, label: 'Businesses', path: '/businesses' },
+                  { icon: BookOpen, label: 'Your Story', path: '/stories' },
+                ].map(({ icon: Icon, label, path }) => (
+                  <DropdownMenuItem key={path} asChild>
+                    <Link to={path} className="flex items-center gap-2 cursor-pointer">
+                      <Icon className="w-4 h-4 text-muted-foreground" />
+                      {label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                {[
+                  { icon: MessageCircle, label: 'Messages', path: '/messages' },
+                  { icon: Bell, label: 'Notifications', path: '/notifications' },
+                  { icon: User, label: 'Profile', path: '/profile' },
+                ].map(({ icon: Icon, label, path }) => (
+                  <DropdownMenuItem key={path} asChild>
+                    <Link to={path} className="flex items-center gap-2 cursor-pointer">
+                      <Icon className="w-4 h-4 text-muted-foreground" />
+                      {label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
