@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play } from 'lucide-react';
+import { Play, Trash2 } from 'lucide-react';
 
 // Curated bg colors for text posts
 const TEXT_COLOR_MAP = {
@@ -46,7 +46,7 @@ function VideoThumb({ src, thumbnail }) {
   );
 }
 
-export default function PostGridTile({ post, onClick }) {
+export default function PostGridTile({ post, onClick, onDelete }) {
   const images = post?.media_urls || [];
   const isVideo = post?.media_type === 'video' || images[0]?.match(/\.(mp4|webm|mov|avi)/i);
   const isText = images.length === 0 || post?.media_type === 'text';
@@ -100,6 +100,20 @@ export default function PostGridTile({ post, onClick }) {
           <span className="flex items-center gap-1">💬 {post.comments_count || 0}</span>
         </div>
       </div>
+
+      {/* Delete button */}
+      {onDelete && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (window.confirm('Delete this post?')) onDelete(post.id);
+          }}
+          className="absolute top-2 left-2 p-1.5 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 hover:bg-destructive transition-all z-10"
+          aria-label="Delete post"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      )}
     </button>
   );
 }

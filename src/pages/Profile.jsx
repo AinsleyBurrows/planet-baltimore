@@ -195,7 +195,7 @@ export default function Profile() {
             <div className="grid grid-cols-3 gap-1 bg-white">
               {posts.filter(p => !p.is_deleted).map(p => (
                 <div key={p.id} className="rounded-lg overflow-hidden">
-                  <PostGridTile post={p} onClick={setSelectedPost} />
+                  <PostGridTile post={p} onClick={setSelectedPost} onDelete={handleDeletePost} />
                 </div>
               ))}
             </div>
