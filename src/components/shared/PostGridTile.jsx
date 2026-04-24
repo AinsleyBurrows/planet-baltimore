@@ -57,7 +57,7 @@ export default function PostGridTile({ post, onClick }) {
   return (
     <button
       onClick={() => onClick?.(post)}
-      className="aspect-square w-full overflow-hidden relative group focus:outline-none bg-white"
+      className="aspect-square w-full overflow-hidden relative group focus:outline-none bg-white rounded-lg"
     >
       {isVideo ? (
         <VideoThumb src={images[0]} thumbnail={post.thumbnail_url} />
@@ -85,19 +85,19 @@ export default function PostGridTile({ post, onClick }) {
       {/* Multi-image indicator */}
       {images.length > 1 && !isVideo && (
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="w-5 h-5 bg-black/50 rounded-sm flex items-center justify-center">
+          <div className="w-5 h-5 bg-white/80 backdrop-blur-sm rounded-sm flex items-center justify-center shadow-sm">
             <div className="grid grid-cols-2 gap-0.5">
-              {[0,1,2,3].map(i => <div key={i} className="w-1 h-1 bg-white rounded-[1px]" />)}
+              {[0,1,2,3].map(i => <div key={i} className="w-1 h-1 bg-foreground/70 rounded-[1px]" />)}
             </div>
           </div>
         </div>
       )}
 
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-3 text-white text-sm font-medium">
-          <span>❤️ {post.likes_count || 0}</span>
-          <span>💬 {post.comments_count || 0}</span>
+      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/40 transition-colors flex items-center justify-center backdrop-blur-[1px] opacity-0 group-hover:opacity-100">
+        <div className="flex items-center gap-3 text-foreground text-sm font-semibold drop-shadow-sm">
+          <span className="flex items-center gap-1">❤️ {post.likes_count || 0}</span>
+          <span className="flex items-center gap-1">💬 {post.comments_count || 0}</span>
         </div>
       </div>
     </button>

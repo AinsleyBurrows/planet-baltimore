@@ -174,9 +174,11 @@ export default function Profile() {
       <div className="mt-4 space-y-4">
         {activeTab === 'posts' && (
           posts.filter(p => !p.is_deleted).length > 0 ? (
-            <div className="grid grid-cols-3 gap-0.5 rounded-xl overflow-hidden bg-white">
+            <div className="grid grid-cols-3 gap-1 bg-white">
               {posts.filter(p => !p.is_deleted).map(p => (
-                <PostGridTile key={p.id} post={p} onClick={setSelectedPost} />
+                <div key={p.id} className="rounded-lg overflow-hidden">
+                  <PostGridTile post={p} onClick={setSelectedPost} />
+                </div>
               ))}
             </div>
           ) : (
@@ -237,9 +239,11 @@ export default function Profile() {
         )}
         {activeTab === 'media' && (
           allMedia.length > 0 ? (
-            <div className="grid grid-cols-3 gap-0.5 rounded-xl overflow-hidden bg-white">
+            <div className="grid grid-cols-3 gap-1 bg-white">
               {allMedia.map((url, idx) => (
-                <AppImage key={idx} src={url} images={allMedia} index={idx} className="aspect-square w-full" aspectRatio="square" />
+                <div key={idx} className="rounded-lg overflow-hidden">
+                  <AppImage src={url} images={allMedia} index={idx} className="aspect-square w-full" aspectRatio="square" />
+                </div>
               ))}
             </div>
           ) : (
