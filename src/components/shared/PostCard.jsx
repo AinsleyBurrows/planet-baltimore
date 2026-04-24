@@ -6,13 +6,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Badge } from '@/components/ui/badge';
 import AppImage from './AppImage';
 import CommentSection from './CommentSection';
+import ShareModal from './ShareModal';
 import { format } from 'date-fns';
 
 export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const isOwner = currentUserId === post.author_id;
+  const postUrl = `${window.location.origin}/profile/${post.author_id}`;
 
   const handleLike = () => {
     setLiked(!liked);
@@ -56,7 +59,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
                 </DropdownMenuItem>
               </>
             )}
-            <DropdownMenuItem><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setShowShare(true)}><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
             <DropdownMenuItem><Bookmark className="w-4 h-4 mr-2" />Save</DropdownMenuItem>
             {!isOwner && <DropdownMenuItem><Flag className="w-4 h-4 mr-2" />Report</DropdownMenuItem>}
           </DropdownMenuContent>
@@ -108,6 +111,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
             <span>{post.comments_count || 0}</span>
           </button>
           <button
+            onClick={() => setShowShare(true)}
             aria-label="Share post"
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-150"
           >
@@ -129,6 +133,14 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
           <CommentSection targetType="post" targetId={post.id} />
         </div>
       )}
+
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        url={postUrl}
+        title={post.content ? post.content.slice(0, 100) : `Post by ${post.author_name}`}
+        description={post.content}
+      />
     </article>
   );
 }

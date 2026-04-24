@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, MapPin, Share2, Heart, ExternalLink, Navigation, Trash2 } from 'lucide-react';
+import ShareModal from '@/components/shared/ShareModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,6 +18,7 @@ import CommentSection from '@/components/shared/CommentSection';
 export default function EventDetail() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [showShare, setShowShare] = useState(false);
 
   const eventId = window.location.pathname.split('/events/')[1];
 
@@ -171,7 +173,7 @@ export default function EventDetail() {
           variant="outline"
           size="icon"
           aria-label="Share event"
-          onClick={() => navigator.share?.({ title: event.title, url: window.location.href }).catch(() => {})}
+          onClick={() => setShowShare(true)}
           className="h-12 w-12 rounded-xl transition-all duration-150 active:scale-95"
         >
           <Share2 className="w-5 h-5" />
@@ -191,6 +193,13 @@ export default function EventDetail() {
           </Button>
         )}
       </div>
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        url={window.location.href}
+        title={event.title}
+        description={event.description}
+      />
     </div>
   );
 }

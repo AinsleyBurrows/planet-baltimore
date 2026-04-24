@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, Clock, Heart, MessageCircle, Share2, Bookmark, Trash2 } from 'lucide-react';
+import ShareModal from '@/components/shared/ShareModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,7 @@ export default function StoryDetail() {
   const navigate = useNavigate();
   const storyId = window.location.pathname.split('/stories/')[1];
   const [user, setUser] = useState(null);
+  const [showShare, setShowShare] = useState(false);
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
@@ -91,7 +93,7 @@ export default function StoryDetail() {
           <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent transition-colors"><MessageCircle className="w-5 h-5" />{story.comments_count || 0}</button>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigator.share?.({ title: story.title, url: window.location.href }).catch(() => {})}><Share2 className="w-5 h-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => setShowShare(true)}><Share2 className="w-5 h-5" /></Button>
           <Button variant="ghost" size="icon"><Bookmark className="w-5 h-5" /></Button>
           {user?.id === story.author_id && (
             <Button
@@ -110,6 +112,14 @@ export default function StoryDetail() {
       <div className="mt-10 border-t border-border pt-8">
         <CommentSection targetType="story" targetId={storyId} />
       </div>
+
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        url={window.location.href}
+        title={story.title}
+        description={story.subtitle}
+      />
 
       {/* Author CTA */}
       <div className="mt-8 p-6 bg-secondary/50 rounded-xl text-center">
