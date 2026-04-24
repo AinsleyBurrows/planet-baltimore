@@ -98,8 +98,8 @@ export default function Profile() {
     </div>
   );
 
-  const mediaPosts = posts.filter(p => p.media_urls?.length > 0);
-  const allMedia = mediaPosts.flatMap(p => p.media_urls);
+  const mediaPosts = posts.filter(p => p.media_urls?.length > 0 && p.media_type !== 'video' && p.media_type !== 'audio' && p.media_type !== 'text');
+  const allMedia = mediaPosts.flatMap(p => p.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)));
 
   return (
     <>
