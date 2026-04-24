@@ -14,7 +14,7 @@ export default function AppImage({ src, alt = '', className = '', clickable = tr
 
   if (imgError || !src) {
     return (
-      <div className={`bg-muted flex items-center justify-center ${aspectClasses[aspectRatio] || ''} ${className}`}>
+      <div className={`bg-white flex items-center justify-center ${aspectClasses[aspectRatio] || ''} ${className}`}>
         <span className="text-muted-foreground text-xs">No image</span>
       </div>
     );

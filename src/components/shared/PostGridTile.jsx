@@ -31,11 +31,11 @@ function VideoThumb({ src, thumbnail }) {
   }, [src, thumb]);
 
   return (
-    <div className="relative w-full h-full bg-black flex items-center justify-center">
+    <div className="relative w-full h-full bg-white flex items-center justify-center">
       {thumb ? (
         <img src={thumb} alt="video thumbnail" className="w-full h-full object-cover" />
       ) : (
-        <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900" />
+        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
       )}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
@@ -57,7 +57,7 @@ export default function PostGridTile({ post, onClick }) {
   return (
     <button
       onClick={() => onClick?.(post)}
-      className="aspect-square w-full overflow-hidden relative group focus:outline-none"
+      className="aspect-square w-full overflow-hidden relative group focus:outline-none bg-white"
     >
       {isVideo ? (
         <VideoThumb src={images[0]} thumbnail={post.thumbnail_url} />

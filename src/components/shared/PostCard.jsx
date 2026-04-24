@@ -70,7 +70,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
       {/* Media */}
       {post.media_urls?.length > 0 && (
-        <div className={`${post.media_urls.length === 1 ? '' : 'grid grid-cols-2 gap-0.5'}`}>
+        <div className={`${post.media_urls.length === 1 ? 'bg-white' : 'grid grid-cols-2 gap-0.5 bg-white'}`}>
           {post.media_urls.slice(0, 4).map((url, idx) => (
             <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
           ))}
