@@ -14,7 +14,7 @@ const IN_APP_PREFS = [
   { key: 'new_like', label: 'Likes', icon: Heart, description: 'When someone likes your post' },
   { key: 'new_mention', label: 'Mentions', icon: MessageCircle, description: 'When someone mentions you' },
   { key: 'event_from_followed', label: 'New Events', icon: Calendar, description: 'From organizers you follow' },
-  { key: 'zine_from_followed', label: 'New Zines', icon: BookOpen, description: 'From artists you follow' },
+  { key: 'zine_from_followed', label: 'New Stories', icon: BookOpen, description: 'From artists you follow' },
   { key: 'community_updates', label: 'Community Updates', icon: Users, description: 'From communities you\'re in' },
   { key: 'mass_messages', label: 'Association Announcements', icon: Megaphone, description: 'Official messages from neighborhood associations' },
 ];
@@ -23,7 +23,7 @@ const EMAIL_PREFS = [
   { key: 'email_new_follower', label: 'New Followers', icon: Users },
   { key: 'email_new_comment', label: 'Comments', icon: MessageCircle },
   { key: 'email_event_from_followed', label: 'New Events from Followed Organizers', icon: Calendar },
-  { key: 'email_zine_from_followed', label: 'New Zines from Followed Artists', icon: BookOpen },
+  { key: 'email_zine_from_followed', label: 'New Stories from Followed Artists', icon: BookOpen },
   { key: 'email_community_updates', label: 'Community Updates', icon: Users },
   { key: 'email_mass_messages', label: 'Association Announcements', icon: Megaphone },
 ];

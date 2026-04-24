@@ -202,7 +202,7 @@ export default function Home() {
               if (item.type === 'story') return (
                 <div className="relative">
                   <div className="absolute -top-1 left-4 z-10">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-accent bg-accent/10 px-2 py-0.5 rounded-full">Zine</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-accent bg-accent/10 px-2 py-0.5 rounded-full">Story</span>
                   </div>
                   <div className="pt-3"><StoryCard story={item.data} /></div>
                 </div>

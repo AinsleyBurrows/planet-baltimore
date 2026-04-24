@@ -15,7 +15,7 @@ const navItems = [
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
-  { icon: BookOpen, label: 'Zines', path: '/stories' },
+  { icon: BookOpen, label: 'Your Story', path: '/stories' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: User, label: 'Profile', path: '/profile' },

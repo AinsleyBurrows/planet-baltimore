@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
-const categories = ['All', 'Events', 'Artists', 'Communities', 'Businesses', 'Zines', 'Neighborhoods'];
+const categories = ['All', 'Events', 'Artists', 'Communities', 'Businesses', 'Your Story', 'Neighborhoods'];
 
 export default function Discover() {
   const [search, setSearch] = useState('');
@@ -23,7 +23,7 @@ export default function Discover() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-foreground mb-1">Discover Baltimore</h1>
-        <p className="text-sm text-muted-foreground">Find events, artists, communities, and zines across the city</p>
+        <p className="text-sm text-muted-foreground">Find events, artists, communities, and stories across the city</p>
       </div>
 
       {/* Search */}
@@ -77,10 +77,10 @@ export default function Discover() {
       )}
 
       {/* Stories */}
-      {(activeCategory === 'All' || activeCategory === 'Zines') && stories.length > 0 && (
+      {(activeCategory === 'All' || activeCategory === 'Your Story') && stories.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Latest Zines</h2>
+            <h2 className="text-lg font-semibold">Latest Stories</h2>
             <Link to="/stories" className="text-sm text-accent font-medium">See all</Link>
           </div>
           <div className="space-y-3">
@@ -96,7 +96,7 @@ export default function Discover() {
             <MapPin className="w-7 h-7 text-accent" />
           </div>
           <h3 className="font-semibold text-foreground mb-1">Discover what Baltimore has to offer</h3>
-          <p className="text-sm text-muted-foreground">Events, artists, and zines are being added every day.</p>
+          <p className="text-sm text-muted-foreground">Events, artists, and stories are being added every day.</p>
         </div>
       )}
     </div>
