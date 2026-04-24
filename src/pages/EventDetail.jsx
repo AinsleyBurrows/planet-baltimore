@@ -13,6 +13,7 @@ import AppImage from '@/components/shared/AppImage';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import RSVPButton from '@/components/events/RSVPButton';
 import AttendeeList from '@/components/events/AttendeeList';
+import AttendeeProfiles from '@/components/events/AttendeeProfiles';
 import CommentSection from '@/components/shared/CommentSection';
 import EventTicketing from '@/components/events/EventTicketing';
 
@@ -152,8 +153,8 @@ export default function EventDetail() {
         </div>
       )}
 
-      {/* Attendee list */}
-      <AttendeeList eventId={eventId} />
+      {/* Attendee profiles */}
+      <AttendeeProfiles eventId={eventId} />
 
       {/* Comments */}
       <div className="border-t border-border pt-6">
