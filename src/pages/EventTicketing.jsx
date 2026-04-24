@@ -54,6 +54,17 @@ export default function EventTicketing() {
           <ArrowLeft className="w-5 h-5" />
         </button>
 
+        {/* Professional header */}
+        <div className="mb-6 bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-100/50 rounded-xl p-4 flex items-center gap-3">
+          <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <div className="text-sm">
+            <p className="font-semibold text-blue-900">Official Ticket Platform</p>
+            <p className="text-blue-700">Secure checkout with Stripe. See the <button onClick={() => document.querySelector('[data-pricing-section]')?.scrollIntoView({ behavior: 'smooth' })} className="underline hover:text-blue-900">price breakdown</button>.</p>
+          </div>
+        </div>
+
         <div className="bg-card rounded-xl border border-border shadow-sm p-6 sm:p-8">
           <h1 className="text-2xl font-bold text-foreground mb-1">Get Tickets</h1>
           <p className="text-muted-foreground mb-8">
@@ -70,16 +81,34 @@ export default function EventTicketing() {
           )}
         </div>
 
-        {/* Trust badges */}
-        <div className="mt-8 flex justify-center items-center gap-4 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1">
-            <span className="w-4 h-4 rounded-full bg-green-500/20 flex items-center justify-center text-green-600 font-bold">✓</span>
-            Secure checkout
+        {/* Trust section */}
+        <div className="mt-8 space-y-4">
+          {/* Trust badges */}
+          <div className="flex flex-wrap justify-center gap-6 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 111.414 1.414L7.414 9l3.293 3.293a1 1 0 11-1.414 1.414l-4-4z" clipRule="evenodd" />
+              </svg>
+              <span><strong>PCI Compliant</strong> – No card data stored</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span><strong>SSL Encrypted</strong> – HTTPS secured</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000-2H6a1 1 0 000 2H5a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V6a1 1 0 00-1-1h-1a1 1 0 000-2h2a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clipRule="evenodd" />
+              </svg>
+              <span><strong>Money-back</strong> – If event cancelled</span>
+            </div>
           </div>
-          <div>•</div>
-          <div className="flex items-center gap-1">
-            <span className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-600 font-bold">✓</span>
-            Powered by Stripe
+
+          {/* Platform info */}
+          <div className="text-center text-xs text-muted-foreground bg-secondary/30 rounded-lg p-3">
+            <p>BMore Connected uses <strong>industry-leading Stripe</strong> to process payments safely and securely</p>
           </div>
         </div>
       </div>

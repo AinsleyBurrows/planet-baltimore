@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { AlertCircle, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
+import PricingTransparency from './PricingTransparency';
 
 export default function TicketSelector({ eventId, onSelectTickets }) {
   const [selectedTicketType, setSelectedTicketType] = useState(null);
@@ -127,6 +128,14 @@ export default function TicketSelector({ eventId, onSelectTickets }) {
 
   return (
     <div className="space-y-6">
+      {/* Trust message */}
+      <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2">
+        <svg className="w-4 h-4 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+        </svg>
+        <span className="text-xs text-green-700"><strong>100% secure</strong> – Powered by Stripe, trusted by millions</span>
+      </div>
+
       {/* Ticket types grid */}
       <div className="space-y-3">
         <h2 className="font-semibold text-foreground">Select Ticket Type</h2>
@@ -252,8 +261,17 @@ export default function TicketSelector({ eventId, onSelectTickets }) {
 
       {/* Price breakdown */}
       {selectedType && (
-        <Card className="p-4 bg-card/60 border-border">
-          <div className="space-y-2 text-sm">
+        <>
+          <PricingTransparency
+            subtotal={pricing.subtotal}
+            discount={pricing.discount}
+            fee={pricing.fee}
+            tax={pricing.taxes}
+            total={pricing.total}
+          />
+
+          <Card className="p-4 bg-card/60 border-border">
+            <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Subtotal ({quantity} × ${selectedType.price})</span>
               <span className="font-medium">${pricing.subtotal.toFixed(2)}</span>
@@ -277,7 +295,8 @@ export default function TicketSelector({ eventId, onSelectTickets }) {
               <span className="text-accent">${pricing.total.toFixed(2)}</span>
             </div>
           </div>
-        </Card>
+          </Card>
+        </>
       )}
 
       {/* CTA */}

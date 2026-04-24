@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Download, Home, ArrowRight } from 'lucide-react';
 import AppImage from '@/components/shared/AppImage';
 import { format } from 'date-fns';
+import BuyerTrustSection from '@/components/ticketing/BuyerTrustSection';
 
 export default function OrderConfirmation() {
   const [searchParams] = useSearchParams();
@@ -94,16 +95,8 @@ export default function OrderConfirmation() {
           </Link>
         </div>
 
-        {/* Help section */}
-        <div className="mt-12 p-6 rounded-xl bg-secondary/40 border border-border">
-          <p className="font-semibold text-foreground mb-3">Need Help?</p>
-          <p className="text-sm text-muted-foreground mb-4">
-            If you didn't receive a confirmation email or have questions about your tickets, please check your spam folder or contact the event organizer.
-          </p>
-          <a href="mailto:support@bmore-connected.com" className="text-sm text-accent hover:underline">
-            Contact Support →
-          </a>
-        </div>
+        {/* Trust & FAQ section */}
+        <BuyerTrustSection />
       </div>
     </div>
   );

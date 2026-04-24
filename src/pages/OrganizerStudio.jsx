@@ -10,6 +10,8 @@ import { format } from 'date-fns';
 import EventAnalytics from '@/components/organizer/EventAnalytics';
 import AttendeeManager from '@/components/organizer/AttendeeManager';
 import BulkMessaging from '@/components/organizer/BulkMessaging';
+import ProducerTrustWidget from '@/components/organizer/ProducerTrustWidget';
+import ComparisonWidget from '@/components/organizer/ComparisonWidget';
 
 export default function OrganizerStudio() {
   const [user, setUser] = useState(null);
@@ -118,13 +120,21 @@ export default function OrganizerStudio() {
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div className="text-center py-16 bg-secondary/30 rounded-xl">
-          <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-          <h3 className="font-semibold text-foreground mb-2">No events yet</h3>
-          <p className="text-sm text-muted-foreground mb-4">Create your first event to start managing</p>
-          <Link to="/create-event">
-            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">Create Event</Button>
-          </Link>
+        <div className="space-y-6">
+          <div className="text-center py-16 bg-secondary/30 rounded-xl">
+            <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+            <h3 className="font-semibold text-foreground mb-2">No events yet</h3>
+            <p className="text-sm text-muted-foreground mb-4">Create your first event to start managing</p>
+            <Link to="/create-event">
+              <Button className="bg-accent hover:bg-accent/90 text-accent-foreground">Create Event</Button>
+            </Link>
+          </div>
+          
+          {/* Trust widget on empty state */}
+          <ProducerTrustWidget />
+
+          {/* Comparison widget */}
+          <ComparisonWidget />
         </div>
       ) : (
         <div className="grid gap-4">
