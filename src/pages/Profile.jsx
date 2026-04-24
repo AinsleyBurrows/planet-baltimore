@@ -98,8 +98,8 @@ export default function Profile() {
     </div>
   );
 
-  const mediaPosts = posts.filter(p => p.media_urls?.length > 0);
-  const allMedia = mediaPosts.flatMap(p => p.media_urls);
+  const mediaPosts = posts.filter(p => p.media_urls?.length > 0 && p.media_type !== 'audio');
+  const allMedia = mediaPosts.flatMap(p => p.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)));
 
   return (
     <>
@@ -322,13 +322,33 @@ export default function Profile() {
           )
         )}
         {activeTab === 'media' && (
-          allMedia.length > 0 ? (
+          mediaPosts.length > 0 ? (
             <div className="grid grid-cols-3 gap-1 bg-white">
-              {allMedia.map((url, idx) => (
-                <div key={idx} className="rounded-lg overflow-hidden">
-                  <AppImage src={url} images={allMedia} index={idx} className="aspect-square w-full" aspectRatio="square" />
-                </div>
-              ))}
+              {mediaPosts.map((post) => {
+                const isVideo = post.media_type === 'video' || post.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i);
+                if (isVideo) {
+                  const thumb = post.thumbnail_url || post.media_urls?.[0];
+                  return (
+                    <div key={post.id} className="rounded-lg overflow-hidden relative aspect-square bg-black">
+                      {post.thumbnail_url ? (
+                        <img src={post.thumbnail_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <video src={post.media_urls?.[0]} className="w-full h-full object-cover" preload="metadata" muted />
+                      )}
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center">
+                          <span className="text-white text-xs ml-0.5">▶</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                return post.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)).map((url, idx) => (
+                  <div key={`${post.id}-${idx}`} className="rounded-lg overflow-hidden">
+                    <AppImage src={url} images={allMedia} index={allMedia.indexOf(url)} className="aspect-square w-full" aspectRatio="square" />
+                  </div>
+                ));
+              })}
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">No media shared yet.</div>
