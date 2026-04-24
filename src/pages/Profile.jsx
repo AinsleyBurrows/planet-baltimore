@@ -351,10 +351,15 @@ export default function Profile() {
     {editingImage && (
       <ImageUploadModal
         type={editingImage}
-        onSave={async () => {
+        onSave={async (fileUrl) => {
+          // Optimistically update the displayed image immediately
+          const field = editingImage === 'banner' ? 'banner_url' : 'avatar_url';
+          setUser(prev => ({ ...prev, [field]: fileUrl }));
+          setEditingImage(null);
+          // Re-fetch after a short delay to allow backend to propagate
+          await new Promise(res => setTimeout(res, 600));
           const updated = await base44.auth.me();
           setUser(updated);
-          setEditingImage(null);
         }}
         onClose={() => setEditingImage(null)}
       />
