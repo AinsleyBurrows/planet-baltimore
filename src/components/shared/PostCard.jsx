@@ -9,6 +9,16 @@ import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
 import { format } from 'date-fns';
 
+const TEXT_COLOR_MAP = {
+  '#1a1a2e': '#ffffff', '#16213e': '#ffffff', '#0f3460': '#ffffff',
+  '#1b4332': '#ffffff', '#2d3a4a': '#ffffff', '#3d2b1f': '#ffffff',
+  '#4a1942': '#ffffff', '#2c2c54': '#ffffff', '#1a1a1a': '#ffffff',
+  '#f5f0e8': '#1a1a1a', '#fef9ef': '#1a1a1a', '#f0f4f8': '#1a1a1a',
+  '#e8f4f8': '#1a1a1a', '#fdf6ec': '#1a1a1a',
+  '#c9a96e': '#1a1a1a', '#d4a853': '#1a1a1a',
+};
+const getTextColor = (bg) => TEXT_COLOR_MAP[bg] || '#ffffff';
+
 export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -68,9 +78,24 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
       {/* Content */}
       {post.content && (
-        <div className="px-4 pb-3">
-          <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
-        </div>
+        post.bg_color ? (
+          // Text post with colored background — render as styled frame like grid tile
+          <div
+            className="mx-4 mb-3 rounded-xl flex items-center justify-center p-6 min-h-[180px]"
+            style={{ backgroundColor: post.bg_color }}
+          >
+            <p
+              className="font-serif text-xl leading-snug font-medium text-center"
+              style={{ color: post.bg_color ? getTextColor(post.bg_color) : '#ffffff' }}
+            >
+              {post.content}
+            </p>
+          </div>
+        ) : (
+          <div className="px-4 pb-3">
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+          </div>
+        )
       )}
 
       {/* Media */}
