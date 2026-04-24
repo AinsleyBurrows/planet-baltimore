@@ -85,12 +85,23 @@ export default function PostDetailModal({ post, onClose }) {
           {!isText ? (
             <div className="relative md:w-[60%] bg-white flex items-center justify-center min-h-[300px] md:min-h-full">
               {isVideo ? (
-                <video
-                  src={images[0]}
-                  controls
-                  className="w-full h-full object-contain max-h-[60vh] md:max-h-full"
-                />
-              ) : (
+            post.thumbnail_url ? (
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img src={post.thumbnail_url} alt="video thumbnail" className="w-full h-full object-contain max-h-[60vh] md:max-h-[90vh]" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40">
+                    <Play className="w-7 h-7 text-white fill-white ml-1" />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <video
+                src={images[0]}
+                controls
+                className="w-full h-full object-contain max-h-[60vh] md:max-h-full"
+              />
+            )
+          ) : (
                 <>
                   <img
                     src={images[imgIndex]}

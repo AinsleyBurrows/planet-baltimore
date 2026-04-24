@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Pencil, Trash2, Flag } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Pencil, Trash2, Flag, Play } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
@@ -75,11 +75,26 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
       {/* Media */}
       {post.media_urls?.length > 0 && (
-        <div className={`${post.media_urls.length === 1 ? 'bg-white' : 'grid grid-cols-2 gap-0.5 bg-white'}`}>
-          {post.media_urls.slice(0, 4).map((url, idx) => (
-            <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
-          ))}
-        </div>
+        post.media_type === 'video' ? (
+          <div className="relative bg-black aspect-video">
+            {post.thumbnail_url ? (
+              <img src={post.thumbnail_url} alt="video thumbnail" className="w-full h-full object-cover" />
+            ) : (
+              <video src={post.media_urls[0]} className="w-full h-full object-cover" preload="metadata" />
+            )}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40">
+                <Play className="w-7 h-7 text-white fill-white ml-1" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className={`${post.media_urls.length === 1 ? 'bg-white' : 'grid grid-cols-2 gap-0.5 bg-white'}`}>
+            {post.media_urls.slice(0, 4).map((url, idx) => (
+              <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
+            ))}
+          </div>
+        )
       )}
 
       {/* Tags */}
