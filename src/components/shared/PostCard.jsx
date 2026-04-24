@@ -76,51 +76,81 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         </DropdownMenu>
       </div>
 
-      {/* Content */}
-      {post.content && (
-        post.bg_color ? (
-          // Text post with colored background — render as styled frame like grid tile
-          <div
-            className="mx-4 mb-3 rounded-xl flex items-center justify-center p-6 min-h-[180px]"
-            style={{ backgroundColor: post.bg_color }}
-          >
-            <p
-              className="font-serif text-xl leading-snug font-medium text-center"
-              style={{ color: post.bg_color ? getTextColor(post.bg_color) : '#ffffff' }}
-            >
-              {post.content}
-            </p>
-          </div>
-        ) : (
-          <div className="px-4 pb-3">
-            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
-          </div>
-        )
-      )}
+      {/* Content + Media */}
+      {(() => {
+        const hasText = !!post.content && !post.bg_color;
+        const hasImages = post.media_urls?.length > 0 && post.media_type !== 'video';
+        const isVideo = post.media_urls?.length > 0 && post.media_type === 'video';
+        const singleImage = hasImages && post.media_urls.length === 1;
 
-      {/* Media */}
-      {post.media_urls?.length > 0 && (
-        post.media_type === 'video' ? (
-          <div className="relative bg-black aspect-video">
-            {post.thumbnail_url ? (
-              <img src={post.thumbnail_url} alt="video thumbnail" className="w-full h-full object-cover" />
-            ) : (
-              <video src={post.media_urls[0]} className="w-full h-full object-cover" preload="metadata" />
-            )}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40">
-                <Play className="w-7 h-7 text-white fill-white ml-1" />
+        // Colored text frame post
+        if (post.bg_color && post.content) {
+          return (
+            <div
+              className="mx-4 mb-3 rounded-xl flex items-center justify-center p-6 min-h-[180px]"
+              style={{ backgroundColor: post.bg_color }}
+            >
+              <p className="font-serif text-xl leading-snug font-medium text-center" style={{ color: getTextColor(post.bg_color) }}>
+                {post.content}
+              </p>
+            </div>
+          );
+        }
+
+        // Single image + text: side-by-side layout
+        if (hasText && singleImage) {
+          return (
+            <div className="flex gap-0 overflow-hidden">
+              <div className="flex-1 px-4 pb-3 flex items-center">
+                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+              </div>
+              <div className="w-40 flex-shrink-0">
+                <AppImage src={post.media_urls[0]} images={post.media_urls} index={0} className="w-full h-full" aspectRatio="square" />
               </div>
             </div>
-          </div>
-        ) : (
-          <div className={`${post.media_urls.length === 1 ? 'bg-white' : 'grid grid-cols-2 gap-0.5 bg-white'}`}>
-            {post.media_urls.slice(0, 4).map((url, idx) => (
-              <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
-            ))}
-          </div>
-        )
-      )}
+          );
+        }
+
+        // Text only
+        if (hasText) {
+          return (
+            <div className="px-4 pb-3">
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+            </div>
+          );
+        }
+
+        // Video
+        if (isVideo) {
+          return (
+            <div className="relative bg-black aspect-video">
+              {post.thumbnail_url ? (
+                <img src={post.thumbnail_url} alt="video thumbnail" className="w-full h-full object-cover" />
+              ) : (
+                <video src={post.media_urls[0]} className="w-full h-full object-cover" preload="metadata" />
+              )}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40">
+                  <Play className="w-7 h-7 text-white fill-white ml-1" />
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // Multiple images (no text above, or text already handled)
+        if (hasImages) {
+          return (
+            <div className="grid grid-cols-2 gap-0.5 bg-white">
+              {post.media_urls.slice(0, 4).map((url, idx) => (
+                <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
+              ))}
+            </div>
+          );
+        }
+
+        return null;
+      })()}
 
       {/* Tags */}
       {post.tags?.length > 0 && (
