@@ -116,7 +116,7 @@ export default function Profile() {
     <>
     <div className="space-y-0">
       {/* Banner */}
-      <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
+      <div className="relative sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
         {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
         <button
           onClick={() => setEditingImage('banner')}
