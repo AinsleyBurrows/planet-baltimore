@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import AppImage from '@/components/shared/AppImage';
 import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
+import CommentSection from '@/components/shared/CommentSection';
 import BoardMemberCard from '@/components/association/BoardMemberCard';
 import BoardMemberForm from '@/components/association/BoardMemberForm';
 import BylawsEditor from '@/components/association/BylawsEditor';
@@ -199,6 +200,7 @@ export default function CommunityAssociationDetail() {
           <TabsTrigger value="members" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Members</TabsTrigger>
           <TabsTrigger value="board" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Board</TabsTrigger>
           <TabsTrigger value="bylaws" className="flex-1 rounded-lg text-xs sm:text-sm py-2">By Laws</TabsTrigger>
+          <TabsTrigger value="comments" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Comments</TabsTrigger>
           <TabsTrigger value="about" className="flex-1 rounded-lg text-xs sm:text-sm py-2">About</TabsTrigger>
         </TabsList>
 
@@ -333,6 +335,11 @@ export default function CommunityAssociationDetail() {
               </div>
             )}
           </div>
+        </TabsContent>
+
+        {/* COMMENTS */}
+        <TabsContent value="comments" className="mt-4">
+          <CommentSection targetType="association" targetId={assocId} />
         </TabsContent>
 
         {/* ABOUT */}

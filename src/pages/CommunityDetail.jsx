@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import AppImage from '@/components/shared/AppImage';
 import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
+import CommentSection from '@/components/shared/CommentSection';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
@@ -120,6 +121,7 @@ export default function CommunityDetail() {
         <TabsList className="w-full bg-secondary/50 rounded-xl">
           <TabsTrigger value="posts" className="flex-1 rounded-lg">Posts</TabsTrigger>
           <TabsTrigger value="events" className="flex-1 rounded-lg">Events</TabsTrigger>
+          <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
           <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
         </TabsList>
 
@@ -133,6 +135,10 @@ export default function CommunityDetail() {
           {events.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground text-sm">No upcoming events nearby.</div>
           ) : events.map(event => <EventCard key={event.id} event={event} compact />)}
+        </TabsContent>
+
+        <TabsContent value="comments" className="mt-4">
+          <CommentSection targetType="community" targetId={communityId} />
         </TabsContent>
 
         <TabsContent value="about" className="mt-4">

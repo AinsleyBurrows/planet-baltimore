@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import AppImage from '@/components/shared/AppImage';
 import PostCard from '@/components/shared/PostCard';
 import FollowButton from '@/components/shared/FollowButton';
+import CommentSection from '@/components/shared/CommentSection';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -133,12 +134,17 @@ export default function BusinessDetail() {
         <TabsList className="w-full bg-secondary/50 rounded-xl">
           <TabsTrigger value="posts" className="flex-1 rounded-lg">Updates</TabsTrigger>
           <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
+          <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="posts" className="mt-4 space-y-4">
           {posts.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground text-sm">No updates yet from this business.</div>
           ) : posts.map(post => <PostCard key={post.id} post={post} />)}
+        </TabsContent>
+
+        <TabsContent value="comments" className="mt-4">
+          <CommentSection targetType="business" targetId={businessId} />
         </TabsContent>
 
         <TabsContent value="about" className="mt-4">

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import PostCard from '@/components/shared/PostCard';
 import FollowButton from '@/components/shared/FollowButton';
 import ArtistGallery from '@/components/artist/ArtistGallery';
+import CommentSection from '@/components/shared/CommentSection';
 import ArtistSchedule from '@/components/artist/ArtistSchedule';
 import ArtistContactForm from '@/components/artist/ArtistContactForm';
 
@@ -165,6 +166,9 @@ export default function ArtistDetail() {
           <TabsTrigger value="contact" className="flex-1 rounded-lg flex items-center gap-1.5 py-2 text-xs sm:text-sm">
             <Mail className="w-3.5 h-3.5" />Contact
           </TabsTrigger>
+          <TabsTrigger value="comments" className="flex-1 rounded-lg flex items-center gap-1.5 py-2 text-xs sm:text-sm">
+            Comments
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="gallery" className="mt-4">
@@ -179,6 +183,10 @@ export default function ArtistDetail() {
           {posts.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground text-sm">No posts yet.</div>
           ) : posts.map(post => <PostCard key={post.id} post={post} />)}
+        </TabsContent>
+
+        <TabsContent value="comments" className="mt-4">
+          <CommentSection targetType="artist" targetId={artistId} />
         </TabsContent>
 
         <TabsContent value="contact" className="mt-4">

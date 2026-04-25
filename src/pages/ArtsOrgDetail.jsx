@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
 import FollowButton from '@/components/shared/FollowButton';
+import CommentSection from '@/components/shared/CommentSection';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -108,6 +109,7 @@ export default function ArtsOrgDetail() {
             <TabsTrigger value="posts" className="flex-1 rounded-lg">Posts</TabsTrigger>
             <TabsTrigger value="events" className="flex-1 rounded-lg">Events</TabsTrigger>
             <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
+            <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
           </TabsList>
 
           <TabsContent value="posts" className="mt-4 space-y-4">
@@ -120,6 +122,10 @@ export default function ArtsOrgDetail() {
             {events.length === 0
               ? <p className="text-center py-10 text-sm text-muted-foreground">No upcoming events.</p>
               : <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{events.map(e => <EventCard key={e.id} event={e} />)}</div>}
+          </TabsContent>
+
+          <TabsContent value="comments" className="mt-4">
+            <CommentSection targetType="arts_org" targetId={id} />
           </TabsContent>
 
           <TabsContent value="about" className="mt-4 space-y-4">
