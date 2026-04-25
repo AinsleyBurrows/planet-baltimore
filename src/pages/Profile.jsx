@@ -22,7 +22,7 @@ const tabs = [
   { id: 'stories', label: 'Your Story', icon: BookOpen },
   { id: 'events', label: 'My Events', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
-  { id: 'media', label: 'Media', icon: Image },
+
 ];
 
 export default function Profile() {
