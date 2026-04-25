@@ -151,11 +151,10 @@ export default function Profile() {
             <Button
               size="sm"
               variant="outline"
-              aria-label="Invite friends"
               onClick={() => setShowInvite(true)}
-              className="rounded-lg transition-all duration-150 active:scale-95"
+              className="rounded-lg transition-all duration-150 active:scale-95 gap-1.5"
             >
-              <UserPlus className="w-4 h-4" />
+              <UserPlus className="w-4 h-4" />Invite Friends
             </Button>
             <Button
               size="sm"
