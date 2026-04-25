@@ -119,7 +119,7 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.18 }}
         className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <motion.div
           initial={{ y: 40, opacity: 0 }}
@@ -235,14 +235,16 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
           </div>
         </motion.div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept={ACCEPTED.join(',')}
-          className="hidden"
-          onChange={e => e.target.files[0] && handleFile(e.target.files[0])}
-        />
       </motion.div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPTED.join(',')}
+        className="hidden"
+        onClick={e => e.stopPropagation()}
+        onChange={e => e.target.files[0] && handleFile(e.target.files[0])}
+      />
     </AnimatePresence>
   );
 }
