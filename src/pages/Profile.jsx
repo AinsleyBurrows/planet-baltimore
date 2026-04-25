@@ -152,9 +152,9 @@ export default function Profile() {
               size="sm"
               variant="outline"
               onClick={() => setShowInvite(true)}
-              className="rounded-lg transition-all duration-150 active:scale-95 gap-1.5"
+              className="rounded-lg transition-all duration-150 active:scale-95 w-8 h-8 p-0"
             >
-              <UserPlus className="w-4 h-4" /><span className="hidden sm:inline">Invite Friends</span>
+              <UserPlus className="w-4 h-4" />
             </Button>
             <Button
               size="sm"
