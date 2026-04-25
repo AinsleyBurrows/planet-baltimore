@@ -128,7 +128,7 @@ export default function Profile() {
       </div>
 
       {/* Profile Info */}
-      <div className="relative px-1" style={{marginTop: '15px'}}>
+      <div className="relative px-1" style={{marginTop: '35px'}}>
         <div className="flex items-end justify-between">
           <div className="relative cursor-pointer" onClick={() => setEditingImage('avatar')}>
             <Avatar key={user.avatar_url} className="border-4 border-background" style={{width: '75px', height: '75px'}}>
