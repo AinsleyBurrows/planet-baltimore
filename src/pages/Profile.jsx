@@ -144,8 +144,8 @@ export default function Profile() {
           </div>
           <div className="flex flex-wrap gap-2 mb-1 justify-end">
             <Link to="/create-post">
-              <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-1.5 rounded-lg">
-                <Plus className="w-4 h-4" /><span className="hidden xs:inline">Create Post</span><span className="xs:hidden">Post</span>
+              <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0">
+                <Plus className="w-4 h-4" />
               </Button>
             </Link>
             <Button
