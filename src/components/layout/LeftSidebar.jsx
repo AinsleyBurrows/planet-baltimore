@@ -53,9 +53,8 @@ export default function LeftSidebar() {
                 <TooltipContent side="right">Create Post</TooltipContent>
               </Tooltip>
             ) : (
-              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg gap-2 h-11">
+              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg h-11">
                 <Plus className="w-5 h-5" />
-                
               </Button>
             )}
           </Link>

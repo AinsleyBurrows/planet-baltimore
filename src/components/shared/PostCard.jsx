@@ -54,6 +54,22 @@ const TEXT_COLOR_MAP = {
 };
 const getTextColor = (bg) => TEXT_COLOR_MAP[bg] || '#ffffff';
 
+function TruncatedText({ text }) {
+  const [expanded, setExpanded] = useState(false);
+  const limit = 180;
+  const isLong = text.length > limit;
+  return (
+    <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+      {isLong && !expanded ? text.slice(0, limit).trimEnd() + '…' : text}
+      {isLong && (
+        <button onClick={() => setExpanded(v => !v)} className="ml-1 text-accent font-medium text-sm hover:underline focus-visible:outline-none">
+          {expanded ? 'less' : 'more'}
+        </button>
+      )}
+    </p>
+  );
+}
+
 export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -139,8 +155,8 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
           return (
             <div>
               <AppImage src={post.media_urls[0]} images={post.media_urls} index={0} className="w-full" aspectRatio="16:9" />
-              <div className="px-4 pt-3 pb-1">
-                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+              <div className="px-4 pt-3 pb-2">
+                <TruncatedText text={post.content} />
               </div>
             </div>
           );
@@ -150,7 +166,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         if (hasText) {
           return (
             <div className="px-4 pb-3">
-              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+              <TruncatedText text={post.content} />
             </div>
           );
         }
@@ -161,8 +177,8 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
             <div>
               <FeedVideo src={post.media_urls[0]} thumbnail={post.thumbnail_url} />
               {hasText && (
-                <div className="px-4 pt-3 pb-1">
-                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                <div className="px-4 pt-3 pb-2">
+                  <TruncatedText text={post.content} />
                 </div>
               )}
             </div>
@@ -179,8 +195,8 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
                 ))}
               </div>
               {hasText && (
-                <div className="px-4 pt-3 pb-1">
-                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                <div className="px-4 pt-3 pb-2">
+                  <TruncatedText text={post.content} />
                 </div>
               )}
             </div>

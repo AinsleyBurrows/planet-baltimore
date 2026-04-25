@@ -39,6 +39,7 @@ function shuffleSeed(arr, seed = 1) {
 
 export default function Home() {
   const [activeFilter, setActiveFilter] = useState('For You');
+  const [filterLoading, setFilterLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const queryClient = useQueryClient();
 
@@ -156,7 +157,7 @@ export default function Home() {
         {FILTERS.map((filter) => (
           <button
             key={filter}
-            onClick={() => setActiveFilter(filter)}
+            onClick={() => { setActiveFilter(filter); setFilterLoading(true); setTimeout(() => setFilterLoading(false), 400); }}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               activeFilter === filter ? 'bg-foreground text-background shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
             }`}
@@ -167,8 +168,8 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Stories bar — always visible */}
-      <div className="bg-card border border-border rounded-xl px-4 py-3">
+      {/* Stories bar — flush, no card wrapper */}
+      <div className="-mx-3 sm:-mx-4 px-3 sm:px-4 border-b border-border pb-3">
         <StoryBar currentUser={currentUser} />
       </div>
 
@@ -180,7 +181,9 @@ export default function Home() {
       )}
 
       <div className="space-y-4">
-        {isLoading ? (
+        {isLoading || filterLoading ? (
+          <FeedSkeleton />
+        ) : feedItems.length === 0 && !isEmpty ? (
           <FeedSkeleton />
         ) : isEmpty ? (
           <div className="text-center py-16">

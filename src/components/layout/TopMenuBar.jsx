@@ -5,6 +5,7 @@ import {
   Palette, Landmark, Building2, BookOpen, MessageCircle,
   Bell, User, Menu, Plus
 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -44,6 +45,13 @@ export default function TopMenuBar() {
         </Link>
 
         <div className="flex items-center gap-2">
+          {/* Quick-access icons */}
+          <Link to="/notifications" aria-label="Notifications" className={`p-2 rounded-lg transition-colors ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
+            <Bell className="w-5 h-5" />
+          </Link>
+          <Link to="/messages" aria-label="Messages" className={`p-2 rounded-lg transition-colors ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
+            <MessageCircle className="w-5 h-5" />
+          </Link>
           {/* Hamburger menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
