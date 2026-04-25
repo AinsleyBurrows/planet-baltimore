@@ -225,7 +225,7 @@ export default function Profile() {
                     <Pin className="w-3 h-3" /> {pinnedPosts.length}/3 posts pinned
                   </p>
                 )}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-2 bg-white">
+                <div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
                   {sortedPosts.map(p => (
                     <div key={p.id} className="rounded-lg overflow-hidden relative group aspect-square">
                       {p.is_pinned && (
