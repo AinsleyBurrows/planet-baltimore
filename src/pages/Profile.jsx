@@ -173,20 +173,18 @@ export default function Profile() {
             <h1 className="font-bold text-foreground" style={{fontSize: '14px'}}>{user.display_name || user.full_name}</h1>
             {user.is_verified && <Shield className="w-5 h-5 text-accent" />}
           </div>
-          {user.bio && <p className="text-sm text-muted-foreground mt-1">{user.bio}</p>}
-          <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-muted-foreground">
-            {user.neighborhood_names?.length > 0 && (
-              <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{user.neighborhood_names[0]}</span>
-            )}
-            {user.website && (
-              <a href={user.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline">
-                <LinkIcon className="w-3.5 h-3.5" />{user.website.replace(/https?:\/\//, '')}
-              </a>
-            )}
-            {user.account_type && (
-              <Badge variant="secondary" className="capitalize text-xs">{user.account_type.replace('_', ' ')}</Badge>
-            )}
-          </div>
+          {user.website && (
+            <a href={user.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline text-sm mt-1">
+              <LinkIcon className="w-3.5 h-3.5" />{user.website.replace(/https?:\/\//, '')}
+            </a>
+          )}
+          {user.neighborhood_names?.length > 0 && (
+            <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1"><MapPin className="w-3.5 h-3.5" />{user.neighborhood_names[0]}</span>
+          )}
+          {user.bio && <p className="text-sm text-muted-foreground mt-2">{user.bio}</p>}
+          {user.account_type && (
+            <div className="mt-2"><Badge variant="secondary" className="capitalize text-xs">{user.account_type.replace('_', ' ')}</Badge></div>
+          )}
         </div>
 
         {/* Stats */}
