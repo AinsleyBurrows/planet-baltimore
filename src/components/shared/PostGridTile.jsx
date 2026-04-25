@@ -55,9 +55,9 @@ export default function PostGridTile({ post, onClick, onDelete }) {
   const textColor = hasBg ? (TEXT_COLOR_MAP[post.bg_color] || '#ffffff') : '#ffffff';
 
   return (
-    <button
+    <div
       onClick={() => onClick?.(post)}
-      className="aspect-square w-full overflow-hidden relative group focus:outline-none bg-white rounded-lg"
+      className="aspect-square w-full overflow-hidden relative group cursor-pointer bg-white rounded-lg"
     >
       {isVideo ? (
         <VideoThumb src={images[0]} thumbnail={post.thumbnail_url} />
@@ -114,6 +114,6 @@ export default function PostGridTile({ post, onClick, onDelete }) {
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       )}
-    </button>
+    </div>
   );
 }
