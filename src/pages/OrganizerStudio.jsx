@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, Users, Send, BarChart3 } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Users, Send, BarChart3, ClipboardList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,6 +12,7 @@ import AttendeeManager from '@/components/organizer/AttendeeManager';
 import BulkMessaging from '@/components/organizer/BulkMessaging';
 import ProducerTrustWidget from '@/components/organizer/ProducerTrustWidget';
 import ComparisonWidget from '@/components/organizer/ComparisonWidget';
+import RSVPDashboard from '@/components/organizer/RSVPDashboard';
 
 export default function OrganizerStudio() {
   const [user, setUser] = useState(null);
@@ -67,9 +68,10 @@ export default function OrganizerStudio() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-border">
+        <div className="flex gap-2 border-b border-border overflow-x-auto">
           {[
             { id: 'overview', label: 'Overview', icon: BarChart3 },
+            { id: 'rsvps', label: 'RSVP List', icon: ClipboardList },
             { id: 'attendees', label: 'Attendees', icon: Users },
             { id: 'messaging', label: 'Send Update', icon: Send },
           ].map(tab => {
@@ -94,6 +96,9 @@ export default function OrganizerStudio() {
         {/* Content */}
         {activeTab === 'overview' && (
           <EventAnalytics event={selectedEvent} tickets={tickets} rsvps={rsvps} />
+        )}
+        {activeTab === 'rsvps' && (
+          <RSVPDashboard eventId={selectedEvent.id} />
         )}
         {activeTab === 'attendees' && (
           <AttendeeManager eventId={selectedEvent.id} tickets={tickets} rsvps={rsvps} />

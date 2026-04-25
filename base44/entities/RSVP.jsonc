@@ -16,6 +16,22 @@
         "not_going"
       ],
       "default": "going"
+    },
+    "attendee_name": {
+      "type": "string",
+      "description": "Full name of attendee"
+    },
+    "attendee_email": {
+      "type": "string",
+      "description": "Email address"
+    },
+    "attendee_phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "attendee_city": {
+      "type": "string",
+      "description": "City they live in"
     }
   },
   "required": [

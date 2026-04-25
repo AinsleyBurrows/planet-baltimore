@@ -7,14 +7,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
+import RSVPFormModal from './RSVPFormModal';
 
-const STATUS_CONFIG = {
-  going: { label: 'Going', icon: CalendarCheck, color: 'bg-accent hover:bg-accent/90 text-accent-foreground' },
-  interested: { label: 'Interested', icon: Star, color: 'bg-secondary hover:bg-secondary/80 text-foreground' },
-};
-
-export default function RSVPButton({ eventId, rsvpCount = 0 }) {
+export default function RSVPButton({ eventId }) {
   const [user, setUser] = useState(null);
+  const [pendingStatus, setPendingStatus] = useState(null); // triggers modal
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -36,28 +33,55 @@ export default function RSVPButton({ eventId, rsvpCount = 0 }) {
   const interestedCount = attendees.filter(r => r.status === 'interested').length;
 
   const rsvpMutation = useMutation({
-    mutationFn: async (status) => {
+    mutationFn: async ({ status, attendeeInfo }) => {
       if (existingRsvp) {
-        if (existingRsvp.status === status) {
-          // Un-RSVP
+        if (existingRsvp.status === status && !attendeeInfo) {
+          // Un-RSVP (no modal, direct toggle)
           await base44.entities.RSVP.delete(existingRsvp.id);
           return null;
         }
-        return base44.entities.RSVP.update(existingRsvp.id, { status });
+        return base44.entities.RSVP.update(existingRsvp.id, {
+          status,
+          attendee_name: attendeeInfo?.name,
+          attendee_email: attendeeInfo?.email,
+          attendee_phone: attendeeInfo?.phone,
+          attendee_city: attendeeInfo?.city,
+        });
       }
-      return base44.entities.RSVP.create({ user_id: user.id, event_id: eventId, status });
+      return base44.entities.RSVP.create({
+        user_id: user.id,
+        event_id: eventId,
+        status,
+        attendee_name: attendeeInfo?.name,
+        attendee_email: attendeeInfo?.email,
+        attendee_phone: attendeeInfo?.phone,
+        attendee_city: attendeeInfo?.city,
+      });
     },
-    onSuccess: (_, status) => {
+    onSuccess: (_, vars) => {
       queryClient.invalidateQueries({ queryKey: ['rsvp', eventId, user?.id] });
       queryClient.invalidateQueries({ queryKey: ['rsvps', eventId] });
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-      toast({ title: existingRsvp?.status === status ? 'RSVP removed' : `Marked as ${status}!` });
+      setPendingStatus(null);
+      toast({ title: vars.attendeeInfo ? `RSVP confirmed! You're marked as ${vars.status}.` : 'RSVP removed' });
     },
   });
 
+  const handleRsvpClick = (status) => {
+    // If already has this status — un-RSVP directly (no form needed)
+    if (existingRsvp?.status === status) {
+      rsvpMutation.mutate({ status });
+      return;
+    }
+    // Otherwise show form to collect info
+    setPendingStatus(status);
+  };
+
+  const handleFormConfirm = (attendeeInfo) => {
+    rsvpMutation.mutate({ status: pendingStatus, attendeeInfo });
+  };
+
   const currentStatus = existingRsvp?.status;
-  const config = currentStatus ? STATUS_CONFIG[currentStatus] : null;
-  const Icon = config?.icon || CalendarPlus;
 
   if (!user) {
     return (
@@ -68,54 +92,62 @@ export default function RSVPButton({ eventId, rsvpCount = 0 }) {
   }
 
   return (
-    <div className="flex-1 flex gap-1">
-      <Button
-        onClick={() => rsvpMutation.mutate('going')}
-        disabled={rsvpMutation.isPending}
-        className={`flex-1 h-12 rounded-l-xl rounded-r-none gap-2 font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-ring ${
-          currentStatus === 'going'
-            ? 'bg-accent hover:bg-accent/90 text-accent-foreground'
-            : 'bg-secondary hover:bg-secondary/80 text-foreground'
-        }`}
-      >
-        {rsvpMutation.isPending ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : currentStatus === 'going' ? (
-          <CalendarCheck className="w-4 h-4" />
-        ) : (
-          <CalendarPlus className="w-4 h-4" />
-        )}
-        {currentStatus === 'going' ? 'Going' : 'RSVP'}
-        {goingCount > 0 && (
-          <span className={`text-xs font-normal opacity-75`}>· {goingCount}</span>
-        )}
-      </Button>
+    <>
+      <div className="flex-1 flex gap-1">
+        <Button
+          onClick={() => handleRsvpClick('going')}
+          disabled={rsvpMutation.isPending}
+          className={`flex-1 h-12 rounded-l-xl rounded-r-none gap-2 font-semibold transition-all duration-150 active:scale-[0.98] ${
+            currentStatus === 'going'
+              ? 'bg-accent hover:bg-accent/90 text-accent-foreground'
+              : 'bg-secondary hover:bg-secondary/80 text-foreground'
+          }`}
+        >
+          {rsvpMutation.isPending && pendingStatus === 'going' ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : currentStatus === 'going' ? (
+            <CalendarCheck className="w-4 h-4" />
+          ) : (
+            <CalendarPlus className="w-4 h-4" />
+          )}
+          {currentStatus === 'going' ? 'Going ✓' : 'RSVP'}
+          {goingCount > 0 && <span className="text-xs font-normal opacity-75">· {goingCount}</span>}
+        </Button>
 
-      {/* Dropdown for Interested */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            className={`h-12 w-10 rounded-l-none rounded-r-xl px-0 ${
-              currentStatus === 'interested'
-                ? 'bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30'
-                : 'bg-secondary hover:bg-secondary/80 text-foreground'
-            }`}
-          >
-            <ChevronDown className="w-4 h-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem onClick={() => rsvpMutation.mutate('going')} className="gap-2">
-            <CalendarCheck className="w-4 h-4 text-accent" />
-            Going {currentStatus === 'going' && '✓'}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => rsvpMutation.mutate('interested')} className="gap-2">
-            <Star className="w-4 h-4 text-yellow-500" />
-            Interested {currentStatus === 'interested' && '✓'}
-            {interestedCount > 0 && <span className="ml-auto text-xs text-muted-foreground">{interestedCount}</span>}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className={`h-12 w-10 rounded-l-none rounded-r-xl px-0 ${
+                currentStatus === 'interested'
+                  ? 'bg-accent/20 hover:bg-accent/30 text-accent border border-accent/30'
+                  : 'bg-secondary hover:bg-secondary/80 text-foreground'
+              }`}
+            >
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => handleRsvpClick('going')} className="gap-2">
+              <CalendarCheck className="w-4 h-4 text-accent" />
+              Going {currentStatus === 'going' && '✓'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleRsvpClick('interested')} className="gap-2">
+              <Star className="w-4 h-4 text-yellow-500" />
+              Interested {currentStatus === 'interested' && '✓'}
+              {interestedCount > 0 && <span className="ml-auto text-xs text-muted-foreground">{interestedCount}</span>}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {pendingStatus && (
+        <RSVPFormModal
+          status={pendingStatus}
+          loading={rsvpMutation.isPending}
+          onConfirm={handleFormConfirm}
+          onClose={() => setPendingStatus(null)}
+        />
+      )}
+    </>
   );
 }
