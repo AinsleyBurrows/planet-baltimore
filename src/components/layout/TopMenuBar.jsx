@@ -39,8 +39,8 @@ export default function TopMenuBar() {
       <div className="flex items-center justify-between px-4 h-14">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-1.5">
-          <span className="text-lg font-bold text-accent">BMore</span>
-          <span className="text-lg font-light text-foreground">Connected</span>
+          <span className="text-lg font-bold text-accent">Planet</span>
+          <span className="text-lg font-light text-foreground">Baltimore</span>
         </Link>
 
         <div className="flex items-center gap-2">
