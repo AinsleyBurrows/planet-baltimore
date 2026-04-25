@@ -9,7 +9,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-background">
       <LeftSidebar />
       <RightSidebar />
-      <div className="ml-[15%] min-w-[60px] lg:ml-[18%] mr-[19%] min-h-screen flex flex-col">
+      <div className="lg:ml-[18%] lg:mr-[19%] min-h-screen flex flex-col">
         <div className="lg:hidden">
           <TopMenuBar />
         </div>
