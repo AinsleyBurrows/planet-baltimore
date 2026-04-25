@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
+import MobileNav from '@/components/layout/MobileNav';
 import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
