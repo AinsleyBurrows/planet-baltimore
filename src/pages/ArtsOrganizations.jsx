@@ -64,7 +64,7 @@ export default function ArtsOrganizations() {
           </Button>
           <Link to="/create-arts-org">
             <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-              <Plus className="w-4 h-4" />Add Org
+              <Plus className="w-4 h-4" />
             </Button>
           </Link>
         </div>

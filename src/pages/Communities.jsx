@@ -37,7 +37,7 @@ export default function Communities() {
         <h1 className="text-2xl font-bold text-foreground">Communities</h1>
         <Link to="/create-community">
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />Create Community
+            <Plus className="w-4 h-4" />
           </Button>
         </Link>
       </div>

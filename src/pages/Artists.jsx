@@ -37,7 +37,7 @@ export default function Artists() {
         <h1 className="text-2xl font-bold text-foreground">Artists</h1>
         <Link to="/create-artist">
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />Create Artist Page
+            <Plus className="w-4 h-4" />
           </Button>
         </Link>
       </div>

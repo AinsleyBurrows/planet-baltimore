@@ -55,7 +55,7 @@ export default function LeftSidebar() {
             ) : (
               <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg gap-2 h-11">
                 <Plus className="w-5 h-5" />
-                Create Post
+                
               </Button>
             )}
           </Link>

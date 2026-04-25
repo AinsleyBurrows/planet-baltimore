@@ -68,7 +68,7 @@ export default function Events() {
           </div>
           <Link to="/create-event">
             <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-1.5 rounded-lg">
-              <Plus className="w-4 h-4" />Create
+              <Plus className="w-4 h-4" />
             </Button>
           </Link>
         </div>

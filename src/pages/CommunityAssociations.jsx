@@ -30,7 +30,7 @@ export default function CommunityAssociations() {
         </div>
         <Link to="/create-community-association">
           <Button className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />Create
+            <Plus className="w-4 h-4" />
           </Button>
         </Link>
       </div>

@@ -33,7 +33,7 @@ export default function Stories() {
         <h1 className="text-2xl font-bold text-foreground">Your Story</h1>
         <Link to="/create-story">
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />Write a Story
+            <Plus className="w-4 h-4" />
           </Button>
         </Link>
       </div>
