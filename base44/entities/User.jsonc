@@ -75,5 +75,6 @@
       "type": "number",
       "default": 0
     }
-  }
+  },
+  "required": []
 }
