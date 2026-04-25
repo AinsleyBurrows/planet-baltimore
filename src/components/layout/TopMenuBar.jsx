@@ -14,15 +14,15 @@ import {
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
-  { icon: Compass, label: 'Discover', path: '/discover' },
-  { icon: Map, label: 'City Map', path: '/map' },
-  { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
-  { icon: Calendar, label: 'Events', path: '/events' },
-  { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
+  { icon: Map, label: 'City Map', path: '/map' },
+  { icon: Users, label: 'Communities', path: '/communities' },
+  { icon: Compass, label: 'Discover', path: '/discover' },
+  { icon: Calendar, label: 'Events', path: '/events' },
+  { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: BookOpen, label: 'Your Story', path: '/stories' },
 ];
 
