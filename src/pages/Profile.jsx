@@ -105,7 +105,7 @@ export default function Profile() {
     <div className="space-y-0">
       {/* Banner */}
       <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
-        {user.banner_url && <img src={user.banner_url} alt="Banner" className="w-full h-full object-cover" />}
+        {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
         <button
           onClick={() => setEditingImage('banner')}
           className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors shadow-sm"
@@ -120,7 +120,7 @@ export default function Profile() {
         <div className="flex items-end justify-between">
           <div className="relative cursor-pointer" onClick={() => setEditingImage('avatar')}>
             <Avatar key={user.avatar_url} className="w-24 h-24 border-4 border-background">
-              <AvatarImage src={user.avatar_url} />
+              <AvatarImage src={user.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined} />
               <AvatarFallback className="text-2xl font-bold bg-accent/10 text-accent">
                 {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
               </AvatarFallback>
