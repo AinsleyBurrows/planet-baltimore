@@ -95,11 +95,14 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
     setError('');
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      console.log('Upload success, file_url:', file_url);
       const field = isBanner ? 'banner_url' : 'avatar_url';
-      await base44.auth.updateMe({ [field]: file_url });
+      const result = await base44.auth.updateMe({ [field]: file_url });
+      console.log('updateMe result:', result);
       onSave(file_url);
     } catch (err) {
-      setError('Upload failed. Please try again.');
+      console.error('Save failed:', err?.response?.data || err?.message || err);
+      setError(`Failed: ${err?.response?.data?.error || err?.message || 'Unknown error'}`);
       setUploading(false);
     }
   };
