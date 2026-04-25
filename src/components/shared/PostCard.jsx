@@ -134,15 +134,13 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
           );
         }
 
-        // Single image + text: side-by-side layout
+        // Single image + text: image on top, text below
         if (hasText && singleImage) {
           return (
-            <div className="flex gap-0 overflow-hidden">
-              <div className="flex-1 px-4 pb-3 flex items-center">
+            <div>
+              <AppImage src={post.media_urls[0]} images={post.media_urls} index={0} className="w-full" aspectRatio="16:9" />
+              <div className="px-4 pt-3 pb-1">
                 <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
-              </div>
-              <div className="w-40 flex-shrink-0">
-                <AppImage src={post.media_urls[0]} images={post.media_urls} index={0} className="w-full h-full" aspectRatio="square" />
               </div>
             </div>
           );
@@ -159,16 +157,32 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
         // Video
         if (isVideo) {
-          return <FeedVideo src={post.media_urls[0]} thumbnail={post.thumbnail_url} />;
+          return (
+            <div>
+              <FeedVideo src={post.media_urls[0]} thumbnail={post.thumbnail_url} />
+              {hasText && (
+                <div className="px-4 pt-3 pb-1">
+                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                </div>
+              )}
+            </div>
+          );
         }
 
-        // Multiple images (no text above, or text already handled)
+        // Multiple images + optional text below
         if (hasImages) {
           return (
-            <div className="grid grid-cols-2 gap-0.5 bg-white">
-              {post.media_urls.slice(0, 4).map((url, idx) => (
-                <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
-              ))}
+            <div>
+              <div className={`grid gap-0.5 bg-white ${post.media_urls.length === 1 ? '' : 'grid-cols-2'}`}>
+                {post.media_urls.slice(0, 4).map((url, idx) => (
+                  <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
+                ))}
+              </div>
+              {hasText && (
+                <div className="px-4 pt-3 pb-1">
+                  <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{post.content}</p>
+                </div>
+              )}
             </div>
           );
         }
