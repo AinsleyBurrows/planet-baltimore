@@ -13,8 +13,8 @@ export default function AppLayout() {
         <div className="lg:hidden">
           <TopMenuBar />
         </div>
-        <main className="flex-1">
-          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8">
+        <main className="flex-1 w-full">
+          <div className="max-w-4xl mx-auto py-4 sm:py-6 lg:py-8">
             <Outlet />
           </div>
         </main>
