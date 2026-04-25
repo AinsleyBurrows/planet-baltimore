@@ -142,7 +142,7 @@ export default function Profile() {
               <Camera className="w-3.5 h-3.5 text-background" />
             </span>
           </div>
-          <div className="flex flex-wrap gap-2 mb-1 justify-end">
+          <div className="flex gap-1 mb-1 justify-end">
             <Link to="/create-post">
               <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0">
                 <Plus className="w-4 h-4" />
