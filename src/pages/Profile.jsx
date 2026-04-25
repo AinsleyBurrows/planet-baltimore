@@ -227,7 +227,7 @@ export default function Profile() {
                     <Pin className="w-3 h-3" /> {pinnedPosts.length}/3 posts pinned
                   </p>
                 )}
-                <div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
+                <div className="px-3 sm:px-4"><div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
                   {sortedPosts.map(p => (
                     <div key={p.id} className="rounded-lg overflow-hidden relative group aspect-square">
                       {p.is_pinned && (
@@ -245,7 +245,7 @@ export default function Profile() {
                       </button>
                     </div>
                   ))}
-                </div>
+                </div></div>
               </>
             );
           })()
@@ -326,7 +326,7 @@ export default function Profile() {
         )}
         {activeTab === 'media' && (
           mediaPosts.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-2 bg-white">
+            <div className="px-3 sm:px-4"><div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
               {mediaPosts.map((post) => {
                 const isVideo = post.media_type === 'video' || post.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i);
                 if (isVideo) {
@@ -352,7 +352,7 @@ export default function Profile() {
                   </div>
                 ));
               })}
-            </div>
+            </div></div>
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">No media shared yet.</div>
           )
