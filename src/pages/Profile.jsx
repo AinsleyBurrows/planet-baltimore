@@ -202,8 +202,8 @@ export default function Profile() {
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-              <Icon className="w-4 h-4" />{tab.label}
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /><span className="hidden xs:inline">{tab.label}</span>
             </button>
           );
         })}
