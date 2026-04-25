@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2 } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2, Pin, PinOff } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +47,16 @@ export default function Profile() {
     await base44.entities.Story.delete(storyId);
     queryClient.invalidateQueries({ queryKey: ['my-stories', user?.id] });
     queryClient.invalidateQueries({ queryKey: ['stories'] });
+  };
+
+  const handleTogglePin = async (post) => {
+    const pinnedPosts = posts.filter(p => p.is_pinned && !p.is_deleted);
+    if (!post.is_pinned && pinnedPosts.length >= 3) {
+      alert('You can only pin up to 3 posts. Unpin one first.');
+      return;
+    }
+    await base44.entities.Post.update(post.id, { is_pinned: !post.is_pinned });
+    queryClient.invalidateQueries({ queryKey: ['my-posts', user?.id] });
   };
 
   const handleDeleteEvent = async (eventId) => {
@@ -192,17 +202,43 @@ export default function Profile() {
       {/* Content */}
       <div className="mt-4 space-y-4">
         {activeTab === 'posts' && (
-          posts.filter(p => !p.is_deleted).length > 0 ? (
-            <div className="grid grid-cols-3 gap-1 bg-white">
-              {posts.filter(p => !p.is_deleted).map(p => (
-                <div key={p.id} className="rounded-lg overflow-hidden">
-                  <PostGridTile post={p} onClick={setSelectedPost} onDelete={handleDeletePost} />
+          (() => {
+            const visiblePosts = posts.filter(p => !p.is_deleted);
+            const pinnedPosts = visiblePosts.filter(p => p.is_pinned);
+            const unpinnedPosts = visiblePosts.filter(p => !p.is_pinned);
+            const sortedPosts = [...pinnedPosts, ...unpinnedPosts];
+            if (!visiblePosts.length) return (
+              <div className="text-center py-12 text-muted-foreground text-sm">No posts yet. Share something with the community!</div>
+            );
+            return (
+              <>
+                {pinnedPosts.length > 0 && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 px-1">
+                    <Pin className="w-3 h-3" /> {pinnedPosts.length}/3 posts pinned
+                  </p>
+                )}
+                <div className="grid grid-cols-3 gap-1 bg-white">
+                  {sortedPosts.map(p => (
+                    <div key={p.id} className="rounded-lg overflow-hidden relative group">
+                      {p.is_pinned && (
+                        <div className="absolute top-1.5 left-1.5 z-10 bg-accent text-accent-foreground rounded-full p-0.5 shadow-sm">
+                          <Pin className="w-2.5 h-2.5" />
+                        </div>
+                      )}
+                      <PostGridTile post={p} onClick={setSelectedPost} onDelete={handleDeletePost} />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleTogglePin(p); }}
+                        className="absolute bottom-2 left-2 p-1.5 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 hover:bg-black/70 transition-all z-10"
+                        title={p.is_pinned ? 'Unpin post' : 'Pin post'}
+                      >
+                        {p.is_pinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground text-sm">No posts yet. Share something with the community!</div>
-          )
+              </>
+            );
+          })()
         )}
         {activeTab === 'feed' && (
           posts.filter(p => !p.is_deleted).length > 0 ? (
