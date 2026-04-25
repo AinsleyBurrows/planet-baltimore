@@ -116,15 +116,17 @@ export default function Profile() {
     <>
     <div className="space-y-0">
       {/* Banner */}
-      <div className="relative sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
-        {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
-        <button
-          onClick={() => setEditingImage('banner')}
-          className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors shadow-sm"
-        >
-          <Camera className="w-3.5 h-3.5" />
-          {user.banner_url ? 'Edit banner' : 'Add banner'}
-        </button>
+      <div className="px-3 sm:px-4">
+        <div className="relative sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
+          {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
+          <button
+            onClick={() => setEditingImage('banner')}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors shadow-sm"
+          >
+            <Camera className="w-3.5 h-3.5" />
+            {user.banner_url ? 'Edit banner' : 'Add banner'}
+          </button>
+        </div>
       </div>
 
       {/* Profile Info */}
