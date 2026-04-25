@@ -128,18 +128,18 @@ export default function Profile() {
       </div>
 
       {/* Profile Info */}
-      <div className="relative px-1" style={{marginTop: '35px'}}>
+      <div className="relative px-3 sm:px-4" style={{marginTop: '2rem'}}>
         <div className="flex items-end justify-between">
           <div className="relative cursor-pointer" onClick={() => setEditingImage('avatar')}>
-            <Avatar key={user.avatar_url} className="border-4 border-background" style={{width: '75px', height: '75px'}}>
+            <Avatar key={user.avatar_url} className="border-4 border-background aspect-square w-16 sm:w-20">
               <AvatarImage src={user.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined} />
-              <AvatarFallback className="text-2xl font-bold bg-accent/10 text-accent">
+              <AvatarFallback className="text-xl sm:text-2xl font-bold bg-accent/10 text-accent">
                 {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
               </AvatarFallback>
             </Avatar>
             {/* Always-visible camera badge — like Twitter/Instagram */}
-            <span className="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm">
-              <Camera className="w-3.5 h-3.5 text-background" />
+            <span className="absolute bottom-0.5 right-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
             </span>
           </div>
           <div className="flex gap-1 mb-1 justify-end">
@@ -168,10 +168,10 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="mt-3">
+        <div className="mt-3 sm:mt-4">
           <div className="flex items-center gap-2">
-            <h1 className="font-bold text-foreground" style={{fontSize: '14px'}}>{user.display_name || user.full_name}</h1>
-            {user.is_verified && <Shield className="w-5 h-5 text-accent" />}
+            <h1 className="font-bold text-foreground text-sm sm:text-base">{user.display_name || user.full_name}</h1>
+            {user.is_verified && <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />}
           </div>
           {user.website && (
             <a href={user.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline text-sm mt-1">
@@ -188,20 +188,20 @@ export default function Profile() {
         </div>
 
         {/* Stats */}
-        <div className="flex gap-6 mt-4 py-3 border-b border-border">
-          <div className="text-center"><span className="font-bold text-foreground">{user.posts_count || posts.length}</span><span className="text-xs text-muted-foreground ml-1">Posts</span></div>
-          <div className="text-center"><span className="font-bold text-foreground">{user.followers_count || 0}</span><span className="text-xs text-muted-foreground ml-1">Followers</span></div>
-          <div className="text-center"><span className="font-bold text-foreground">{user.following_count || 0}</span><span className="text-xs text-muted-foreground ml-1">Following</span></div>
+        <div className="flex gap-6 sm:gap-8 mt-4 py-3 border-b border-border">
+          <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.posts_count || posts.length}</span><span className="text-xs text-muted-foreground ml-1">Posts</span></div>
+          <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.followers_count || 0}</span><span className="text-xs text-muted-foreground ml-1">Followers</span></div>
+          <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.following_count || 0}</span><span className="text-xs text-muted-foreground ml-1">Following</span></div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-border mt-2 overflow-x-auto">
+      <div className="flex border-b border-border mt-3 overflow-x-auto gap-0.5">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1 px-2 sm:px-4 py-3 text-[10px] sm:text-[12px] font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-              <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" /><span className="hidden sm:inline">{tab.label}</span>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5" /><span className="hidden sm:inline">{tab.label}</span>
             </button>
           );
         })}
@@ -225,9 +225,9 @@ export default function Profile() {
                     <Pin className="w-3 h-3" /> {pinnedPosts.length}/3 posts pinned
                   </p>
                 )}
-                <div className="grid grid-cols-3 gap-1 bg-white">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-2 bg-white">
                   {sortedPosts.map(p => (
-                    <div key={p.id} className="rounded-lg overflow-hidden relative group">
+                    <div key={p.id} className="rounded-lg overflow-hidden relative group aspect-square">
                       {p.is_pinned && (
                         <div className="absolute top-1.5 left-1.5 z-10 bg-accent text-accent-foreground rounded-full p-0.5 shadow-sm">
                           <Pin className="w-2.5 h-2.5" />
@@ -281,19 +281,19 @@ export default function Profile() {
             const interestedEvents = rsvpedEvents.filter(e => interested.includes(e.id));
             if (!rsvpedEvents.length) return <div className="text-center py-12 text-muted-foreground text-sm">No RSVPs yet. Find events to attend!</div>;
             return (
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {goingEvents.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-accent mb-3 flex items-center gap-1.5"><CalendarCheck className="w-4 h-4" />Going ({goingEvents.length})</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <h3 className="text-sm font-semibold text-accent mb-4 flex items-center gap-1.5"><CalendarCheck className="w-4 h-4" />Going ({goingEvents.length})</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       {goingEvents.map(e => <EventCard key={e.id} event={e} />)}
                     </div>
                   </div>
                 )}
                 {interestedEvents.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-semibold text-muted-foreground mb-3">Interested ({interestedEvents.length})</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <h3 className="text-sm font-semibold text-muted-foreground mb-4">Interested ({interestedEvents.length})</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       {interestedEvents.map(e => <EventCard key={e.id} event={e} />)}
                     </div>
                   </div>
@@ -304,7 +304,7 @@ export default function Profile() {
         )}
         {activeTab === 'created_events' && (
           createdEvents.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {createdEvents.map(e => (
                 <div key={e.id} className="relative group">
                   <EventCard event={e} />
@@ -324,7 +324,7 @@ export default function Profile() {
         )}
         {activeTab === 'media' && (
           mediaPosts.length > 0 ? (
-            <div className="grid grid-cols-3 gap-1 bg-white">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 sm:gap-2 bg-white">
               {mediaPosts.map((post) => {
                 const isVideo = post.media_type === 'video' || post.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i);
                 if (isVideo) {
@@ -345,8 +345,8 @@ export default function Profile() {
                   );
                 }
                 return post.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)).map((url, idx) => (
-                  <div key={`${post.id}-${idx}`} className="rounded-lg overflow-hidden">
-                    <AppImage src={url} images={allMedia} index={allMedia.indexOf(url)} className="aspect-square w-full" aspectRatio="square" />
+                  <div key={`${post.id}-${idx}`} className="rounded-lg overflow-hidden aspect-square">
+                    <AppImage src={url} images={allMedia} index={allMedia.indexOf(url)} className="w-full h-full" aspectRatio="square" />
                   </div>
                 ));
               })}

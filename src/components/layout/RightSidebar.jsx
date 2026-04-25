@@ -16,10 +16,10 @@ function SuggestionSection({ title, icon: Icon, items, type, badgeLabel }) {
         </div>
         {badgeLabel && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{badgeLabel}</Badge>}
       </div>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {items.map((item, idx) => (
           <Link key={idx} to={item.link || '#'} className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary/60 active:bg-secondary transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <Avatar className="w-10 h-10 rounded-lg">
+            <Avatar className="w-9 h-9 rounded-lg flex-shrink-0">
               <AvatarImage src={item.image} />
               <AvatarFallback className="rounded-lg bg-accent/10 text-accent text-xs font-bold">
                 {item.name?.charAt(0)}
@@ -61,21 +61,21 @@ const suggestedPeople = [
 
 export default function RightSidebar() {
   return (
-    <aside className="hidden xl:block fixed right-0 top-0 h-screen w-[280px] bg-card border-l border-border overflow-y-auto z-30">
-      <div className="p-5 pt-20">
+    <aside className="hidden xl:block fixed right-0 top-0 h-screen w-[19%] min-w-[240px] bg-card border-l border-border overflow-y-auto z-30">
+      <div className="p-4 sm:p-5 pt-20 sm:pt-24 space-y-5">
         <SuggestionSection title="Trending Zines" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" />
         <SuggestionSection title="Artists to Follow" icon={Sparkles} items={suggestedArtists} badgeLabel="50% Discover" />
         <SuggestionSection title="Upcoming Events" icon={MapPin} items={suggestedEvents} />
         <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} />
         
-        <div className="mt-4 pt-4 border-t border-border">
+        <div className="pt-4 border-t border-border">
           <Link to="/discover" className="flex items-center gap-2 text-sm text-accent hover:text-accent/80 font-medium transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md p-0.5">
             Explore more of Baltimore
             <ArrowRight className="w-4 h-4 transition-transform duration-150 group-hover:translate-x-0.5" />
           </Link>
         </div>
         
-        <p className="text-[11px] text-muted-foreground/60 mt-6">© 2026 BMore Connected</p>
+        <p className="text-[11px] text-muted-foreground/60">© 2026 BMore Connected</p>
       </div>
     </aside>
   );

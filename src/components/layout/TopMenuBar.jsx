@@ -37,7 +37,7 @@ export default function TopMenuBar() {
 
   return (
     <header className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-      <div className="flex items-center justify-between px-4 h-14">
+      <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-1.5">
           <span className="text-lg font-bold text-accent">Planet</span>

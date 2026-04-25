@@ -27,9 +27,9 @@ export default function LeftSidebar() {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <aside className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-card border-r border-border z-40 transition-all duration-300 ${collapsed ? 'w-[72px]' : 'w-[260px]'}`}>
+      <aside className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-card border-r border-border z-40 transition-all duration-300 ${collapsed ? 'w-[15%] min-w-[60px]' : 'w-[18%] min-w-[200px]'}`}>
         {/* Logo */}
-        <div className={`flex items-center h-16 border-b border-border px-4 ${collapsed ? 'justify-center' : ''}`}>
+        <div className={`flex items-center h-16 border-b border-border px-4 sm:px-5 ${collapsed ? 'justify-center' : ''}`}>
           {collapsed ? (
             <span className="text-xl font-bold text-accent">P</span>
           ) : (
@@ -41,19 +41,19 @@ export default function LeftSidebar() {
         </div>
 
         {/* Create Button */}
-        <div className={`px-3 pt-4 pb-2 ${collapsed ? 'flex justify-center' : ''}`}>
+        <div className={`px-3 pt-3 pb-2 ${collapsed ? 'flex justify-center' : ''}`}>
           <Link to="/create-post">
             {collapsed ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full w-10 h-10">
+                  <Button size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full aspect-square">
                     <Plus className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">Create Post</TooltipContent>
               </Tooltip>
             ) : (
-              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg h-11">
+              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg py-2.5">
                 <Plus className="w-5 h-5" />
               </Button>
             )}
@@ -61,16 +61,16 @@ export default function LeftSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-2 sm:px-3 py-2 space-y-0.5">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
             const Icon = item.icon;
-            
+
             if (collapsed) {
               return (
                 <Tooltip key={item.path}>
                   <TooltipTrigger asChild>
-                    <Link to={item.path} className={`flex items-center justify-center w-full h-11 rounded-lg transition-all ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}>
+                    <Link to={item.path} className={`flex items-center justify-center w-full py-2 rounded-lg transition-all ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}>
                       <Icon className="w-5 h-5" />
                     </Link>
                   </TooltipTrigger>
@@ -83,18 +83,18 @@ export default function LeftSidebar() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 h-11 rounded-lg transition-all duration-150 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
               >
                 <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-150 ${isActive ? 'scale-110' : ''}`} />
-                <span>{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
         {/* Collapse Toggle */}
-        <div className="border-t border-border p-3">
-          <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="flex items-center justify-center w-full h-9 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <div className="border-t border-border p-2 sm:p-3">
+          <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="flex items-center justify-center w-full py-2 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>

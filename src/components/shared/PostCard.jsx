@@ -86,22 +86,22 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
   return (
     <article className="bg-card rounded-xl border border-border overflow-hidden transition-all duration-200 hover:shadow-md">
       {/* Header */}
-      <div className="flex items-center justify-between p-4">
-        <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg p-0.5">
-          <Avatar className="w-10 h-10">
+      <div className="flex items-center justify-between p-3 sm:p-4">
+        <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg p-0.5 flex-1 min-w-0">
+          <Avatar className="w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
             <AvatarImage src={post.author_avatar} />
-            <AvatarFallback className="bg-accent/10 text-accent font-semibold text-sm">
+            <AvatarFallback className="bg-accent/10 text-accent font-semibold text-xs sm:text-sm">
               {post.author_name?.charAt(0) || '?'}
             </AvatarFallback>
           </Avatar>
-          <div>
-            <p className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-accent transition-colors truncate">
               {post.author_name || 'Anonymous'}
             </p>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              {post.neighborhood_name && <span>{post.neighborhood_name}</span>}
-              {post.neighborhood_name && <span>·</span>}
-              <span>{post.created_date ? format(new Date(post.created_date), 'MMM d') : ''}</span>
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground">
+              {post.neighborhood_name && <span className="truncate">{post.neighborhood_name}</span>}
+              {post.neighborhood_name && <span className="flex-shrink-0">·</span>}
+              <span className="flex-shrink-0">{post.created_date ? format(new Date(post.created_date), 'MMM d') : ''}</span>
             </div>
           </div>
         </Link>
@@ -208,38 +208,38 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
       {/* Tags */}
       {post.tags?.length > 0 && (
-        <div className="px-4 pt-2 flex flex-wrap gap-1.5">
+        <div className="px-3 sm:px-4 pt-2 flex flex-wrap gap-1">
           {post.tags.map((tag, idx) => (
-            <Badge key={idx} variant="secondary" className="text-xs font-normal">#{tag}</Badge>
+            <Badge key={idx} variant="secondary" className="text-[10px] sm:text-xs font-normal">#{tag}</Badge>
           ))}
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-3 sm:py-4">
+        <div className="flex items-center gap-4 sm:gap-6">
           <button
             onClick={handleLike}
             aria-label={liked ? 'Unlike post' : 'Like post'}
-            className={`flex items-center gap-1.5 text-sm transition-all duration-150 active:scale-90 ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm transition-all duration-150 active:scale-90 ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <Heart className={`w-5 h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-accent' : ''}`} />
-            <span>{(post.likes_count || 0) + (liked ? 1 : 0)}</span>
+            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-accent' : ''}`} />
+            <span className="hidden sm:inline">{(post.likes_count || 0) + (liked ? 1 : 0)}</span>
           </button>
           <button
             onClick={() => setShowComments(v => !v)}
             aria-label="Comment on post"
-            className={`flex items-center gap-1.5 text-sm active:scale-90 transition-all duration-150 ${showComments ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm active:scale-90 transition-all duration-150 ${showComments ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <MessageCircle className={`w-5 h-5 ${showComments ? 'fill-accent/20' : ''}`} />
-            <span>{post.comments_count || 0}</span>
+            <MessageCircle className={`w-4 h-4 sm:w-5 sm:h-5 ${showComments ? 'fill-accent/20' : ''}`} />
+            <span className="hidden sm:inline">{post.comments_count || 0}</span>
           </button>
           <button
             onClick={() => setShowShare(true)}
             aria-label="Share post"
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-150"
+            className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-muted-foreground hover:text-foreground active:scale-90 transition-all duration-150"
           >
-            <Share2 className="w-5 h-5" />
+            <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
         <button

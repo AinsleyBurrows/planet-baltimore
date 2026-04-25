@@ -11,22 +11,22 @@ export default function EventCard({ event, compact = false }) {
 
   if (compact) {
     return (
-      <Link to={`/events/${event.id}`} className="flex gap-3 p-3 rounded-xl bg-card border border-border hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-accent/10 flex flex-col items-center justify-center">
+      <Link to={`/events/${event.id}`} className="flex gap-3 p-2.5 sm:p-3 rounded-xl bg-card border border-border hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-accent/10 flex flex-col items-center justify-center">
           {eventDate ? (
             <>
-              <span className="text-xs font-bold text-accent uppercase">{format(eventDate, 'MMM')}</span>
-              <span className="text-lg font-bold text-foreground">{format(eventDate, 'd')}</span>
+              <span className="text-[10px] sm:text-xs font-bold text-accent uppercase">{format(eventDate, 'MMM')}</span>
+              <span className="text-base sm:text-lg font-bold text-foreground">{format(eventDate, 'd')}</span>
             </>
           ) : (
-            <Calendar className="w-6 h-6 text-accent" />
+            <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-foreground truncate group-hover:text-accent transition-colors">{event.title}</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">{eventDate ? format(eventDate, 'EEE, MMM d · h:mm a') : ''}</p>
-          <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-            <MapPin className="w-3 h-3" />
+          <h3 className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-accent transition-colors">{event.title}</h3>
+          <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">{eventDate ? format(eventDate, 'EEE, MMM d · h:mm a') : ''}</p>
+          <div className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs text-muted-foreground">
+            <MapPin className="w-3 h-3 flex-shrink-0" />
             <span className="truncate">{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
           </div>
         </div>
@@ -52,16 +52,16 @@ export default function EventCard({ event, compact = false }) {
         )}
       </div>
 
-      <div className="p-4">
-        <div className="flex items-center gap-2 text-xs text-accent font-semibold mb-1.5">
-          <Clock className="w-3.5 h-3.5" />
-          {eventDate ? format(eventDate, 'EEE, MMM d · h:mm a') : 'Date TBD'}
+      <div className="p-3 sm:p-4">
+        <div className="flex items-center gap-2 text-[11px] sm:text-xs text-accent font-semibold mb-2">
+          <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="truncate">{eventDate ? format(eventDate, 'EEE, MMM d · h:mm a') : 'Date TBD'}</span>
         </div>
-        <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-2">{event.title}</h3>
-        {event.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{event.description}</p>}
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-3">
-          <MapPin className="w-3 h-3" />
-          <span>{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
+        <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-2 text-sm">{event.title}</h3>
+        {event.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">{event.description}</p>}
+        <div className="flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">
+          <MapPin className="w-3 h-3 flex-shrink-0" />
+          <span className="truncate">{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
         </div>
         <InlineRSVP eventId={event.id} />
       </div>

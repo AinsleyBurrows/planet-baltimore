@@ -130,25 +130,25 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-border gap-2">
             <button
               onClick={onClose}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
+              className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors font-medium whitespace-nowrap"
             >
               Cancel
             </button>
-            <h2 className="text-sm font-semibold text-foreground">{title}</h2>
+            <h2 className="text-xs sm:text-sm font-semibold text-foreground text-center flex-1">{title}</h2>
             <Button
               size="sm"
               onClick={handleSave}
               disabled={!preview || uploading}
-              className="rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground h-8 px-4 text-xs font-semibold"
+              className="rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground h-8 px-3 sm:px-4 text-[11px] sm:text-xs font-semibold whitespace-nowrap"
             >
               {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save'}
             </Button>
           </div>
 
-          <div className="p-5 space-y-4">
+          <div className="p-4 sm:p-5 space-y-4 sm:space-y-5">
             {/* Preview / drop zone */}
             <div
               className={`relative overflow-hidden bg-muted border-2 border-dashed border-border select-none ${previewShape} ${preview ? 'cursor-grab active:cursor-grabbing border-solid' : 'cursor-pointer'}`}
@@ -180,20 +180,20 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
                   {/* Replace button */}
                   <button
                     onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                    className="absolute top-2 right-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/70 text-white text-xs font-medium backdrop-blur-sm transition-colors"
+                    className="absolute top-2 right-2 flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-black/55 hover:bg-black/70 text-white text-[11px] sm:text-xs font-medium backdrop-blur-sm transition-colors"
                   >
                     <RefreshCw className="w-3 h-3" />
-                    Change
+                    <span className="hidden sm:inline">Change</span>
                   </button>
                 </>
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 sm:gap-3 text-muted-foreground px-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
                     <Upload className="w-5 h-5" />
                   </div>
-                  <div className="text-center px-4">
-                    <p className="text-sm font-medium text-foreground">Choose a photo</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">or drag & drop · JPEG, PNG, WebP · {MAX_SIZE_MB} MB max</p>
+                  <div className="text-center">
+                    <p className="text-xs sm:text-sm font-medium text-foreground">Choose a photo</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">drag & drop · max {MAX_SIZE_MB}MB</p>
                   </div>
                 </div>
               )}
@@ -201,11 +201,11 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
 
             {/* Zoom slider — only when image loaded */}
             {preview && (
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-3">
+              <div className="space-y-2 sm:space-y-2.5">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <button
                     onClick={() => setZoom(z => Math.max(1, parseFloat((z - 0.1).toFixed(2))))}
-                    className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                    className="p-1 sm:p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
                   >
                     <ZoomOut className="w-4 h-4" />
                   </button>
@@ -220,12 +220,12 @@ export default function ImageUploadModal({ type, onSave, onClose }) {
                   />
                   <button
                     onClick={() => setZoom(z => Math.min(3, parseFloat((z + 0.1).toFixed(2))))}
-                    className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                    className="p-1 sm:p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
                   >
                     <ZoomIn className="w-4 h-4" />
                   </button>
                 </div>
-                <p className="text-center text-xs text-muted-foreground">Drag to reposition · scroll or slide to zoom</p>
+                <p className="text-center text-[10px] sm:text-xs text-muted-foreground">Drag to move · zoom to resize</p>
               </div>
             )}
 

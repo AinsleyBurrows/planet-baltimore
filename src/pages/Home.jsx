@@ -148,59 +148,59 @@ export default function Home() {
   const isEmpty = !isLoading && feedItems.length === 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Home</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Home</h1>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-3 sm:-mx-4 px-3 sm:px-4">
         {FILTERS.map((filter) => (
           <button
             key={filter}
             onClick={() => { setActiveFilter(filter); setFilterLoading(true); setTimeout(() => setFilterLoading(false), 400); }}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               activeFilter === filter ? 'bg-foreground text-background shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
             }`}
           >
-            {filter === 'Discover' && <Compass className="w-3.5 h-3.5" />}
+            {filter === 'Discover' && <Compass className="w-4 h-4 sm:w-5 sm:h-5" />}
             {filter}
           </button>
         ))}
       </div>
 
       {/* Stories bar — flush, no card wrapper */}
-      <div className="-mx-3 sm:-mx-4 px-3 sm:px-4 border-b border-border pb-3">
+      <div className="-mx-3 sm:-mx-4 px-3 sm:px-4 border-b border-border pb-3 sm:pb-4">
         <StoryBar currentUser={currentUser} />
       </div>
 
       {activeFilter === 'Discover' && (
-        <div className="flex items-center gap-2 p-3 bg-accent/5 border border-accent/20 rounded-xl text-sm text-muted-foreground">
-          <Sparkles className="w-4 h-4 text-accent flex-shrink-0" />
+        <div className="flex items-center gap-2 p-3 sm:p-4 bg-accent/5 border border-accent/20 rounded-xl text-xs sm:text-sm text-muted-foreground">
+          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-accent flex-shrink-0" />
           <span>Broadening your world — content from across Baltimore you haven't seen yet.</span>
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-4 sm:space-y-5">
         {isLoading || filterLoading ? (
           <FeedSkeleton />
         ) : feedItems.length === 0 && !isEmpty ? (
           <FeedSkeleton />
         ) : isEmpty ? (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
-              {activeFilter === 'Following' ? <Users className="w-7 h-7 text-accent" /> : <span className="text-2xl">🏙️</span>}
+          <div className="text-center py-12 sm:py-16">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+              {activeFilter === 'Following' ? <Users className="w-7 h-7 sm:w-9 sm:h-9 text-accent" /> : <span className="text-3xl sm:text-4xl">🏙️</span>}
             </div>
-            <h3 className="font-semibold text-foreground mb-1">
+            <h3 className="font-semibold text-foreground mb-2 text-base sm:text-lg">
               {activeFilter === 'Following' ? 'No activity from people you follow' : 'Your feed is quiet'}
             </h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-6">
               {activeFilter === 'Following' ? 'Follow artists, businesses, and organizations to see their updates here.' : 'Explore Baltimore communities to fill your feed.'}
             </p>
             {activeFilter === 'Following' && (
-              <div className="flex gap-3 justify-center mt-5 flex-wrap">
-                <Link to="/artists"><Button variant="outline" size="sm" className="rounded-lg">Browse Artists</Button></Link>
-                <Link to="/arts-organizations"><Button variant="outline" size="sm" className="rounded-lg">Browse Orgs</Button></Link>
-                <Link to="/businesses"><Button variant="outline" size="sm" className="rounded-lg">Browse Businesses</Button></Link>
+              <div className="flex gap-2 sm:gap-3 justify-center flex-wrap">
+                <Link to="/artists"><Button variant="outline" size="sm" className="rounded-lg text-xs sm:text-sm">Browse Artists</Button></Link>
+                <Link to="/arts-organizations"><Button variant="outline" size="sm" className="rounded-lg text-xs sm:text-sm">Browse Orgs</Button></Link>
+                <Link to="/businesses"><Button variant="outline" size="sm" className="rounded-lg text-xs sm:text-sm">Browse Businesses</Button></Link>
               </div>
             )}
           </div>
