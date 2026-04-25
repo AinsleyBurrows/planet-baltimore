@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2, Pin, PinOff } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ import PostGridTile from '@/components/shared/PostGridTile';
 import PostDetailModal from '@/components/shared/PostDetailModal';
 import ImageUploadModal from '@/components/profile/ImageUploadModal';
 import ShareModal from '@/components/shared/ShareModal';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -31,6 +32,7 @@ export default function Profile() {
   const [selectedPost, setSelectedPost] = useState(null);
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
   const [showShare, setShowShare] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -146,6 +148,15 @@ export default function Profile() {
                 <Plus className="w-4 h-4" />Create Post
               </Button>
             </Link>
+            <Button
+              size="sm"
+              variant="outline"
+              aria-label="Invite friends"
+              onClick={() => setShowInvite(true)}
+              className="rounded-lg transition-all duration-150 active:scale-95"
+            >
+              <UserPlus className="w-4 h-4" />
+            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -351,6 +362,7 @@ export default function Profile() {
       </div>
     </div>
 
+    {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
     {selectedPost && <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
 
     <ShareModal
