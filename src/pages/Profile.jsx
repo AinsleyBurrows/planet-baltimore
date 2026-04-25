@@ -170,7 +170,7 @@ export default function Profile() {
 
         <div className="mt-3">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-foreground">{user.display_name || user.full_name}</h1>
+            <h1 className="font-bold text-foreground" style={{fontSize: '14px'}}>{user.display_name || user.full_name}</h1>
             {user.is_verified && <Shield className="w-5 h-5 text-accent" />}
           </div>
           {user.bio && <p className="text-sm text-muted-foreground mt-1">{user.bio}</p>}
