@@ -44,13 +44,6 @@ export default function TopMenuBar() {
         </Link>
 
         <div className="flex items-center gap-2">
-          {/* Quick create */}
-          <Link to="/create-post">
-            <Button size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full w-8 h-8">
-              <Plus className="w-4 h-4" />
-            </Button>
-          </Link>
-
           {/* Hamburger menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
