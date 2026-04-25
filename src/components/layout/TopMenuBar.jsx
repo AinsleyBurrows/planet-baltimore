@@ -35,7 +35,7 @@ export default function TopMenuBar() {
   const location = useLocation();
 
   return (
-    <header className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
+    <header className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center justify-between px-4 h-14">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-1.5">

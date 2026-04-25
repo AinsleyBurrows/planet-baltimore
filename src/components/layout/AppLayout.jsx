@@ -12,8 +12,8 @@ export default function AppLayout() {
       <RightSidebar />
       <div className="lg:ml-[260px] xl:mr-[280px] min-h-screen flex flex-col">
         <TopMenuBar />
-        <main className="flex-1 pb-20 lg:pb-0">
-          <div className="max-w-3xl mx-auto px-4 py-6">
+        <main className="flex-1 pb-24 lg:pb-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}>
+          <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
             <Outlet />
           </div>
         </main>

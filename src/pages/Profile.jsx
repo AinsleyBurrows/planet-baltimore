@@ -142,10 +142,10 @@ export default function Profile() {
               <Camera className="w-3.5 h-3.5 text-background" />
             </span>
           </div>
-          <div className="flex gap-2 mb-1">
+          <div className="flex flex-wrap gap-2 mb-1 justify-end">
             <Link to="/create-post">
               <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground gap-1.5 rounded-lg">
-                <Plus className="w-4 h-4" />Create Post
+                <Plus className="w-4 h-4" /><span className="hidden xs:inline">Create Post</span><span className="xs:hidden">Post</span>
               </Button>
             </Link>
             <Button
@@ -154,7 +154,7 @@ export default function Profile() {
               onClick={() => setShowInvite(true)}
               className="rounded-lg transition-all duration-150 active:scale-95 gap-1.5"
             >
-              <UserPlus className="w-4 h-4" />Invite Friends
+              <UserPlus className="w-4 h-4" /><span className="hidden sm:inline">Invite Friends</span>
             </Button>
             <Button
               size="sm"
