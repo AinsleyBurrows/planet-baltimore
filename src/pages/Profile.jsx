@@ -131,7 +131,7 @@ export default function Profile() {
       <div className="relative px-1" style={{marginTop: '15px'}}>
         <div className="flex items-end justify-between">
           <div className="relative cursor-pointer" onClick={() => setEditingImage('avatar')}>
-            <Avatar key={user.avatar_url} className="w-24 h-24 border-4 border-background">
+            <Avatar key={user.avatar_url} className="border-4 border-background" style={{width: '75px', height: '75px'}}>
               <AvatarImage src={user.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined} />
               <AvatarFallback className="text-2xl font-bold bg-accent/10 text-accent">
                 {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
