@@ -46,19 +46,27 @@ Deno.serve(async (req) => {
     const platformFee = subtotal * 0.05; // 5% platform fee
     const totalAmount = Math.round((subtotal + platformFee) * 100); // Convert to cents
 
-    // Create Stripe checkout session
+    // Create Stripe checkout session with automatic tax calculation
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       success_url: `${req.headers.get('origin')}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/events/${eventId}`,
       customer_email: user.email,
+      automatic_tax: {
+        enabled: true,
+      },
+      tax_id_collection: {
+        enabled: true,
+      },
+      billing_address_collection: 'required',
       metadata: {
         eventId,
         ticketTypeId,
         quantity: quantity.toString(),
         buyerId: user.id,
         promoterId: promoterId || '',
+        eventCity: event.address || event.neighborhood_name || '',
       },
       line_items: [
         {
@@ -68,6 +76,7 @@ Deno.serve(async (req) => {
               name: `${event.title} - ${ticketType.name}`,
               description: ticketType.description || '',
               images: event.image_url ? [event.image_url] : [],
+              tax_code: 'txcd_100000000',
             },
             unit_amount: Math.round(ticketType.price * 100),
           },
