@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,6 +13,7 @@ import PostCard from '@/components/shared/PostCard';
 import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
 import RestaurantHub from '@/components/business/RestaurantHub';
+import BusinessEditProfileModal from '@/components/business/BusinessEditProfileModal';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -23,6 +24,7 @@ export default function BusinessDetail() {
   const navigate = useNavigate();
   const businessId = window.location.pathname.split('/businesses/')[1];
   const [user, setUser] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
@@ -87,8 +89,13 @@ export default function BusinessDetail() {
             <AvatarFallback className="rounded-xl bg-primary/10 text-primary text-2xl font-bold">{business.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex gap-2 mb-1">
+            {isOwner && (
+              <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowEdit(true)}>
+                <Pencil className="w-3.5 h-3.5" /> Edit Page
+              </Button>
+            )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
-            {business && <FollowButton targetType="business" targetId={business.id} targetName={business.name} />}
+            {!isOwner && business && <FollowButton targetType="business" targetId={business.id} targetName={business.name} />}
           </div>
         </div>
 
@@ -178,6 +185,8 @@ export default function BusinessDetail() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {showEdit && <BusinessEditProfileModal business={business} onClose={() => setShowEdit(false)} />}
     </div>
   );
 }
