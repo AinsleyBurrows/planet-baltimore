@@ -1,0 +1,57 @@
+{
+  "name": "Promoter",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Reference to Event"
+    },
+    "producer_id": {
+      "type": "string",
+      "description": "Event producer user ID"
+    },
+    "promoter_id": {
+      "type": "string",
+      "description": "Sub-promoter user ID"
+    },
+    "promoter_name": {
+      "type": "string",
+      "description": "Promoter's full name"
+    },
+    "promoter_email": {
+      "type": "string"
+    },
+    "commission_rate": {
+      "type": "number",
+      "description": "Commission percentage (e.g., 5 for 5%)"
+    },
+    "total_tickets_sold": {
+      "type": "number",
+      "default": 0
+    },
+    "total_commission_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "removed"
+      ],
+      "default": "active"
+    },
+    "stripe_account_id": {
+      "type": "string",
+      "description": "Optional: Stripe Connect account for direct payouts"
+    }
+  },
+  "required": [
+    "event_id",
+    "producer_id",
+    "promoter_id",
+    "promoter_email",
+    "commission_rate"
+  ]
+}

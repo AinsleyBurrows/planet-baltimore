@@ -41,6 +41,8 @@ import OrganizerStudio from '@/pages/OrganizerStudio';
 import EventTicketing from '@/pages/EventTicketing';
 import OrderConfirmation from '@/pages/OrderConfirmation';
 
+// Routes already exist in App.jsx - verify they're present
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
@@ -92,6 +94,8 @@ const AuthenticatedApp = () => {
         <Route path="/notification-settings" element={<NotificationSettings />} />
         <Route path="/map" element={<CityMap />} />
         <Route path="/organizer-studio" element={<OrganizerStudio />} />
+        <Route path="/events/:id/tickets" element={<EventTicketing />} />
+        <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:id" element={<StoryDetail />} />
         <Route path="/profile" element={<Profile />} />

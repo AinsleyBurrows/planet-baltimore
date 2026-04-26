@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Heart, Share2, Gift } from 'lucide-react';
+import { Heart, Share2, Gift, Ticket } from 'lucide-react';
 import RSVPButton from './RSVPButton';
 
 export default function EventTicketing({ event, rsvpCount, onShare, user }) {
+  const navigate = useNavigate();
   const [donationAmount, setDonationAmount] = useState('');
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showDonationForm, setShowDonationForm] = useState(false);
@@ -45,64 +47,20 @@ export default function EventTicketing({ event, rsvpCount, onShare, user }) {
     );
   }
 
-  // Platform ticketing mode
+  // Platform ticketing mode - new Stripe integration
   if (event.ticketing_mode === 'platform') {
     return (
       <div className="sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4 space-y-4">
         <div className="bg-secondary/40 rounded-xl p-4 space-y-3">
           <h3 className="font-semibold text-foreground">Get Tickets</h3>
           
-          {allSoldOut ? (
-            <div className="p-3 bg-destructive/10 text-destructive rounded-lg text-sm font-medium text-center">
-              All tickets sold out
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {activeTickets.map(ticket => {
-                const availableQty = ticket.quantity_total - ticket.quantity_sold;
-                const isSoldOut = availableQty <= 0;
-                
-                return (
-                  <button
-                    key={ticket.id}
-                    onClick={() => setSelectedTicket(ticket)}
-                    disabled={isSoldOut}
-                    className={`w-full p-3 rounded-lg border-2 transition-all ${
-                      selectedTicket?.id === ticket.id
-                        ? 'border-accent bg-accent/10'
-                        : isSoldOut
-                        ? 'border-border bg-muted opacity-50 cursor-not-allowed'
-                        : 'border-border hover:border-accent bg-card'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="text-left">
-                        <p className="font-medium text-foreground">{ticket.name}</p>
-                        {ticket.description && (
-                          <p className="text-xs text-muted-foreground">{ticket.description}</p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-foreground">
-                          {ticket.price === 0 ? 'Free' : `$${ticket.price}`}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {isSoldOut ? 'Sold out' : `${availableQty} left`}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {selectedTicket && !allSoldOut && (
-            <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-12 rounded-lg font-semibold">
-              Buy Ticket
-              {selectedTicket.price > 0 && ` - $${selectedTicket.price}`}
-            </Button>
-          )}
+          <Button 
+            onClick={() => navigate(`/events/${event.id}/tickets`)}
+            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-12 rounded-lg font-semibold gap-2"
+          >
+            <Ticket className="w-5 h-5" />
+            Buy Tickets
+          </Button>
         </div>
 
         {/* Donation section */}
