@@ -69,7 +69,7 @@
     },
     "menu_sections": {
       "type": "array",
-      "description": "Menu sections, each with a name and list of items",
+      "description": "Menu sections (restaurant)",
       "items": {
         "type": "object",
         "properties": {
@@ -98,7 +98,7 @@
     },
     "todays_specials": {
       "type": "array",
-      "description": "Today's featured specials",
+      "description": "Today's featured specials (restaurant)",
       "items": {
         "type": "object",
         "properties": {
@@ -119,11 +119,16 @@
     },
     "reservation_url": {
       "type": "string",
-      "description": "Link to reservation system (e.g. OpenTable, Resy)"
+      "description": "Reservation link (restaurant)"
     },
     "order_online_url": {
       "type": "string",
-      "description": "Link to online ordering"
+      "description": "Online ordering link (restaurant)"
+    },
+    "hub_data": {
+      "type": "object",
+      "description": "Category-specific hub data. Flexible object used differently per business type.",
+      "additionalProperties": true
     }
   },
   "required": [

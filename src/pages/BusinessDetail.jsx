@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,6 +13,12 @@ import PostCard from '@/components/shared/PostCard';
 import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
 import RestaurantHub from '@/components/business/RestaurantHub';
+import RetailHub from '@/components/business/RetailHub';
+import ServiceHub from '@/components/business/ServiceHub';
+import EntertainmentHub from '@/components/business/EntertainmentHub';
+import HealthHub from '@/components/business/HealthHub';
+import CreativeHub from '@/components/business/CreativeHub';
+import NonprofitHub from '@/components/business/NonprofitHub';
 import BusinessEditProfileModal from '@/components/business/BusinessEditProfileModal';
 import BusinessMessageModal from '@/components/business/BusinessMessageModal';
 
@@ -78,7 +84,15 @@ export default function BusinessDetail() {
   );
 
   const isOwner = user?.id === business.owner_id;
-  const isRestaurant = business.category === 'restaurant';
+  const category = business.category;
+  const isRestaurant = category === 'restaurant';
+  const isRetail = category === 'retail';
+  const isService = category === 'service';
+  const isEntertainment = category === 'entertainment';
+  const isHealth = category === 'health';
+  const isCreative = category === 'creative';
+  const isNonprofit = category === 'nonprofit';
+  const hasCategoryHub = isRestaurant || isRetail || isService || isEntertainment || isHealth || isCreative || isNonprofit;
   const mapsUrl = business.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}` : '';
 
   return (
@@ -187,11 +201,17 @@ export default function BusinessDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isRestaurant ? 'restaurant' : 'posts'}>
-        <TabsList className={`w-full bg-secondary/50 rounded-xl ${isRestaurant ? 'grid grid-cols-4' : 'grid grid-cols-3'}`}>
-          {isRestaurant && (
-            <TabsTrigger value="restaurant" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
-              <Utensils className="w-3.5 h-3.5" /> Restaurant
+      <Tabs defaultValue={hasCategoryHub ? 'hub' : 'posts'}>
+        <TabsList className={`w-full bg-secondary/50 rounded-xl grid ${hasCategoryHub ? 'grid-cols-4' : 'grid-cols-3'}`}>
+          {hasCategoryHub && (
+            <TabsTrigger value="hub" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
+              {isRestaurant && <><Utensils className="w-3.5 h-3.5" /> Menu</>}
+              {isRetail && <><ShoppingCart className="w-3.5 h-3.5" /> Shop</>}
+              {isService && <><Briefcase className="w-3.5 h-3.5" /> Services</>}
+              {isEntertainment && <><Music className="w-3.5 h-3.5" /> Shows</>}
+              {isHealth && <><HeartPulse className="w-3.5 h-3.5" /> Health</>}
+              {isCreative && <><Palette className="w-3.5 h-3.5" /> Portfolio</>}
+              {isNonprofit && <><HandHeart className="w-3.5 h-3.5" /> Mission</>}
             </TabsTrigger>
           )}
           <TabsTrigger value="posts" className="rounded-lg">Updates</TabsTrigger>
@@ -199,9 +219,15 @@ export default function BusinessDetail() {
           <TabsTrigger value="comments" className="rounded-lg">Comments</TabsTrigger>
         </TabsList>
 
-        {isRestaurant && (
-          <TabsContent value="restaurant" className="mt-4">
-            <RestaurantHub business={business} isOwner={isOwner} user={user} events={events} />
+        {hasCategoryHub && (
+          <TabsContent value="hub" className="mt-4">
+            {isRestaurant && <RestaurantHub business={business} isOwner={isOwner} user={user} events={events} />}
+            {isRetail && <RetailHub business={business} isOwner={isOwner} user={user} events={events} />}
+            {isService && <ServiceHub business={business} isOwner={isOwner} user={user} events={events} />}
+            {isEntertainment && <EntertainmentHub business={business} isOwner={isOwner} user={user} events={events} />}
+            {isHealth && <HealthHub business={business} isOwner={isOwner} user={user} events={events} />}
+            {isCreative && <CreativeHub business={business} isOwner={isOwner} user={user} events={events} />}
+            {isNonprofit && <NonprofitHub business={business} isOwner={isOwner} user={user} events={events} />}
           </TabsContent>
         )}
 

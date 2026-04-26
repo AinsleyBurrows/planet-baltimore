@@ -12,6 +12,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
   const avatarInputRef = useRef(null);
   const bannerInputRef = useRef(null);
 
+  const hub = business.hub_data || {};
   const [form, setForm] = useState({
     name: business.name || '',
     description: business.description || '',
@@ -22,9 +23,29 @@ export default function BusinessEditProfileModal({ business, onClose }) {
     hours: business.hours || '',
     neighborhood_name: business.neighborhood_name || '',
     tags: (business.tags || []).join(', '),
-    // Restaurant-specific
+    // Restaurant
     reservation_url: business.reservation_url || '',
     order_online_url: business.order_online_url || '',
+    // Retail
+    shop_url: hub.shop_url || '',
+    loyalty_info: hub.loyalty_info || '',
+    // Service
+    booking_url: hub.booking_url || '',
+    insurance_info: hub.insurance_info || '',
+    // Entertainment
+    ticket_url: hub.ticket_url || '',
+    capacity: hub.capacity || '',
+    age_restriction: hub.age_restriction || '',
+    dresscode: hub.dresscode || '',
+    // Health
+    telehealth_available: hub.telehealth_available || false,
+    insurance_accepted: hub.insurance_accepted || false,
+    // Creative
+    commissions_open: hub.commissions_open || false,
+    // Nonprofit
+    donate_url: hub.donate_url || '',
+    volunteer_signup_open: hub.volunteer_signup_open || false,
+    mission: hub.mission || '',
   });
 
   const [avatarFile, setAvatarFile] = useState(null);
@@ -59,6 +80,30 @@ export default function BusinessEditProfileModal({ business, onClose }) {
 
     const tags = form.tags.split(',').map(t => t.trim()).filter(Boolean);
 
+    const hub_data = {
+      ...(business.hub_data || {}),
+      // Retail
+      shop_url: form.shop_url,
+      loyalty_info: form.loyalty_info,
+      // Service
+      booking_url: form.booking_url,
+      insurance_info: form.insurance_info,
+      // Entertainment
+      ticket_url: form.ticket_url,
+      capacity: form.capacity,
+      age_restriction: form.age_restriction,
+      dresscode: form.dresscode,
+      // Health
+      telehealth_available: form.telehealth_available,
+      insurance_accepted: form.insurance_accepted,
+      // Creative
+      commissions_open: form.commissions_open,
+      // Nonprofit
+      donate_url: form.donate_url,
+      volunteer_signup_open: form.volunteer_signup_open,
+      mission: form.mission,
+    };
+
     await base44.entities.BusinessPage.update(business.id, {
       name: form.name,
       description: form.description,
@@ -73,6 +118,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
       order_online_url: form.order_online_url,
       image_url,
       banner_url,
+      hub_data,
     });
 
     queryClient.invalidateQueries({ queryKey: ['business', business.id] });
@@ -82,6 +128,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
   };
 
   const isRestaurant = form.category === 'restaurant';
+  // kept for conditional rendering in UI
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
@@ -187,7 +234,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
             <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.tags} onChange={e => setForm(p => ({ ...p, tags: e.target.value }))} placeholder="seafood, outdoor seating, family-friendly" />
           </div>
 
-          {/* Restaurant-specific fields */}
+          {/* Category-specific fields */}
           {isRestaurant && (
             <div className="border border-border rounded-xl p-4 space-y-3 bg-secondary/20">
               <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Restaurant Settings</p>
@@ -196,9 +243,113 @@ export default function BusinessEditProfileModal({ business, onClose }) {
                 <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.reservation_url} onChange={e => setForm(p => ({ ...p, reservation_url: e.target.value }))} placeholder="https://resy.com/…" />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Online Ordering Link (DoorDash, direct, etc.)</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Online Ordering Link</label>
                 <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.order_online_url} onChange={e => setForm(p => ({ ...p, order_online_url: e.target.value }))} placeholder="https://order.yourrestaurant.com" />
               </div>
+            </div>
+          )}
+
+          {form.category === 'retail' && (
+            <div className="border border-border rounded-xl p-4 space-y-3 bg-secondary/20">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Retail Settings</p>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Online Shop Link</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.shop_url} onChange={e => setForm(p => ({ ...p, shop_url: e.target.value }))} placeholder="https://shop.yourbusiness.com" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Loyalty / Rewards Program Info</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.loyalty_info} onChange={e => setForm(p => ({ ...p, loyalty_info: e.target.value }))} placeholder="e.g. Earn 1 point per $1 spent…" />
+              </div>
+            </div>
+          )}
+
+          {form.category === 'service' && (
+            <div className="border border-border rounded-xl p-4 space-y-3 bg-secondary/20">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Service Settings</p>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Booking / Appointment Link</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.booking_url} onChange={e => setForm(p => ({ ...p, booking_url: e.target.value }))} placeholder="https://calendly.com/…" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Insurance / Payment Info</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.insurance_info} onChange={e => setForm(p => ({ ...p, insurance_info: e.target.value }))} placeholder="e.g. Accepts major credit cards, invoicing available" />
+              </div>
+            </div>
+          )}
+
+          {form.category === 'entertainment' && (
+            <div className="border border-border rounded-xl p-4 space-y-3 bg-secondary/20">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Entertainment Settings</p>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Ticketing Link</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.ticket_url} onChange={e => setForm(p => ({ ...p, ticket_url: e.target.value }))} placeholder="https://eventbrite.com/…" />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Capacity</label>
+                  <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.capacity} onChange={e => setForm(p => ({ ...p, capacity: e.target.value }))} placeholder="500" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Age Restriction</label>
+                  <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.age_restriction} onChange={e => setForm(p => ({ ...p, age_restriction: e.target.value }))} placeholder="21+" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Dress Code</label>
+                  <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.dresscode} onChange={e => setForm(p => ({ ...p, dresscode: e.target.value }))} placeholder="Smart casual" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {form.category === 'health' && (
+            <div className="border border-border rounded-xl p-4 space-y-3 bg-secondary/20">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Health Settings</p>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Booking / Appointment Link</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.booking_url} onChange={e => setForm(p => ({ ...p, booking_url: e.target.value }))} placeholder="https://zocdoc.com/…" />
+              </div>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={form.telehealth_available} onChange={e => setForm(p => ({ ...p, telehealth_available: e.target.checked }))} className="rounded" />
+                  <span className="text-muted-foreground">Telehealth Available</span>
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={form.insurance_accepted} onChange={e => setForm(p => ({ ...p, insurance_accepted: e.target.checked }))} className="rounded" />
+                  <span className="text-muted-foreground">Insurance Accepted</span>
+                </label>
+              </div>
+            </div>
+          )}
+
+          {form.category === 'creative' && (
+            <div className="border border-border rounded-xl p-4 space-y-3 bg-secondary/20">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Creative Settings</p>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Shop / Purchase Link (Etsy, website, etc.)</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.shop_url} onChange={e => setForm(p => ({ ...p, shop_url: e.target.value }))} placeholder="https://etsy.com/shop/…" />
+              </div>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={form.commissions_open} onChange={e => setForm(p => ({ ...p, commissions_open: e.target.checked }))} className="rounded" />
+                <span className="text-muted-foreground">Commissions are currently open</span>
+              </label>
+            </div>
+          )}
+
+          {form.category === 'nonprofit' && (
+            <div className="border border-border rounded-xl p-4 space-y-3 bg-secondary/20">
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Nonprofit Settings</p>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Mission Statement</label>
+                <textarea className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring" rows={2} value={form.mission} onChange={e => setForm(p => ({ ...p, mission: e.target.value }))} placeholder="What does your organization do and who do you serve?" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Donation Link</label>
+                <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.donate_url} onChange={e => setForm(p => ({ ...p, donate_url: e.target.value }))} placeholder="https://donate.yourorg.org" />
+              </div>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={form.volunteer_signup_open} onChange={e => setForm(p => ({ ...p, volunteer_signup_open: e.target.checked }))} className="rounded" />
+                <span className="text-muted-foreground">Accept volunteer sign-ups</span>
+              </label>
             </div>
           )}
         </div>
