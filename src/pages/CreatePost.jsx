@@ -212,8 +212,20 @@ export default function CreatePost() {
       {mediaPreviews.length > 0 && (
         <div className={`grid gap-2 mt-4 rounded-xl overflow-hidden ${mediaPreviews.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
           {mediaPreviews.map((preview, idx) => (
-            <div key={idx} className="relative aspect-square bg-muted rounded-lg overflow-hidden">
-              <img src={preview} alt="" className="w-full h-full object-cover" />
+            <div key={idx} className="relative bg-muted rounded-lg overflow-hidden">
+              {activeType === 'audio' ? (
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Music className="w-5 h-5 text-accent flex-shrink-0" />
+                    <span className="truncate">{mediaFiles[idx]?.name}</span>
+                  </div>
+                  <audio src={preview} controls className="w-full h-10" />
+                </div>
+              ) : (
+                <div className="aspect-square">
+                  <img src={preview} alt="" className="w-full h-full object-cover" />
+                </div>
+              )}
               <button onClick={() => removeMedia(idx)} className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
                 <X className="w-3.5 h-3.5" />
               </button>

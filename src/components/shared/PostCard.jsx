@@ -136,6 +136,24 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         const hasImages = post.media_urls?.length > 0 && !isVideo;
         const singleImage = hasImages && post.media_urls.length === 1;
 
+        // Audio post
+        if (post.media_type === 'audio' && post.media_urls?.length > 0) {
+          return (
+            <div className="px-4 pb-3 space-y-3">
+              {post.content && <TruncatedText text={post.content} />}
+              {post.media_urls.map((url, idx) => (
+                <div key={idx} className="flex flex-col gap-1 bg-secondary/40 rounded-xl p-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                    <span className="text-lg">🎵</span>
+                    <span className="truncate font-medium text-foreground">{post.content ? '' : 'Audio Track'}</span>
+                  </div>
+                  <audio src={url} controls className="w-full h-10" preload="metadata" />
+                </div>
+              ))}
+            </div>
+          );
+        }
+
         // Colored text frame post
         if (post.bg_color && post.content) {
           return (
