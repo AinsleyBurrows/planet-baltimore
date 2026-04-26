@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import ShareModal from './ShareModal';
+import CommentSection from './CommentSection';
 
 const TEXT_BG_TEXT_COLORS = {
   '#1a1a2e': '#ffffff', '#16213e': '#ffffff', '#0f3460': '#ffffff',
@@ -221,9 +222,9 @@ export default function PostDetailModal({ post, onClose }) {
               </button>
             </div>
 
-            {/* Comments placeholder */}
-            <div className="px-4 py-4 flex-1">
-              <p className="text-xs text-muted-foreground italic">Comments coming soon</p>
+            {/* Comments */}
+            <div className="px-4 py-4 flex-1 overflow-y-auto">
+              <CommentSection targetType="post" targetId={post.id} />
             </div>
           </div>
         </motion.div>
