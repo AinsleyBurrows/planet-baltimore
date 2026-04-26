@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus } from 'lucide-react';
+import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,13 +17,22 @@ import CommunityInviteModal from '@/components/community/CommunityInviteModal';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [joined, setJoined] = useState(false);
   const [user, setUser] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const bannerInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
   const communityId = window.location.pathname.split('/communities/')[1];
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+
+  const uploadImage = async (file, field) => {
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.entities.Community.update(communityId, { [field]: file_url });
+    queryClient.invalidateQueries({ queryKey: ['community', communityId] });
+  };
 
   const { data: community, isLoading } = useQuery({
     queryKey: ['community', communityId],
@@ -74,17 +83,35 @@ export default function CommunityDetail() {
       {/* Banner */}
       <div className="relative h-48 rounded-xl overflow-hidden bg-gradient-to-br from-primary/20 to-accent/10">
         {community.banner_url && <AppImage src={community.banner_url} className="w-full h-full" clickable={false} />}
+        {isOwner && (
+          <button
+            onClick={() => bannerInputRef.current?.click()}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
+          >
+            <Camera className="w-3.5 h-3.5" />
+            {community.banner_url ? 'Edit banner' : 'Add banner'}
+          </button>
+        )}
+        <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banner_url')} />
       </div>
 
       {/* Header */}
       <div className="px-1 pb-4">
         <div className="flex items-end justify-between -mt-10 mb-4">
-          <Avatar className="w-20 h-20 rounded-xl border-4 border-background shadow-lg">
-            <AvatarImage src={community.image_url} className="object-cover" />
-            <AvatarFallback className="rounded-xl bg-accent/10 text-accent text-2xl font-bold">
-              {community.name?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="w-20 h-20 rounded-xl border-4 border-background shadow-lg" onClick={isOwner ? () => avatarInputRef.current?.click() : undefined} style={isOwner ? { cursor: 'pointer' } : {}}>
+              <AvatarImage src={community.image_url} className="object-cover" />
+              <AvatarFallback className="rounded-xl bg-accent/10 text-accent text-2xl font-bold">
+                {community.name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            {isOwner && (
+              <span className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+                <Camera className="w-3 h-3 text-background" />
+              </span>
+            )}
+            <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'image_url')} />
+          </div>
           <div className="flex gap-2 mb-1">
             {isOwner && (
               <>
