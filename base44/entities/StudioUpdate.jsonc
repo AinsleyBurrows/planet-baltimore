@@ -1,0 +1,59 @@
+{
+  "name": "StudioUpdate",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "update_type": {
+      "type": "string",
+      "enum": [
+        "wip",
+        "announcement",
+        "process",
+        "reflection",
+        "milestone"
+      ],
+      "default": "wip"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "followers"
+      ],
+      "default": "public"
+    },
+    "linked_series_id": {
+      "type": "string"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "artist_id",
+    "owner_id",
+    "content"
+  ]
+}

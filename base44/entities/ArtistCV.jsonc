@@ -1,0 +1,151 @@
+{
+  "name": "ArtistCV",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "artist_statement": {
+      "type": "string"
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "degree": {
+            "type": "string"
+          },
+          "institution": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "solo_exhibitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "group_exhibitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "awards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "organization": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "residencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "program": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "publications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "publisher": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "press": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "publication": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cv_pdf_url": {
+      "type": "string",
+      "description": "Uploaded CV PDF"
+    }
+  },
+  "required": [
+    "artist_id",
+    "owner_id"
+  ]
+}

@@ -46,6 +46,9 @@
     "website": {
       "type": "string"
     },
+    "contact_email": {
+      "type": "string"
+    },
     "social_links": {
       "type": "object"
     },
