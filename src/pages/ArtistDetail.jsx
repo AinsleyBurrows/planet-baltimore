@@ -232,7 +232,7 @@ export default function ArtistDetail() {
 
         {/* Gallery */}
         <TabsContent value="gallery" className="mt-4">
-          <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} />
+          <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
         </TabsContent>
 
         {/* Events */}
