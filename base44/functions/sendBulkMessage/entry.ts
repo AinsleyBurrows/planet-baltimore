@@ -1,6 +1,10 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
+  if (req.method !== 'POST') {
+    return Response.json({ error: 'Method not allowed' }, { status: 405 });
+  }
+
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
@@ -9,35 +13,41 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { recipients, subject, message, eventTitle } = await req.json();
+    const { eventId, subject, message, recipientEmails } = await req.json();
 
-    if (!recipients || !Array.isArray(recipients) || recipients.length === 0) {
-      return Response.json({ error: 'No recipients provided' }, { status: 400 });
+    if (!eventId || !subject || !message || !recipientEmails || recipientEmails.length === 0) {
+      return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (!subject || !message) {
-      return Response.json({ error: 'Subject and message are required' }, { status: 400 });
+    // Verify user is promoter for this event
+    const promoter = await base44.entities.Promoter.filter({
+      event_id: eventId,
+      promoter_id: user.id,
+    });
+
+    if (promoter.length === 0) {
+      return Response.json({ error: 'Not authorized for this event' }, { status: 403 });
     }
 
-    // Send email to each recipient
-    const results = await Promise.allSettled(
-      recipients.map(email =>
-        base44.integrations.Core.SendEmail({
-          to: email,
-          subject: `[${eventTitle}] ${subject}`,
-          body: `${message}\n\n---\nYou received this message because you RSVP'd to ${eventTitle}.`,
-          from_name: user.full_name || 'Event Organizer',
-        })
-      )
+    // Send emails to all attendees
+    const emailPromises = recipientEmails.map(email =>
+      base44.integrations.Core.SendEmail({
+        to: email,
+        subject,
+        body: message,
+        from_name: `${user.full_name} (Event Promoter)`,
+      }).catch(err => ({ error: err.message, email }))
     );
 
-    const successful = results.filter(r => r.status === 'fulfilled').length;
-    const failed = results.filter(r => r.status === 'rejected').length;
+    const results = await Promise.all(emailPromises);
+    const successful = results.filter(r => !r.error).length;
+    const failed = results.filter(r => r.error).length;
 
     return Response.json({
-      sent: successful,
-      failed,
-      message: `Successfully sent to ${successful} recipient(s)${failed > 0 ? ` (${failed} failed)` : ''}`,
+      success: true,
+      deliveredCount: successful,
+      failedCount: failed,
+      message: `Sent to ${successful} attendee${successful !== 1 ? 's' : ''}`,
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

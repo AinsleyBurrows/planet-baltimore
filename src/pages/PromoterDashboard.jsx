@@ -8,10 +8,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 import PromoterEventCard from '@/components/promoter/PromoterEventCard';
 import PromoterSalesAnalytics from '@/components/promoter/PromoterSalesAnalytics';
+import PromoCodeManager from '@/components/promoter/PromoCodeManager';
+import PromoterMessageTool from '@/components/promoter/PromoterMessageTool';
+import PromoterSocialSharing from '@/components/promoter/PromoterSocialSharing';
 
 export default function PromoterDashboard() {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => {});
@@ -85,9 +89,12 @@ export default function PromoterDashboard() {
 
       {/* Events & Analytics */}
       <Tabs defaultValue="events" className="w-full">
-        <TabsList className="w-full bg-secondary/50 rounded-xl">
-          <TabsTrigger value="events" className="flex-1 rounded-lg">My Events</TabsTrigger>
-          <TabsTrigger value="analytics" className="flex-1 rounded-lg">Sales Analytics</TabsTrigger>
+        <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-5">
+          <TabsTrigger value="events" className="rounded-lg text-xs sm:text-sm">My Events</TabsTrigger>
+          <TabsTrigger value="analytics" className="rounded-lg text-xs sm:text-sm">Analytics</TabsTrigger>
+          <TabsTrigger value="promo" className="rounded-lg text-xs sm:text-sm">Promo Codes</TabsTrigger>
+          <TabsTrigger value="messaging" className="rounded-lg text-xs sm:text-sm">Message</TabsTrigger>
+          <TabsTrigger value="social" className="rounded-lg text-xs sm:text-sm">Social</TabsTrigger>
         </TabsList>
 
         <TabsContent value="events" className="mt-4 space-y-4">
@@ -105,6 +112,7 @@ export default function PromoterDashboard() {
                 event={event}
                 sales={salesData[event.id] || []}
                 promoterRecord={promoterRecords.find(p => p.event_id === event.id)}
+                onSelect={() => setSelectedEventId(event.id)}
               />
             ))
           )}
@@ -112,6 +120,57 @@ export default function PromoterDashboard() {
 
         <TabsContent value="analytics" className="mt-4">
           <PromoterSalesAnalytics events={events} salesData={salesData} />
+        </TabsContent>
+
+        <TabsContent value="promo" className="mt-4">
+          {selectedEventId ? (
+            <PromoCodeManager eventId={selectedEventId} />
+          ) : events.length > 0 ? (
+            <div className="bg-secondary/30 border border-border rounded-xl p-6 text-center">
+              <p className="text-muted-foreground mb-4">Select an event from "My Events" to manage promotional codes</p>
+              <Button variant="outline" onClick={() => document.querySelector('[value="events"]')?.click()}>
+                View Events
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No events available</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="messaging" className="mt-4">
+          {selectedEventId && events.find(e => e.id === selectedEventId) ? (
+            <PromoterMessageTool eventId={selectedEventId} />
+          ) : events.length > 0 ? (
+            <div className="bg-secondary/30 border border-border rounded-xl p-6 text-center">
+              <p className="text-muted-foreground mb-4">Select an event from "My Events" to message attendees</p>
+              <Button variant="outline" onClick={() => document.querySelector('[value="events"]')?.click()}>
+                View Events
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No events available</p>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="social" className="mt-4">
+          {selectedEventId && events.find(e => e.id === selectedEventId) ? (
+            <PromoterSocialSharing event={events.find(e => e.id === selectedEventId)} />
+          ) : events.length > 0 ? (
+            <div className="bg-secondary/30 border border-border rounded-xl p-6 text-center">
+              <p className="text-muted-foreground mb-4">Select an event from "My Events" to share on social media</p>
+              <Button variant="outline" onClick={() => document.querySelector('[value="events"]')?.click()}>
+                View Events
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No events available</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
     </div>

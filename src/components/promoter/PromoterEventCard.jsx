@@ -4,7 +4,7 @@ import { Calendar, MapPin, TrendingUp, Users, DollarSign } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
-export default function PromoterEventCard({ event, sales, promoterRecord }) {
+export default function PromoterEventCard({ event, sales, promoterRecord, onSelect }) {
   const totalTicketsSold = sales.reduce((sum, s) => sum + (s.quantity || 0), 0);
   const totalCommission = sales.reduce((sum, s) => sum + (s.commission_amount || 0), 0);
   const totalRevenue = sales.reduce((sum, s) => sum + (s.total_amount || 0), 0);
@@ -13,8 +13,15 @@ export default function PromoterEventCard({ event, sales, promoterRecord }) {
   const daysUntilEvent = eventDate ? Math.ceil((eventDate - new Date()) / (1000 * 60 * 60 * 24)) : null;
   const eventPassed = daysUntilEvent && daysUntilEvent < 0;
 
-  return (
-    <Link to={`/events/${event.id}`} className="block bg-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200">
+  const handleClick = (e) => {
+    if (onSelect) {
+      e.preventDefault();
+      onSelect();
+    }
+  };
+
+  const content = (
+    <div className="bg-card border border-border rounded-xl p-4 hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
@@ -68,6 +75,12 @@ export default function PromoterEventCard({ event, sales, promoterRecord }) {
           />
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <Link to={`/events/${event.id}`} onClick={handleClick} className="block">
+      {content}
     </Link>
   );
 }
