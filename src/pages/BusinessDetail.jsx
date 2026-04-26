@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Heart, Users, Navigation } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,6 +12,7 @@ import AppImage from '@/components/shared/AppImage';
 import PostCard from '@/components/shared/PostCard';
 import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
+import RestaurantHub from '@/components/business/RestaurantHub';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -21,6 +22,9 @@ const categoryLabels = {
 export default function BusinessDetail() {
   const navigate = useNavigate();
   const businessId = window.location.pathname.split('/businesses/')[1];
+  const [user, setUser] = useState(null);
+
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   const { data: business, isLoading } = useQuery({
     queryKey: ['business', businessId],
@@ -32,9 +36,15 @@ export default function BusinessDetail() {
   });
 
   const { data: posts = [] } = useQuery({
-    queryKey: ['business-posts', business?.name],
-    queryFn: () => base44.entities.Post.filter({ author_name: business.name }, '-created_date', 10),
-    enabled: !!business?.name,
+    queryKey: ['business-posts', business?.owner_id],
+    queryFn: () => base44.entities.Post.filter({ author_id: business.owner_id }, '-created_date', 20),
+    enabled: !!business?.owner_id,
+  });
+
+  const { data: events = [] } = useQuery({
+    queryKey: ['business-events', business?.owner_id],
+    queryFn: () => base44.entities.Event.filter({ organizer_id: business.owner_id }, '-date', 10),
+    enabled: !!business?.owner_id,
   });
 
   if (isLoading) return (
@@ -54,6 +64,8 @@ export default function BusinessDetail() {
     </div>
   );
 
+  const isOwner = user?.id === business.owner_id;
+  const isRestaurant = business.category === 'restaurant';
   const mapsUrl = business.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.address)}` : '';
 
   return (
@@ -130,12 +142,23 @@ export default function BusinessDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="posts">
-        <TabsList className="w-full bg-secondary/50 rounded-xl">
-          <TabsTrigger value="posts" className="flex-1 rounded-lg">Updates</TabsTrigger>
-          <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
-          <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
+      <Tabs defaultValue={isRestaurant ? 'restaurant' : 'posts'}>
+        <TabsList className={`w-full bg-secondary/50 rounded-xl ${isRestaurant ? 'grid grid-cols-4' : 'grid grid-cols-3'}`}>
+          {isRestaurant && (
+            <TabsTrigger value="restaurant" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
+              <Utensils className="w-3.5 h-3.5" /> Restaurant
+            </TabsTrigger>
+          )}
+          <TabsTrigger value="posts" className="rounded-lg">Updates</TabsTrigger>
+          <TabsTrigger value="about" className="rounded-lg">About</TabsTrigger>
+          <TabsTrigger value="comments" className="rounded-lg">Comments</TabsTrigger>
         </TabsList>
+
+        {isRestaurant && (
+          <TabsContent value="restaurant" className="mt-4">
+            <RestaurantHub business={business} isOwner={isOwner} user={user} events={events} />
+          </TabsContent>
+        )}
 
         <TabsContent value="posts" className="mt-4 space-y-4">
           {posts.length === 0 ? (
