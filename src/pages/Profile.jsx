@@ -29,7 +29,11 @@ const tabs = [
 ];
 
 export default function Profile() {
+  const profileId = window.location.pathname.split('/').pop();
+  const isOwnProfile = !profileId || profileId === 'profile';
+  
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState('posts');
   const [selectedPost, setSelectedPost] = useState(null);
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
@@ -38,8 +42,16 @@ export default function Profile() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser);
+    base44.auth.me().then(setCurrentUser);
   }, []);
+
+  useEffect(() => {
+    if (isOwnProfile) {
+      setUser(currentUser);
+    } else if (profileId && profileId !== 'profile') {
+      base44.entities.User.get(profileId).then(setUser).catch(() => setUser(null));
+    }
+  }, [profileId, isOwnProfile, currentUser]);
 
   const handleDeletePost = async (postId) => {
     await base44.entities.Post.delete(postId);
@@ -121,45 +133,53 @@ export default function Profile() {
       <div className="px-0 sm:px-4">
         <div className="relative sm:h-56 rounded-none sm:rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
           {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
-          <button
-            onClick={() => setEditingImage('banner')}
-            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors shadow-sm"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            {user.banner_url ? 'Edit banner' : 'Add banner'}
-          </button>
+          {isOwnProfile && (
+            <button
+              onClick={() => setEditingImage('banner')}
+              className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors shadow-sm"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              {user.banner_url ? 'Edit banner' : 'Add banner'}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Profile Info */}
       <div className="relative px-3 sm:px-4" style={{marginTop: '2rem'}}>
         <div className="flex items-end justify-between">
-          <div className="relative cursor-pointer" onClick={() => setEditingImage('avatar')}>
-            <Avatar key={user.avatar_url} className="border-4 border-background aspect-square w-[64px] h-[64px]">
-              <AvatarImage src={user.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined} />
-              <AvatarFallback className="text-xl sm:text-2xl font-bold bg-accent/10 text-accent">
-                {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
-              </AvatarFallback>
-            </Avatar>
-            {/* Always-visible camera badge — like Twitter/Instagram */}
-            <span className="absolute bottom-0.5 right-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
-            </span>
-          </div>
+           <div className={isOwnProfile ? "relative cursor-pointer" : "relative"} onClick={() => isOwnProfile && setEditingImage('avatar')}>
+             <Avatar key={user.avatar_url} className="border-4 border-background aspect-square w-[64px] h-[64px]">
+               <AvatarImage src={user.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined} />
+               <AvatarFallback className="text-xl sm:text-2xl font-bold bg-accent/10 text-accent">
+                 {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
+               </AvatarFallback>
+             </Avatar>
+             {/* Always-visible camera badge — like Twitter/Instagram */}
+             {isOwnProfile && (
+               <span className="absolute bottom-0.5 right-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm">
+                 <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
+               </span>
+             )}
+           </div>
           <div className="flex gap-1 mb-1 justify-end">
-            <Link to="/create-post">
-              <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0">
-                <Plus className="w-4 h-4" />
+            {isOwnProfile && (
+              <Link to="/create-post">
+                <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0">
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </Link>
+            )}
+            {isOwnProfile && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowInvite(true)}
+                className="rounded-lg transition-all duration-150 active:scale-95 w-8 h-8 p-0"
+              >
+                <UserPlus className="w-4 h-4" />
               </Button>
-            </Link>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowInvite(true)}
-              className="rounded-lg transition-all duration-150 active:scale-95 w-8 h-8 p-0"
-            >
-              <UserPlus className="w-4 h-4" />
-            </Button>
+            )}
             <Button
               size="sm"
               variant="outline"
