@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { MapPin, Users, Calendar, Building2, X } from 'lucide-react';
@@ -15,6 +15,15 @@ import NeighborhoodMap from '@/components/neighborhoods/NeighborhoodMap';
 export default function Neighborhoods() {
   const [selected, setSelected] = useState(null);
   const [activeTab, setActiveTab] = useState('events');
+  const mapRef = useRef(null);
+
+  const handleSelect = (n) => {
+    setSelected(n);
+    // Scroll the map into view so the user sees the pin
+    setTimeout(() => {
+      mapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
 
   const { data: neighborhoods = [], isLoading: loadingNeighborhoods } = useQuery({
     queryKey: ['neighborhoods'],
@@ -47,14 +56,14 @@ export default function Neighborhoods() {
       </div>
 
       {/* Map */}
-      <div className="rounded-xl overflow-hidden border border-border shadow-sm" style={{ height: 420 }}>
+      <div ref={mapRef} className="rounded-xl overflow-hidden border border-border shadow-sm" style={{ height: 420 }}>
         {loadingNeighborhoods ? (
           <Skeleton className="w-full h-full rounded-none" />
         ) : (
           <NeighborhoodMap
             neighborhoods={neighborhoods}
             selected={selected}
-            onSelect={setSelected}
+            onSelect={handleSelect}
           />
         )}
       </div>
@@ -83,7 +92,7 @@ export default function Neighborhoods() {
                 )}
               </div>
             </div>
-            <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors flex-shrink-0">
+            <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors flex-shrink-0" aria-label="Close">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
@@ -177,7 +186,7 @@ export default function Neighborhoods() {
               {neighborhoods.map(n => (
                 <button
                   key={n.id}
-                  onClick={() => setSelected(n)}
+                  onClick={() => handleSelect(n)}
                   className="flex items-center gap-2 p-3 bg-card border border-border rounded-xl hover:border-accent/50 hover:shadow-sm transition-all text-left group"
                 >
                   <MapPin className="w-4 h-4 text-accent flex-shrink-0" />

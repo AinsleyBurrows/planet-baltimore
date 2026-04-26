@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -41,6 +41,44 @@ const REGION_ICONS = Object.fromEntries(
 
 const selectedIcon = makeIcon('gold', [30, 49]);
 
+function NeighborhoodMarker({ n, selected, onSelect }) {
+  const markerRef = useRef(null);
+  const isSelected = selected?.id === n.id;
+
+  // Auto-open popup when this neighborhood is selected
+  useEffect(() => {
+    if (isSelected && markerRef.current) {
+      markerRef.current.openPopup();
+    }
+  }, [isSelected]);
+
+  return (
+    <Marker
+      ref={markerRef}
+      position={[n.latitude, n.longitude]}
+      icon={isSelected ? selectedIcon : (REGION_ICONS[n.region] || makeIcon('blue'))}
+      eventHandlers={{ click: () => onSelect(n) }}
+    >
+      <Popup>
+        <div className="min-w-[160px]">
+          <p className="font-semibold text-sm">{n.name}</p>
+          <p className="text-xs mt-0.5 font-medium" style={{ color: REGION_COLORS[n.region]?.hex || '#6b7280' }}>{n.region}</p>
+          {n.description && <p className="text-xs mt-1 text-gray-600 line-clamp-2">{n.description}</p>}
+          {n.zip_codes?.length > 0 && (
+            <p className="text-xs mt-1 text-gray-500">ZIP: {n.zip_codes.join(', ')}</p>
+          )}
+          <button
+            onClick={() => onSelect(n)}
+            className="mt-2 text-xs font-medium text-blue-600 hover:underline"
+          >
+            Explore neighborhood →
+          </button>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
 function FlyToSelected({ selected }) {
   const map = useMap();
   useEffect(() => {
@@ -72,26 +110,12 @@ export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
         <FlyToSelected selected={selected} />
 
         {pinnable.map(n => (
-          <Marker
+          <NeighborhoodMarker
             key={n.id}
-            position={[n.latitude, n.longitude]}
-            icon={selected?.id === n.id ? selectedIcon : (REGION_ICONS[n.region] || makeIcon('blue'))}
-            eventHandlers={{ click: () => onSelect(n) }}
-          >
-            <Popup>
-              <div className="min-w-[140px]">
-                <p className="font-semibold text-sm">{n.name}</p>
-                <p className="text-xs mt-0.5" style={{ color: REGION_COLORS[n.region]?.hex || '#6b7280' }}>{n.region}</p>
-                {n.description && <p className="text-xs mt-1 text-gray-600 line-clamp-2">{n.description}</p>}
-                <button
-                  onClick={() => onSelect(n)}
-                  className="mt-2 text-xs font-medium text-blue-600 hover:underline"
-                >
-                  Explore →
-                </button>
-              </div>
-            </Popup>
-          </Marker>
+            n={n}
+            selected={selected}
+            onSelect={onSelect}
+          />
         ))}
       </MapContainer>
 
