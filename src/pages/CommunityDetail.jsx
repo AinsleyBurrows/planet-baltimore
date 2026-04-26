@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus, Camera } from 'lucide-react';
+import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus, Camera, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,6 +14,7 @@ import EventCard from '@/components/shared/EventCard';
 import CommentSection from '@/components/shared/CommentSection';
 import CommunityEditModal from '@/components/community/CommunityEditModal';
 import CommunityInviteModal from '@/components/community/CommunityInviteModal';
+import CommunityMessageModal from '@/components/community/CommunityMessageModal';
 import ShareModal from '@/components/shared/ShareModal';
 
 export default function CommunityDetail() {
@@ -24,6 +25,7 @@ export default function CommunityDetail() {
   const [showEdit, setShowEdit] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
   const communityId = window.location.pathname.split('/communities/')[1];
@@ -123,6 +125,9 @@ export default function CommunityDetail() {
                 <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowInvite(true)}>
                   <UserPlus className="w-3.5 h-3.5" /> Invite
                 </Button>
+                <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowMessage(true)}>
+                  <MessageSquare className="w-3.5 h-3.5" /> Message All
+                </Button>
               </>
             )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}><Share2 className="w-4 h-4" /></Button>
@@ -213,6 +218,7 @@ export default function CommunityDetail() {
 
       {showEdit && <CommunityEditModal community={community} onClose={() => setShowEdit(false)} />}
       {showInvite && <CommunityInviteModal community={community} onClose={() => setShowInvite(false)} />}
+      {showMessage && <CommunityMessageModal community={community} onClose={() => setShowMessage(false)} />}
       <ShareModal
         isOpen={showShare}
         onClose={() => setShowShare(false)}
