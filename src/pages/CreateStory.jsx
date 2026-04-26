@@ -50,7 +50,7 @@ export default function CreateStory() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast({ title: 'Zine saved!' });
+      toast({ title: 'Story saved!' });
       navigate('/stories');
     },
   });
@@ -58,8 +58,8 @@ export default function CreateStory() {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
-        <h1 className="text-lg font-semibold">Write a Zine</h1>
+         <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
+         <h1 className="text-lg font-semibold">Write a Story</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => createMutation.mutate('draft')} disabled={!form.title || createMutation.isPending} className="rounded-lg">
             Save Draft
@@ -80,7 +80,7 @@ export default function CreateStory() {
           <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }}} />
         </label>
 
-        <Input value={form.title} onChange={(e) => updateForm('title', e.target.value)} placeholder="Your zine title..." className="text-2xl font-serif font-bold border-0 bg-transparent h-auto py-2 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
+        <Input value={form.title} onChange={(e) => updateForm('title', e.target.value)} placeholder="Your story title..." className="text-2xl font-serif font-bold border-0 bg-transparent h-auto py-2 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
         <Input value={form.subtitle} onChange={(e) => updateForm('subtitle', e.target.value)} placeholder="A brief subtitle..." className="text-lg border-0 bg-transparent h-auto py-1 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
 
         <div><Label>Category</Label>
@@ -90,8 +90,11 @@ export default function CreateStory() {
           </Select>
         </div>
 
-        <div className="min-h-[300px]">
-          <ReactQuill value={form.content} onChange={(v) => updateForm('content', v)} placeholder="Start writing your zine..." theme="snow" className="rounded-lg" />
+        <div>
+          <Label className="mb-2 block">Your Story</Label>
+          <div className="min-h-[300px]">
+            <ReactQuill value={form.content} onChange={(v) => updateForm('content', v)} placeholder="Write your story here..." theme="snow" className="rounded-lg" />
+          </div>
         </div>
       </div>
     </div>
