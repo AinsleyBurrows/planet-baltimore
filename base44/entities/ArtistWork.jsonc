@@ -20,7 +20,15 @@
       "description": "Process notes / story behind the work"
     },
     "image_url": {
-      "type": "string"
+      "type": "string",
+      "description": "Primary image (legacy)"
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Multiple images for this work"
     },
     "medium": {
       "type": "string",

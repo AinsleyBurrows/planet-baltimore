@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Plus, Trash2, Pencil, X, Loader2, Image as ImageIcon, Clock, DollarSign, Ruler } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Pencil, X, Loader2, Image as ImageIcon, Clock, DollarSign, Ruler, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function WorkForm({ series, artistId, ownerId, work, onClose, onSaved }) {
+  // Merge legacy image_url into image_urls array
+  const existingImages = work?.image_urls?.length ? work.image_urls : (work?.image_url ? [work.image_url] : []);
+
   const [form, setForm] = useState({
     title: work?.title || '',
     description: work?.description || '',
@@ -17,23 +20,41 @@ function WorkForm({ series, artistId, ownerId, work, onClose, onSaved }) {
     is_available: work?.is_available || false,
     price: work?.price || '',
   });
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(work?.image_url || '');
+  const [imagePreviews, setImagePreviews] = useState(existingImages);
+  const [newFiles, setNewFiles] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
+  const handleImages = (e) => {
+    const files = Array.from(e.target.files);
+    setNewFiles(prev => [...prev, ...files]);
+    setImagePreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))]);
+  };
+
+  const removeImage = (idx) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== idx));
+    // Track which are new files (appended after existingImages)
+    const newFileStartIdx = existingImages.length - (existingImages.length - imagePreviews.filter((_, i) => i < existingImages.length).length);
+    if (idx >= existingImages.length) {
+      setNewFiles(prev => prev.filter((_, i) => i !== (idx - existingImages.length)));
+    }
   };
 
   const handleSave = async () => {
     setSaving(true);
-    let imageUrl = work?.image_url || '';
-    if (imageFile) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
-      imageUrl = file_url;
-    }
-    const data = { ...form, image_url: imageUrl, series_id: series.id, artist_id: artistId, owner_id: ownerId, price: form.price ? parseFloat(form.price) : undefined };
+    // Upload any new files
+    const uploadedUrls = await Promise.all(newFiles.map(f => base44.integrations.Core.UploadFile({ file: f }).then(r => r.file_url)));
+    // Rebuild full list: kept existing + new uploads
+    const keptExisting = imagePreviews.filter(p => !p.startsWith('blob:'));
+    const allImages = [...keptExisting, ...uploadedUrls];
+    const data = {
+      ...form,
+      image_urls: allImages,
+      image_url: allImages[0] || '',
+      series_id: series.id,
+      artist_id: artistId,
+      owner_id: ownerId,
+      price: form.price ? parseFloat(form.price) : undefined,
+    };
     if (work?.id) {
       await base44.entities.ArtistWork.update(work.id, data);
     } else {
@@ -55,13 +76,29 @@ function WorkForm({ series, artistId, ownerId, work, onClose, onSaved }) {
           <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="w-4 h-4" /></button>
         </div>
 
-        <label className="block cursor-pointer">
-          <div className="aspect-square rounded-xl overflow-hidden bg-secondary/50 border-2 border-dashed border-border hover:border-accent/50 transition-colors flex items-center justify-center max-h-64">
-            {imagePreview ? <img src={imagePreview} alt="" className="w-full h-full object-cover" /> :
-              <div className="text-center"><ImageIcon className="w-6 h-6 mx-auto text-muted-foreground mb-1" /><span className="text-xs text-muted-foreground">Upload image</span></div>}
+        {/* Multi-image upload area */}
+        <div className="space-y-2">
+          <label className="text-xs text-muted-foreground">Images</label>
+          <div className="grid grid-cols-3 gap-2">
+            {imagePreviews.map((src, idx) => (
+              <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-secondary/50 border border-border">
+                <img src={src} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-1 right-1 p-0.5 rounded-full bg-black/60 text-white hover:bg-destructive transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+            <label className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-accent/50 transition-colors flex flex-col items-center justify-center cursor-pointer bg-secondary/30">
+              <ImageIcon className="w-5 h-5 text-muted-foreground mb-1" />
+              <span className="text-[10px] text-muted-foreground">Add</span>
+              <input type="file" accept="image/*" multiple className="hidden" onChange={handleImages} />
+            </label>
           </div>
-          <input type="file" accept="image/*" className="hidden" onChange={handleImage} />
-        </label>
+        </div>
 
         <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" placeholder="Work title *" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} />
         <textarea className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring min-h-[80px]" placeholder="Process notes, story, or description…" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} />
@@ -100,6 +137,7 @@ export default function ArtistWorkDetail({ series, isOwner, ownerId, artistId, o
   const [showForm, setShowForm] = useState(false);
   const [editingWork, setEditingWork] = useState(null);
   const [lightboxWork, setLightboxWork] = useState(null);
+  const [lightboxImgIdx, setLightboxImgIdx] = useState(0);
 
   const { data: works = [] } = useQuery({
     queryKey: ['artist-works', series.id],
@@ -149,11 +187,23 @@ export default function ArtistWorkDetail({ series, isOwner, ownerId, artistId, o
           {works.map(work => (
             <motion.div key={work.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               className="group relative rounded-xl overflow-hidden border border-border bg-card cursor-pointer hover:shadow-md transition-all"
-              onClick={() => setLightboxWork(work)}
+              onClick={() => { setLightboxWork(work); setLightboxImgIdx(0); }}
             >
-              <div className="aspect-square bg-muted overflow-hidden">
-                {work.image_url ? <img src={work.image_url} alt={work.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" /> :
-                  <div className="w-full h-full bg-gradient-to-br from-accent/10 to-primary/5 flex items-center justify-center"><ImageIcon className="w-6 h-6 text-muted-foreground/40" /></div>}
+              <div className="aspect-square bg-muted overflow-hidden relative">
+                {(() => {
+                  const thumb = work.image_urls?.[0] || work.image_url;
+                  const count = work.image_urls?.length || (work.image_url ? 1 : 0);
+                  return thumb ? (
+                    <>
+                      <img src={thumb} alt={work.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      {count > 1 && (
+                        <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-semibold">+{count}</span>
+                      )}
+                    </>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-accent/10 to-primary/5 flex items-center justify-center"><ImageIcon className="w-6 h-6 text-muted-foreground/40" /></div>
+                  );
+                })()}
               </div>
               <div className="p-2">
                 <p className="text-xs font-semibold text-foreground truncate">{work.title}</p>
@@ -181,40 +231,72 @@ export default function ArtistWorkDetail({ series, isOwner, ownerId, artistId, o
 
       {/* Work Lightbox */}
       <AnimatePresence>
-        {lightboxWork && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setLightboxWork(null)}>
-            <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
-              className="relative max-w-2xl w-full bg-card rounded-2xl overflow-hidden shadow-2xl flex flex-col sm:flex-row max-h-[90vh]"
-              onClick={e => e.stopPropagation()}>
-              <button onClick={() => setLightboxWork(null)} className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 text-white hover:bg-black/60"><X className="w-4 h-4" /></button>
-              {lightboxWork.image_url && (
-                <div className="sm:w-1/2 bg-black flex-shrink-0">
-                  <img src={lightboxWork.image_url} alt={lightboxWork.title} className="w-full h-full object-contain max-h-[50vh] sm:max-h-[90vh]" />
-                </div>
-              )}
-              <div className="p-5 flex-1 overflow-y-auto space-y-3">
-                <h2 className="font-bold text-foreground text-lg">{lightboxWork.title}</h2>
-                <div className="space-y-1.5 text-sm text-muted-foreground">
-                  {lightboxWork.year && <p>📅 {lightboxWork.year}</p>}
-                  {lightboxWork.medium && <p className="flex items-center gap-1.5"><span>🎨</span>{lightboxWork.medium}</p>}
-                  {lightboxWork.dimensions && <p className="flex items-center gap-1.5"><Ruler className="w-3.5 h-3.5" />{lightboxWork.dimensions}</p>}
-                  {lightboxWork.price && lightboxWork.is_available && <p className="flex items-center gap-1.5 text-green-600 font-medium"><DollarSign className="w-3.5 h-3.5" />{lightboxWork.price.toLocaleString()} — Available</p>}
-                </div>
-                {lightboxWork.description && (
-                  <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">About this work</p>
-                    <p className="text-sm text-foreground leading-relaxed">{lightboxWork.description}</p>
+        {lightboxWork && (() => {
+          const allImgs = lightboxWork.image_urls?.length ? lightboxWork.image_urls : (lightboxWork.image_url ? [lightboxWork.image_url] : []);
+          const currentImg = allImgs[lightboxImgIdx];
+          return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setLightboxWork(null)}>
+              <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
+                className="relative max-w-2xl w-full bg-card rounded-2xl overflow-hidden shadow-2xl flex flex-col sm:flex-row max-h-[90vh]"
+                onClick={e => e.stopPropagation()}>
+                <button onClick={() => setLightboxWork(null)} className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 text-white hover:bg-black/60"><X className="w-4 h-4" /></button>
+                {allImgs.length > 0 && (
+                  <div className="sm:w-1/2 bg-black flex-shrink-0 relative flex items-center justify-center">
+                    <img src={currentImg} alt={lightboxWork.title} className="w-full object-contain max-h-[50vh] sm:max-h-[90vh]" />
+                    {allImgs.length > 1 && (
+                      <>
+                        <button disabled={lightboxImgIdx === 0} onClick={() => setLightboxImgIdx(i => i - 1)}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70 disabled:opacity-30 transition-all">
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button disabled={lightboxImgIdx === allImgs.length - 1} onClick={() => setLightboxImgIdx(i => i + 1)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70 disabled:opacity-30 transition-all">
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                          {allImgs.map((_, i) => (
+                            <button key={i} onClick={() => setLightboxImgIdx(i)}
+                              className={`w-1.5 h-1.5 rounded-full transition-all ${i === lightboxImgIdx ? 'bg-white w-3' : 'bg-white/40'}`} />
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
-                <div className="flex gap-1.5 flex-wrap">
-                  {lightboxWork.is_wip && <Badge className="bg-amber-500/10 text-amber-600 border-0 text-xs"><Clock className="w-3 h-3 mr-1" />Work In Progress</Badge>}
-                  {lightboxWork.is_available && <Badge className="bg-green-500/10 text-green-600 border-0 text-xs">For Sale</Badge>}
+                <div className="p-5 flex-1 overflow-y-auto space-y-3">
+                  <h2 className="font-bold text-foreground text-lg">{lightboxWork.title}</h2>
+                  {allImgs.length > 1 && (
+                    <div className="flex gap-1.5 overflow-x-auto pb-1">
+                      {allImgs.map((img, i) => (
+                        <button key={i} onClick={() => setLightboxImgIdx(i)}
+                          className={`flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === lightboxImgIdx ? 'border-accent' : 'border-transparent'}`}>
+                          <img src={img} alt="" className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <div className="space-y-1.5 text-sm text-muted-foreground">
+                    {lightboxWork.year && <p>📅 {lightboxWork.year}</p>}
+                    {lightboxWork.medium && <p className="flex items-center gap-1.5"><span>🎨</span>{lightboxWork.medium}</p>}
+                    {lightboxWork.dimensions && <p className="flex items-center gap-1.5"><Ruler className="w-3.5 h-3.5" />{lightboxWork.dimensions}</p>}
+                    {lightboxWork.price && lightboxWork.is_available && <p className="flex items-center gap-1.5 text-green-600 font-medium"><DollarSign className="w-3.5 h-3.5" />{lightboxWork.price.toLocaleString()} — Available</p>}
+                  </div>
+                  {lightboxWork.description && (
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">About this work</p>
+                      <p className="text-sm text-foreground leading-relaxed">{lightboxWork.description}</p>
+                    </div>
+                  )}
+                  <div className="flex gap-1.5 flex-wrap">
+                    {lightboxWork.is_wip && <Badge className="bg-amber-500/10 text-amber-600 border-0 text-xs"><Clock className="w-3 h-3 mr-1" />Work In Progress</Badge>}
+                    {lightboxWork.is_available && <Badge className="bg-green-500/10 text-green-600 border-0 text-xs">For Sale</Badge>}
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
+          );
+        })()}
       </AnimatePresence>
 
       <AnimatePresence>
