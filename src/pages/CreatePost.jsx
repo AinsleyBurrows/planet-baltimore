@@ -150,7 +150,7 @@ export default function CreatePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['my-posts'] });
-      toast({ title: 'Post published!' });
+
       navigate('/');
     },
     onError: () => {
