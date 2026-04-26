@@ -1,0 +1,61 @@
+{
+  "name": "AssociationDocument",
+  "type": "object",
+  "properties": {
+    "association_id": {
+      "type": "string",
+      "description": "Reference to CommunityAssociation"
+    },
+    "name": {
+      "type": "string",
+      "description": "Document name/title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Details about the document"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "meeting_minutes",
+        "budget_report",
+        "map",
+        "handbook",
+        "policy",
+        "other"
+      ],
+      "default": "other",
+      "description": "Category of document"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the uploaded file"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "File size in bytes"
+    },
+    "uploaded_by": {
+      "type": "string",
+      "description": "User ID who uploaded"
+    },
+    "uploaded_by_name": {
+      "type": "string",
+      "description": "Name of uploader"
+    },
+    "year": {
+      "type": "string",
+      "description": "Year for minutes/budget (e.g., 2026)"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "Visible to members"
+    }
+  },
+  "required": [
+    "association_id",
+    "name",
+    "file_url"
+  ]
+}
