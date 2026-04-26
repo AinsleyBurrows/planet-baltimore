@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -285,8 +285,9 @@ export default function Profile() {
             <div className="px-3 sm:px-4"><div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
               {mediaPosts.map((post) => {
                 const isVideo = post.media_type === 'video' || post.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i);
+                const isAudio = post.media_type === 'audio' || post.media_urls?.[0]?.match(/\.(mp3|wav|ogg|aac)$/i);
+                
                 if (isVideo) {
-                  const thumb = post.thumbnail_url || post.media_urls?.[0];
                   return (
                     <div key={post.id} className="rounded-lg overflow-hidden relative aspect-square bg-black">
                       {post.thumbnail_url ? (
@@ -302,6 +303,15 @@ export default function Profile() {
                     </div>
                   );
                 }
+                
+                if (isAudio) {
+                  return (
+                    <div key={post.id} className="rounded-lg overflow-hidden relative aspect-square bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center">
+                      <Music className="w-8 h-8 text-accent" />
+                    </div>
+                  );
+                }
+                
                 return post.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)).map((url, idx) => (
                   <div key={`${post.id}-${idx}`} className="rounded-lg overflow-hidden aspect-square">
                     <AppImage src={url} images={allMedia} index={allMedia.indexOf(url)} className="w-full h-full" aspectRatio="square" />
