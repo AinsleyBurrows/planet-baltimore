@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell,
   FileText, Crown, Shield, Edit3, Send, Eye, Plus, Trash2, ChevronDown,
-  MessageSquare, Calendar, Info, ExternalLink, Download, AlertTriangle
+  MessageSquare, Calendar, Info, ExternalLink, Download, AlertTriangle, Camera, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +31,9 @@ export default function CommunityAssociationDetail() {
   const [showBylawsEditor, setShowBylawsEditor] = useState(false);
   const [showMassMessage, setShowMassMessage] = useState(false);
   const [editingBoardMember, setEditingBoardMember] = useState(null);
+  const bannerInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
 
   const assocId = window.location.pathname.split('/community-associations/')[1];
 
@@ -99,6 +102,14 @@ export default function CommunityAssociationDetail() {
     }
   }, [currentUser, members]);
 
+  const uploadImage = async (file, field) => {
+    setUploading(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.entities.CommunityAssociation.update(association.id, { [field]: file_url });
+    queryClient.invalidateQueries({ queryKey: ['community-association', assocId] });
+    setUploading(false);
+  };
+
   const isAdmin = currentUser && association && (
     association.owner_id === currentUser.id ||
     (association.admins || []).includes(currentUser.id)
@@ -131,6 +142,17 @@ export default function CommunityAssociationDetail() {
       {/* Banner */}
       <div className="relative h-48 rounded-xl overflow-hidden bg-gradient-to-br from-primary/30 via-primary/10 to-accent/10">
         {association.banner_url && <AppImage src={association.banner_url} className="w-full h-full" clickable={false} />}
+        {isAdmin && (
+          <button
+            onClick={() => bannerInputRef.current?.click()}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
+            disabled={uploading}
+          >
+            <Camera className="w-3.5 h-3.5" />
+            {uploading ? 'Uploading...' : association.banner_url ? 'Edit banner' : 'Add banner'}
+          </button>
+        )}
+        <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banner_url')} />
         {/* Official badge overlay */}
         <div className="absolute top-3 left-3 flex gap-2">
           {association.is_official && (
@@ -149,12 +171,20 @@ export default function CommunityAssociationDetail() {
       {/* Header */}
       <div className="px-1 pb-4">
         <div className="flex items-end justify-between -mt-10 mb-4">
-          <Avatar className="w-20 h-20 rounded-xl border-4 border-background shadow-lg">
-            <AvatarImage src={association.image_url} />
-            <AvatarFallback className="rounded-xl bg-primary/10 text-primary text-2xl font-bold">
-              {association.name?.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="w-20 h-20 rounded-xl border-4 border-background shadow-lg cursor-pointer hover:opacity-80 transition-opacity" onClick={isAdmin ? () => avatarInputRef.current?.click() : undefined}>
+              <AvatarImage src={association.image_url} />
+              <AvatarFallback className="rounded-xl bg-primary/10 text-primary text-2xl font-bold">
+                {association.name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            {isAdmin && (
+              <span className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+                <Camera className="w-3 h-3 text-background" />
+              </span>
+            )}
+            <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'image_url')} />
+          </div>
           <div className="flex gap-2 mb-1 flex-wrap justify-end">
             {isAdmin && (
               <Button
