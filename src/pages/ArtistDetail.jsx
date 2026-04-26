@@ -18,6 +18,7 @@ import ArtistContactForm from '@/components/artist/ArtistContactForm';
 import ShareModal from '@/components/shared/ShareModal';
 import ArtistEditProfileModal from '@/components/artist/ArtistEditProfileModal';
 import ArtistMessageModal from '@/components/artist/ArtistMessageModal';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 
 // New feature tabs
 import ArtistSeriesTab from '@/components/artist/ArtistSeriesTab';
@@ -43,6 +44,7 @@ export default function ArtistDetail() {
   const [showShare, setShowShare] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -225,6 +227,9 @@ export default function ArtistDetail() {
           <TabsTrigger value="contact" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
           </TabsTrigger>
+          <TabsTrigger value="invite" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+            <Users className="w-3.5 h-3.5" /><span className="hidden xs:inline">Invite</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* Studio Journal */}
@@ -276,12 +281,20 @@ export default function ArtistDetail() {
             <ArtistContactForm artist={artist} />
           </div>
         </TabsContent>
+
+        {/* Invite Friends */}
+        <TabsContent value="invite" className="mt-4">
+          <button onClick={() => setShowInvite(true)} className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors">
+            Invite Friends
+          </button>
+        </TabsContent>
       </Tabs>
 
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={window.location.href} title={artist.name} description={artist.bio} />
 
       {showEditProfile && <ArtistEditProfileModal artist={artist} onClose={() => setShowEditProfile(false)} />}
       {showMessage && <ArtistMessageModal artist={artist} onClose={() => setShowMessage(false)} />}
+      {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
     </div>
   );
 }

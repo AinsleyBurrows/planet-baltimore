@@ -17,12 +17,14 @@ import AttendeeProfiles from '@/components/events/AttendeeProfiles';
 import CommentSection from '@/components/shared/CommentSection';
 import EventTicketing from '@/components/events/EventTicketing';
 import EventEditModal from '@/components/events/EventEditModal';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 
 export default function EventDetail() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [showShare, setShowShare] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
 
   const eventId = window.location.pathname.split('/events/')[1];
 
@@ -171,6 +173,13 @@ export default function EventDetail() {
         user={user}
       />
 
+      <Button
+        onClick={() => setShowInvite(true)}
+        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg h-10 font-medium gap-2"
+      >
+        Invite Friends
+      </Button>
+
       {user?.id === event.organizer_id && (
         <div className="flex gap-3">
           <Button
@@ -207,6 +216,10 @@ export default function EventDetail() {
           event={event}
           onClose={() => setShowEdit(false)}
         />
+      )}
+
+      {showInvite && (
+        <InviteFriendsModal onClose={() => setShowInvite(false)} />
       )}
     </div>
   );

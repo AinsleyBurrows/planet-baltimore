@@ -22,6 +22,7 @@ import BylawsEditor from '@/components/association/BylawsEditor';
 import MassMessageModal from '@/components/association/MassMessageModal';
 import VotingTab from '@/components/association/VotingTab';
 import DocumentsTab from '@/components/association/DocumentsTab';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import { format } from 'date-fns';
 
 export default function CommunityAssociationDetail() {
@@ -32,6 +33,7 @@ export default function CommunityAssociationDetail() {
   const [showBoardForm, setShowBoardForm] = useState(false);
   const [showBylawsEditor, setShowBylawsEditor] = useState(false);
   const [showMassMessage, setShowMassMessage] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const [editingBoardMember, setEditingBoardMember] = useState(null);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
@@ -234,6 +236,7 @@ export default function CommunityAssociationDetail() {
           <TabsTrigger value="members" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Members</TabsTrigger>
           <TabsTrigger value="board" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Board</TabsTrigger>
           <TabsTrigger value="bylaws" className="flex-1 rounded-lg text-xs sm:text-sm py-2">By Laws</TabsTrigger>
+          <TabsTrigger value="invite" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Invite</TabsTrigger>
           <TabsTrigger value="comments" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Comments</TabsTrigger>
           <TabsTrigger value="about" className="flex-1 rounded-lg text-xs sm:text-sm py-2">About</TabsTrigger>
         </TabsList>
@@ -326,6 +329,13 @@ export default function CommunityAssociationDetail() {
               </div>
             )}
           </div>
+        </TabsContent>
+
+        {/* INVITE FRIENDS */}
+        <TabsContent value="invite" className="mt-4">
+          <button onClick={() => setShowInvite(true)} className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors">
+            Invite Friends to Join
+          </button>
         </TabsContent>
 
         {/* BY LAWS */}
@@ -457,6 +467,10 @@ export default function CommunityAssociationDetail() {
           memberCount={members.length}
           onClose={() => setShowMassMessage(false)}
         />
+      )}
+
+      {showInvite && (
+        <InviteFriendsModal onClose={() => setShowInvite(false)} />
       )}
     </div>
   );

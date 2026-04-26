@@ -16,6 +16,7 @@ import CommunityEditModal from '@/components/community/CommunityEditModal';
 import CommunityInviteModal from '@/components/community/CommunityInviteModal';
 import CommunityMessageModal from '@/components/community/CommunityMessageModal';
 import ShareModal from '@/components/shared/ShareModal';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function CommunityDetail() {
   const [user, setUser] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showInviteFriends, setShowInviteFriends] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const bannerInputRef = useRef(null);
@@ -176,6 +178,7 @@ export default function CommunityDetail() {
         <TabsList className="w-full bg-secondary/50 rounded-xl">
           <TabsTrigger value="posts" className="flex-1 rounded-lg">Posts</TabsTrigger>
           <TabsTrigger value="events" className="flex-1 rounded-lg">Events</TabsTrigger>
+          <TabsTrigger value="invite" className="flex-1 rounded-lg">Invite</TabsTrigger>
           <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
           <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
         </TabsList>
@@ -190,6 +193,12 @@ export default function CommunityDetail() {
           {events.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground text-sm">No upcoming events nearby.</div>
           ) : events.map(event => <EventCard key={event.id} event={event} compact />)}
+        </TabsContent>
+
+        <TabsContent value="invite" className="mt-4">
+          <button onClick={() => setShowInviteFriends(true)} className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors">
+            Invite Friends
+          </button>
         </TabsContent>
 
         <TabsContent value="comments" className="mt-4">
@@ -218,6 +227,7 @@ export default function CommunityDetail() {
 
       {showEdit && <CommunityEditModal community={community} onClose={() => setShowEdit(false)} />}
       {showInvite && <CommunityInviteModal community={community} onClose={() => setShowInvite(false)} />}
+      {showInviteFriends && <InviteFriendsModal onClose={() => setShowInviteFriends(false)} />}
       {showMessage && <CommunityMessageModal community={community} onClose={() => setShowMessage(false)} />}
       <ShareModal
         isOpen={showShare}

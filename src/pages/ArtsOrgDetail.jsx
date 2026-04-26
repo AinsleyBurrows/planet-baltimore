@@ -12,6 +12,7 @@ import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
 import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -23,7 +24,7 @@ const ORG_TYPE_LABELS = {
 
 export default function ArtsOrgDetail() {
   const id = window.location.pathname.split('/').pop();
-
+  const [showInvite, setShowInvite] = useState(false);
 
   const { data: org, isLoading } = useQuery({
     queryKey: ['arts-org', id],
@@ -108,6 +109,7 @@ export default function ArtsOrgDetail() {
           <TabsList className="w-full bg-secondary/50 rounded-xl">
             <TabsTrigger value="posts" className="flex-1 rounded-lg">Posts</TabsTrigger>
             <TabsTrigger value="events" className="flex-1 rounded-lg">Events</TabsTrigger>
+            <TabsTrigger value="invite" className="flex-1 rounded-lg">Invite</TabsTrigger>
             <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
             <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
           </TabsList>
@@ -122,6 +124,12 @@ export default function ArtsOrgDetail() {
             {events.length === 0
               ? <p className="text-center py-10 text-sm text-muted-foreground">No upcoming events.</p>
               : <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{events.map(e => <EventCard key={e.id} event={e} />)}</div>}
+          </TabsContent>
+
+          <TabsContent value="invite" className="mt-4">
+            <button onClick={() => setShowInvite(true)} className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors">
+              Invite Friends
+            </button>
           </TabsContent>
 
           <TabsContent value="comments" className="mt-4">
@@ -150,6 +158,10 @@ export default function ArtsOrgDetail() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {showInvite && (
+        <InviteFriendsModal onClose={() => setShowInvite(false)} />
+      )}
     </div>
   );
 }

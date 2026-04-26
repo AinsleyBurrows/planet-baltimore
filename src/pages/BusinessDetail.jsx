@@ -21,6 +21,7 @@ import CreativeHub from '@/components/business/CreativeHub';
 import NonprofitHub from '@/components/business/NonprofitHub';
 import BusinessEditProfileModal from '@/components/business/BusinessEditProfileModal';
 import BusinessMessageModal from '@/components/business/BusinessMessageModal';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -34,6 +35,7 @@ export default function BusinessDetail() {
   const [user, setUser] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -216,8 +218,9 @@ export default function BusinessDetail() {
           )}
           <TabsTrigger value="posts" className="rounded-lg">Updates</TabsTrigger>
           <TabsTrigger value="about" className="rounded-lg">About</TabsTrigger>
+          <TabsTrigger value="invite" className="rounded-lg">Invite</TabsTrigger>
           <TabsTrigger value="comments" className="rounded-lg">Comments</TabsTrigger>
-        </TabsList>
+          </TabsList>
 
         {hasCategoryHub && (
           <TabsContent value="hub" className="mt-4">
@@ -248,10 +251,17 @@ export default function BusinessDetail() {
             {business.hours && <div><h3 className="font-semibold text-foreground mb-1">Hours</h3><p className="text-muted-foreground">{business.hours}</p></div>}
           </div>
         </TabsContent>
+
+        <TabsContent value="invite" className="mt-4">
+          <button onClick={() => setShowInvite(true)} className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors">
+            Invite Friends
+          </button>
+        </TabsContent>
       </Tabs>
 
       {showEdit && <BusinessEditProfileModal business={business} onClose={() => setShowEdit(false)} />}
       {showMessage && <BusinessMessageModal business={business} onClose={() => setShowMessage(false)} />}
+      {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
     </div>
   );
 }
