@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import MobileNav from '@/components/layout/MobileNav';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Image, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +16,8 @@ import PostDetailModal from '@/components/shared/PostDetailModal';
 import ImageUploadModal from '@/components/profile/ImageUploadModal';
 import ShareModal from '@/components/shared/ShareModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import PostsGrid from '@/components/profile/PostsGrid';
+import RSVPEvents from '@/components/profile/RSVPEvents';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -212,45 +213,7 @@ export default function Profile() {
 
       {/* Content */}
       <div className="mt-4 space-y-4">
-        {activeTab === 'posts' && (
-          (() => {
-            const visiblePosts = posts.filter(p => !p.is_deleted);
-            const pinnedPosts = visiblePosts.filter(p => p.is_pinned);
-            const unpinnedPosts = visiblePosts.filter(p => !p.is_pinned);
-            const sortedPosts = [...pinnedPosts, ...unpinnedPosts];
-            if (!visiblePosts.length) return (
-              <div className="text-center py-12 text-muted-foreground text-sm">No posts yet. Share something with the community!</div>
-            );
-            return (
-              <>
-                {pinnedPosts.length > 0 && (
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 px-1">
-                    <Pin className="w-3 h-3" /> {pinnedPosts.length}/3 posts pinned
-                  </p>
-                )}
-                <div className="px-3 sm:px-4"><div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
-                  {sortedPosts.map(p => (
-                    <div key={p.id} className="rounded-lg overflow-hidden relative group aspect-square">
-                      {p.is_pinned && (
-                        <div className="absolute top-1.5 left-1.5 z-10 bg-accent text-accent-foreground rounded-full p-0.5 shadow-sm">
-                          <Pin className="w-2.5 h-2.5" />
-                        </div>
-                      )}
-                      <PostGridTile post={p} onClick={setSelectedPost} onDelete={handleDeletePost} />
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleTogglePin(p); }}
-                        className="absolute bottom-2 left-2 p-1.5 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 hover:bg-black/70 transition-all z-10"
-                        title={p.is_pinned ? 'Unpin post' : 'Pin post'}
-                      >
-                        {p.is_pinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                  ))}
-                </div></div>
-              </>
-            );
-          })()
-        )}
+        {activeTab === 'posts' && <PostsGrid posts={posts} onSelect={setSelectedPost} onDelete={handleDeletePost} onTogglePin={handleTogglePin} />}
         {activeTab === 'feed' && (
           posts.filter(p => !p.is_deleted).length > 0 ? (
             posts.filter(p => !p.is_deleted).map(p => <PostCard key={p.id} post={p} currentUserId={user.id} onDelete={handleDeletePost} />)
@@ -276,35 +239,7 @@ export default function Profile() {
             <div className="text-center py-12 text-muted-foreground text-sm">No stories published yet.</div>
           )
         )}
-        {activeTab === 'events' && (
-          (() => {
-            const going = myRsvps.filter(r => r.status === 'going').map(r => r.event_id);
-            const interested = myRsvps.filter(r => r.status === 'interested').map(r => r.event_id);
-            const goingEvents = rsvpedEvents.filter(e => going.includes(e.id));
-            const interestedEvents = rsvpedEvents.filter(e => interested.includes(e.id));
-            if (!rsvpedEvents.length) return <div className="text-center py-12 text-muted-foreground text-sm">No RSVPs yet. Find events to attend!</div>;
-            return (
-              <div className="space-y-8">
-                {goingEvents.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-accent mb-4 flex items-center gap-1.5"><CalendarCheck className="w-4 h-4" />Going ({goingEvents.length})</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                      {goingEvents.map(e => <EventCard key={e.id} event={e} />)}
-                    </div>
-                  </div>
-                )}
-                {interestedEvents.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-muted-foreground mb-4">Interested ({interestedEvents.length})</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                      {interestedEvents.map(e => <EventCard key={e.id} event={e} />)}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()
-        )}
+        {activeTab === 'events' && <RSVPEvents myRsvps={myRsvps} rsvpedEvents={rsvpedEvents} />}
         {activeTab === 'created_events' && (
           createdEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
