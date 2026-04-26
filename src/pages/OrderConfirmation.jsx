@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import TicketQRCode from '@/components/ticketing/TicketQRCode';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Download, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +22,11 @@ export default function OrderConfirmation() {
         orderNumber: `ORD-${Date.now()}`,
         total: 125.00,
         ticketCount: 2,
+        event: { id: '1', title: 'Summer Music Festival', date: '2026-06-15' },
+        tickets: [
+          { id: '1', ticketNumber: 'Ticket #1 of 2', unique_code: 'ABC123XYZ789', owner_email: 'user@example.com' },
+          { id: '2', ticketNumber: 'Ticket #2 of 2', unique_code: 'DEF456UVW012', owner_email: 'user@example.com' },
+        ],
       });
     }
   }, []);
@@ -53,12 +59,18 @@ export default function OrderConfirmation() {
         </div>
       )}
 
+      {orderDetails?.tickets && (
+        <div className="space-y-3">
+          <h3 className="font-semibold text-foreground mb-3">Your Tickets</h3>
+          {orderDetails.tickets.map((ticket, idx) => (
+            <TicketQRCode key={idx} ticket={ticket} eventTitle={orderDetails.event.title} />
+          ))}
+        </div>
+      )}
+
       <div className="space-y-3 pt-4">
         <Button onClick={() => navigate('/')} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg gap-2">
           <Home className="w-4 h-4" /> Back to Home
-        </Button>
-        <Button variant="outline" className="w-full rounded-lg gap-2">
-          <Download className="w-4 h-4" /> Download Tickets
         </Button>
       </div>
     </div>

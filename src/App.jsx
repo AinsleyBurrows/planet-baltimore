@@ -40,6 +40,7 @@ import CityMap from '@/pages/CityMap';
 import OrganizerStudio from '@/pages/OrganizerStudio';
 import EventTicketing from '@/pages/EventTicketing';
 import OrderConfirmation from '@/pages/OrderConfirmation';
+import EventCheckIn from '@/pages/EventCheckIn';
 
 // Routes already exist in App.jsx - verify they're present
 
@@ -95,6 +96,7 @@ const AuthenticatedApp = () => {
         <Route path="/map" element={<CityMap />} />
         <Route path="/organizer-studio" element={<OrganizerStudio />} />
         <Route path="/events/:id/tickets" element={<EventTicketing />} />
+        <Route path="/events/:id/check-in" element={<EventCheckIn />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:id" element={<StoryDetail />} />
