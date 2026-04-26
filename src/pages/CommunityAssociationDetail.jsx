@@ -223,7 +223,7 @@ export default function CommunityAssociationDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="posts">
+      <Tabs defaultValue="posts" className="mt-[10px]">
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex-wrap gap-1">
           <TabsTrigger value="posts" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Posts</TabsTrigger>
           <TabsTrigger value="events" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Events</TabsTrigger>
