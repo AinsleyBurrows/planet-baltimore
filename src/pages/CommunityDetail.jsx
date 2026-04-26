@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell } from 'lucide-react';
+import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,11 +12,18 @@ import AppImage from '@/components/shared/AppImage';
 import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
 import CommentSection from '@/components/shared/CommentSection';
+import CommunityEditModal from '@/components/community/CommunityEditModal';
+import CommunityInviteModal from '@/components/community/CommunityInviteModal';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
   const [joined, setJoined] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
   const communityId = window.location.pathname.split('/communities/')[1];
+
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   const { data: community, isLoading } = useQuery({
     queryKey: ['community', communityId],
@@ -49,6 +56,8 @@ export default function CommunityDetail() {
     </div>
   );
 
+  const isOwner = user?.id === community?.owner_id;
+
   if (!community) return (
     <div className="text-center py-16">
       <p className="text-muted-foreground">Community not found</p>
@@ -77,13 +86,25 @@ export default function CommunityDetail() {
             </AvatarFallback>
           </Avatar>
           <div className="flex gap-2 mb-1">
+            {isOwner && (
+              <>
+                <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowEdit(true)}>
+                  <Pencil className="w-3.5 h-3.5" /> Edit
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowInvite(true)}>
+                  <UserPlus className="w-3.5 h-3.5" /> Invite
+                </Button>
+              </>
+            )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
-            <Button
-              onClick={() => setJoined(!joined)}
-              className={`rounded-lg h-9 px-4 gap-2 ${joined ? 'bg-secondary text-foreground' : 'bg-accent hover:bg-accent/90 text-accent-foreground'}`}
-            >
-              {joined ? <><Bell className="w-4 h-4" />Joined</> : <><Users className="w-4 h-4" />Join</>}
-            </Button>
+            {!isOwner && (
+              <Button
+                onClick={() => setJoined(!joined)}
+                className={`rounded-lg h-9 px-4 gap-2 ${joined ? 'bg-secondary text-foreground' : 'bg-accent hover:bg-accent/90 text-accent-foreground'}`}
+              >
+                {joined ? <><Bell className="w-4 h-4" />Joined</> : <><Users className="w-4 h-4" />Join</>}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -160,6 +181,9 @@ export default function CommunityDetail() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {showEdit && <CommunityEditModal community={community} onClose={() => setShowEdit(false)} />}
+      {showInvite && <CommunityInviteModal community={community} onClose={() => setShowInvite(false)} />}
     </div>
   );
 }
