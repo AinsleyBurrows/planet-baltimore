@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, MapPin, Navigation, Trash2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Navigation, Trash2, Edit3 } from 'lucide-react';
 import ShareModal from '@/components/shared/ShareModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,11 +16,13 @@ import AttendeeList from '@/components/events/AttendeeList';
 import AttendeeProfiles from '@/components/events/AttendeeProfiles';
 import CommentSection from '@/components/shared/CommentSection';
 import EventTicketing from '@/components/events/EventTicketing';
+import EventEditModal from '@/components/events/EventEditModal';
 
 export default function EventDetail() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [showShare, setShowShare] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   const eventId = window.location.pathname.split('/events/')[1];
 
@@ -174,6 +176,15 @@ export default function EventDetail() {
           <Button
             variant="outline"
             size="sm"
+            onClick={() => setShowEdit(true)}
+            className="gap-2"
+          >
+            <Edit3 className="w-4 h-4" />
+            Edit Event
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             aria-label="Delete event"
             onClick={() => { if (window.confirm('Delete this event?')) deleteMutation.mutate(); }}
             className="text-destructive hover:bg-destructive/10 hover:border-destructive transition-all duration-150"
@@ -190,6 +201,13 @@ export default function EventDetail() {
         title={event.title}
         description={event.description}
       />
+
+      {showEdit && (
+        <EventEditModal
+          event={event}
+          onClose={() => setShowEdit(false)}
+        />
+      )}
     </div>
   );
 }
