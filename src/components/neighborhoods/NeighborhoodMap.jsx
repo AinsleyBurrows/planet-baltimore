@@ -11,24 +11,35 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-// Custom coral accent marker for selected
-const selectedIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+const SHADOW_URL = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
+const MARKER_BASE = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-';
 
-const defaultIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+// Region → marker color mapping
+export const REGION_COLORS = {
+  'North Baltimore':    { color: 'green',  hex: '#22c55e' },
+  'South Baltimore':    { color: 'blue',   hex: '#3b82f6' },
+  'East Baltimore':     { color: 'orange', hex: '#f97316' },
+  'West Baltimore':     { color: 'violet', hex: '#8b5cf6' },
+  'Central/Downtown':   { color: 'red',    hex: '#ef4444' },
+};
+
+function makeIcon(color, size = [25, 41]) {
+  return new L.Icon({
+    iconUrl: `${MARKER_BASE}${color}.png`,
+    shadowUrl: SHADOW_URL,
+    iconSize: size,
+    iconAnchor: [size[0] / 2, size[1]],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  });
+}
+
+// Pre-build all icons
+const REGION_ICONS = Object.fromEntries(
+  Object.entries(REGION_COLORS).map(([region, { color }]) => [region, makeIcon(color)])
+);
+
+const selectedIcon = makeIcon('gold', [30, 49]);
 
 function FlyToSelected({ selected }) {
   const map = useMap();
@@ -43,45 +54,61 @@ function FlyToSelected({ selected }) {
 const BALTIMORE_CENTER = [39.2904, -76.6122];
 
 export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
-  // Only render neighborhoods that have coordinates
   const pinnable = neighborhoods.filter(n => n.latitude && n.longitude);
 
   return (
-    <MapContainer
-      center={BALTIMORE_CENTER}
-      zoom={12}
-      style={{ height: '100%', width: '100%' }}
-      scrollWheelZoom={false}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className="relative h-full w-full">
+      <MapContainer
+        center={BALTIMORE_CENTER}
+        zoom={12}
+        style={{ height: '100%', width: '100%' }}
+        scrollWheelZoom={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-      <FlyToSelected selected={selected} />
+        <FlyToSelected selected={selected} />
 
-      {pinnable.map(n => (
-        <Marker
-          key={n.id}
-          position={[n.latitude, n.longitude]}
-          icon={selected?.id === n.id ? selectedIcon : defaultIcon}
-          eventHandlers={{ click: () => onSelect(n) }}
-        >
-          <Popup>
-            <div className="min-w-[140px]">
-              <p className="font-semibold text-sm">{n.name}</p>
-              <p className="text-xs text-gray-500">{n.region}</p>
-              {n.description && <p className="text-xs mt-1 text-gray-600 line-clamp-2">{n.description}</p>}
-              <button
-                onClick={() => onSelect(n)}
-                className="mt-2 text-xs font-medium text-blue-600 hover:underline"
-              >
-                Explore →
-              </button>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+        {pinnable.map(n => (
+          <Marker
+            key={n.id}
+            position={[n.latitude, n.longitude]}
+            icon={selected?.id === n.id ? selectedIcon : (REGION_ICONS[n.region] || makeIcon('blue'))}
+            eventHandlers={{ click: () => onSelect(n) }}
+          >
+            <Popup>
+              <div className="min-w-[140px]">
+                <p className="font-semibold text-sm">{n.name}</p>
+                <p className="text-xs mt-0.5" style={{ color: REGION_COLORS[n.region]?.hex || '#6b7280' }}>{n.region}</p>
+                {n.description && <p className="text-xs mt-1 text-gray-600 line-clamp-2">{n.description}</p>}
+                <button
+                  onClick={() => onSelect(n)}
+                  className="mt-2 text-xs font-medium text-blue-600 hover:underline"
+                >
+                  Explore →
+                </button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+
+      {/* Legend */}
+      <div className="absolute bottom-3 left-3 z-[1000] bg-white/90 backdrop-blur-sm rounded-xl shadow-md px-3 py-2 space-y-1 border border-gray-200">
+        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Region</p>
+        {Object.entries(REGION_COLORS).map(([region, { hex }]) => (
+          <div key={region} className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: hex }} />
+            <span className="text-[11px] text-gray-700 whitespace-nowrap">{region}</span>
+          </div>
+        ))}
+        <div className="flex items-center gap-1.5 pt-0.5 border-t border-gray-200 mt-1">
+          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#eab308' }} />
+          <span className="text-[11px] text-gray-700 whitespace-nowrap">Selected</span>
+        </div>
+      </div>
+    </div>
   );
 }
