@@ -14,6 +14,7 @@ import EventCard from '@/components/shared/EventCard';
 import CommentSection from '@/components/shared/CommentSection';
 import CommunityEditModal from '@/components/community/CommunityEditModal';
 import CommunityInviteModal from '@/components/community/CommunityInviteModal';
+import ShareModal from '@/components/shared/ShareModal';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function CommunityDetail() {
   const [user, setUser] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
   const communityId = window.location.pathname.split('/communities/')[1];
@@ -123,7 +125,7 @@ export default function CommunityDetail() {
                 </Button>
               </>
             )}
-            <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
+            <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}><Share2 className="w-4 h-4" /></Button>
             {!isOwner && (
               <Button
                 onClick={() => setJoined(!joined)}
@@ -211,6 +213,13 @@ export default function CommunityDetail() {
 
       {showEdit && <CommunityEditModal community={community} onClose={() => setShowEdit(false)} />}
       {showInvite && <CommunityInviteModal community={community} onClose={() => setShowInvite(false)} />}
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        url={`${window.location.origin}/communities/${communityId}`}
+        title={community.name}
+        description={community.description}
+      />
     </div>
   );
 }
