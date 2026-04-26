@@ -169,7 +169,7 @@ export default function CommunityAssociationDetail() {
       </div>
 
       {/* Header */}
-      <div className="px-1 pb-4">
+      <div className="px-1 pb-4 mt-[10px]">
         <div className="flex items-end justify-between -mt-10 mb-4">
           <div className="relative">
             <Avatar className="w-20 h-20 rounded-xl border-4 border-background shadow-lg cursor-pointer hover:opacity-80 transition-opacity" onClick={isAdmin ? () => avatarInputRef.current?.click() : undefined}>
