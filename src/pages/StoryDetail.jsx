@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Clock, Heart, MessageCircle, Share2, Bookmark, Trash2 } from 'lucide-react';
+import { ArrowLeft, Clock, Heart, MessageCircle, Share2, Bookmark, Trash2, Edit3 } from 'lucide-react';
 import ShareModal from '@/components/shared/ShareModal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -96,14 +96,23 @@ export default function StoryDetail() {
           <Button variant="ghost" size="icon" onClick={() => setShowShare(true)}><Share2 className="w-5 h-5" /></Button>
           <Button variant="ghost" size="icon"><Bookmark className="w-5 h-5" /></Button>
           {user?.id === story.author_id && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => { if (window.confirm('Delete this story?')) deleteMutation.mutate(); }}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="w-5 h-5" />
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(`/create-story?id=${storyId}`)}
+              >
+                <Edit3 className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => { if (window.confirm('Delete this story?')) deleteMutation.mutate(); }}
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="w-5 h-5" />
+              </Button>
+            </>
           )}
         </div>
       </div>
