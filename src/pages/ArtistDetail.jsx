@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
-  Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid
+  Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
+  Camera, Pencil
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,7 @@ import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
 import ArtistContactForm from '@/components/artist/ArtistContactForm';
 import ShareModal from '@/components/shared/ShareModal';
+import ArtistEditProfileModal from '@/components/artist/ArtistEditProfileModal';
 
 // New feature tabs
 import ArtistSeriesTab from '@/components/artist/ArtistSeriesTab';
@@ -34,9 +36,19 @@ const socialIcons = {
 
 export default function ArtistDetail() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const artistId = window.location.pathname.split('/artists/')[1];
   const [user, setUser] = useState(null);
   const [showShare, setShowShare] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const bannerInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
+
+  const uploadImage = async (file, field) => {
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.entities.ArtistPage.update(artistId, { [field]: file_url });
+    queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
+  };
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
@@ -104,16 +116,39 @@ export default function ArtistDetail() {
             </Badge>
           </div>
         )}
+        {isOwner && (
+          <button
+            onClick={() => bannerInputRef.current?.click()}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
+          >
+            <Camera className="w-3.5 h-3.5" />
+            {artist.banner_url ? 'Edit banner' : 'Add banner'}
+          </button>
+        )}
+        <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banner_url')} />
       </div>
 
       {/* Profile header */}
       <div className="px-1 pb-4">
         <div className="flex items-end justify-between -mt-10 mb-4">
-          <Avatar className="w-20 h-20 rounded-full border-4 border-background shadow-lg">
-            <AvatarImage src={artist.image_url} className="object-cover" />
-            <AvatarFallback className="bg-accent/10 text-accent text-2xl font-bold">{artist.name?.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="w-20 h-20 rounded-full border-4 border-background shadow-lg cursor-pointer" onClick={isOwner ? () => avatarInputRef.current?.click() : undefined}>
+              <AvatarImage src={artist.image_url} className="object-cover" />
+              <AvatarFallback className="bg-accent/10 text-accent text-2xl font-bold">{artist.name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            {isOwner && (
+              <span className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+                <Camera className="w-3 h-3 text-background" />
+              </span>
+            )}
+            <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'image_url')} />
+          </div>
           <div className="flex gap-2 mb-1">
+            {isOwner && (
+              <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowEditProfile(true)}>
+                <Pencil className="w-3.5 h-3.5" />Edit Profile
+              </Button>
+            )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}>
               <Share2 className="w-4 h-4" />
             </Button>
@@ -237,6 +272,8 @@ export default function ArtistDetail() {
       </Tabs>
 
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={window.location.href} title={artist.name} description={artist.bio} />
+
+      {showEditProfile && <ArtistEditProfileModal artist={artist} onClose={() => setShowEditProfile(false)} />}
     </div>
   );
 }
