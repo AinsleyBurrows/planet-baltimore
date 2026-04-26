@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
-  Camera, Pencil
+  Camera, Pencil, MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ import CommentSection from '@/components/shared/CommentSection';
 import ArtistContactForm from '@/components/artist/ArtistContactForm';
 import ShareModal from '@/components/shared/ShareModal';
 import ArtistEditProfileModal from '@/components/artist/ArtistEditProfileModal';
+import ArtistMessageModal from '@/components/artist/ArtistMessageModal';
 
 // New feature tabs
 import ArtistSeriesTab from '@/components/artist/ArtistSeriesTab';
@@ -41,6 +42,7 @@ export default function ArtistDetail() {
   const [user, setUser] = useState(null);
   const [showShare, setShowShare] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -145,9 +147,14 @@ export default function ArtistDetail() {
           </div>
           <div className="flex gap-2 mb-1">
             {isOwner && (
-              <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowEditProfile(true)}>
-                <Pencil className="w-3.5 h-3.5" />Edit Profile
-              </Button>
+              <>
+                <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowEditProfile(true)}>
+                  <Pencil className="w-3.5 h-3.5" />Edit Profile
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowMessage(true)}>
+                  <MessageSquare className="w-3.5 h-3.5" />Message All
+                </Button>
+              </>
             )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}>
               <Share2 className="w-4 h-4" />
@@ -274,6 +281,7 @@ export default function ArtistDetail() {
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={window.location.href} title={artist.name} description={artist.bio} />
 
       {showEditProfile && <ArtistEditProfileModal artist={artist} onClose={() => setShowEditProfile(false)} />}
+      {showMessage && <ArtistMessageModal artist={artist} onClose={() => setShowMessage(false)} />}
     </div>
   );
 }
