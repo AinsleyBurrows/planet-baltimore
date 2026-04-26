@@ -295,6 +295,18 @@ export default function Profile() {
         )}
 
       </div>
+
+      {/* Bottom Tab Menu */}
+      <div className="flex border-t border-border mt-8 overflow-x-auto gap-0.5 sticky bottom-0 bg-background/95 backdrop-blur-sm">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-t-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+              <Icon className="w-4 h-4 sm:w-5 sm:h-5" /><span className="hidden sm:inline">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
 
     {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
