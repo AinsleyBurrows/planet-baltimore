@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 
 const CATEGORIES = ['visual_art', 'music', 'video', 'photography', 'performance', 'literary', 'mixed_media', 'digital', 'other'];
 const SOCIAL_PLATFORMS = ['instagram', 'twitter', 'tiktok', 'youtube', 'soundcloud', 'bandcamp', 'linkedin'];
@@ -16,10 +16,21 @@ export default function ArtistEditProfileModal({ artist, onClose }) {
     category: artist.category || 'visual_art',
     website: artist.website || '',
     contact_email: artist.contact_email || '',
+    neighborhood_id: artist.neighborhood_id || '',
     neighborhood_name: artist.neighborhood_name || '',
     tags: (artist.tags || []).join(', '),
     social_links: artist.social_links || {},
   });
+
+  const { data: neighborhoods = [] } = useQuery({
+    queryKey: ['neighborhoods-list'],
+    queryFn: () => base44.entities.Neighborhood.list('name', 100),
+  });
+
+  const handleNeighborhoodChange = (id) => {
+    const found = neighborhoods.find(n => n.id === id);
+    setForm(p => ({ ...p, neighborhood_id: id, neighborhood_name: found?.name || '' }));
+  };
   const [saving, setSaving] = useState(false);
 
   const updateSocial = (platform, value) => {
@@ -35,6 +46,7 @@ export default function ArtistEditProfileModal({ artist, onClose }) {
       category: form.category,
       website: form.website,
       contact_email: form.contact_email,
+      neighborhood_id: form.neighborhood_id,
       neighborhood_name: form.neighborhood_name,
       tags,
       social_links: form.social_links,
@@ -76,7 +88,16 @@ export default function ArtistEditProfileModal({ artist, onClose }) {
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Neighborhood</label>
-              <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.neighborhood_name} onChange={e => setForm(p => ({ ...p, neighborhood_name: e.target.value }))} placeholder="e.g. Hampden" />
+              <select
+                className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                value={form.neighborhood_id}
+                onChange={e => handleNeighborhoodChange(e.target.value)}
+              >
+                <option value="">Select neighborhood…</option>
+                {neighborhoods.map(n => (
+                  <option key={n.id} value={n.id}>{n.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 
