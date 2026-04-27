@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown } from 'lucide-react';
+import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,9 @@ import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ArtsOrgMessageModal from '@/components/arts/ArtsOrgMessageModal';
+import ArtsOrgEditModal from '@/components/arts/ArtsOrgEditModal';
+import ArtsOrgCreatePostModal from '@/components/arts/ArtsOrgCreatePostModal';
+import ShareModal from '@/components/shared/ShareModal';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -28,6 +31,9 @@ export default function ArtsOrgDetail() {
   const queryClient = useQueryClient();
   const [showInvite, setShowInvite] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [uploading, setUploading] = useState(null); // 'banner' | 'avatar' | null
   const [showNeighborhoodPicker, setShowNeighborhoodPicker] = useState(false);
@@ -122,7 +128,7 @@ export default function ArtsOrgDetail() {
           </div>
           <div className="flex gap-2 mb-1">
             {org && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
-            <Button size="sm" variant="outline" className="rounded-lg transition-all duration-150 active:scale-95" aria-label="Share"><Share2 className="w-4 h-4" /></Button>
+            <Button size="sm" variant="outline" onClick={() => setShowShare(true)} className="rounded-lg transition-all duration-150 active:scale-95" aria-label="Share"><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
 
@@ -195,12 +201,28 @@ export default function ArtsOrgDetail() {
           </TabsList>
 
           <TabsContent value="posts" className="mt-4 space-y-4">
+            {isOwner && (
+              <button
+                onClick={() => setShowCreatePost(true)}
+                className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" />Write a post for {org.name}
+              </button>
+            )}
             {posts.length === 0
               ? <p className="text-center py-10 text-sm text-muted-foreground">No posts yet.</p>
-              : posts.map(p => <PostCard key={p.id} post={p} />)}
+              : posts.map(p => <PostCard key={p.id} post={p} currentUserId={currentUser?.id} />)}
           </TabsContent>
 
-          <TabsContent value="events" className="mt-4">
+          <TabsContent value="events" className="mt-4 space-y-4">
+            {isOwner && (
+              <a
+                href={`/create-event?organizer_name=${encodeURIComponent(org.name)}&organizer_id=${org.id}`}
+                className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <Plus className="w-4 h-4" />Create an event for {org.name}
+              </a>
+            )}
             {events.length === 0
               ? <p className="text-center py-10 text-sm text-muted-foreground">No upcoming events.</p>
               : <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{events.map(e => <EventCard key={e.id} event={e} />)}</div>}
@@ -230,6 +252,11 @@ export default function ArtsOrgDetail() {
           </TabsContent>
 
           <TabsContent value="about" className="mt-4 space-y-4">
+            {isOwner && (
+              <Button variant="outline" size="sm" onClick={() => setShowEdit(true)} className="gap-2">
+                <Pencil className="w-3.5 h-3.5" />Edit Info
+              </Button>
+            )}
             {org.mission && (
               <div className="bg-accent/5 border border-accent/10 rounded-xl p-4">
                 <p className="text-xs font-semibold text-accent uppercase tracking-wider mb-2">Mission</p>
@@ -254,6 +281,9 @@ export default function ArtsOrgDetail() {
 
       {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
       {showMessage && <ArtsOrgMessageModal org={org} onClose={() => setShowMessage(false)} />}
+      {showEdit && <ArtsOrgEditModal org={org} onClose={() => setShowEdit(false)} />}
+      {showCreatePost && currentUser && <ArtsOrgCreatePostModal org={org} user={currentUser} onClose={() => setShowCreatePost(false)} />}
+      <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={window.location.href} title={org.name} description={org.tagline || org.description} />
     </div>
   );
 }
