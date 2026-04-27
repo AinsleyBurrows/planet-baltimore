@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send } from 'lucide-react';
+import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,9 +25,14 @@ const ORG_TYPE_LABELS = {
 
 export default function ArtsOrgDetail() {
   const id = window.location.pathname.split('/').pop();
+  const queryClient = useQueryClient();
   const [showInvite, setShowInvite] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [uploading, setUploading] = useState(null); // 'banner' | 'avatar' | null
+  const [showNeighborhoodPicker, setShowNeighborhoodPicker] = useState(false);
+  const bannerInputRef = useRef(null);
+  const avatarInputRef = useRef(null);
 
   useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
 
@@ -35,6 +40,30 @@ export default function ArtsOrgDetail() {
     queryKey: ['arts-org', id],
     queryFn: () => base44.entities.ArtsOrganization.get(id),
   });
+
+  const { data: neighborhoods = [] } = useQuery({
+    queryKey: ['neighborhoods'],
+    queryFn: () => base44.entities.Neighborhood.list('name', 100),
+  });
+
+  const isOwner = currentUser?.id === org?.owner_id;
+
+  const uploadImage = async (file, field) => {
+    setUploading(field);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    await base44.entities.ArtsOrganization.update(id, { [field]: file_url });
+    queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
+    setUploading(null);
+  };
+
+  const handleNeighborhoodSelect = async (neighborhood) => {
+    await base44.entities.ArtsOrganization.update(id, {
+      neighborhood_id: neighborhood.id,
+      neighborhood_name: neighborhood.name,
+    });
+    queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
+    setShowNeighborhoodPicker(false);
+  };
 
   const { data: posts = [] } = useQuery({
     queryKey: ['arts-org-posts', id],
@@ -63,20 +92,40 @@ export default function ArtsOrgDetail() {
       <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
         {org.banner_url && <img src={org.banner_url} alt="" className="w-full h-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        {isOwner && (
+          <button
+            onClick={() => bannerInputRef.current?.click()}
+            disabled={uploading === 'banner_url'}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
+          >
+            <Camera className="w-3.5 h-3.5" />
+            {uploading === 'banner_url' ? 'Uploading...' : org.banner_url ? 'Edit banner' : 'Add banner'}
+          </button>
+        )}
+        <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banner_url')} />
       </div>
 
       {/* Profile row */}
       <div className="relative px-1 -mt-10">
         <div className="flex items-end justify-between">
-          <Avatar className="w-20 h-20 border-4 border-background rounded-xl">
-            <AvatarImage src={org.image_url} />
-            <AvatarFallback className="rounded-xl text-2xl font-bold bg-accent/10 text-accent">{org.name?.charAt(0)}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="w-20 h-20 border-4 border-background rounded-xl cursor-pointer" onClick={isOwner ? () => avatarInputRef.current?.click() : undefined}>
+              <AvatarImage src={org.image_url} />
+              <AvatarFallback className="rounded-xl text-2xl font-bold bg-accent/10 text-accent">{org.name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            {isOwner && (
+              <span className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+                <Camera className="w-3 h-3 text-background" />
+              </span>
+            )}
+            <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'image_url')} />
+          </div>
           <div className="flex gap-2 mb-1">
             {org && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
             <Button size="sm" variant="outline" className="rounded-lg transition-all duration-150 active:scale-95" aria-label="Share"><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
+
 
         <div className="mt-3">
           <div className="flex items-center gap-2">
@@ -88,7 +137,33 @@ export default function ArtsOrgDetail() {
           {org.description && <p className="text-sm text-foreground mt-2 leading-relaxed">{org.description}</p>}
 
           <div className="flex flex-wrap gap-3 mt-3 text-sm text-muted-foreground">
-            {org.neighborhood_name && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{org.neighborhood_name}</span>}
+            {isOwner ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowNeighborhoodPicker(v => !v)}
+                  className="flex items-center gap-1 text-accent hover:underline"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  {org.neighborhood_name || 'Add neighborhood'}
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+                {showNeighborhoodPicker && (
+                  <div className="absolute top-7 left-0 z-30 bg-card border border-border rounded-xl shadow-xl w-56 max-h-60 overflow-y-auto">
+                    {neighborhoods.map(n => (
+                      <button
+                        key={n.id}
+                        onClick={() => handleNeighborhoodSelect(n)}
+                        className={`w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors ${org.neighborhood_id === n.id ? 'text-accent font-medium' : 'text-foreground'}`}
+                      >
+                        {n.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              org.neighborhood_name && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{org.neighborhood_name}</span>
+            )}
             {org.website && <a href={org.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline"><Globe className="w-3.5 h-3.5" />{org.website.replace(/https?:\/\//, '')}</a>}
             {org.phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5" />{org.phone}</span>}
             {org.hours && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{org.hours}</span>}
