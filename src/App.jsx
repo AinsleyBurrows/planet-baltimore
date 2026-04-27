@@ -9,8 +9,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import AppLayout from '@/components/layout/AppLayout';
 import Home from '@/pages/Home';
 import Discover from '@/pages/Discover';
-import Events from '@/pages/Events';
-import EventDetail from '@/pages/EventDetail';
+
 import Communities from '@/pages/Communities';
 import Artists from '@/pages/Artists';
 import Businesses from '@/pages/Businesses';
@@ -39,9 +38,7 @@ import NotificationSettings from '@/pages/NotificationSettings';
 import CityMap from '@/pages/CityMap';
 import OrganizerStudio from '@/pages/OrganizerStudio';
 import PromoterDashboard from '@/pages/PromoterDashboard';
-import EventTicketing from '@/pages/EventTicketing';
 import OrderConfirmation from '@/pages/OrderConfirmation';
-import EventCheckIn from '@/pages/EventCheckIn';
 import TicketSalesDashboard from '@/pages/TicketSalesDashboard';
 
 // Routes already exist in App.jsx - verify they're present
@@ -78,9 +75,6 @@ const AuthenticatedApp = () => {
         <Route path="/" element={<Home />} />
         <Route path="/discover" element={<Discover />} />
         <Route path="/neighborhoods" element={<Neighborhoods />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/events/:id" element={<EventDetail />} />
-        <Route path="/events/:id/tickets" element={<EventTicketing />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/communities" element={<Communities />} />
         <Route path="/communities/:id" element={<CommunityDetail />} />
@@ -98,9 +92,6 @@ const AuthenticatedApp = () => {
         <Route path="/map" element={<CityMap />} />
         <Route path="/organizer-studio" element={<OrganizerStudio />} />
         <Route path="/promoter-dashboard" element={<PromoterDashboard />} />
-        <Route path="/events/:id/tickets" element={<EventTicketing />} />
-        <Route path="/events/:id/check-in" element={<EventCheckIn />} />
-        <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/ticket-sales-dashboard" element={<TicketSalesDashboard />} />
 
         <Route path="/profile" element={<Profile />} />
