@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Loader2, Image as ImageIcon, ChevronDown, Clock, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import ReactQuill from 'react-quill';
+import { format } from 'date-fns';
 
 const categories = ['blog', 'newsletter', 'essay', 'announcement', 'event_recap', 'resource', 'poetry', 'novel', 'song'];
 
@@ -84,45 +85,116 @@ export default function CreateStory() {
     },
   });
 
+  const readTime = estimateReadTime(form.content);
+
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-         <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
-         <h1 className="text-lg font-semibold">{existingStory ? 'Edit Story' : 'Write a Story'}</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => createMutation.mutate('draft')} disabled={!form.title || createMutation.isPending} className="rounded-lg">
-            Save Draft
-          </Button>
-          <Button onClick={() => createMutation.mutate('published')} disabled={!form.title || createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg">
-           {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : existingStory ? 'Update' : 'Publish'}
-          </Button>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+        <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
+          <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary transition-colors">
+            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+          </button>
+          
+          <div className="flex-1 text-center">
+            <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
+              {existingStory ? 'Editing' : 'New Story'}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {form.content && (
+              <div className="hidden sm:flex items-center gap-3 text-xs text-muted-foreground mr-4">
+                <div className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>{readTime} min read</span>
+                </div>
+              </div>
+            )}
+            <Button variant="outline" size="sm" onClick={() => createMutation.mutate('draft')} disabled={!form.title || createMutation.isPending} className="rounded-lg text-xs">
+              {createMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Draft'}
+            </Button>
+            <Button size="sm" onClick={() => createMutation.mutate('published')} disabled={!form.title || createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg text-xs">
+              {createMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : existingStory ? 'Update' : 'Publish'}
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="space-y-5">
-        {/* Cover Image */}
-        <label className="block">
-          <div className="aspect-[2/1] rounded-xl overflow-hidden bg-secondary/50 border-2 border-dashed border-border hover:border-accent/50 cursor-pointer flex items-center justify-center">
-            {coverPreview ? <img src={coverPreview} alt="" className="w-full h-full object-cover" /> :
-              <div className="text-center"><ImageIcon className="w-8 h-8 mx-auto text-muted-foreground mb-2" /><span className="text-sm text-muted-foreground">Add cover image</span></div>}
+      {/* Main Editor Area */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-4 py-8 sm:px-6">
+          {/* Cover Image */}
+          <label className="block mb-8 group cursor-pointer">
+            <div className="aspect-[16/9] rounded-xl overflow-hidden bg-secondary/50 border border-border hover:border-accent/50 transition-colors flex items-center justify-center">
+              {coverPreview ? (
+                <img src={coverPreview} alt="" className="w-full h-full object-cover group-hover:opacity-95 transition-opacity" />
+              ) : (
+                <div className="text-center">
+                  <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                  <span className="text-sm text-muted-foreground">Add a cover image</span>
+                </div>
+              )}
+            </div>
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }}} />
+          </label>
+
+          {/* Title - Serif, Large, Simple */}
+          <input
+            value={form.title}
+            onChange={(e) => updateForm('title', e.target.value)}
+            placeholder="Your story title"
+            className="w-full text-5xl font-serif font-bold border-0 bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/30 mb-3 outline-none"
+          />
+
+          {/* Subtitle */}
+          <input
+            value={form.subtitle}
+            onChange={(e) => updateForm('subtitle', e.target.value)}
+            placeholder="A brief subtitle (optional)"
+            className="w-full text-xl text-muted-foreground border-0 bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/40 mb-6 outline-none"
+          />
+
+          {/* Category Selector - Minimal */}
+          <div className="flex items-center gap-3 pb-6 mb-6 border-b border-border">
+            <Select value={form.category} onValueChange={(v) => updateForm('category', v)}>
+              <SelectTrigger className="w-auto border-0 bg-transparent px-0 shadow-none gap-2 hover:bg-secondary/50 rounded-lg h-auto py-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map(c => (
+                  <SelectItem key={c} value={c} className="capitalize">
+                    {c.replace('_', ' ')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {existingStory && (
+              <span className="text-xs text-muted-foreground">
+                Updated {format(new Date(existingStory.updated_date), 'MMM d, yyyy')}
+              </span>
+            )}
           </div>
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }}} />
-        </label>
 
-        <Input value={form.title} onChange={(e) => updateForm('title', e.target.value)} placeholder="Your story title..." className="text-2xl font-serif font-bold border-0 bg-transparent h-auto py-2 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
-        <Input value={form.subtitle} onChange={(e) => updateForm('subtitle', e.target.value)} placeholder="A brief subtitle..." className="text-lg border-0 bg-transparent h-auto py-1 px-0 focus-visible:ring-0 placeholder:text-muted-foreground/40" />
-
-        <div><Label>Category</Label>
-          <Select value={form.category} onValueChange={(v) => updateForm('category', v)}>
-            <SelectTrigger className="mt-1.5 w-48"><SelectValue /></SelectTrigger>
-            <SelectContent>{categories.map(c => <SelectItem key={c} value={c} className="capitalize">{c.replace('_', ' ')}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label className="mb-2 block">Your Story</Label>
-          <div className="min-h-[600px]">
-            <ReactQuill value={form.content} onChange={(v) => updateForm('content', v)} placeholder="Write your story here..." theme="snow" className="rounded-lg h-full" />
+          {/* Rich Text Editor - Full Width */}
+          <div className="min-h-[700px] prose prose-sm max-w-none">
+            <ReactQuill
+              value={form.content}
+              onChange={(v) => updateForm('content', v)}
+              placeholder="Begin writing..."
+              theme="snow"
+              modules={{
+                toolbar: [
+                  ['bold', 'italic', 'underline', 'strike'],
+                  ['blockquote', 'code-block'],
+                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                  [{ 'header': [1, 2, 3, false] }],
+                  ['link', 'image'],
+                  ['clean']
+                ]
+              }}
+              className="text-base leading-8 font-serif"
+            />
           </div>
         </div>
       </div>
