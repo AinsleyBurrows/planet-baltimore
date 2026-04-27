@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Plus, Trash2, Pencil, X, Loader2, Image as ImageIcon, Clock, DollarSign, Ruler, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Pencil, X, Loader2, Image as ImageIcon, Clock, DollarSign, Ruler, ChevronLeft, ChevronRight, Upload } from 'lucide-react';
+import SeriesBulkUploadModal from './SeriesBulkUploadModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -136,6 +137,7 @@ export default function ArtistWorkDetail({ series, isOwner, ownerId, artistId, o
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingWork, setEditingWork] = useState(null);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [lightboxWork, setLightboxWork] = useState(null);
   const [lightboxImgIdx, setLightboxImgIdx] = useState(0);
 
@@ -168,9 +170,14 @@ export default function ArtistWorkDetail({ series, isOwner, ownerId, artistId, o
           </div>
         </div>
         {isOwner && (
-          <Button size="sm" onClick={() => { setEditingWork(null); setShowForm(true); }} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg gap-1">
-            <Plus className="w-3.5 h-3.5" />Add Work
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => setShowBulkUpload(true)} className="rounded-lg gap-1">
+              <Upload className="w-3.5 h-3.5" />Bulk Upload
+            </Button>
+            <Button size="sm" onClick={() => { setEditingWork(null); setShowForm(true); }} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg gap-1">
+              <Plus className="w-3.5 h-3.5" />Add Work
+            </Button>
+          </div>
         )}
       </div>
 
@@ -302,6 +309,18 @@ export default function ArtistWorkDetail({ series, isOwner, ownerId, artistId, o
       <AnimatePresence>
         {showForm && <WorkForm series={series} artistId={artistId} ownerId={ownerId} work={editingWork}
           onClose={() => { setShowForm(false); setEditingWork(null); }} onSaved={refresh} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showBulkUpload && (
+          <SeriesBulkUploadModal
+            series={series}
+            artistId={artistId}
+            ownerId={ownerId}
+            onClose={() => setShowBulkUpload(false)}
+            onSaved={() => { setShowBulkUpload(false); refresh(); }}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
