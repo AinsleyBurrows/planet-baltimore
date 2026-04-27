@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,18 @@ export default function CreateArtist() {
   const [user, setUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
-  const [form, setForm] = useState({ name: '', bio: '', category: 'visual_art', website: '' });
+  const [form, setForm] = useState({ name: '', bio: '', category: 'visual_art', website: '', neighborhood_id: '', neighborhood_name: '' });
+
+  const { data: neighborhoods = [] } = useQuery({
+    queryKey: ['neighborhoods-list'],
+    queryFn: () => base44.entities.Neighborhood.list('name', 100),
+  });
+
+  const handleNeighborhoodChange = (id) => {
+    const found = neighborhoods.find(n => n.id === id);
+    updateForm('neighborhood_id', id);
+    updateForm('neighborhood_name', found?.name || '');
+  };
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
 
@@ -65,6 +76,15 @@ export default function CreateArtist() {
           <Select value={form.category} onValueChange={(v) => updateForm('category', v)}>
             <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
             <SelectContent>{categories.map(c => <SelectItem key={c} value={c} className="capitalize">{c.replace('_', ' ')}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Neighborhood</Label>
+          <Select value={form.neighborhood_id} onValueChange={handleNeighborhoodChange}>
+            <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select your neighborhood…" /></SelectTrigger>
+            <SelectContent>
+              {neighborhoods.map(n => <SelectItem key={n.id} value={n.id}>{n.name}</SelectItem>)}
+            </SelectContent>
           </Select>
         </div>
         <div><Label>Website (optional)</Label><Input value={form.website} onChange={(e) => updateForm('website', e.target.value)} placeholder="https://..." className="mt-1.5" /></div>
