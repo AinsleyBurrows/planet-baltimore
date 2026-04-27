@@ -21,7 +21,7 @@ const FIELD_PLACEHOLDERS = {
   program: 'Residency Name', publisher: 'Publisher', publication: 'Publication name', url: 'https://…'
 };
 
-function CVSection({ sectionKey, label, icon: SectionIcon, fields, items = [], isOwner, onAdd, onRemove }) {
+function CVSection({ sectionKey, label, icon: SectionIcon, fields, items = [], isOwner, onAdd, onEdit, onRemove }) {
   const Icon = SectionIcon;
   const [expanded, setExpanded] = useState(true);
 
@@ -53,10 +53,16 @@ function CVSection({ sectionKey, label, icon: SectionIcon, fields, items = [], i
                   </div>
                 </div>
                 {isOwner && (
-                  <button onClick={() => onRemove(sectionKey, i)}
-                    className="opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all flex-shrink-0">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="opacity-0 group-hover:opacity-100 flex gap-1 flex-shrink-0 transition-all">
+                    <button onClick={() => onEdit(sectionKey, i, item, fields)}
+                      className="p-1 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => onRemove(sectionKey, i)}
+                      className="p-1 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 )}
               </div>
             ))
@@ -73,8 +79,9 @@ function CVSection({ sectionKey, label, icon: SectionIcon, fields, items = [], i
   );
 }
 
-function AddEntryModal({ sectionKey, fields, onSave, onClose }) {
-  const [form, setForm] = useState(Object.fromEntries(fields.map(f => [f, ''])));
+function EntryModal({ sectionKey, fields, initialData, onSave, onClose }) {
+  const isEdit = !!initialData;
+  const [form, setForm] = useState(initialData || Object.fromEntries(fields.map(f => [f, ''])));
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
@@ -84,14 +91,16 @@ function AddEntryModal({ sectionKey, fields, onSave, onClose }) {
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-foreground capitalize">Add entry</h3>
+          <h3 className="font-semibold text-foreground capitalize">{isEdit ? 'Edit entry' : 'Add entry'}</h3>
           <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="w-4 h-4" /></button>
         </div>
         {fields.map(field => (
           <input key={field} className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring capitalize"
             placeholder={FIELD_PLACEHOLDERS[field] || field} value={form[field]} onChange={e => setForm(p => ({ ...p, [field]: e.target.value }))} />
         ))}
-        <Button onClick={() => onSave(sectionKey, form)} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl">Add</Button>
+        <Button onClick={() => onSave(sectionKey, form)} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl">
+          {isEdit ? 'Save changes' : 'Add'}
+        </Button>
       </motion.div>
     </div>
   );
@@ -101,6 +110,7 @@ export default function ArtistCVTab({ artistId, isOwner, ownerId, artistName }) 
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [addingTo, setAddingTo] = useState(null); // { sectionKey, fields }
+  const [editingEntry, setEditingEntry] = useState(null); // { sectionKey, index, data, fields }
   const [cvData, setCvData] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -156,6 +166,20 @@ export default function ArtistCVTab({ artistId, isOwner, ownerId, artistName }) 
       const base = prev || currentCV;
       return { ...base, [sectionKey]: (base[sectionKey] || []).filter((_, i) => i !== idx) };
     });
+  };
+
+  const handleEditEntry = (sectionKey, index, data, fields) => {
+    setEditingEntry({ sectionKey, index, data, fields });
+  };
+
+  const handleSaveEdit = (sectionKey, updatedEntry) => {
+    setCvData(prev => {
+      const base = prev || currentCV;
+      const updated = [...(base[sectionKey] || [])];
+      updated[editingEntry.index] = updatedEntry;
+      return { ...base, [sectionKey]: updated };
+    });
+    setEditingEntry(null);
   };
 
   if (isLoading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 rounded-xl bg-muted animate-pulse" />)}</div>;
@@ -215,12 +239,14 @@ export default function ArtistCVTab({ artistId, isOwner, ownerId, artistName }) 
           fields={section.fields} items={currentCV[section.key] || []}
           isOwner={isOwner && editing}
           onAdd={(key, fields) => setAddingTo({ sectionKey: key, fields })}
+          onEdit={handleEditEntry}
           onRemove={handleRemove}
         />
       ))}
 
       <AnimatePresence>
-        {addingTo && <AddEntryModal sectionKey={addingTo.sectionKey} fields={addingTo.fields} onSave={handleAdd} onClose={() => setAddingTo(null)} />}
+        {addingTo && <EntryModal sectionKey={addingTo.sectionKey} fields={addingTo.fields} onSave={handleAdd} onClose={() => setAddingTo(null)} />}
+        {editingEntry && <EntryModal sectionKey={editingEntry.sectionKey} fields={editingEntry.fields} initialData={editingEntry.data} onSave={handleSaveEdit} onClose={() => setEditingEntry(null)} />}
       </AnimatePresence>
     </div>
   );
