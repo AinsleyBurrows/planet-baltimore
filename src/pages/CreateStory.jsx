@@ -177,25 +177,32 @@ export default function CreateStory() {
           </div>
 
           {/* Rich Text Editor - Full Width */}
-          <div className="min-h-[700px] prose prose-sm max-w-none">
+          <div className="min-h-[700px] editor-wrapper">
             <ReactQuill
               value={form.content}
               onChange={(v) => updateForm('content', v)}
-              placeholder="Begin writing..."
+              placeholder="Begin writing your story..."
               theme="snow"
               modules={{
                 toolbar: [
+                  [{ 'header': [1, 2, 3, false] }],
                   ['bold', 'italic', 'underline', 'strike'],
                   ['blockquote', 'code-block'],
                   [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                  [{ 'header': [1, 2, 3, false] }],
                   ['link', 'image'],
                   ['clean']
                 ]
               }}
-              className="text-base leading-8 font-serif"
+              className="text-base leading-relaxed font-serif bg-transparent"
             />
           </div>
+
+          {/* Footer hint */}
+          {!form.content && (
+            <div className="mt-8 text-center text-sm text-muted-foreground/50">
+              <p>Tips: Use formatting to emphasize your story. Add links, quotes, and images to make it engaging.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
