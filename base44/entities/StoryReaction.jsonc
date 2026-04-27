@@ -1,0 +1,27 @@
+{
+  "name": "StoryReaction",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "story_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "like",
+        "love",
+        "wow",
+        "think"
+      ],
+      "default": "like"
+    }
+  },
+  "required": [
+    "user_id",
+    "story_id",
+    "type"
+  ]
+}

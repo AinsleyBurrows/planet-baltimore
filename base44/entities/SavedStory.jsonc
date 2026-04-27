@@ -1,0 +1,19 @@
+{
+  "name": "SavedStory",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "story_id": {
+      "type": "string"
+    },
+    "saved_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "story_id"
+  ]
+}

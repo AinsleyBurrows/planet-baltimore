@@ -1,0 +1,47 @@
+{
+  "name": "WriterProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "newsletter_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "newsletter_subscribers": {
+      "type": "number",
+      "default": 0
+    },
+    "total_views": {
+      "type": "number",
+      "default": 0
+    },
+    "total_likes": {
+      "type": "number",
+      "default": 0
+    },
+    "published_stories_count": {
+      "type": "number",
+      "default": 0
+    },
+    "featured_collections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

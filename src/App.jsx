@@ -14,8 +14,9 @@ import EventDetail from '@/pages/EventDetail';
 import Communities from '@/pages/Communities';
 import Artists from '@/pages/Artists';
 import Businesses from '@/pages/Businesses';
-import Stories from '@/pages/Stories';
-import StoryDetail from '@/pages/StoryDetail';
+import StoriesV2 from '@/pages/StoriesV2';
+import StoryDetailV2 from '@/pages/StoryDetailV2';
+import WritingDashboardV2 from '@/pages/WritingDashboardV2';
 import Profile from '@/pages/Profile';
 import Messages from '@/pages/Messages';
 import Notifications from '@/pages/Notifications';
@@ -101,8 +102,9 @@ const AuthenticatedApp = () => {
         <Route path="/events/:id/tickets" element={<EventTicketing />} />
         <Route path="/events/:id/check-in" element={<EventCheckIn />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
-        <Route path="/stories" element={<Stories />} />
-        <Route path="/stories/:id" element={<StoryDetail />} />
+        <Route path="/stories" element={<StoriesV2 />} />
+        <Route path="/stories/:id" element={<StoryDetailV2 />} />
+        <Route path="/writing" element={<WritingDashboardV2 />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/messages" element={<Messages />} />
@@ -113,7 +115,6 @@ const AuthenticatedApp = () => {
         <Route path="/create-artist" element={<CreateArtist />} />
         <Route path="/create-business" element={<CreateBusiness />} />
         <Route path="/create-story" element={<CreateStory />} />
-        <Route path="/writing-insights" element={<WritingInsights />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

@@ -1,0 +1,35 @@
+{
+  "name": "StoryCollection",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "author_id": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "cover_image": {
+      "type": "string"
+    },
+    "story_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "author_id"
+  ]
+}
