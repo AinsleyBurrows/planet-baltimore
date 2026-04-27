@@ -232,7 +232,7 @@ export default function Profile() {
       </div>
 
       {/* Content */}
-      <div className="mt-4 space-y-4">
+      <div className="mt-[10px] space-y-4">
         {activeTab === 'posts' && <PostsGrid posts={posts} onSelect={setSelectedPost} onDelete={handleDeletePost} onTogglePin={handleTogglePin} />}
         {activeTab === 'feed' && (
           posts.filter(p => !p.is_deleted).length > 0 ? (
