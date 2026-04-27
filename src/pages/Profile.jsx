@@ -22,7 +22,7 @@ import RSVPEvents from '@/components/profile/RSVPEvents';
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
   { id: 'feed', label: 'Feed', icon: Rss },
-  { id: 'stories', label: 'Baltimore Writers', icon: BookOpen },
+  { id: 'stories', label: 'My Writings', icon: BookOpen },
   { id: 'events', label: 'My Events', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
 
