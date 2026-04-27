@@ -24,6 +24,7 @@ import VotingTab from '@/components/association/VotingTab';
 import DocumentsTab from '@/components/association/DocumentsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import AssociationEditModal from '@/components/association/AssociationEditModal';
+import FollowButton from '@/components/shared/FollowButton';
 import { format } from 'date-fns';
 
 export default function CommunityAssociationDetail() {
@@ -213,6 +214,7 @@ export default function CommunityAssociationDetail() {
               </>
             )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
+            <FollowButton targetType="community" targetId={assocId} targetName={association.name} />
             <Button
               onClick={() => currentUser && joinMutation.mutate()}
               disabled={joinMutation.isPending}

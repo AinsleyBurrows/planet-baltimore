@@ -12,6 +12,7 @@ import AppImage from '@/components/shared/AppImage';
 import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
 import CommentSection from '@/components/shared/CommentSection';
+import FollowButton from '@/components/shared/FollowButton';
 import CommunityEditModal from '@/components/community/CommunityEditModal';
 import CommunityInviteModal from '@/components/community/CommunityInviteModal';
 import CommunityMessageModal from '@/components/community/CommunityMessageModal';
@@ -23,7 +24,6 @@ import CommunityCreateEventModal from '@/components/community/CommunityCreateEve
 export default function CommunityDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [joined, setJoined] = useState(false);
   const [user, setUser] = useState(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
@@ -140,13 +140,8 @@ export default function CommunityDetail() {
               </>
             )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}><Share2 className="w-4 h-4" /></Button>
-            {!isOwner && (
-              <Button
-                onClick={() => setJoined(!joined)}
-                className={`rounded-lg h-9 px-4 gap-2 ${joined ? 'bg-secondary text-foreground' : 'bg-accent hover:bg-accent/90 text-accent-foreground'}`}
-              >
-                {joined ? <><Bell className="w-4 h-4" />Joined</> : <><Users className="w-4 h-4" />Join</>}
-              </Button>
+            {!isOwner && community && (
+              <FollowButton targetType="community" targetId={community.id} targetName={community.name} />
             )}
           </div>
         </div>

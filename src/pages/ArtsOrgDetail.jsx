@@ -128,7 +128,7 @@ export default function ArtsOrgDetail() {
             <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'image_url')} />
           </div>
           <div className="flex gap-2 mb-1">
-            {org && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
+            {org && !isOwner && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
             <Button size="sm" variant="outline" onClick={() => setShowShare(true)} className="rounded-lg transition-all duration-150 active:scale-95" aria-label="Share"><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
