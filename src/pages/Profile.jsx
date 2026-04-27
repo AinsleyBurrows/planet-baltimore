@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,10 +18,12 @@ import ShareModal from '@/components/shared/ShareModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import PostsGrid from '@/components/profile/PostsGrid';
 import RSVPEvents from '@/components/profile/RSVPEvents';
+import StoryCard from '@/components/shared/StoryCard';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
   { id: 'feed', label: 'Feed', icon: Rss },
+  { id: 'writings', label: 'My Writings', icon: BookOpen },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
 ];
@@ -106,6 +108,17 @@ export default function Profile() {
     enabled: rsvpEventIds.length > 0,
   });
 
+  const { data: userStories = [] } = useQuery({
+    queryKey: ['user-stories', user?.id],
+    queryFn: () => base44.entities.Story.filter({ author_id: user.id }, '-created_date', 50),
+    enabled: !!user?.id,
+  });
+
+  const handleDeleteStory = async (storyId) => {
+    await base44.entities.Story.delete(storyId);
+    queryClient.invalidateQueries({ queryKey: ['user-stories', user?.id] });
+  };
+
   if (!user) return (
     <div className="space-y-4">
       <Skeleton className="h-48 rounded-xl" />
@@ -153,6 +166,13 @@ export default function Profile() {
              )}
            </div>
           <div className="flex gap-1 mb-1 justify-end">
+            {isOwnProfile && (
+              <Link to="/create-story">
+                <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0" title="Write a story">
+                  <BookOpen className="w-4 h-4" />
+                </Button>
+              </Link>
+            )}
             {isOwnProfile && (
               <Link to="/create-post">
                 <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0">
@@ -229,6 +249,29 @@ export default function Profile() {
             posts.filter(p => !p.is_deleted).map(p => <PostCard key={p.id} post={p} currentUserId={user.id} onDelete={handleDeletePost} />)
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">Your activity feed is empty.</div>
+          )
+        )}
+
+        {activeTab === 'writings' && (
+          userStories.length > 0 ? (
+            <div className="space-y-4">
+              {userStories.map(story => (
+                <div key={story.id} className="relative group">
+                  <StoryCard story={story} />
+                  {isOwnProfile && (
+                    <button
+                      onClick={() => { if (window.confirm('Delete this story?')) handleDeleteStory(story.id); }}
+                      className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                      aria-label="Delete story"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground text-sm">No stories yet. Start writing!</div>
           )
         )}
 
