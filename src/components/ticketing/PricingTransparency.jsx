@@ -1,59 +1,67 @@
-import React, { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { ChevronDown } from 'lucide-react';
+import React from 'react';
+import { Info, HelpCircle } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-export default function PricingTransparency({ subtotal, discount, fee, tax, total }) {
-  const [showBreakdown, setShowBreakdown] = useState(false);
-
-  if (!subtotal) return null;
+export default function PricingTransparency({ ticketPrice, quantity, platformFee, promoDiscount }) {
+  const subtotal = ticketPrice * quantity;
+  const discount = promoDiscount || 0;
+  const total = subtotal + platformFee - discount;
 
   return (
-    <Card className="p-4 bg-blue-50/50 border-blue-200">
-      <button
-        onClick={() => setShowBreakdown(!showBreakdown)}
-        className="w-full flex items-center justify-between text-left"
-      >
-        <p className="text-xs text-blue-900 font-medium">
-          💡 See how your price is calculated
-        </p>
-        <ChevronDown className={`w-4 h-4 text-blue-700 transition-transform duration-200 ${showBreakdown ? 'rotate-180' : ''}`} />
-      </button>
+    <div className="space-y-4">
+      <h3 className="font-semibold text-foreground flex items-center gap-2">
+        Pricing Breakdown
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="p-1 rounded-full hover:bg-secondary">
+              <HelpCircle className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-72 text-xs text-muted-foreground space-y-2">
+            <p><strong>Ticket Price:</strong> Cost set by event organizer</p>
+            <p><strong>Platform Fee:</strong> Processing & payment gateway costs</p>
+            <p><strong>Promo Discount:</strong> Applied when code is valid</p>
+          </PopoverContent>
+        </Popover>
+      </h3>
 
-      {showBreakdown && (
-        <div className="mt-3 space-y-2 pt-3 border-t border-blue-200/50 text-xs">
-          <div className="flex justify-between text-blue-900">
-            <span>Tickets (base price)</span>
-            <span className="font-medium">${subtotal.toFixed(2)}</span>
-          </div>
-
-          {discount > 0 && (
-            <div className="flex justify-between text-green-700">
-              <span>Promo code discount</span>
-              <span className="font-medium">-${discount.toFixed(2)}</span>
-            </div>
-          )}
-
-          <div className="flex justify-between text-blue-900">
-            <span>Platform fee (5% + $0.50/ticket)</span>
-            <span className="font-medium">${fee.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between text-blue-900">
-            <span>Sales tax (8%)</span>
-            <span className="font-medium">${tax.toFixed(2)}</span>
-          </div>
-
-          <div className="border-t border-blue-200/50 pt-2 flex justify-between font-bold text-blue-900">
-            <span>You pay</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-
-          <p className="text-blue-700 mt-2 pt-2 border-t border-blue-200/50">
-            ✓ Your ticket includes event organizer support and digital delivery<br/>
-            ✓ Platform fee helps cover secure payment processing via Stripe
-          </p>
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">
+            {quantity > 1 ? `${quantity} Tickets` : 'Ticket'}
+          </span>
+          <span className="text-foreground font-medium">${subtotal.toFixed(2)}</span>
         </div>
-      )}
-    </Card>
+
+        <div className="flex justify-between">
+          <span className="text-muted-foreground flex items-center gap-1">
+            Platform Fee
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="p-0.5">
+                  <Info className="w-3 h-3 text-muted-foreground/60" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 text-xs">
+                This covers payment processing, transaction security, and platform services.
+              </PopoverContent>
+            </Popover>
+          </span>
+          <span className="text-foreground font-medium">${platformFee.toFixed(2)}</span>
+        </div>
+
+        {discount > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Promo Discount</span>
+            <span>-${discount.toFixed(2)}</span>
+          </div>
+        )}
+
+        <div className="border-t border-border pt-2 flex justify-between font-semibold text-foreground">
+          <span>Total Amount</span>
+          <span className="text-lg text-accent">${total.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
   );
 }
