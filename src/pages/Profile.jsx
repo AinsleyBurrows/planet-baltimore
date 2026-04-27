@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, BookOpen, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import PostCard from '@/components/shared/PostCard';
 import EventCard from '@/components/shared/EventCard';
-import StoryCard from '@/components/shared/StoryCard';
+
 import AppImage from '@/components/shared/AppImage';
 import PostGridTile from '@/components/shared/PostGridTile';
 import PostDetailModal from '@/components/shared/PostDetailModal';
@@ -22,10 +22,8 @@ import RSVPEvents from '@/components/profile/RSVPEvents';
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
   { id: 'feed', label: 'Feed', icon: Rss },
-  { id: 'stories', label: 'My Writings', icon: BookOpen },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
-
 ];
 
 export default function Profile() {
@@ -59,11 +57,7 @@ export default function Profile() {
     queryClient.invalidateQueries({ queryKey: ['home-posts'] });
   };
 
-  const handleDeleteStory = async (storyId) => {
-    await base44.entities.Story.delete(storyId);
-    queryClient.invalidateQueries({ queryKey: ['my-stories', user?.id] });
-    queryClient.invalidateQueries({ queryKey: ['stories'] });
-  };
+
 
   const handleTogglePin = async (post) => {
     const pinnedPosts = posts.filter(p => p.is_pinned && !p.is_deleted);
@@ -86,11 +80,7 @@ export default function Profile() {
     enabled: !!user?.id,
   });
 
-  const { data: stories = [] } = useQuery({
-    queryKey: ['my-stories', user?.id],
-    queryFn: () => base44.entities.Story.filter({ author_id: user.id }, '-created_date', 20),
-    enabled: !!user?.id,
-  });
+
 
   const { data: createdEvents = [] } = useQuery({
     queryKey: ['my-created-events', user?.id],
@@ -241,35 +231,7 @@ export default function Profile() {
             <div className="text-center py-12 text-muted-foreground text-sm">Your activity feed is empty.</div>
           )
         )}
-        {activeTab === 'stories' && (
-          <>
-            {isOwnProfile && (
-              <Link to="/create-story">
-                <button className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                  <Plus className="w-4 h-4" />Create Story
-                </button>
-              </Link>
-            )}
-            {stories.length > 0 ? (
-              stories.map(s => (
-                <div key={s.id} className="relative group">
-                  <StoryCard story={s} />
-                  {isOwnProfile && (
-                    <button
-                      onClick={() => { if (window.confirm('Delete this story?')) handleDeleteStory(s.id); }}
-                      className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all opacity-0 group-hover:opacity-100 shadow-sm"
-                      aria-label="Delete story"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-12 text-muted-foreground text-sm">No stories published yet.</div>
-            )}
-          </>
-        )}
+
         {activeTab === 'events' && <RSVPEvents myRsvps={myRsvps} rsvpedEvents={rsvpedEvents} />}
         {activeTab === 'created_events' && (
           createdEvents.length > 0 ? (
