@@ -250,7 +250,11 @@ export default function ArtistDetail() {
           )}
           {posts.length === 0
             ? <p className="text-center py-10 text-sm text-muted-foreground">No posts yet.</p>
-            : posts.map(p => <PostCard key={p.id} post={p} currentUserId={user?.id} />)
+            : (
+              <div className="grid grid-cols-2 gap-3">
+                {posts.map(p => <PostCard key={p.id} post={p} currentUserId={user?.id} />)}
+              </div>
+            )
           }
         </TabsContent>
 
