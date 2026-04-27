@@ -31,7 +31,7 @@ const EMAIL_PREFS = [
 const defaultPrefs = {
   new_follower: true, new_comment: true, new_like: true, new_mention: true,
   event_from_followed: true, zine_from_followed: true, community_updates: true, mass_messages: true,
-  email_new_follower: false, email_new_comment: false, email_event_from_followed: true,
+  email_new_follower: true, email_new_comment: true, email_event_from_followed: true,
   email_zine_from_followed: true, email_community_updates: true, email_mass_messages: true,
 };
 
@@ -80,10 +80,21 @@ export default function NotificationSettings() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-xl font-bold text-foreground">Notification Settings</h1>
           <p className="text-sm text-muted-foreground">Control what you're notified about</p>
         </div>
+        <Button
+          size="sm"
+          className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg text-xs"
+          onClick={() => {
+            const allOn = Object.fromEntries([...IN_APP_PREFS, ...EMAIL_PREFS].map(p => [p.key, true]));
+            setPrefs(allOn);
+            mutation.mutate(allOn);
+          }}
+        >
+          Turn All On
+        </Button>
       </div>
 
       {/* In-app */}
