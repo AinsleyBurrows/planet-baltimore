@@ -14,9 +14,6 @@ import EventDetail from '@/pages/EventDetail';
 import Communities from '@/pages/Communities';
 import Artists from '@/pages/Artists';
 import Businesses from '@/pages/Businesses';
-import StoriesV2 from '@/pages/StoriesV2';
-import StoryDetailV2 from '@/pages/StoryDetailV2';
-import WritingDashboardV2 from '@/pages/WritingDashboardV2';
 import Profile from '@/pages/Profile';
 import Messages from '@/pages/Messages';
 import Notifications from '@/pages/Notifications';
@@ -26,7 +23,6 @@ import CreateCommunity from '@/pages/CreateCommunity';
 import CreateArtist from '@/pages/CreateArtist';
 import CreateBusiness from '@/pages/CreateBusiness';
 import CreateStory from '@/pages/CreateStory';
-import WritingInsights from '@/pages/WritingInsights';
 import Neighborhoods from '@/pages/Neighborhoods';
 import CommunityDetail from '@/pages/CommunityDetail';
 import ArtistDetail from '@/pages/ArtistDetail';
@@ -104,9 +100,7 @@ const AuthenticatedApp = () => {
         <Route path="/events/:id/check-in" element={<EventCheckIn />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/ticket-sales-dashboard" element={<TicketSalesDashboard />} />
-        <Route path="/stories" element={<StoriesV2 />} />
-        <Route path="/stories/:id" element={<StoryDetailV2 />} />
-        <Route path="/writing" element={<WritingDashboardV2 />} />
+
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/messages" element={<Messages />} />
