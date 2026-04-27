@@ -23,6 +23,7 @@ import BusinessEditProfileModal from '@/components/business/BusinessEditProfileM
 import BusinessMessageModal from '@/components/business/BusinessMessageModal';
 import BusinessCreatePostModal from '@/components/business/BusinessCreatePostModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import ShareModal from '@/components/shared/ShareModal';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -38,6 +39,7 @@ export default function BusinessDetail() {
   const [showMessage, setShowMessage] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -150,7 +152,7 @@ export default function BusinessDetail() {
                 </Button>
               </>
             )}
-            <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
+            <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}><Share2 className="w-4 h-4" /></Button>
             {!isOwner && business && <FollowButton targetType="business" targetId={business.id} targetName={business.name} />}
           </div>
         </div>
@@ -274,6 +276,7 @@ export default function BusinessDetail() {
       {showMessage && <BusinessMessageModal business={business} onClose={() => setShowMessage(false)} />}
       {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
       {showCreatePost && user && <BusinessCreatePostModal business={business} user={user} onClose={() => setShowCreatePost(false)} />}
+      <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={`${window.location.origin}/businesses/${businessId}`} title={business.name} description={business.description} />
     </div>
   );
 }

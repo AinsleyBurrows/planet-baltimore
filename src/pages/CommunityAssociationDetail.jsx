@@ -25,6 +25,7 @@ import DocumentsTab from '@/components/association/DocumentsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import AssociationEditModal from '@/components/association/AssociationEditModal';
 import FollowButton from '@/components/shared/FollowButton';
+import ShareModal from '@/components/shared/ShareModal';
 import { format } from 'date-fns';
 
 export default function CommunityAssociationDetail() {
@@ -37,6 +38,7 @@ export default function CommunityAssociationDetail() {
   const [showMassMessage, setShowMassMessage] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [editingBoardMember, setEditingBoardMember] = useState(null);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
@@ -213,8 +215,8 @@ export default function CommunityAssociationDetail() {
                 </Button>
               </>
             )}
-            <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
-            <FollowButton targetType="community" targetId={assocId} targetName={association.name} />
+            <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}><Share2 className="w-4 h-4" /></Button>
+            {!isAdmin && <FollowButton targetType="community" targetId={assocId} targetName={association.name} />}
             <Button
               onClick={() => currentUser && joinMutation.mutate()}
               disabled={joinMutation.isPending}
@@ -490,6 +492,7 @@ export default function CommunityAssociationDetail() {
       {showEditProfile && (
         <AssociationEditModal association={association} onClose={() => setShowEditProfile(false)} />
       )}
+      <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={`${window.location.origin}/community-associations/${assocId}`} title={association.name} description={association.description} />
     </div>
   );
 }
