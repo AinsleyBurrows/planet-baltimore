@@ -180,7 +180,7 @@ export default function CommunityDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="posts">
+      <Tabs defaultValue="posts" className="mt-[15px]">
         <TabsList className="w-full bg-secondary/50 rounded-xl">
           <TabsTrigger value="posts" className="flex-1 rounded-lg">Posts</TabsTrigger>
           <TabsTrigger value="events" className="flex-1 rounded-lg">Events</TabsTrigger>
