@@ -36,7 +36,7 @@ export default function TopMenuBar() {
   const location = useLocation();
 
   return (
-    <header className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <header className="lg:hidden sticky top-0 z-[1000] bg-background/95 backdrop-blur border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center justify-between px-5 sm:px-5 py-3 sm:py-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-1.5">
@@ -59,7 +59,7 @@ export default function TopMenuBar() {
                 <Menu className="w-5 h-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 z-[1001]">
               {navItems.map(({ icon: Icon, label, path }) => {
                 const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
                 return (
