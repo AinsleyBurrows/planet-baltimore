@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 import { ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +20,7 @@ export default function CreateBusiness() {
   const [user, setUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
-  const [form, setForm] = useState({ name: '', description: '', category: 'restaurant', address: '', phone: '', website: '', hours: '' });
+  const [form, setForm] = useState({ name: '', description: '', category: 'restaurant', address: '', phone: '', website: '', hours: '', neighborhood_id: '', neighborhood_name: '' });
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
 
@@ -66,6 +67,15 @@ export default function CreateBusiness() {
             <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
             <SelectContent>{categories.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent>
           </Select>
+        </div>
+        <div>
+          <Label>Neighborhood</Label>
+          <div className="mt-1.5">
+            <NeighborhoodSelect
+              value={form.neighborhood_id}
+              onChange={(id, name) => setForm(p => ({ ...p, neighborhood_id: id, neighborhood_name: name }))}
+            />
+          </div>
         </div>
         <div><Label>Address</Label><Input value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Business address" className="mt-1.5" /></div>
         <div className="grid grid-cols-2 gap-4">

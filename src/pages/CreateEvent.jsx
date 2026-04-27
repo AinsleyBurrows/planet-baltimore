@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 import { ArrowLeft, Loader2, Image as ImageIcon, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,7 @@ export default function CreateEvent() {
     title: '', description: '', date: '', end_date: '', venue_name: '', address: '',
     category: 'community', capacity: '',
     ticketing_mode: 'rsvp_only', allow_donations: false,
+    neighborhood_id: '', neighborhood_name: '',
   });
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
@@ -95,6 +97,16 @@ export default function CreateEvent() {
 
         <div><Label>Venue Name</Label><Input value={form.venue_name} onChange={(e) => updateForm('venue_name', e.target.value)} placeholder="Where is it happening?" className="mt-1.5" /></div>
         <div><Label>Address</Label><Input value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Full address" className="mt-1.5" /></div>
+
+        <div>
+          <Label>Neighborhood</Label>
+          <div className="mt-1.5">
+            <NeighborhoodSelect
+              value={form.neighborhood_id}
+              onChange={(id, name) => setForm(p => ({ ...p, neighborhood_id: id, neighborhood_name: name }))}
+            />
+          </div>
+        </div>
 
         <div><Label>Category</Label>
           <Select value={form.category} onValueChange={(v) => updateForm('category', v)}>

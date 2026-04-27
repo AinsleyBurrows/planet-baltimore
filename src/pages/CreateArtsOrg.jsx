@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 import { ArrowLeft, Loader2, ImagePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,7 +34,7 @@ export default function CreateArtsOrg() {
   const [imagePreview, setImagePreview] = useState('');
   const [form, setForm] = useState({
     name: '', tagline: '', description: '', mission: '',
-    org_type: '', address: '', neighborhood_name: '',
+    org_type: '', address: '', neighborhood_id: '', neighborhood_name: '',
     website: '', phone: '', hours: '',
   });
 
@@ -110,7 +111,11 @@ export default function CreateArtsOrg() {
         <Textarea placeholder="Description" value={form.description} onChange={e => update('description', e.target.value)} className="rounded-xl resize-none" rows={3} />
         <Textarea placeholder="Mission statement (optional)" value={form.mission} onChange={e => update('mission', e.target.value)} className="rounded-xl resize-none" rows={3} />
 
-        <Input placeholder="Neighborhood" value={form.neighborhood_name} onChange={e => update('neighborhood_name', e.target.value)} className="rounded-xl" />
+        <NeighborhoodSelect
+          value={form.neighborhood_id}
+          onChange={(id, name) => setForm(f => ({ ...f, neighborhood_id: id, neighborhood_name: name }))}
+          className="rounded-xl"
+        />
         <Input placeholder="Address" value={form.address} onChange={e => update('address', e.target.value)} className="rounded-xl" />
         <Input placeholder="Website" value={form.website} onChange={e => update('website', e.target.value)} className="rounded-xl" />
         <Input placeholder="Phone" value={form.phone} onChange={e => update('phone', e.target.value)} className="rounded-xl" />

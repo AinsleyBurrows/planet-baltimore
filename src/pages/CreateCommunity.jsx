@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 import { ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +20,7 @@ export default function CreateCommunity() {
   const [user, setUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
-  const [form, setForm] = useState({ name: '', description: '', category: 'neighborhood', website: '', contact_email: '' });
+  const [form, setForm] = useState({ name: '', description: '', category: 'neighborhood', website: '', contact_email: '', neighborhood_id: '', neighborhood_name: '' });
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
 
@@ -66,6 +67,15 @@ export default function CreateCommunity() {
             <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
             <SelectContent>{categories.map(c => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}</SelectContent>
           </Select>
+        </div>
+        <div>
+          <Label>Neighborhood (optional)</Label>
+          <div className="mt-1.5">
+            <NeighborhoodSelect
+              value={form.neighborhood_id}
+              onChange={(id, name) => setForm(p => ({ ...p, neighborhood_id: id, neighborhood_name: name }))}
+            />
+          </div>
         </div>
         <div><Label>Website (optional)</Label><Input value={form.website} onChange={(e) => updateForm('website', e.target.value)} placeholder="https://..." className="mt-1.5" /></div>
         <div><Label>Contact Email (optional)</Label><Input value={form.contact_email} onChange={(e) => updateForm('contact_email', e.target.value)} placeholder="email@example.com" className="mt-1.5" /></div>

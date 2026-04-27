@@ -4,6 +4,7 @@ import { X, Save, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 
 export default function ArtsOrgEditModal({ org, onClose }) {
   const queryClient = useQueryClient();
@@ -13,6 +14,8 @@ export default function ArtsOrgEditModal({ org, onClose }) {
     description: org.description || '',
     mission: org.mission || '',
     address: org.address || '',
+    neighborhood_id: org.neighborhood_id || '',
+    neighborhood_name: org.neighborhood_name || '',
     contact_email: org.contact_email || '',
     phone: org.phone || '',
     website: org.website || '',
@@ -74,6 +77,13 @@ export default function ArtsOrgEditModal({ org, onClose }) {
                 />
               </div>
             ))}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Neighborhood</label>
+              <NeighborhoodSelect
+                value={form.neighborhood_id}
+                onChange={(id, name) => setForm(f => ({ ...f, neighborhood_id: id, neighborhood_name: name }))}
+              />
+            </div>
             <div className="space-y-1">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Description</label>
               <textarea

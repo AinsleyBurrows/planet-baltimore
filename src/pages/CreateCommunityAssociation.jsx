@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Building, Upload } from 'lucide-react';
@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 
 export default function CreateCommunityAssociation() {
   const navigate = useNavigate();
@@ -19,15 +19,7 @@ export default function CreateCommunityAssociation() {
     address: '', website: '', contact_email: '', phone: '',
   });
 
-  const { data: neighborhoods = [] } = useQuery({
-    queryKey: ['neighborhoods-list'],
-    queryFn: () => base44.entities.Neighborhood.list('name', 100),
-  });
 
-  const handleNeighborhoodChange = (id) => {
-    const found = neighborhoods.find(n => n.id === id);
-    setForm(f => ({ ...f, neighborhood_id: id, neighborhood_name: found?.name || '' }));
-  };
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -106,12 +98,12 @@ export default function CreateCommunityAssociation() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label>Neighborhood</Label>
-            <Select value={form.neighborhood_id} onValueChange={handleNeighborhoodChange}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder="Select neighborhood…" /></SelectTrigger>
-              <SelectContent>
-                {neighborhoods.map(n => <SelectItem key={n.id} value={n.id}>{n.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <div className="mt-1">
+              <NeighborhoodSelect
+                value={form.neighborhood_id}
+                onChange={(id, name) => setForm(f => ({ ...f, neighborhood_id: id, neighborhood_name: name }))}
+              />
+            </div>
           </div>
           <div>
             <Label>Address</Label>

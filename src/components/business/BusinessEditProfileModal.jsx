@@ -4,6 +4,7 @@ import { X, Loader2, Camera, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 
 const CATEGORIES = ['restaurant', 'retail', 'service', 'entertainment', 'health', 'education', 'technology', 'creative', 'nonprofit', 'other'];
 
@@ -21,6 +22,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
     phone: business.phone || '',
     website: business.website || '',
     hours: business.hours || '',
+    neighborhood_id: business.neighborhood_id || '',
     neighborhood_name: business.neighborhood_name || '',
     tags: (business.tags || []).join(', '),
     // Restaurant
@@ -112,6 +114,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
       phone: form.phone,
       website: form.website,
       hours: form.hours,
+      neighborhood_id: form.neighborhood_id,
       neighborhood_name: form.neighborhood_name,
       tags,
       reservation_url: form.reservation_url,
@@ -204,7 +207,10 @@ export default function BusinessEditProfileModal({ business, onClose }) {
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Neighborhood</label>
-              <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.neighborhood_name} onChange={e => setForm(p => ({ ...p, neighborhood_name: e.target.value }))} placeholder="e.g. Fells Point" />
+              <NeighborhoodSelect
+                value={form.neighborhood_id}
+                onChange={(id, name) => setForm(p => ({ ...p, neighborhood_id: id, neighborhood_name: name }))}
+              />
             </div>
           </div>
 

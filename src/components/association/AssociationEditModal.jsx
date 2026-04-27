@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 
 export default function AssociationEditModal({ association, onClose }) {
   const queryClient = useQueryClient();
@@ -19,17 +20,6 @@ export default function AssociationEditModal({ association, onClose }) {
     phone: association.phone || '',
   });
   const [saving, setSaving] = useState(false);
-
-  const { data: neighborhoods = [] } = useQuery({
-    queryKey: ['neighborhoods-list'],
-    queryFn: () => base44.entities.Neighborhood.list('name', 100),
-  });
-
-  const handleNeighborhoodChange = (e) => {
-    const id = e.target.value;
-    const found = neighborhoods.find(n => n.id === id);
-    setForm(f => ({ ...f, neighborhood_id: id, neighborhood_name: found?.name || '' }));
-  };
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -69,14 +59,10 @@ export default function AssociationEditModal({ association, onClose }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Neighborhood</label>
-              <select
-                className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+              <NeighborhoodSelect
                 value={form.neighborhood_id}
-                onChange={handleNeighborhoodChange}
-              >
-                <option value="">Select neighborhood…</option>
-                {neighborhoods.map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
-              </select>
+                onChange={(id, name) => setForm(f => ({ ...f, neighborhood_id: id, neighborhood_name: name }))}
+              />
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Address</label>

@@ -4,6 +4,7 @@ import { X, Loader2, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
+import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 
 const CATEGORIES = ['neighborhood', 'arts', 'activism', 'wellness', 'education', 'business', 'social', 'sports', 'faith', 'civic', 'other'];
 
@@ -13,6 +14,8 @@ export default function CommunityEditModal({ community, onClose }) {
     name: community.name || '',
     description: community.description || '',
     category: community.category || '',
+    neighborhood_id: community.neighborhood_id || '',
+    neighborhood_name: community.neighborhood_name || '',
     website: community.website || '',
     contact_email: community.contact_email || '',
     tags: community.tags?.join(', ') || '',
@@ -36,6 +39,8 @@ export default function CommunityEditModal({ community, onClose }) {
     let updates = {
       ...form,
       tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+      neighborhood_id: form.neighborhood_id,
+      neighborhood_name: form.neighborhood_name,
     };
     if (avatarFile) {
       const { file_url } = await base44.integrations.Core.UploadFile({ file: avatarFile });
@@ -107,6 +112,13 @@ export default function CommunityEditModal({ community, onClose }) {
                 <option value="">Select category…</option>
                 {CATEGORIES.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
               </select>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Neighborhood</label>
+              <NeighborhoodSelect
+                value={form.neighborhood_id}
+                onChange={(id, name) => setForm(p => ({ ...p, neighborhood_id: id, neighborhood_name: name }))}
+              />
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Website</label>
