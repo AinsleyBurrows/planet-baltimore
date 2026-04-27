@@ -1,145 +1,197 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Clock, Heart, MessageCircle, Share2, Bookmark, Trash2, Edit3 } from 'lucide-react';
-import ShareModal from '@/components/shared/ShareModal';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Heart, Share2, Bookmark, MoreHorizontal, Trash2, Edit, Clock, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
-import AppImage from '@/components/shared/AppImage';
 import CommentSection from '@/components/shared/CommentSection';
+import ShareModal from '@/components/shared/ShareModal';
+import AppImage from '@/components/shared/AppImage';
 
 export default function StoryDetail() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const storyId = window.location.pathname.split('/stories/')[1];
   const [user, setUser] = useState(null);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
-  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
 
-  const deleteMutation = useMutation({
-    mutationFn: () => base44.entities.Story.delete(storyId),
-    onSuccess: () => navigate('/stories'),
-  });
-
-  const { data: story, isLoading } = useQuery({
+  const { data: story, isLoading, error } = useQuery({
     queryKey: ['story', storyId],
     queryFn: async () => {
-      const stories = await base44.entities.Story.filter({ id: storyId });
-      return stories[0];
+      const results = await base44.entities.Story.filter({ id: storyId });
+      return results[0];
     },
     enabled: !!storyId,
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: () => base44.entities.Story.delete(storyId),
+    onSuccess: () => {
+      navigate('/stories');
+    },
+  });
+
+  const handleDelete = () => {
+    if (window.confirm('Delete this story?')) {
+      deleteMutation.mutate();
+    }
+  };
+
+  const isOwner = user?.id === story?.author_id;
+
   if (isLoading) return (
-    <div className="space-y-4 max-w-2xl mx-auto">
-      <Skeleton className="aspect-[2/1] rounded-xl" />
-      <Skeleton className="h-10 w-3/4" />
-      <Skeleton className="h-6 w-1/2" />
-      <Skeleton className="h-96 w-full" />
+    <div className="space-y-6">
+      <Skeleton className="h-[400px] rounded-xl" />
+      <Skeleton className="h-12 w-2/3" />
+      <Skeleton className="h-48" />
     </div>
   );
 
-  if (!story) return (
+  if (error || !story) return (
     <div className="text-center py-16">
-      <h3 className="font-semibold text-foreground mb-1">Zine not found</h3>
-      <Button variant="ghost" onClick={() => navigate('/stories')} className="mt-4">Back to Zines</Button>
+      <p className="text-muted-foreground mb-4">Story not found</p>
+      <Button variant="outline" onClick={() => navigate('/stories')}>Back to Stories</Button>
     </div>
   );
+
+  if (story.visibility === 'private' && !isOwner) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-muted-foreground mb-4">This story is private</p>
+        <Button variant="outline" onClick={() => navigate('/stories')}>Back to Stories</Button>
+      </div>
+    );
+  }
 
   return (
-    <article className="max-w-2xl mx-auto">
-      <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary mb-4"><ArrowLeft className="w-5 h-5" /></button>
+    <div className="max-w-3xl mx-auto">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-accent hover:underline mb-6 text-sm">
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
 
       {/* Cover Image */}
       {story.cover_image && (
-        <div className="aspect-[2/1] rounded-xl overflow-hidden mb-8">
-          <AppImage src={story.cover_image} className="w-full h-full" />
+        <div className="rounded-xl overflow-hidden mb-8 aspect-video bg-muted">
+          <AppImage src={story.cover_image} className="w-full h-full" clickable={false} aspectRatio="16:9" />
         </div>
       )}
 
       {/* Header */}
       <div className="mb-8">
-        {story.category && <Badge variant="secondary" className="mb-3 capitalize">{story.category.replace('_', ' ')}</Badge>}
-        <h1 className="text-3xl sm:text-4xl font-serif font-bold text-foreground leading-tight">{story.title}</h1>
-        {story.subtitle && <p className="text-lg text-muted-foreground mt-3">{story.subtitle}</p>}
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex-1">
+            <h1 className="text-3xl sm:text-4xl font-serif font-bold text-foreground mb-2">{story.title}</h1>
+            {story.subtitle && <p className="text-lg text-muted-foreground">{story.subtitle}</p>}
+          </div>
+          {isOwner && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-lg flex-shrink-0">
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate(`/create-story?id=${storyId}`)}>
+                  <Edit className="w-4 h-4 mr-2" />Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive" onClick={handleDelete}>
+                  <Trash2 className="w-4 h-4 mr-2" />Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
 
-        <div className="flex items-center gap-4 mt-6 pt-6 border-t border-border">
-          <Avatar className="w-12 h-12">
+        {/* Meta */}
+        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+          <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{story.reading_time || 5} min read</span>
+          <span>·</span>
+          <span className="flex items-center gap-1"><Eye className="w-4 h-4" />{(story.views_count || 0).toLocaleString()} views</span>
+          <span>·</span>
+          <span>{story.published_at ? format(new Date(story.published_at), 'MMM d, yyyy') : ''}</span>
+        </div>
+
+        {/* Author */}
+        <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-lg">
+          <Avatar className="w-10 h-10">
             <AvatarImage src={story.author_avatar} />
-            <AvatarFallback className="bg-accent/10 text-accent font-semibold">{story.author_name?.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="bg-accent/10 text-accent">{story.author_name?.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div>
+          <div className="flex-1">
             <p className="font-semibold text-foreground">{story.author_name}</p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {story.published_at && <span>{format(new Date(story.published_at), 'MMM d, yyyy')}</span>}
-              <span>·</span>
-              <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{story.reading_time || 5} min read</span>
-            </div>
+            <p className="text-sm text-muted-foreground">Published {story.published_at ? format(new Date(story.published_at), 'MMM d, yyyy') : 'recently'}</p>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="prose prose-lg max-w-none text-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: story.content }} />
+      {/* Category & Tags */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        {story.category && <Badge variant="secondary" className="capitalize">{story.category}</Badge>}
+        {story.tags?.map(tag => <Badge key={tag} variant="outline">#{tag}</Badge>)}
+      </div>
 
-      {/* Footer Actions */}
-      <div className="flex items-center justify-between mt-12 pt-6 border-t border-border">
+      {/* Content */}
+      <article className="prose prose-sm dark:prose-invert max-w-none mb-8">
+        <div
+          className="text-base leading-relaxed text-foreground whitespace-pre-wrap"
+          dangerouslySetInnerHTML={{ __html: story.content }}
+        />
+      </article>
+
+      {/* Actions */}
+      <div className="flex items-center justify-between py-4 border-t border-b border-border mb-8">
         <div className="flex items-center gap-4">
-          <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent transition-colors"><Heart className="w-5 h-5" />{story.likes_count || 0}</button>
-          <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent transition-colors"><MessageCircle className="w-5 h-5" />{story.comments_count || 0}</button>
+          <button
+            onClick={() => setLiked(!liked)}
+            className={`flex items-center gap-1.5 text-sm font-medium transition-all ${
+              liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Heart className={`w-5 h-5 ${liked ? 'fill-accent' : ''}`} />
+            {(story.likes_count || 0) + (liked ? 1 : 0)}
+          </button>
+          <button
+            onClick={() => setSaved(!saved)}
+            className={`flex items-center gap-1.5 text-sm font-medium transition-all ${
+              saved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Bookmark className={`w-5 h-5 ${saved ? 'fill-accent' : ''}`} />
+            {saved ? 'Saved' : 'Save'}
+          </button>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => setShowShare(true)}><Share2 className="w-5 h-5" /></Button>
-          <Button variant="ghost" size="icon"><Bookmark className="w-5 h-5" /></Button>
-          {user?.id === story.author_id && (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate(`/create-story?id=${storyId}`)}
-              >
-                <Edit3 className="w-5 h-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => { if (window.confirm('Delete this story?')) deleteMutation.mutate(); }}
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="w-5 h-5" />
-              </Button>
-            </>
-          )}
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowShare(true)}
+          className="gap-2"
+        >
+          <Share2 className="w-4 h-4" />
+          Share
+        </Button>
       </div>
 
       {/* Comments */}
-      <div className="mt-10 border-t border-border pt-8">
-        <CommentSection targetType="story" targetId={storyId} />
-      </div>
+      <CommentSection targetType="story" targetId={storyId} />
 
       <ShareModal
         isOpen={showShare}
         onClose={() => setShowShare(false)}
-        url={window.location.href}
+        url={`${window.location.origin}/stories/${storyId}`}
         title={story.title}
         description={story.subtitle}
       />
-
-      {/* Author CTA */}
-      <div className="mt-8 p-6 bg-secondary/50 rounded-xl text-center">
-        <Avatar className="w-16 h-16 mx-auto mb-3">
-          <AvatarImage src={story.author_avatar} />
-          <AvatarFallback className="bg-accent/10 text-accent font-bold text-lg">{story.author_name?.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <h3 className="font-semibold text-foreground">Written by {story.author_name}</h3>
-        <p className="text-sm text-muted-foreground mt-1">Follow for more zines from Baltimore</p>
-        <Button className="mt-4 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg">Follow</Button>
-      </div>
-    </article>
+    </div>
   );
 }

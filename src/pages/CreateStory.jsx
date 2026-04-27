@@ -1,261 +1,270 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2, Image as ImageIcon, ChevronDown, Clock, Eye, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Image as ImageIcon, Calendar, Lock, Globe, Eye, Save, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import ReactQuill from 'react-quill';
-import { format } from 'date-fns';
+import 'react-quill/dist/quill.snow.css';
 
-const categories = ['blog', 'newsletter', 'essay', 'announcement', 'event_recap', 'resource', 'poetry', 'novel', 'song'];
+const categories = ['blog', 'newsletter', 'essay', 'announcement', 'event_recap', 'resource'];
 
 export default function CreateStory() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [user, setUser] = useState(null);
-  const [coverFile, setCoverFile] = useState(null);
-  const [coverPreview, setCoverPreview] = useState('');
-  const [form, setForm] = useState({ title: '', subtitle: '', content: '', category: 'blog' });
-  const [existingStory, setExistingStory] = useState(null);
-  const [publishDate, setPublishDate] = useState(null);
-  const [showScheduler, setShowScheduler] = useState(false);
-
   const storyId = new URLSearchParams(window.location.search).get('id');
 
-  useEffect(() => { 
-    base44.auth.me().then(setUser);
-    if (storyId) {
-      base44.entities.Story.filter({ id: storyId }).then(results => {
-        if (results[0]) {
-          const story = results[0];
-          setExistingStory(story);
-          setForm({
-            title: story.title || '',
-            subtitle: story.subtitle || '',
-            content: story.content || '',
-            category: story.category || 'blog',
-          });
-          if (story.cover_image) setCoverPreview(story.cover_image);
-        }
-      });
-    }
-  }, [storyId]);
+  const [user, setUser] = useState(null);
+  const [isDraft, setIsDraft] = useState(!storyId);
+  const [formData, setFormData] = useState({
+    title: '',
+    subtitle: '',
+    content: '',
+    cover_image: '',
+    category: 'blog',
+    tags: [],
+    visibility: 'public',
+  });
+  const [tagInput, setTagInput] = useState('');
 
-  const updateForm = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => navigate('/'));
+  }, [navigate]);
 
-  const estimateReadTime = (html) => {
-    const text = html?.replace(/<[^>]*>/g, '') || '';
-    return Math.max(1, Math.ceil(text.split(/\s+/).length / 200));
-  };
-
-  const createMutation = useMutation({
-    mutationFn: async (status, scheduledDate = null) => {
-      let coverUrl = coverPreview;
-      if (coverFile) {
-        const result = await base44.integrations.Core.UploadFile({ file: coverFile });
-        coverUrl = result.file_url;
-      }
-      
-      const data = {
-        ...form,
-        cover_image: coverUrl,
-        status,
-        reading_time: estimateReadTime(form.content),
-      };
-
-      if (existingStory) {
-        if (status === 'published') {
-          data.published_at = scheduledDate ? scheduledDate.toISOString() : new Date().toISOString();
-        }
-        return base44.entities.Story.update(existingStory.id, data);
-      } else {
-        return base44.entities.Story.create({
-          ...data,
-          author_id: user.id,
-          author_name: user.display_name || user.full_name,
-          author_avatar: user.avatar_url,
-          published_at: status === 'published' ? (scheduledDate ? scheduledDate.toISOString() : new Date().toISOString()) : undefined,
-        });
-      }
+  const { data: story } = useQuery({
+    queryKey: ['story', storyId],
+    queryFn: async () => {
+      const results = await base44.entities.Story.filter({ id: storyId });
+      return results[0];
     },
-    onSuccess: (_, [status, scheduledDate]) => {
-      queryClient.invalidateQueries({ queryKey: ['stories'] });
-      if (status === 'published' && scheduledDate) {
-        toast({ title: `Story scheduled for ${format(scheduledDate, 'MMM d, yyyy')}!` });
-      } else if (status === 'published') {
-        toast({ title: 'Story published!' });
-      } else {
-        toast({ title: 'Draft saved!' });
+    enabled: !!storyId,
+    onSuccess: (data) => {
+      if (data) {
+        setFormData({
+          title: data.title || '',
+          subtitle: data.subtitle || '',
+          content: data.content || '',
+          cover_image: data.cover_image || '',
+          category: data.category || 'blog',
+          tags: data.tags || [],
+          visibility: data.visibility || 'public',
+        });
+        setIsDraft(data.status === 'draft');
       }
-      navigate('/writing-insights');
     },
   });
 
-  const readTime = estimateReadTime(form.content);
+  const uploadCoverImage = async (file) => {
+    if (!file) return;
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setFormData(prev => ({ ...prev, cover_image: file_url }));
+  };
+
+  const createMutation = useMutation({
+    mutationFn: (data) => {
+      if (storyId) {
+        return base44.entities.Story.update(storyId, data);
+      }
+      return base44.entities.Story.create(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['published-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['story', storyId] });
+      toast({ title: 'Success', description: storyId ? 'Story updated' : 'Story saved' });
+      navigate('/stories');
+    },
+  });
+
+  const handleSave = async (publish = false) => {
+    if (!formData.title.trim() || !formData.content.trim()) {
+      toast({ title: 'Error', description: 'Title and content are required', variant: 'destructive' });
+      return;
+    }
+
+    const wordCount = formData.content.split(/\s+/).length;
+    const readingTime = Math.ceil(wordCount / 200);
+
+    const data = {
+      ...formData,
+      author_id: user.id,
+      author_name: user.full_name,
+      author_avatar: user.avatar_url,
+      reading_time: readingTime,
+      status: publish ? 'published' : 'draft',
+      published_at: publish ? new Date().toISOString() : null,
+    };
+
+    createMutation.mutate(data);
+  };
+
+  const handleAddTag = () => {
+    if (tagInput.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...new Set([...prev.tags, tagInput.trim()])],
+      }));
+      setTagInput('');
+    }
+  };
+
+  if (!user) return <div className="flex items-center justify-center py-16">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
-          <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary transition-colors">
-            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-          </button>
-          
-          <div className="flex-1 text-center">
-            <p className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
-              {existingStory ? 'Editing' : 'New Story'}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {form.content && (
-              <div className="hidden sm:flex items-center gap-3 text-xs text-muted-foreground mr-4">
-                <div className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{readTime} min read</span>
-                </div>
-              </div>
+    <div className="max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-accent hover:underline text-sm">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleSave(false)} disabled={createMutation.isPending} className="gap-2">
+            <Save className="w-4 h-4" />
+            Save Draft
+          </Button>
+          <Button onClick={() => handleSave(true)} disabled={createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+            {createMutation.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Publishing...
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4" />
+                Publish
+              </>
             )}
-            <Button variant="outline" size="sm" onClick={() => createMutation.mutate(['draft'])} disabled={!form.title || createMutation.isPending} className="rounded-lg text-xs">
-              {createMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Draft'}
-            </Button>
+          </Button>
+        </div>
+      </div>
 
-            <Popover open={showScheduler} onOpenChange={setShowScheduler}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1.5">
-                  <Calendar className="w-3.5 h-3.5" />
-                  Schedule
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80" align="end">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-foreground mb-2">Select publication date</p>
-                    <CalendarComponent
-                      mode="single"
-                      selected={publishDate}
-                      onSelect={setPublishDate}
-                      disabled={(date) => date < new Date()}
-                      className="rounded-md border border-border"
-                    />
-                  </div>
-                  {publishDate && (
-                    <div className="text-sm text-muted-foreground">
-                      Will publish on {format(publishDate, 'MMMM d, yyyy')}
-                    </div>
-                  )}
-                  <Button
-                    onClick={() => {
-                      createMutation.mutate(['published', publishDate]);
-                      setShowScheduler(false);
-                    }}
-                    disabled={!publishDate || createMutation.isPending || !form.title}
-                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-xs"
-                  >
-                    Schedule Story
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
+      {/* Cover Image */}
+      <div className="mb-8">
+        <label className="block text-sm font-medium text-foreground mb-2">Cover Image</label>
+        <div className="relative rounded-xl overflow-hidden bg-secondary/50 aspect-video">
+          {formData.cover_image ? (
+            <>
+              <img src={formData.cover_image} alt="Cover" className="w-full h-full object-cover" />
+              <button
+                onClick={() => document.getElementById('cover-input').click()}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-all"
+              >
+                <ImageIcon className="w-8 h-8 text-white" />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => document.getElementById('cover-input').click()}
+              className="w-full h-full flex flex-col items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ImageIcon className="w-8 h-8 mb-2" />
+              Click to add cover image
+            </button>
+          )}
+        </div>
+        <input
+          id="cover-input"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => e.target.files[0] && uploadCoverImage(e.target.files[0])}
+        />
+      </div>
 
-            <Button size="sm" onClick={() => createMutation.mutate(['published', null])} disabled={!form.title || createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg text-xs">
-              {createMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : existingStory ? 'Update' : 'Publish Now'}
-            </Button>
+      {/* Title & Subtitle */}
+      <div className="mb-8 space-y-4">
+        <input
+          type="text"
+          placeholder="Story title..."
+          value={formData.title}
+          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          className="w-full text-3xl font-serif font-bold bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground"
+          maxLength={200}
+        />
+        <textarea
+          placeholder="Add a subtitle (optional)..."
+          value={formData.subtitle}
+          onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
+          className="w-full text-lg bg-transparent border-0 outline-none text-muted-foreground placeholder:text-muted-foreground/60 resize-none"
+          rows="2"
+          maxLength={300}
+        />
+      </div>
+
+      {/* Metadata */}
+      <div className="mb-8 p-4 rounded-lg bg-secondary/30 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Category</label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat.replace('_', ' ').charAt(0).toUpperCase() + cat.slice(1)}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Visibility</label>
+            <select
+              value={formData.visibility}
+              onChange={(e) => setFormData(prev => ({ ...prev, visibility: e.target.value }))}
+              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Tags */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">Tags</label>
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              placeholder="Add a tag..."
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+              className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
+              maxLength={30}
+            />
+            <Button onClick={handleAddTag} variant="outline" size="sm">Add</Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {formData.tags.map(tag => (
+              <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }))}>
+                #{tag} ✕
+              </Badge>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Main Editor Area */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl mx-auto px-4 py-8 sm:px-6">
-          {/* Cover Image */}
-          <label className="block mb-8 group cursor-pointer">
-            <div className="aspect-[16/9] rounded-xl overflow-hidden bg-secondary/50 border border-border hover:border-accent/50 transition-colors flex items-center justify-center">
-              {coverPreview ? (
-                <img src={coverPreview} alt="" className="w-full h-full object-cover group-hover:opacity-95 transition-opacity" />
-              ) : (
-                <div className="text-center">
-                  <ImageIcon className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                  <span className="text-sm text-muted-foreground">Add a cover image</span>
-                </div>
-              )}
-            </div>
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files[0]; if (f) { setCoverFile(f); setCoverPreview(URL.createObjectURL(f)); }}} />
-          </label>
-
-          {/* Title - Serif, Large, Simple */}
-          <input
-            value={form.title}
-            onChange={(e) => updateForm('title', e.target.value)}
-            placeholder="Your story title"
-            className="w-full text-5xl font-serif font-bold border-0 bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/30 mb-3 outline-none"
-          />
-
-          {/* Subtitle */}
-          <input
-            value={form.subtitle}
-            onChange={(e) => updateForm('subtitle', e.target.value)}
-            placeholder="A brief subtitle (optional)"
-            className="w-full text-xl text-muted-foreground border-0 bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/40 mb-6 outline-none"
-          />
-
-          {/* Category Selector - Minimal */}
-          <div className="flex items-center gap-3 pb-6 mb-6 border-b border-border">
-            <Select value={form.category} onValueChange={(v) => updateForm('category', v)}>
-              <SelectTrigger className="w-auto border-0 bg-transparent px-0 shadow-none gap-2 hover:bg-secondary/50 rounded-lg h-auto py-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map(c => (
-                  <SelectItem key={c} value={c} className="capitalize">
-                    {c.replace('_', ' ')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {existingStory && (
-              <span className="text-xs text-muted-foreground">
-                Updated {format(new Date(existingStory.updated_date), 'MMM d, yyyy')}
-              </span>
-            )}
-          </div>
-
-          {/* Rich Text Editor - Full Width */}
-          <div className="min-h-[700px] editor-wrapper">
-            <ReactQuill
-              value={form.content}
-              onChange={(v) => updateForm('content', v)}
-              placeholder="Begin writing your story..."
-              theme="snow"
-              modules={{
-                toolbar: [
-                  [{ 'header': [1, 2, 3, false] }],
-                  ['bold', 'italic', 'underline', 'strike'],
-                  ['blockquote', 'code-block'],
-                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                  ['link', 'image'],
-                  ['clean']
-                ]
-              }}
-              className="text-base leading-relaxed font-serif bg-transparent"
-            />
-          </div>
-
-          {/* Footer hint */}
-          {!form.content && (
-            <div className="mt-8 text-center text-sm text-muted-foreground/50">
-              <p>Tips: Use formatting to emphasize your story. Add links, quotes, and images to make it engaging.</p>
-            </div>
-          )}
-        </div>
+      {/* Content Editor */}
+      <div className="editor-wrapper mb-8">
+        <label className="block text-sm font-medium text-foreground mb-2">Content</label>
+        <ReactQuill
+          value={formData.content}
+          onChange={(content) => setFormData(prev => ({ ...prev, content }))}
+          theme="snow"
+          placeholder="Start writing your story..."
+          modules={{
+            toolbar: [
+              [{ header: [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              ['blockquote', 'code-block'],
+              ['link', 'image'],
+              ['clean'],
+            ],
+          }}
+        />
       </div>
     </div>
   );

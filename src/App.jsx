@@ -22,6 +22,8 @@ import CreateEvent from '@/pages/CreateEvent';
 import CreateCommunity from '@/pages/CreateCommunity';
 import CreateArtist from '@/pages/CreateArtist';
 import CreateBusiness from '@/pages/CreateBusiness';
+import Stories from '@/pages/Stories';
+import StoryDetail from '@/pages/StoryDetail';
 import CreateStory from '@/pages/CreateStory';
 import Neighborhoods from '@/pages/Neighborhoods';
 import CommunityDetail from '@/pages/CommunityDetail';
@@ -110,6 +112,8 @@ const AuthenticatedApp = () => {
         <Route path="/create-community" element={<CreateCommunity />} />
         <Route path="/create-artist" element={<CreateArtist />} />
         <Route path="/create-business" element={<CreateBusiness />} />
+        <Route path="/stories" element={<Stories />} />
+        <Route path="/stories/:id" element={<StoryDetail />} />
         <Route path="/create-story" element={<CreateStory />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />

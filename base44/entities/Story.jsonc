@@ -54,6 +54,14 @@
       ],
       "default": "draft"
     },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private"
+      ],
+      "default": "public"
+    },
     "published_at": {
       "type": "string"
     },
