@@ -18,6 +18,7 @@ import CommunityMessageModal from '@/components/community/CommunityMessageModal'
 import ShareModal from '@/components/shared/ShareModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import CommunityCreatePostModal from '@/components/community/CommunityCreatePostModal';
+import CommunityCreateEventModal from '@/components/community/CommunityCreateEventModal';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ export default function CommunityDetail() {
   const [showMessage, setShowMessage] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [postView, setPostView] = useState('feed');
+  const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
   const communityId = window.location.pathname.split('/communities/')[1];
@@ -59,9 +62,9 @@ export default function CommunityDetail() {
   });
 
   const { data: events = [] } = useQuery({
-    queryKey: ['community-events', community?.neighborhood_name],
-    queryFn: () => base44.entities.Event.filter({ neighborhood_name: community.neighborhood_name }, '-date', 6),
-    enabled: !!community?.neighborhood_name,
+    queryKey: ['community-events', communityId],
+    queryFn: () => base44.entities.Event.filter({ community_id: communityId }, '-date', 20),
+    enabled: !!communityId,
   });
 
   if (isLoading) return (
@@ -257,9 +260,30 @@ export default function CommunityDetail() {
         </TabsContent>
 
         <TabsContent value="events" className="mt-4 space-y-3">
+          {isOwner && (
+            <button
+              onClick={() => setShowCreateEvent(true)}
+              className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4" />Create an Event
+            </button>
+          )}
           {events.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground text-sm">No upcoming events nearby.</div>
-          ) : events.map(event => <EventCard key={event.id} event={event} compact />)}
+            <div className="text-center py-12 text-muted-foreground text-sm">No events yet.</div>
+          ) : events.map(event => (
+            <div key={event.id} className="relative group">
+              <EventCard event={event} compact />
+              {isOwner && (
+                <button
+                  onClick={() => setEditingEvent(event)}
+                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-background/80 hover:bg-background border border-border opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  aria-label="Edit event"
+                >
+                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              )}
+            </div>
+          ))}
         </TabsContent>
 
         <TabsContent value="invite" className="mt-4">
@@ -293,6 +317,8 @@ export default function CommunityDetail() {
       </Tabs>
 
       {showCreatePost && user && <CommunityCreatePostModal community={community} user={user} onClose={() => setShowCreatePost(false)} />}
+      {showCreateEvent && user && <CommunityCreateEventModal community={community} user={user} onClose={() => setShowCreateEvent(false)} />}
+      {editingEvent && <CommunityCreateEventModal community={community} user={user} event={editingEvent} onClose={() => setEditingEvent(null)} />}
       {showEdit && <CommunityEditModal community={community} onClose={() => setShowEdit(false)} />}
       {showInvite && <CommunityInviteModal community={community} onClose={() => setShowInvite(false)} />}
       {showInviteFriends && <InviteFriendsModal onClose={() => setShowInviteFriends(false)} />}
