@@ -245,12 +245,12 @@ export default function ArtistWorkDetail({ series, isOwner, ownerId, artistId, o
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setLightboxWork(null)}>
               <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
-                className="relative max-w-2xl w-full bg-card rounded-2xl overflow-hidden shadow-2xl flex flex-col sm:flex-row max-h-[90vh]"
+                className="relative max-w-4xl w-full bg-card rounded-2xl overflow-hidden shadow-2xl flex flex-col sm:flex-row max-h-[90vh]"
                 onClick={e => e.stopPropagation()}>
                 <button onClick={() => setLightboxWork(null)} className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 text-white hover:bg-black/60"><X className="w-4 h-4" /></button>
                 {allImgs.length > 0 && (
-                  <div className="sm:w-1/2 bg-black flex-shrink-0 relative flex items-center justify-center">
-                    <img src={currentImg} alt={lightboxWork.title} className="w-full object-contain max-h-[50vh] sm:max-h-[90vh]" />
+                  <div className="sm:w-2/3 bg-black flex-shrink-0 relative flex items-center justify-center">
+                    <img src={currentImg} alt={lightboxWork.title} className="w-full object-contain max-h-[60vh] sm:max-h-[90vh]" />
                     {allImgs.length > 1 && (
                       <>
                         <button disabled={lightboxImgIdx === 0} onClick={() => setLightboxImgIdx(i => i - 1)}
