@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, Clock, TrendingUp, BookOpen, Share2, UserPlus, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, Clock, TrendingUp, BookOpen, Share2, UserPlus, Plus, Pencil, Trash2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { format } from 'date-fns';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ShareModal from '@/components/shared/ShareModal';
 
@@ -32,6 +36,17 @@ export default function WritingInsights() {
 
   const deleteMutation = useMutation({
     mutationFn: (storyId) => base44.entities.Story.delete(storyId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-stories', user?.id] });
+    },
+  });
+
+  const publishMutation = useMutation({
+    mutationFn: ({ storyId, scheduledDate = null }) =>
+      base44.entities.Story.update(storyId, {
+        status: 'published',
+        published_at: scheduledDate ? scheduledDate.toISOString() : new Date().toISOString(),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-stories', user?.id] });
     },
@@ -225,14 +240,51 @@ export default function WritingInsights() {
               <div key={story.id} className="flex items-center gap-4 p-3 bg-secondary/40 rounded-lg group hover:bg-secondary/60 transition-colors">
                 <div className="text-lg font-bold text-accent/60 w-6">#{idx + 1}</div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground truncate">{story.title}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-foreground truncate">{story.title}</p>
+                    <Badge variant="outline" className="text-xs capitalize flex-shrink-0">{story.status || 'draft'}</Badge>
+                  </div>
                   <p className="text-xs text-muted-foreground capitalize">{story.category?.replace('_', ' ')}</p>
                 </div>
                 <div className="text-right flex-shrink-0 mr-3">
                   <p className="text-sm font-medium text-accent">{(story.views_count || 0).toLocaleString()} views</p>
                   <p className="text-xs text-muted-foreground">{story.reading_time || 0} min read</p>
                 </div>
-                <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1.5 items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  {story.status === 'draft' && (
+                    <>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button size="sm" variant="ghost" className="h-8 px-2 text-xs gap-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            Schedule
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-72" align="end">
+                          <div className="space-y-3">
+                            <p className="text-sm font-medium">Select publication date</p>
+                            <CalendarComponent
+                              mode="single"
+                              disabled={(date) => date < new Date()}
+                              onSelect={(date) => {
+                                publishMutation.mutate({ storyId: story.id, scheduledDate: date });
+                              }}
+                              className="rounded-md border border-border"
+                            />
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => publishMutation.mutate({ storyId: story.id })}
+                        disabled={publishMutation.isPending}
+                        className="h-8 px-2 text-xs bg-accent/10 text-accent hover:bg-accent/20"
+                      >
+                        Publish
+                      </Button>
+                    </>
+                  )}
                   <Button
                     size="sm"
                     variant="ghost"
