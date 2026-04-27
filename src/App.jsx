@@ -44,6 +44,7 @@ import PromoterDashboard from '@/pages/PromoterDashboard';
 import EventTicketing from '@/pages/EventTicketing';
 import OrderConfirmation from '@/pages/OrderConfirmation';
 import EventCheckIn from '@/pages/EventCheckIn';
+import TicketSalesDashboard from '@/pages/TicketSalesDashboard';
 
 // Routes already exist in App.jsx - verify they're present
 
@@ -102,6 +103,7 @@ const AuthenticatedApp = () => {
         <Route path="/events/:id/tickets" element={<EventTicketing />} />
         <Route path="/events/:id/check-in" element={<EventCheckIn />} />
         <Route path="/order-confirmation" element={<OrderConfirmation />} />
+        <Route path="/ticket-sales-dashboard" element={<TicketSalesDashboard />} />
         <Route path="/stories" element={<StoriesV2 />} />
         <Route path="/stories/:id" element={<StoryDetailV2 />} />
         <Route path="/writing" element={<WritingDashboardV2 />} />
