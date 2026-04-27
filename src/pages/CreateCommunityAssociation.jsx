@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Building, Upload } from 'lucide-react';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 
 export default function CreateCommunityAssociation() {
@@ -14,9 +15,19 @@ export default function CreateCommunityAssociation() {
   const { toast } = useToast();
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({
-    name: '', tagline: '', description: '', neighborhood_name: '',
+    name: '', tagline: '', description: '', neighborhood_id: '', neighborhood_name: '',
     address: '', website: '', contact_email: '', phone: '',
   });
+
+  const { data: neighborhoods = [] } = useQuery({
+    queryKey: ['neighborhoods-list'],
+    queryFn: () => base44.entities.Neighborhood.list('name', 100),
+  });
+
+  const handleNeighborhoodChange = (id) => {
+    const found = neighborhoods.find(n => n.id === id);
+    setForm(f => ({ ...f, neighborhood_id: id, neighborhood_name: found?.name || '' }));
+  };
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -95,7 +106,12 @@ export default function CreateCommunityAssociation() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label>Neighborhood</Label>
-            <Input className="mt-1" placeholder="e.g. Hampden" value={form.neighborhood_name} onChange={e => set('neighborhood_name', e.target.value)} />
+            <Select value={form.neighborhood_id} onValueChange={handleNeighborhoodChange}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder="Select neighborhood…" /></SelectTrigger>
+              <SelectContent>
+                {neighborhoods.map(n => <SelectItem key={n.id} value={n.id}>{n.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label>Address</Label>

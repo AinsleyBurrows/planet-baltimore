@@ -23,6 +23,7 @@ import MassMessageModal from '@/components/association/MassMessageModal';
 import VotingTab from '@/components/association/VotingTab';
 import DocumentsTab from '@/components/association/DocumentsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import AssociationEditModal from '@/components/association/AssociationEditModal';
 import { format } from 'date-fns';
 
 export default function CommunityAssociationDetail() {
@@ -34,6 +35,7 @@ export default function CommunityAssociationDetail() {
   const [showBylawsEditor, setShowBylawsEditor] = useState(false);
   const [showMassMessage, setShowMassMessage] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const [editingBoardMember, setEditingBoardMember] = useState(null);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
@@ -191,14 +193,24 @@ export default function CommunityAssociationDetail() {
           </div>
           <div className="flex gap-2 mb-1 flex-wrap justify-end">
             {isAdmin && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="rounded-lg gap-1.5 border-primary/40 text-primary"
-                onClick={() => setShowMassMessage(true)}
-              >
-                <Send className="w-3.5 h-3.5" />Message All
-              </Button>
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-lg gap-1.5"
+                  onClick={() => setShowEditProfile(true)}
+                >
+                  <Edit3 className="w-3.5 h-3.5" />Edit Profile
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-lg gap-1.5 border-primary/40 text-primary"
+                  onClick={() => setShowMassMessage(true)}
+                >
+                  <Send className="w-3.5 h-3.5" />Message All
+                </Button>
+              </>
             )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9"><Share2 className="w-4 h-4" /></Button>
             <Button
@@ -471,6 +483,10 @@ export default function CommunityAssociationDetail() {
 
       {showInvite && (
         <InviteFriendsModal onClose={() => setShowInvite(false)} />
+      )}
+
+      {showEditProfile && (
+        <AssociationEditModal association={association} onClose={() => setShowEditProfile(false)} />
       )}
     </div>
   );
