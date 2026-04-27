@@ -82,7 +82,7 @@ export default function Profile() {
 
   const { data: posts = [] } = useQuery({
     queryKey: ['my-posts', user?.id],
-    queryFn: () => base44.entities.Post.filter({ author_id: user.id }, '-created_date', 50),
+    queryFn: () => base44.entities.Post.filter({ author_id: user.id, page_type: 'personal' }, '-created_date', 50),
     enabled: !!user?.id,
   });
 

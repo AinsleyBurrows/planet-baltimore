@@ -30,7 +30,7 @@ export default function ArtistGallery({ portfolioUrls = [], posts = [], isOwner 
       queryClient.invalidateQueries({ queryKey: ['artist', artist.id] });
     } else if (item.type === 'post') {
       await base44.entities.Post.delete(item.postId);
-      queryClient.invalidateQueries({ queryKey: ['artist-posts', artist?.owner_id] });
+      queryClient.invalidateQueries({ queryKey: ['artist-posts', artist?.id] });
     }
     if (lightboxIdx === idx) setLightboxIdx(null);
   };

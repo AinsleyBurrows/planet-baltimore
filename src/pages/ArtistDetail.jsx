@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
-  Camera, Pencil, MessageSquare
+  Camera, Pencil, MessageSquare, Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,8 @@ import ArtistStudioJournal from '@/components/artist/ArtistStudioJournal';
 import ArtistCVTab from '@/components/artist/ArtistCVTab';
 import ArtistCreateEvent from '@/components/artist/ArtistCreateEvent';
 import ArtistGallery from '@/components/artist/ArtistGallery';
+import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
+import PostCard from '@/components/shared/PostCard';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
@@ -45,6 +47,7 @@ export default function ArtistDetail() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -66,9 +69,9 @@ export default function ArtistDetail() {
   });
 
   const { data: posts = [] } = useQuery({
-    queryKey: ['artist-posts', artist?.owner_id],
-    queryFn: () => base44.entities.Post.filter({ author_id: artist.owner_id }, '-created_date', 30),
-    enabled: !!artist?.owner_id,
+    queryKey: ['artist-posts', artistId],
+    queryFn: () => base44.entities.Post.filter({ page_id: artistId, page_type: 'artist' }, '-created_date', 30),
+    enabled: !!artistId,
   });
 
   const { data: events = [] } = useQuery({
@@ -204,6 +207,9 @@ export default function ArtistDetail() {
       {/* Tabs */}
       <Tabs defaultValue="journal">
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex-wrap gap-0.5">
+          <TabsTrigger value="posts" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+            <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
+          </TabsTrigger>
           <TabsTrigger value="journal" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
             <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
           </TabsTrigger>
@@ -231,6 +237,22 @@ export default function ArtistDetail() {
             <Users className="w-3.5 h-3.5" /><span className="hidden xs:inline">Invite</span>
           </TabsTrigger>
         </TabsList>
+
+        {/* Posts */}
+        <TabsContent value="posts" className="mt-4 space-y-4">
+          {isOwner && (
+            <button
+              onClick={() => setShowCreatePost(true)}
+              className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4" />New Post
+            </button>
+          )}
+          {posts.length === 0
+            ? <p className="text-center py-10 text-sm text-muted-foreground">No posts yet.</p>
+            : posts.map(p => <PostCard key={p.id} post={p} currentUserId={user?.id} />)
+          }
+        </TabsContent>
 
         {/* Studio Journal */}
         <TabsContent value="journal" className="mt-4">
@@ -295,6 +317,7 @@ export default function ArtistDetail() {
       {showEditProfile && <ArtistEditProfileModal artist={artist} onClose={() => setShowEditProfile(false)} />}
       {showMessage && <ArtistMessageModal artist={artist} onClose={() => setShowMessage(false)} />}
       {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
+      {showCreatePost && user && <ArtistCreatePostModal artist={artist} user={user} onClose={() => setShowCreatePost(false)} />}
     </div>
   );
 }

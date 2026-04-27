@@ -136,6 +136,8 @@ export default function CreatePost() {
         author_id: user.id,
         author_name: user.display_name || user.full_name,
         author_avatar: user.avatar_url,
+        author_type: 'user',
+        page_type: 'personal',
         content,
         media_urls: mediaUrls,
         media_type: mediaUrls.length > 0 ? activeType : 'text',

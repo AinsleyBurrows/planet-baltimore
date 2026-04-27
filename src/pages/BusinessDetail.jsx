@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -21,6 +21,7 @@ import CreativeHub from '@/components/business/CreativeHub';
 import NonprofitHub from '@/components/business/NonprofitHub';
 import BusinessEditProfileModal from '@/components/business/BusinessEditProfileModal';
 import BusinessMessageModal from '@/components/business/BusinessMessageModal';
+import BusinessCreatePostModal from '@/components/business/BusinessCreatePostModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 
 const categoryLabels = {
@@ -36,6 +37,7 @@ export default function BusinessDetail() {
   const [showEdit, setShowEdit] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -57,9 +59,9 @@ export default function BusinessDetail() {
   });
 
   const { data: posts = [] } = useQuery({
-    queryKey: ['business-posts', business?.owner_id],
-    queryFn: () => base44.entities.Post.filter({ author_id: business.owner_id }, '-created_date', 20),
-    enabled: !!business?.owner_id,
+    queryKey: ['business-posts', businessId],
+    queryFn: () => base44.entities.Post.filter({ page_id: businessId, page_type: 'business' }, '-created_date', 20),
+    enabled: !!businessId,
   });
 
   const { data: events = [] } = useQuery({
@@ -235,9 +237,18 @@ export default function BusinessDetail() {
         )}
 
         <TabsContent value="posts" className="mt-4 space-y-4">
-          {posts.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground text-sm">No updates yet from this business.</div>
-          ) : posts.map(post => <PostCard key={post.id} post={post} />)}
+          {isOwner && (
+            <button
+              onClick={() => setShowCreatePost(true)}
+              className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4" />Post Update
+            </button>
+          )}
+          {posts.length === 0
+            ? <div className="text-center py-12 text-muted-foreground text-sm">No updates yet.</div>
+            : posts.map(post => <PostCard key={post.id} post={post} currentUserId={user?.id} />)
+          }
         </TabsContent>
 
         <TabsContent value="comments" className="mt-4">
@@ -262,6 +273,7 @@ export default function BusinessDetail() {
       {showEdit && <BusinessEditProfileModal business={business} onClose={() => setShowEdit(false)} />}
       {showMessage && <BusinessMessageModal business={business} onClose={() => setShowMessage(false)} />}
       {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
+      {showCreatePost && user && <BusinessCreatePostModal business={business} user={user} onClose={() => setShowCreatePost(false)} />}
     </div>
   );
 }
