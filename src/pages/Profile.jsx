@@ -333,7 +333,7 @@ export default function Profile() {
     <ShareModal
       isOpen={showShare}
       onClose={() => setShowShare(false)}
-      url={window.location.href}
+      url={`${window.location.origin}/profile/${user?.id}`}
       title={user?.display_name || user?.full_name}
       description={user?.bio}
     />
