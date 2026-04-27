@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus } from 'lucide-react';
+import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus, Grid2X2, List } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +29,7 @@ const ORG_TYPE_LABELS = {
 export default function ArtsOrgDetail() {
   const id = window.location.pathname.split('/').pop();
   const queryClient = useQueryClient();
+  const [postView, setPostView] = useState('feed'); // 'feed' | 'grid'
   const [showInvite, setShowInvite] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -201,17 +202,64 @@ export default function ArtsOrgDetail() {
           </TabsList>
 
           <TabsContent value="posts" className="mt-4 space-y-4">
-            {isOwner && (
-              <button
-                onClick={() => setShowCreatePost(true)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4" />Write a post for {org.name}
-              </button>
+            <div className="flex items-center justify-between">
+              {isOwner ? (
+                <button
+                  onClick={() => setShowCreatePost(true)}
+                  className="px-3 py-1.5 rounded-lg border border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-xs font-medium transition-colors flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />New Post
+                </button>
+              ) : <div />}
+              <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
+                <button
+                  onClick={() => setPostView('feed')}
+                  className={`p-1.5 rounded-md transition-colors ${postView === 'feed' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  aria-label="Feed view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setPostView('grid')}
+                  className={`p-1.5 rounded-md transition-colors ${postView === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  aria-label="Grid view"
+                >
+                  <Grid2X2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {posts.length === 0 ? (
+              <p className="text-center py-10 text-sm text-muted-foreground">No posts yet.</p>
+            ) : postView === 'feed' ? (
+              <div className="space-y-4">
+                {posts.map(p => <PostCard key={p.id} post={p} currentUserId={currentUser?.id} />)}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                {posts.filter(p => p.media_urls?.length > 0).map(p => {
+                  const isVideo = p.media_type === 'video' || p.media_urls?.[0]?.match(/\.(mp4|webm|mov)/i);
+                  return (
+                    <div key={p.id} className="aspect-square rounded-xl overflow-hidden bg-secondary relative group cursor-pointer">
+                      {isVideo ? (
+                        <video src={p.media_urls[0]} className="w-full h-full object-cover" muted preload="metadata" />
+                      ) : (
+                        <img src={p.media_urls[0]} alt="" className="w-full h-full object-cover" />
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-end p-2 opacity-0 group-hover:opacity-100">
+                        <p className="text-white text-xs line-clamp-2">{p.content}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+                {posts.filter(p => !p.media_urls?.length).map(p => (
+                  <div key={p.id} className="aspect-square rounded-xl overflow-hidden flex items-center justify-center p-3 text-center cursor-pointer group"
+                    style={{ backgroundColor: p.bg_color || 'hsl(var(--secondary))' }}>
+                    <p className="text-xs font-medium line-clamp-5" style={{ color: p.bg_color ? '#fff' : 'hsl(var(--foreground))' }}>{p.content}</p>
+                  </div>
+                ))}
+              </div>
             )}
-            {posts.length === 0
-              ? <p className="text-center py-10 text-sm text-muted-foreground">No posts yet.</p>
-              : posts.map(p => <PostCard key={p.id} post={p} currentUserId={currentUser?.id} />)}
           </TabsContent>
 
           <TabsContent value="events" className="mt-4 space-y-4">
