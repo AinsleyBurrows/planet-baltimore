@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink } from 'lucide-react';
+import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ import EventCard from '@/components/shared/EventCard';
 import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import ArtsOrgMessageModal from '@/components/arts/ArtsOrgMessageModal';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -25,6 +26,10 @@ const ORG_TYPE_LABELS = {
 export default function ArtsOrgDetail() {
   const id = window.location.pathname.split('/').pop();
   const [showInvite, setShowInvite] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
 
   const { data: org, isLoading } = useQuery({
     queryKey: ['arts-org', id],
@@ -126,10 +131,23 @@ export default function ArtsOrgDetail() {
               : <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{events.map(e => <EventCard key={e.id} event={e} />)}</div>}
           </TabsContent>
 
-          <TabsContent value="invite" className="mt-4">
-            <button onClick={() => setShowInvite(true)} className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors">
-              Invite Friends
+          <TabsContent value="invite" className="mt-4 space-y-3">
+            <button
+              onClick={() => setShowInvite(true)}
+              className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              <Users className="w-4 h-4" />
+              Invite Friends to Planet Baltimore
             </button>
+            {currentUser?.id === org?.owner_id && (
+              <button
+                onClick={() => setShowMessage(true)}
+                className="w-full px-4 py-3 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <Send className="w-4 h-4" />
+                Message All Followers
+              </button>
+            )}
           </TabsContent>
 
           <TabsContent value="comments" className="mt-4">
@@ -159,9 +177,8 @@ export default function ArtsOrgDetail() {
         </Tabs>
       </div>
 
-      {showInvite && (
-        <InviteFriendsModal onClose={() => setShowInvite(false)} />
-      )}
+      {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
+      {showMessage && <ArtsOrgMessageModal org={org} onClose={() => setShowMessage(false)} />}
     </div>
   );
 }
