@@ -10,7 +10,6 @@ const navItems = [
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
-  { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: Map, label: 'City Map', path: '/map' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Compass, label: 'Discover', path: '/discover' },
@@ -19,6 +18,7 @@ const navItems = [
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: User, label: 'Profile', path: '/profile' },
+  { icon: BookOpen, label: 'Stories', path: '/stories' },
 ];
 
 export default function LeftSidebar() {
