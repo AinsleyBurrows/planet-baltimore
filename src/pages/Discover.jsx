@@ -15,9 +15,9 @@ export default function Discover() {
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const { data: events = [] } = useQuery({ queryKey: ['discover-events'], queryFn: () => base44.entities.Event.list('-created_date', 6) });
-  const { data: artists = [] } = useQuery({ queryKey: ['discover-artists'], queryFn: () => base44.entities.ArtistPage.list('-created_date', 6) });
-  const { data: stories = [] } = useQuery({ queryKey: ['discover-stories'], queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-created_date', 4) });
+  const { data: events = [] } = useQuery({ queryKey: ['discover-events'], queryFn: () => base44.entities.Event.list('-created_date', 6), staleTime: 180000 });
+  const { data: artists = [] } = useQuery({ queryKey: ['discover-artists'], queryFn: () => base44.entities.ArtistPage.list('-created_date', 6), staleTime: 180000 });
+  const { data: stories = [] } = useQuery({ queryKey: ['discover-stories'], queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-created_date', 4), staleTime: 180000 });
 
   return (
     <div className="space-y-8">

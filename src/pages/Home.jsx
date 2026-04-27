@@ -52,15 +52,18 @@ export default function Home() {
 
   const { data: posts = [], isLoading: loadingPosts } = useQuery({
     queryKey: ['home-posts'],
-    queryFn: () => base44.entities.Post.list('-created_date', 60),
+    queryFn: () => base44.entities.Post.list('-created_date', 30),
+    staleTime: 120000,
   });
   const { data: stories = [], isLoading: loadingStories } = useQuery({
     queryKey: ['home-stories'],
-    queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-created_date', 30),
+    queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-created_date', 15),
+    staleTime: 120000,
   });
   const { data: events = [], isLoading: loadingEvents } = useQuery({
     queryKey: ['home-events'],
-    queryFn: () => base44.entities.Event.filter({ status: 'upcoming' }, 'date', 30),
+    queryFn: () => base44.entities.Event.filter({ status: 'upcoming' }, 'date', 15),
+    staleTime: 120000,
   });
   const { data: follows = [], isLoading: loadingFollows } = useQuery({
     queryKey: ['follows', currentUser?.id],

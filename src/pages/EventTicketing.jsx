@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Clock, AlertCircle, Loader2, ShieldCheck } from 'lucide-react';
@@ -14,6 +15,7 @@ import BuyerTrustSection from '@/components/ticketing/BuyerTrustSection';
 
 export default function EventTicketing() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const eventId = window.location.pathname.split('/events/')[1]?.split('/')[0];
   const [selectedTickets, setSelectedTickets] = useState({});
   const [promoDiscount, setPromoDiscount] = useState(0);
@@ -51,9 +53,12 @@ export default function EventTicketing() {
       });
 
       // Redirect to Stripe checkout
-      if (response.sessionId) {
-        window.location.href = `https://checkout.stripe.com/pay/${response.sessionId}`;
+      if (response.data?.sessionId) {
+        window.location.href = `https://checkout.stripe.com/pay/${response.data.sessionId}`;
       }
+    },
+    onError: (error) => {
+      toast({ title: 'Error', description: error.message || 'Checkout failed', variant: 'destructive' });
     },
   });
 
@@ -107,9 +112,11 @@ export default function EventTicketing() {
         <TicketTypeManager ticketTypes={ticketTypes} selectedTickets={selectedTickets} onSelect={setSelectedTickets} />
 
         {/* Promo Code */}
-        {totalQuantity > 0 && (
+         {totalQuantity > 0 && (
           <PromoCodeSection
             eventId={eventId}
+            ticketTypeId={Object.keys(selectedTickets)[0]}
+            quantity={totalQuantity}
             onApply={(promoData) => {
               if (promoData) {
                 const discount = promoData.type === 'percentage'

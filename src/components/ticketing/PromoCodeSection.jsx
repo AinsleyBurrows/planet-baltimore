@@ -1,27 +1,33 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { Tag, AlertCircle, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function PromoCodeSection({ eventId, onApply }) {
+export default function PromoCodeSection({ eventId, ticketTypeId, quantity, onApply }) {
   const [code, setCode] = useState('');
   const [result, setResult] = useState(null);
   const [isApplied, setIsApplied] = useState(false);
 
   const applyMutation = useMutation({
     mutationFn: async () => {
-      // In real app, validate against backend
-      const response = await fetch(`/api/promo-codes/${code}?eventId=${eventId}`).catch(() => null);
-      if (!response || !response.ok) throw new Error('Invalid code');
-      return response.json();
+      const response = await base44.functions.invoke('validatePromoCode', {
+        code: code.toUpperCase(),
+        eventId,
+        ticketTypeId,
+        quantity,
+      });
+      return response.data;
     },
     onSuccess: (data) => {
-      setResult({ discount: data.discount, type: data.type, message: 'Code applied!' });
-      setIsApplied(true);
-      onApply?.(data);
+      if (data.valid) {
+        setResult({ discount: data.discount, type: data.type, message: `${data.discountLabel} applied!` });
+        setIsApplied(true);
+        onApply?.(data);
+      }
     },
-    onError: () => {
-      setResult({ error: 'Code not valid for this event' });
+    onError: (error) => {
+      setResult({ error: error.message || 'Code not valid for this event' });
     },
   });
 

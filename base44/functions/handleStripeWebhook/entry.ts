@@ -28,7 +28,17 @@ Deno.serve(async (req) => {
 
     const base44 = createClientFromRequest(req);
     const paymentIntent = event.data.object;
-    const { eventId, ticketTypeId, quantity, buyerId, promoterId } = paymentIntent.metadata;
+    
+    // Get metadata from either checkout session or payment intent
+    let metadata = paymentIntent.metadata;
+    if (!metadata.eventId && paymentIntent.client_secret) {
+      // Try to get from checkout session
+      const sessions = await stripe.checkout.sessions.list({ limit: 1 });
+      const session = sessions.data.find(s => s.payment_intent === paymentIntent.id);
+      metadata = session?.metadata || metadata;
+    }
+    
+    const { eventId, ticketTypeId, quantity, buyerId, promoterId } = metadata;
 
     // Create ticket order
     const orderNumber = `ORD-${Date.now()}`;

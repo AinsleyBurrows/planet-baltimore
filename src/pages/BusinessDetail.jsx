@@ -62,14 +62,16 @@ export default function BusinessDetail() {
 
   const { data: posts = [] } = useQuery({
     queryKey: ['business-posts', businessId],
-    queryFn: () => base44.entities.Post.filter({ page_id: businessId, page_type: 'business' }, '-created_date', 20),
+    queryFn: () => base44.entities.Post.filter({ page_id: businessId, page_type: 'business' }, '-created_date', 10),
     enabled: !!businessId,
+    staleTime: 60000,
   });
 
   const { data: events = [] } = useQuery({
     queryKey: ['business-events', business?.owner_id],
-    queryFn: () => base44.entities.Event.filter({ organizer_id: business.owner_id }, '-date', 10),
+    queryFn: () => base44.entities.Event.filter({ organizer_id: business.owner_id }, '-date', 5),
     enabled: !!business?.owner_id,
+    staleTime: 60000,
   });
 
   if (isLoading) return (
