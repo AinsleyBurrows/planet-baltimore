@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, Clock, TrendingUp, BookOpen, Share2, UserPlus } from 'lucide-react';
+import { ArrowLeft, Eye, Clock, TrendingUp, BookOpen, Share2, UserPlus, Plus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,6 +18,7 @@ export default function WritingInsights() {
   const [user, setUser] = useState(null);
   const [showInvite, setShowInvite] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -27,6 +28,13 @@ export default function WritingInsights() {
     queryKey: ['my-stories', user?.id],
     queryFn: () => base44.entities.Story.filter({ author_id: user.id }, '-created_date', 100),
     enabled: !!user?.id,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (storyId) => base44.entities.Story.delete(storyId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-stories', user?.id] });
+    },
   });
 
   if (isLoading) return (
@@ -79,6 +87,14 @@ export default function WritingInsights() {
         <div className="flex gap-2">
           <Button
             size="sm"
+            onClick={() => navigate('/create-story')}
+            className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">New Writing</span>
+          </Button>
+          <Button
+            size="sm"
             variant="outline"
             onClick={() => setShowInvite(true)}
             className="gap-2"
@@ -89,7 +105,7 @@ export default function WritingInsights() {
           <Button
             size="sm"
             onClick={() => setShowShare(true)}
-            className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
           >
             <Share2 className="w-4 h-4" />
             <span className="hidden sm:inline">Share</span>
@@ -206,15 +222,38 @@ export default function WritingInsights() {
           <h2 className="font-semibold text-foreground mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-accent" />Top Performing Stories</h2>
           <div className="space-y-3">
             {topStories.map((story, idx) => (
-              <div key={story.id} className="flex items-center gap-4 p-3 bg-secondary/40 rounded-lg">
+              <div key={story.id} className="flex items-center gap-4 p-3 bg-secondary/40 rounded-lg group hover:bg-secondary/60 transition-colors">
                 <div className="text-lg font-bold text-accent/60 w-6">#{idx + 1}</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-foreground truncate">{story.title}</p>
                   <p className="text-xs text-muted-foreground capitalize">{story.category?.replace('_', ' ')}</p>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-right flex-shrink-0 mr-3">
                   <p className="text-sm font-medium text-accent">{(story.views_count || 0).toLocaleString()} views</p>
                   <p className="text-xs text-muted-foreground">{story.reading_time || 0} min read</p>
+                </div>
+                <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => navigate(`/create-story?id=${story.id}`)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      if (window.confirm('Delete this story? This action cannot be undone.')) {
+                        deleteMutation.mutate(story.id);
+                      }
+                    }}
+                    disabled={deleteMutation.isPending}
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
                 </div>
               </div>
             ))}
