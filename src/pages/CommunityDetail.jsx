@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus, Camera, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus, Camera, MessageSquare, Plus, Grid2X2, List, Pin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,6 +17,7 @@ import CommunityInviteModal from '@/components/community/CommunityInviteModal';
 import CommunityMessageModal from '@/components/community/CommunityMessageModal';
 import ShareModal from '@/components/shared/ShareModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import CommunityCreatePostModal from '@/components/community/CommunityCreatePostModal';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
@@ -28,6 +29,8 @@ export default function CommunityDetail() {
   const [showInviteFriends, setShowInviteFriends] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [postView, setPostView] = useState('feed');
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
   const communityId = window.location.pathname.split('/communities/')[1];
@@ -184,9 +187,73 @@ export default function CommunityDetail() {
         </TabsList>
 
         <TabsContent value="posts" className="mt-4 space-y-4">
+          <div className="flex items-center justify-between">
+            {isOwner ? (
+              <button
+                onClick={() => setShowCreatePost(true)}
+                className="px-3 py-1.5 rounded-lg border border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-xs font-medium transition-colors flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />New Post
+              </button>
+            ) : <div />}
+            <div className="flex items-center gap-1 bg-secondary rounded-lg p-0.5">
+              <button
+                onClick={() => setPostView('feed')}
+                className={`p-1.5 rounded-md transition-colors ${postView === 'feed' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                aria-label="Feed view"
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setPostView('grid')}
+                className={`p-1.5 rounded-md transition-colors ${postView === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                aria-label="Grid view"
+              >
+                <Grid2X2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
           {posts.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground text-sm">No posts yet in this community.</div>
-          ) : posts.map(post => <PostCard key={post.id} post={post} />)}
+          ) : postView === 'feed' ? (
+            <div className="space-y-4">
+              {[...posts].sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0)).map(post => (
+                <div key={post.id} className="relative">
+                  {post.is_pinned && (
+                    <div className="flex items-center gap-1 text-xs text-accent font-medium mb-1 ml-1">
+                      <Pin className="w-3 h-3" />Pinned
+                    </div>
+                  )}
+                  <PostCard post={post} currentUserId={user?.id} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {posts.filter(p => p.media_urls?.length > 0).map(p => {
+                const isVideo = p.media_type === 'video' || p.media_urls?.[0]?.match(/\.(mp4|webm|mov)/i);
+                return (
+                  <div key={p.id} className="aspect-square rounded-xl overflow-hidden bg-secondary relative group cursor-pointer">
+                    {isVideo ? (
+                      <video src={p.media_urls[0]} className="w-full h-full object-cover" muted preload="metadata" />
+                    ) : (
+                      <img src={p.media_urls[0]} alt="" className="w-full h-full object-cover" />
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-end p-2 opacity-0 group-hover:opacity-100">
+                      <p className="text-white text-xs line-clamp-2">{p.content}</p>
+                    </div>
+                  </div>
+                );
+              })}
+              {posts.filter(p => !p.media_urls?.length).map(p => (
+                <div key={p.id} className="aspect-square rounded-xl flex items-center justify-center p-3 text-center cursor-pointer"
+                  style={{ backgroundColor: p.bg_color || 'hsl(var(--secondary))' }}>
+                  <p className="text-xs font-medium line-clamp-5" style={{ color: p.bg_color ? '#fff' : 'hsl(var(--foreground))' }}>{p.content}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="events" className="mt-4 space-y-3">
@@ -225,6 +292,7 @@ export default function CommunityDetail() {
         </TabsContent>
       </Tabs>
 
+      {showCreatePost && user && <CommunityCreatePostModal community={community} user={user} onClose={() => setShowCreatePost(false)} />}
       {showEdit && <CommunityEditModal community={community} onClose={() => setShowEdit(false)} />}
       {showInvite && <CommunityInviteModal community={community} onClose={() => setShowInvite(false)} />}
       {showInviteFriends && <InviteFriendsModal onClose={() => setShowInviteFriends(false)} />}
