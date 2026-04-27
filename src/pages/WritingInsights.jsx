@@ -2,17 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, Clock, TrendingUp, BookOpen } from 'lucide-react';
+import { ArrowLeft, Eye, Clock, TrendingUp, BookOpen, Share2, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import ShareModal from '@/components/shared/ShareModal';
 
 const COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
 
 export default function WritingInsights() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [showInvite, setShowInvite] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -70,6 +75,25 @@ export default function WritingInsights() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-2xl font-bold text-foreground">Writing Insights</h1>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowInvite(true)}
+            className="gap-2"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span className="hidden sm:inline">Invite</span>
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => setShowShare(true)}
+            className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2"
+          >
+            <Share2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Share</span>
+          </Button>
         </div>
       </div>
 
@@ -204,6 +228,15 @@ export default function WritingInsights() {
           <Button className="mt-4 bg-accent hover:bg-accent/90" onClick={() => navigate('/create-story')}>Write Your First Story</Button>
         </Card>
       )}
+
+      {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        url={`${window.location.origin}/profile/${user?.id}`}
+        title={`Check out my writing insights on Planet Baltimore`}
+        description={`I've published ${publishedCount} stories with ${totalViews.toLocaleString()} total views.`}
+      />
     </div>
   );
 }
