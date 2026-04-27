@@ -6,18 +6,20 @@ import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
 import TextBgPicker, { getTextColor } from '@/components/shared/TextBgPicker';
 
-export default function CommunityCreatePostModal({ community, user, onClose }) {
+export default function CommunityCreatePostModal({ community, user, onClose, editingPost = null }) {
   const queryClient = useQueryClient();
-  const [content, setContent] = useState('');
+  const isEditing = !!editingPost;
+  const [content, setContent] = useState(editingPost?.content || '');
   const [mediaFiles, setMediaFiles] = useState([]);
-  const [bgColor, setBgColor] = useState(null);
-  const [isPinned, setIsPinned] = useState(false);
+  const [existingMediaUrls, setExistingMediaUrls] = useState(editingPost?.media_urls || []);
+  const [bgColor, setBgColor] = useState(editingPost?.bg_color || null);
+  const [isPinned, setIsPinned] = useState(editingPost?.is_pinned || false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
 
-  const isTextOnly = mediaFiles.length === 0;
+  const isTextOnly = mediaFiles.length === 0 && existingMediaUrls.length === 0;
 
   const addFiles = (files, type) => {
     const newFiles = Array.from(files).map(file => ({
@@ -33,37 +35,53 @@ export default function CommunityCreatePostModal({ community, user, onClose }) {
     setMediaFiles(prev => prev.filter((_, i) => i !== idx));
   };
 
+  const removeExistingUrl = (idx) => {
+    setExistingMediaUrls(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const handlePost = async () => {
-    if (!content.trim() && mediaFiles.length === 0) return;
+    if (!content.trim() && mediaFiles.length === 0 && existingMediaUrls.length === 0) return;
     setSaving(true);
 
-    let media_urls = [];
-    let media_type = 'text';
+    let media_urls = [...existingMediaUrls];
+    let media_type = editingPost?.media_type || 'text';
 
     if (mediaFiles.length > 0) {
       setUploading(true);
       const uploaded = await Promise.all(
         mediaFiles.map(m => base44.integrations.Core.UploadFile({ file: m.file }))
       );
-      media_urls = uploaded.map(r => r.file_url);
+      media_urls = [...media_urls, ...uploaded.map(r => r.file_url)];
       media_type = mediaFiles[0].type === 'video' ? 'video' : 'image';
       setUploading(false);
     }
 
-    await base44.entities.Post.create({
-      content: content.trim(),
-      author_id: user.id,
-      author_name: user.full_name,
-      author_avatar: user.avatar_url,
-      author_type: 'community',
-      community_id: community.id,
-      page_type: 'community',
-      visibility: 'public',
-      media_urls,
-      media_type,
-      bg_color: isTextOnly && bgColor ? bgColor : undefined,
-      is_pinned: isPinned,
-    });
+    if (media_urls.length === 0) media_type = 'text';
+
+    if (isEditing) {
+      await base44.entities.Post.update(editingPost.id, {
+        content: content.trim(),
+        media_urls,
+        media_type,
+        bg_color: isTextOnly && bgColor ? bgColor : undefined,
+        is_pinned: isPinned,
+      });
+    } else {
+      await base44.entities.Post.create({
+        content: content.trim(),
+        author_id: user.id,
+        author_name: user.full_name,
+        author_avatar: user.avatar_url,
+        author_type: 'community',
+        community_id: community.id,
+        page_type: 'community',
+        visibility: 'public',
+        media_urls,
+        media_type,
+        bg_color: isTextOnly && bgColor ? bgColor : undefined,
+        is_pinned: isPinned,
+      });
+    }
 
     queryClient.invalidateQueries({ queryKey: ['community-posts', community.id] });
     setSaving(false);
@@ -90,7 +108,7 @@ export default function CommunityCreatePostModal({ community, user, onClose }) {
           onClick={e => e.stopPropagation()}
         >
           <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0">
-            <h2 className="text-sm font-semibold text-foreground">New Post — {community.name}</h2>
+            <h2 className="text-sm font-semibold text-foreground">{isEditing ? 'Edit Post' : `New Post — ${community.name}`}</h2>
             <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
@@ -117,7 +135,28 @@ export default function CommunityCreatePostModal({ community, user, onClose }) {
               />
             </div>
 
-            {/* Media previews */}
+            {/* Existing media (edit mode) */}
+            {existingMediaUrls.length > 0 && (
+              <div className={`grid gap-2 ${existingMediaUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                {existingMediaUrls.map((url, idx) => (
+                  <div key={idx} className="relative rounded-xl overflow-hidden aspect-square bg-secondary">
+                    {/\.(mp4|webm|mov)/i.test(url) ? (
+                      <video src={url} className="w-full h-full object-cover" muted />
+                    ) : (
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                    )}
+                    <button
+                      onClick={() => removeExistingUrl(idx)}
+                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3 text-white" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* New media previews */}
             {mediaFiles.length > 0 && (
               <div className={`grid gap-2 ${mediaFiles.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
                 {mediaFiles.map((m, idx) => (
@@ -149,7 +188,7 @@ export default function CommunityCreatePostModal({ community, user, onClose }) {
             )}
 
             {/* Media add buttons */}
-            {mediaFiles.length < 4 && (
+            {(mediaFiles.length + existingMediaUrls.length) < 4 && (
               <div className="flex gap-2">
                 <button
                   onClick={() => imageInputRef.current?.click()}
@@ -189,8 +228,8 @@ export default function CommunityCreatePostModal({ community, user, onClose }) {
               className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
             >
               {busy
-                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{uploading ? 'Uploading...' : 'Posting...'}</>
-                : <><Send className="w-4 h-4 mr-2" />Publish Post</>
+                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{uploading ? 'Uploading...' : 'Saving...'}</>
+                : <><Send className="w-4 h-4 mr-2" />{isEditing ? 'Save Changes' : 'Publish Post'}</>
               }
             </Button>
           </div>

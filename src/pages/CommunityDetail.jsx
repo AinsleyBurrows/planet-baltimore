@@ -31,6 +31,7 @@ export default function CommunityDetail() {
   const [showShare, setShowShare] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
   const [postView, setPostView] = useState('feed');
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -228,7 +229,15 @@ export default function CommunityDetail() {
                       <Pin className="w-3 h-3" />Pinned
                     </div>
                   )}
-                  <PostCard post={post} currentUserId={user?.id} />
+                  <PostCard
+                    post={post}
+                    currentUserId={user?.id}
+                    onEdit={(p) => setEditingPost(p)}
+                    onDelete={async (id) => {
+                      await base44.entities.Post.delete(id);
+                      queryClient.invalidateQueries({ queryKey: ['community-posts', communityId] });
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -317,6 +326,7 @@ export default function CommunityDetail() {
       </Tabs>
 
       {showCreatePost && user && <CommunityCreatePostModal community={community} user={user} onClose={() => setShowCreatePost(false)} />}
+      {editingPost && user && <CommunityCreatePostModal community={community} user={user} editingPost={editingPost} onClose={() => setEditingPost(null)} />}
       {showCreateEvent && user && <CommunityCreateEventModal community={community} user={user} onClose={() => setShowCreateEvent(false)} />}
       {editingEvent && <CommunityCreateEventModal community={community} user={user} event={editingEvent} onClose={() => setEditingEvent(null)} />}
       {showEdit && <CommunityEditModal community={community} onClose={() => setShowEdit(false)} />}
