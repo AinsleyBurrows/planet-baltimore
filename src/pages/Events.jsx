@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import EventCard from '@/components/shared/EventCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import CalendarView from '@/components/events/CalendarView';
+import CreateEventModal from '@/components/events/CreateEventModal';
 
 const CATEGORIES = ['All', 'Art', 'Music', 'Education', 'Community', 'Wellness', 'Festival', 'Family', 'Other'];
 const ARTS_TYPES = ['All Events', 'Exhibitions', 'Workshops', 'Performances', 'Talks'];
@@ -23,6 +24,7 @@ export default function Events() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [artsFilter, setArtsFilter] = useState('All Events');
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events'],
@@ -66,11 +68,9 @@ export default function Events() {
               <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
-          <Link to="/create-event">
-            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-1 sm:gap-1.5 rounded-lg p-2 sm:px-3">
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-            </Button>
-          </Link>
+          <Button onClick={() => setShowCreateModal(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground gap-1 sm:gap-1.5 rounded-lg p-2 sm:px-3">
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+          </Button>
         </div>
       </div>
 
@@ -140,6 +140,8 @@ export default function Events() {
           {filtered.map(event => <EventCard key={event.id} event={event} />)}
         </div>
       )}
+
+      <CreateEventModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
     </div>
   );
 }
