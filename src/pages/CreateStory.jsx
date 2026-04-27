@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import ReactQuill from 'react-quill';
 
-const categories = ['blog', 'newsletter', 'essay', 'announcement', 'event_recap', 'resource'];
+const categories = ['blog', 'newsletter', 'essay', 'announcement', 'event_recap', 'resource', 'poetry', 'novel', 'song'];
 
 export default function CreateStory() {
   const navigate = useNavigate();
