@@ -1,18 +1,23 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Loader2, ImagePlus, VideoIcon, Trash2 } from 'lucide-react';
+import { X, Send, Loader2, ImagePlus, VideoIcon, Trash2, Pin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
+import TextBgPicker, { getTextColor } from '@/components/shared/TextBgPicker';
 
 export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
   const queryClient = useQueryClient();
   const [content, setContent] = useState('');
   const [mediaFiles, setMediaFiles] = useState([]); // { file, previewUrl, type }
+  const [bgColor, setBgColor] = useState(null);
+  const [isPinned, setIsPinned] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const imageInputRef = useRef(null);
   const videoInputRef = useRef(null);
+
+  const isTextOnly = mediaFiles.length === 0;
 
   const addFiles = (files, type) => {
     const newFiles = Array.from(files).map(file => ({
@@ -20,7 +25,8 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
       previewUrl: URL.createObjectURL(file),
       type,
     }));
-    setMediaFiles(prev => [...prev, ...newFiles].slice(0, 4)); // max 4
+    setMediaFiles(prev => [...prev, ...newFiles].slice(0, 4));
+    setBgColor(null); // clear color when media is added
   };
 
   const removeFile = (idx) => {
@@ -55,6 +61,8 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
       visibility: 'public',
       media_urls,
       media_type,
+      bg_color: isTextOnly && bgColor ? bgColor : undefined,
+      is_pinned: isPinned,
     });
 
     queryClient.invalidateQueries({ queryKey: ['arts-org-posts', org.id] });
@@ -89,14 +97,26 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
           </div>
 
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
-            <textarea
-              autoFocus
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              placeholder="What's happening at your organization?"
-              rows={4}
-              className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm resize-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring placeholder:text-muted-foreground"
-            />
+
+            {/* Text area — optionally colored */}
+            <div
+              className="rounded-xl overflow-hidden transition-all"
+              style={isTextOnly && bgColor ? { backgroundColor: bgColor, padding: '16px' } : {}}
+            >
+              <textarea
+                autoFocus
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                placeholder="What's happening at your organization?"
+                rows={4}
+                className="w-full rounded-lg bg-transparent px-3 py-2 text-sm resize-none focus-visible:outline-none placeholder:text-muted-foreground"
+                style={
+                  isTextOnly && bgColor
+                    ? { color: getTextColor(bgColor), border: 'none', outline: 'none' }
+                    : { border: '1px solid hsl(var(--input))' }
+                }
+              />
+            </div>
 
             {/* Media previews */}
             {mediaFiles.length > 0 && (
@@ -119,6 +139,18 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
               </div>
             )}
 
+            {/* Text color picker — only when no media */}
+            {isTextOnly && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <TextBgPicker value={bgColor} onChange={(v) => setBgColor(prev => prev === v ? null : v)} />
+                  {bgColor && (
+                    <button onClick={() => setBgColor(null)} className="text-xs text-muted-foreground hover:text-foreground underline ml-3 flex-shrink-0">Clear</button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Media add buttons */}
             {mediaFiles.length < 4 && (
               <div className="flex gap-2">
@@ -138,6 +170,19 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
                 <input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={e => addFiles(e.target.files, 'video')} />
               </div>
             )}
+
+            {/* Pin toggle */}
+            <button
+              onClick={() => setIsPinned(v => !v)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-colors ${
+                isPinned
+                  ? 'border-accent bg-accent/10 text-accent'
+                  : 'border-border text-muted-foreground hover:border-accent hover:text-accent'
+              }`}
+            >
+              <Pin className="w-3.5 h-3.5" />
+              {isPinned ? 'Pinned to top' : 'Pin to top of page'}
+            </button>
           </div>
 
           <div className="px-5 py-4 border-t border-border flex-shrink-0">
@@ -146,7 +191,10 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
               disabled={busy || (!content.trim() && mediaFiles.length === 0)}
               className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
             >
-              {busy ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{uploading ? 'Uploading...' : 'Posting...'}</> : <><Send className="w-4 h-4 mr-2" />Publish Post</>}
+              {busy
+                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{uploading ? 'Uploading...' : 'Posting...'}</>
+                : <><Send className="w-4 h-4 mr-2" />Publish Post</>
+              }
             </Button>
           </div>
         </motion.div>

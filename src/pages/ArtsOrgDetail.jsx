@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus, Grid2X2, List } from 'lucide-react';
+import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus, Grid2X2, List, Pin } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -233,7 +233,16 @@ export default function ArtsOrgDetail() {
               <p className="text-center py-10 text-sm text-muted-foreground">No posts yet.</p>
             ) : postView === 'feed' ? (
               <div className="space-y-4">
-                {posts.map(p => <PostCard key={p.id} post={p} currentUserId={currentUser?.id} />)}
+                {[...posts].sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0)).map(p => (
+                  <div key={p.id} className="relative">
+                    {p.is_pinned && (
+                      <div className="flex items-center gap-1 text-xs text-accent font-medium mb-1 ml-1">
+                        <Pin className="w-3 h-3" />Pinned
+                      </div>
+                    )}
+                    <PostCard post={p} currentUserId={currentUser?.id} />
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
