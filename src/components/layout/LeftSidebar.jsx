@@ -18,7 +18,7 @@ const navItems = [
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: User, label: 'Profile', path: '/profile' },
-  { icon: BookOpen, label: 'Your Story', path: '/stories' },
+  { icon: BookOpen, label: 'Baltimore Writers', path: '/stories' },
 ];
 
 export default function LeftSidebar() {
