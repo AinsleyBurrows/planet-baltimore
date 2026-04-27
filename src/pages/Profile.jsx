@@ -242,22 +242,33 @@ export default function Profile() {
           )
         )}
         {activeTab === 'stories' && (
-          stories.length > 0 ? (
-            stories.map(s => (
-              <div key={s.id} className="relative group">
-                <StoryCard story={s} />
-                <button
-                  onClick={() => { if (window.confirm('Delete this story?')) handleDeleteStory(s.id); }}
-                  className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all opacity-0 group-hover:opacity-100 shadow-sm"
-                  aria-label="Delete story"
-                >
-                  <Trash2 className="w-4 h-4" />
+          <>
+            {isOwnProfile && (
+              <Link to="/create-story">
+                <button className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                  <Plus className="w-4 h-4" />Create Story
                 </button>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-12 text-muted-foreground text-sm">No stories published yet.</div>
-          )
+              </Link>
+            )}
+            {stories.length > 0 ? (
+              stories.map(s => (
+                <div key={s.id} className="relative group">
+                  <StoryCard story={s} />
+                  {isOwnProfile && (
+                    <button
+                      onClick={() => { if (window.confirm('Delete this story?')) handleDeleteStory(s.id); }}
+                      className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all opacity-0 group-hover:opacity-100 shadow-sm"
+                      aria-label="Delete story"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12 text-muted-foreground text-sm">No stories published yet.</div>
+            )}
+          </>
         )}
         {activeTab === 'events' && <RSVPEvents myRsvps={myRsvps} rsvpedEvents={rsvpedEvents} />}
         {activeTab === 'created_events' && (
