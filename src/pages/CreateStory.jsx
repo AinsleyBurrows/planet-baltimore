@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2, Image as ImageIcon, ChevronDown, Clock, Eye } from 'lucide-react';
+import { ArrowLeft, Loader2, Image as ImageIcon, ChevronDown, Clock, Eye, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import ReactQuill from 'react-quill';
 import { format } from 'date-fns';
 
@@ -22,6 +24,8 @@ export default function CreateStory() {
   const [coverPreview, setCoverPreview] = useState('');
   const [form, setForm] = useState({ title: '', subtitle: '', content: '', category: 'blog' });
   const [existingStory, setExistingStory] = useState(null);
+  const [publishDate, setPublishDate] = useState(null);
+  const [showScheduler, setShowScheduler] = useState(false);
 
   const storyId = new URLSearchParams(window.location.search).get('id');
 
@@ -52,7 +56,7 @@ export default function CreateStory() {
   };
 
   const createMutation = useMutation({
-    mutationFn: async (status) => {
+    mutationFn: async (status, scheduledDate = null) => {
       let coverUrl = coverPreview;
       if (coverFile) {
         const result = await base44.integrations.Core.UploadFile({ file: coverFile });
@@ -67,6 +71,9 @@ export default function CreateStory() {
       };
 
       if (existingStory) {
+        if (status === 'published') {
+          data.published_at = scheduledDate ? scheduledDate.toISOString() : new Date().toISOString();
+        }
         return base44.entities.Story.update(existingStory.id, data);
       } else {
         return base44.entities.Story.create({
@@ -74,14 +81,20 @@ export default function CreateStory() {
           author_id: user.id,
           author_name: user.display_name || user.full_name,
           author_avatar: user.avatar_url,
-          published_at: status === 'published' ? new Date().toISOString() : undefined,
+          published_at: status === 'published' ? (scheduledDate ? scheduledDate.toISOString() : new Date().toISOString()) : undefined,
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, [status, scheduledDate]) => {
       queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast({ title: existingStory ? 'Story updated!' : 'Story saved!' });
-      navigate('/stories');
+      if (status === 'published' && scheduledDate) {
+        toast({ title: `Story scheduled for ${format(scheduledDate, 'MMM d, yyyy')}!` });
+      } else if (status === 'published') {
+        toast({ title: 'Story published!' });
+      } else {
+        toast({ title: 'Draft saved!' });
+      }
+      navigate('/writing-insights');
     },
   });
 
@@ -111,11 +124,50 @@ export default function CreateStory() {
                 </div>
               </div>
             )}
-            <Button variant="outline" size="sm" onClick={() => createMutation.mutate('draft')} disabled={!form.title || createMutation.isPending} className="rounded-lg text-xs">
+            <Button variant="outline" size="sm" onClick={() => createMutation.mutate(['draft'])} disabled={!form.title || createMutation.isPending} className="rounded-lg text-xs">
               {createMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Draft'}
             </Button>
-            <Button size="sm" onClick={() => createMutation.mutate('published')} disabled={!form.title || createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg text-xs">
-              {createMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : existingStory ? 'Update' : 'Publish'}
+
+            <Popover open={showScheduler} onOpenChange={setShowScheduler}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="rounded-lg text-xs gap-1.5">
+                  <Calendar className="w-3.5 h-3.5" />
+                  Schedule
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="end">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium text-foreground mb-2">Select publication date</p>
+                    <CalendarComponent
+                      mode="single"
+                      selected={publishDate}
+                      onSelect={setPublishDate}
+                      disabled={(date) => date < new Date()}
+                      className="rounded-md border border-border"
+                    />
+                  </div>
+                  {publishDate && (
+                    <div className="text-sm text-muted-foreground">
+                      Will publish on {format(publishDate, 'MMMM d, yyyy')}
+                    </div>
+                  )}
+                  <Button
+                    onClick={() => {
+                      createMutation.mutate(['published', publishDate]);
+                      setShowScheduler(false);
+                    }}
+                    disabled={!publishDate || createMutation.isPending || !form.title}
+                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-xs"
+                  >
+                    Schedule Story
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <Button size="sm" onClick={() => createMutation.mutate(['published', null])} disabled={!form.title || createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg text-xs">
+              {createMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : existingStory ? 'Update' : 'Publish Now'}
             </Button>
           </div>
         </div>
