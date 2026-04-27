@@ -121,8 +121,8 @@ export default function CreateStory() {
 
         <div>
           <Label className="mb-2 block">Your Story</Label>
-          <div className="min-h-[300px]">
-            <ReactQuill value={form.content} onChange={(v) => updateForm('content', v)} placeholder="Write your story here..." theme="snow" className="rounded-lg" />
+          <div className="min-h-[600px]">
+            <ReactQuill value={form.content} onChange={(v) => updateForm('content', v)} placeholder="Write your story here..." theme="snow" className="rounded-lg h-full" />
           </div>
         </div>
       </div>
