@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,11 +39,32 @@ export default function Profile() {
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
   const [showShare, setShowShare] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser);
   }, []);
+
+  const { data: followStatus } = useQuery({
+    queryKey: ['follow-status', currentUser?.id, user?.id],
+    queryFn: async () => {
+      if (!currentUser?.id || !user?.id || currentUser.id === user.id) return null;
+      const follows = await base44.entities.Follow.filter({ 
+        follower_id: currentUser.id,
+        target_type: 'user',
+        target_id: user.id
+      });
+      return follows.length > 0;
+    },
+    enabled: !!currentUser?.id && !!user?.id && currentUser.id !== user.id,
+  });
+
+  useEffect(() => {
+    if (followStatus !== undefined) {
+      setIsFollowing(followStatus);
+    }
+  }, [followStatus]);
 
   useEffect(() => {
     if (isOwnProfile) {
@@ -69,6 +90,29 @@ export default function Profile() {
     }
     await base44.entities.Post.update(post.id, { is_pinned: !post.is_pinned });
     queryClient.invalidateQueries({ queryKey: ['my-posts', user?.id] });
+  };
+
+  const handleToggleFollow = async () => {
+    if (!currentUser || currentUser.id === user.id) return;
+    if (isFollowing) {
+      const follows = await base44.entities.Follow.filter({ 
+        follower_id: currentUser.id,
+        target_type: 'user',
+        target_id: user.id
+      });
+      if (follows.length > 0) {
+        await base44.entities.Follow.delete(follows[0].id);
+      }
+    } else {
+      await base44.entities.Follow.create({
+        follower_id: currentUser.id,
+        target_type: 'user',
+        target_id: user.id,
+        target_name: user.full_name,
+      });
+    }
+    setIsFollowing(!isFollowing);
+    queryClient.invalidateQueries({ queryKey: ['follow-status', currentUser?.id, user?.id] });
   };
 
   const handleDeleteEvent = async (eventId) => {
@@ -188,6 +232,17 @@ export default function Profile() {
                 className="rounded-lg transition-all duration-150 active:scale-95 w-8 h-8 p-0"
               >
                 <UserPlus className="w-4 h-4" />
+              </Button>
+            )}
+            {!isOwnProfile && currentUser && (
+              <Button
+                size="sm"
+                variant={isFollowing ? "default" : "outline"}
+                onClick={handleToggleFollow}
+                className={`rounded-lg transition-all duration-150 active:scale-95 gap-1.5 ${isFollowing ? 'bg-accent hover:bg-accent/90 text-accent-foreground' : ''}`}
+              >
+                <UserCheck className="w-4 h-4" />
+                <span className="hidden sm:inline">{isFollowing ? 'Following' : 'Follow'}</span>
               </Button>
             )}
             <Button
