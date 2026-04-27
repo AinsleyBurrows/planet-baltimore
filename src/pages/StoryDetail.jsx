@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, Share2, Bookmark, MoreHorizontal, Trash2, Edit, Clock, Eye } from 'lucide-react';
+import { ArrowLeft, Heart, Share2, Bookmark, MoreHorizontal, Trash2, Edit, Clock, Eye, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -42,13 +42,25 @@ export default function StoryDetail() {
     },
   });
 
+  const featureMutation = useMutation({
+    mutationFn: () => base44.entities.Story.update(storyId, { is_featured: !story.is_featured }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['story', storyId] });
+    },
+  });
+
   const handleDelete = () => {
     if (window.confirm('Delete this story?')) {
       deleteMutation.mutate();
     }
   };
 
+  const handleToggleFeature = () => {
+    featureMutation.mutate();
+  };
+
   const isOwner = user?.id === story?.author_id;
+  const isAdmin = user?.role === 'admin';
 
   if (isLoading) return (
     <div className="space-y-6">
@@ -94,22 +106,32 @@ export default function StoryDetail() {
             <h1 className="text-3xl sm:text-4xl font-serif font-bold text-foreground mb-2">{story.title}</h1>
             {story.subtitle && <p className="text-lg text-muted-foreground">{story.subtitle}</p>}
           </div>
-          {isOwner && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-lg flex-shrink-0">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate(`/create-story?id=${storyId}`)}>
-                  <Edit className="w-4 h-4 mr-2" />Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive" onClick={handleDelete}>
-                  <Trash2 className="w-4 h-4 mr-2" />Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          {(isOwner || isAdmin) && (
+           <DropdownMenu>
+             <DropdownMenuTrigger asChild>
+               <Button variant="outline" size="icon" className="rounded-lg flex-shrink-0">
+                 <MoreHorizontal className="w-4 h-4" />
+               </Button>
+             </DropdownMenuTrigger>
+             <DropdownMenuContent align="end">
+               {isOwner && (
+                 <DropdownMenuItem onClick={() => navigate(`/create-story?id=${storyId}`)}>
+                   <Edit className="w-4 h-4 mr-2" />Edit
+                 </DropdownMenuItem>
+               )}
+               {isAdmin && (
+                 <DropdownMenuItem onClick={handleToggleFeature}>
+                   <Star className={`w-4 h-4 mr-2 ${story.is_featured ? 'fill-accent' : ''}`} />
+                   {story.is_featured ? 'Unfeature' : 'Feature'}
+                 </DropdownMenuItem>
+               )}
+               {isOwner && (
+                 <DropdownMenuItem className="text-destructive" onClick={handleDelete}>
+                   <Trash2 className="w-4 h-4 mr-2" />Delete
+                 </DropdownMenuItem>
+               )}
+             </DropdownMenuContent>
+           </DropdownMenu>
           )}
         </div>
 
