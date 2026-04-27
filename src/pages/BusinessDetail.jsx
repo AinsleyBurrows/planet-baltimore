@@ -212,7 +212,7 @@ export default function BusinessDetail() {
               {isRestaurant && <><Utensils className="w-3.5 h-3.5" /> Menu</>}
               {isRetail && <><ShoppingCart className="w-3.5 h-3.5" /> Shop</>}
               {isService && <><Briefcase className="w-3.5 h-3.5" /> Services</>}
-              {isEntertainment && <><Music className="w-3.5 h-3.5" /> Posts</>}
+              {isEntertainment && <>Posts</>}
               {isHealth && <><HeartPulse className="w-3.5 h-3.5" /> Health</>}
               {isCreative && <><Palette className="w-3.5 h-3.5" /> Portfolio</>}
               {isNonprofit && <><HandHeart className="w-3.5 h-3.5" /> Mission</>}
