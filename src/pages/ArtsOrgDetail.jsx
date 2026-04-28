@@ -23,6 +23,11 @@ import MembershipTab from '@/components/arts/tabs/MembershipTab';
 import OpportunitiesTab from '@/components/arts/tabs/OpportunitiesTab';
 import PressKitTab from '@/components/arts/tabs/PressKitTab';
 import AnnouncementsTab from '@/components/arts/tabs/AnnouncementsTab';
+import GrantTrackerTab from '@/components/arts/nonprofit/GrantTrackerTab';
+import VolunteersTab from '@/components/arts/nonprofit/VolunteersTab';
+import ImpactTab from '@/components/arts/nonprofit/ImpactTab';
+import SponsorsTab from '@/components/arts/nonprofit/SponsorsTab';
+import NewsletterTab from '@/components/arts/nonprofit/NewsletterTab';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -60,6 +65,7 @@ export default function ArtsOrgDetail() {
   });
 
   const isOwner = currentUser?.id === org?.owner_id;
+  const isNonprofit = (org?.org_type === 'nonprofit') || (org?.secondary_types || []).includes('nonprofit');
 
   const uploadImage = async (file, field) => {
     setUploading(field);
@@ -208,6 +214,11 @@ export default function ArtsOrgDetail() {
             <TabsTrigger value="opportunities" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Opportunities</TabsTrigger>
             <TabsTrigger value="press" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Press</TabsTrigger>
             <TabsTrigger value="announcements" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Updates</TabsTrigger>
+            {isNonprofit && <TabsTrigger value="grants" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Grants</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="volunteers" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Volunteers</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="impact" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Impact</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="sponsors" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Sponsors</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="newsletter" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Newsletter</TabsTrigger>}
             <TabsTrigger value="invite" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Invite</TabsTrigger>
             <TabsTrigger value="about" className="flex-1 rounded-lg text-xs sm:text-sm py-2">About</TabsTrigger>
             <TabsTrigger value="comments" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Comments</TabsTrigger>
@@ -320,6 +331,32 @@ export default function ArtsOrgDetail() {
               ? <p className="text-center py-10 text-sm text-muted-foreground">No upcoming events.</p>
               : <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{events.map(e => <EventCard key={e.id} event={e} />)}</div>}
           </TabsContent>
+
+          {isNonprofit && (
+            <TabsContent value="grants" className="mt-4">
+              <GrantTrackerTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isNonprofit && (
+            <TabsContent value="volunteers" className="mt-4">
+              <VolunteersTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isNonprofit && (
+            <TabsContent value="impact" className="mt-4">
+              <ImpactTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isNonprofit && (
+            <TabsContent value="sponsors" className="mt-4">
+              <SponsorsTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isNonprofit && (
+            <TabsContent value="newsletter" className="mt-4">
+              <NewsletterTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
 
           <TabsContent value="invite" className="mt-4 space-y-3">
             <button

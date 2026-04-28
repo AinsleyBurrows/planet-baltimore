@@ -260,6 +260,138 @@
           }
         }
       }
+    },
+    "grants": {
+      "type": "array",
+      "description": "Grant and funding tracker (nonprofit)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "funder_name": {
+            "type": "string"
+          },
+          "grant_name": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "deadline": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "volunteers": {
+      "type": "array",
+      "description": "Volunteers and committee members (nonprofit)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "committee": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "availability": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "impact": {
+      "type": "object",
+      "description": "Impact and programs report (nonprofit)",
+      "properties": {
+        "programs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "stats": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "annual_report_url": {
+          "type": "string"
+        }
+      }
+    },
+    "sponsors": {
+      "type": "array",
+      "description": "Sponsors and partners board (nonprofit)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "logo_url": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "newsletter": {
+      "type": "object",
+      "description": "Newsletter settings and archive (nonprofit)",
+      "properties": {
+        "signup_url": {
+          "type": "string"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "newsletter_subscribers": {
+      "type": "array",
+      "description": "Mailing list subscribers (nonprofit)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "signed_up_at": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [
