@@ -4,18 +4,23 @@ import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, MapPin, Calendar, Minus, Plus, ShieldCheck, Loader2, Ticket, Crown, Zap, Star, Tag, Users, Info, Lock } from 'lucide-react';
+import {
+  ArrowLeft, MapPin, Calendar, Minus, Plus, ShieldCheck,
+  Loader2, Ticket, Crown, Zap, Star, Tag, Users, Info,
+  Lock, ChevronDown, ChevronUp, CheckCircle2, AlertCircle
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 
 const GROUP_ICONS = { vip: Crown, early_bird: Zap, free: Star, group: Users, donation: Tag, general: Ticket };
 const GROUP_LABELS = { vip: 'VIP', early_bird: 'Early Bird', free: 'Free', group: 'Group', donation: 'Donation', general: 'GA' };
-const GROUP_STYLES = {
-  vip: 'border-purple-200 bg-purple-50',
-  early_bird: 'border-yellow-200 bg-yellow-50',
-  free: 'border-green-200 bg-green-50',
-  group: 'border-blue-200 bg-blue-50',
-  default: 'border-border bg-card',
+const GROUP_ACCENT = {
+  vip: { badge: 'bg-purple-100 text-purple-700 border-purple-200', ring: 'ring-purple-400', dot: 'bg-purple-400' },
+  early_bird: { badge: 'bg-amber-100 text-amber-700 border-amber-200', ring: 'ring-amber-400', dot: 'bg-amber-400' },
+  free: { badge: 'bg-emerald-100 text-emerald-700 border-emerald-200', ring: 'ring-emerald-400', dot: 'bg-emerald-400' },
+  group: { badge: 'bg-blue-100 text-blue-700 border-blue-200', ring: 'ring-blue-400', dot: 'bg-blue-400' },
+  donation: { badge: 'bg-pink-100 text-pink-700 border-pink-200', ring: 'ring-pink-400', dot: 'bg-pink-400' },
+  general: { badge: 'bg-secondary text-secondary-foreground border-border', ring: 'ring-foreground/30', dot: 'bg-foreground/40' },
 };
 
 export default function EventTicketing() {
@@ -29,11 +34,10 @@ export default function EventTicketing() {
   const [promoData, setPromoData] = useState(null);
   const [promoError, setPromoError] = useState('');
   const [validatingPromo, setValidatingPromo] = useState(false);
+  const [showPromo, setShowPromo] = useState(false);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   const { data: event, isLoading: eventLoading } = useQuery({
     queryKey: ['event', eventId],
@@ -77,36 +81,24 @@ export default function EventTicketing() {
       if (found.valid_until && new Date(found.valid_until) < now) { setPromoError('Code has expired'); return; }
       if (found.usage_limit && (found.usage_count || 0) >= found.usage_limit) { setPromoError('Code usage limit reached'); return; }
       setPromoData(found);
-      toast({ title: 'Promo applied!', description: found.discount_type === 'percentage' ? `${found.discount_value}% off` : `$${found.discount_value} off` });
-    } catch {
-      setPromoError('Failed to validate code');
-    } finally {
-      setValidatingPromo(false);
-    }
+      toast({ title: '🎉 Promo applied!', description: found.discount_type === 'percentage' ? `${found.discount_value}% off your order` : `$${found.discount_value} off your order` });
+    } catch { setPromoError('Failed to validate code'); }
+    finally { setValidatingPromo(false); }
   };
 
   const checkoutMutation = useMutation({
     mutationFn: async () => {
-      const totalQty = Object.values(selectedTickets).reduce((s, q) => s + q, 0);
-      if (totalQty === 0) throw new Error('Select at least one ticket');
-
-      // Handle multi-type orders: create one session per ticket type (Stripe limitation)
-      // For simplicity, take first type selected
-      const [firstTypeId, firstQty] = Object.entries(selectedTickets)[0];
+      const entries = Object.entries(selectedTickets).filter(([, qty]) => qty > 0);
+      if (entries.length === 0) throw new Error('Select at least one ticket');
+      // Use first ticket type for the session (Stripe single-session)
+      const [firstTypeId, firstQty] = entries[0];
       const response = await base44.functions.invoke('createCheckoutSession', {
-        eventId,
-        ticketTypeId: firstTypeId,
-        quantity: firstQty,
-        promoterId,
-        promoCodeId: promoData?.id || '',
+        eventId, ticketTypeId: firstTypeId, quantity: firstQty,
+        promoterId, promoCodeId: promoData?.id || '',
       });
-
-      const { sessionId } = response.data;
+      const { sessionId, free, orderId } = response.data;
+      if (free) { navigate(`/order-confirmation?order_id=${orderId}`); return; }
       if (!sessionId) throw new Error('Failed to create checkout session');
-      // Redirect to Stripe Checkout
-      const stripe = await import('https://js.stripe.com/v3/');
-      const stripeInstance = window.Stripe ? window.Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '') : null;
-
       window.location.href = `https://checkout.stripe.com/c/pay/${sessionId}`;
     },
     onError: (error) => toast({ title: 'Checkout Failed', description: error.message, variant: 'destructive' }),
@@ -127,185 +119,286 @@ export default function EventTicketing() {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 gap-4">
-        <Lock className="w-12 h-12 text-muted-foreground opacity-30" />
-        <p className="text-muted-foreground">Sign in to purchase tickets</p>
-        <Button onClick={() => base44.auth.redirectToLogin(window.location.pathname)} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-background px-4">
+        <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center">
+          <Lock className="w-8 h-8 text-accent" />
+        </div>
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-foreground mb-1">Sign in to get tickets</h2>
+          <p className="text-muted-foreground text-sm">You need an account to purchase or reserve tickets.</p>
+        </div>
+        <Button onClick={() => base44.auth.redirectToLogin(window.location.pathname)} className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 h-11 rounded-xl font-semibold">
           Sign In to Continue
         </Button>
       </div>
     );
   }
 
-  if (eventLoading) return <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-accent" /></div>;
-  if (!event) return <div className="text-center py-16 text-muted-foreground">Event not found</div>;
+  if (eventLoading) return <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 animate-spin text-accent" /></div>;
+  if (!event) return <div className="text-center py-24 text-muted-foreground">Event not found</div>;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-8">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-accent hover:underline text-sm">
-        <ArrowLeft className="w-4 h-4" /> Back to event
-      </button>
-
-      {/* Event Banner */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 border border-border">
-        {event.image_url && <img src={event.image_url} alt={event.title} className="w-full h-40 object-cover" />}
-        <div className="p-5">
-          <h1 className="text-xl font-bold text-foreground mb-2">{event.title}</h1>
-          <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-            {event.date && <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{format(new Date(event.date), 'EEEE, MMMM d, yyyy · h:mm a')}</span>}
-            {event.venue_name && <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" />{event.venue_name}{event.address && `, ${event.address}`}</span>}
-          </div>
-          {promoterId && (
-            <div className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
-              <Tag className="w-3 h-3" /> Referred by a promoter
-            </div>
-          )}
+    <div className="min-h-screen bg-background">
+      {/* Top bar */}
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3 flex items-center gap-3">
+        <button onClick={() => navigate(-1)} className="p-2 rounded-xl hover:bg-secondary transition-colors">
+          <ArrowLeft className="w-5 h-5 text-foreground" />
+        </button>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-foreground text-sm truncate">{event.title}</p>
+          {event.date && <p className="text-xs text-muted-foreground">{format(new Date(event.date), 'EEE, MMM d · h:mm a')}</p>}
         </div>
-      </div>
-
-      {/* Ticket Types */}
-      <div className="space-y-3">
-        <h2 className="font-bold text-foreground text-lg">Select Tickets</h2>
-        {activeTicketTypes.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground bg-secondary/30 rounded-xl">
-            <Ticket className="w-8 h-8 mx-auto mb-2 opacity-30" />
-            <p>No tickets available at this time</p>
+        {totalQty > 0 && (
+          <div className="flex-shrink-0 bg-accent text-accent-foreground text-xs font-bold px-2.5 py-1 rounded-full">
+            {totalQty} selected
           </div>
         )}
-        {activeTicketTypes.map(tt => {
-          const available = (tt.quantity_total || 0) - (tt.quantity_sold || 0);
-          const maxCanBuy = tt.max_per_buyer ? Math.min(available, tt.max_per_buyer) : available;
-          const selected = selectedTickets[tt.id] || 0;
-          const isSoldOut = available <= 0;
-          const GroupIcon = GROUP_ICONS[tt.ticket_type_group] || Ticket;
-          const groupStyle = GROUP_STYLES[tt.ticket_type_group] || GROUP_STYLES.default;
-
-          return (
-            <div key={tt.id} className={`p-4 rounded-xl border-2 transition-all ${selected > 0 ? 'border-accent' : groupStyle} ${isSoldOut ? 'opacity-60' : ''}`}>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <GroupIcon className="w-4 h-4 text-accent" />
-                    <p className="font-bold text-foreground">{tt.name}</p>
-                    <Badge variant="secondary" className="text-xs">{GROUP_LABELS[tt.ticket_type_group] || tt.ticket_type_group}</Badge>
-                    {isSoldOut && <Badge className="text-xs bg-red-100 text-red-700 border-red-200">Sold Out</Badge>}
-                    {!isSoldOut && available <= 10 && <Badge className="text-xs bg-orange-100 text-orange-700 border-orange-200">Only {available} left!</Badge>}
-                  </div>
-                  {tt.description && <p className="text-xs text-muted-foreground mb-2">{tt.description}</p>}
-                  {tt.perks?.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {tt.perks.map(p => <span key={p} className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">✓ {p}</span>)}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xl font-bold text-foreground">{tt.price === 0 ? 'Free' : `$${tt.price.toFixed(2)}`}</span>
-                    <span className="text-xs text-muted-foreground">{available} remaining</span>
-                  </div>
-                </div>
-                {/* Qty Stepper */}
-                {!isSoldOut && (
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button
-                      onClick={() => adjustQty(tt.id, -1, maxCanBuy)}
-                      disabled={selected === 0}
-                      className="w-8 h-8 rounded-full border-2 border-border flex items-center justify-center text-foreground hover:border-accent hover:text-accent transition-all disabled:opacity-30 font-bold"
-                    >
-                      <Minus className="w-3.5 h-3.5" />
-                    </button>
-                    <span className="w-8 text-center font-bold text-foreground text-lg">{selected}</span>
-                    <button
-                      onClick={() => adjustQty(tt.id, 1, maxCanBuy)}
-                      disabled={selected >= maxCanBuy}
-                      className="w-8 h-8 rounded-full border-2 border-border flex items-center justify-center text-foreground hover:border-accent hover:text-accent transition-all disabled:opacity-30 font-bold"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                )}
-              </div>
-              {tt.max_per_buyer && <p className="text-xs text-muted-foreground mt-2">Max {tt.max_per_buyer} per buyer</p>}
-            </div>
-          );
-        })}
       </div>
 
-      {/* Promo Code */}
-      {totalQty > 0 && (
-        <div className="bg-card border border-border rounded-xl p-4 space-y-2">
-          <h3 className="font-semibold text-foreground text-sm">Promo Code</h3>
-          {promoData ? (
-            <div className="flex items-center justify-between p-2.5 bg-green-50 border border-green-200 rounded-lg">
-              <span className="text-sm text-green-700 font-semibold">✓ {promoData.code} applied — {promoData.discount_type === 'percentage' ? `${promoData.discount_value}% off` : `$${promoData.discount_value} off`}</span>
-              <button onClick={() => { setPromoData(null); setPromoCode(''); }} className="text-xs text-muted-foreground hover:text-destructive">Remove</button>
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4 pb-40">
+        {/* Event Card */}
+        <div className="rounded-2xl overflow-hidden border border-border bg-card shadow-sm">
+          {event.image_url && (
+            <div className="h-44 overflow-hidden">
+              <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+            </div>
+          )}
+          <div className="p-5">
+            <h1 className="text-2xl font-bold text-foreground mb-3">{event.title}</h1>
+            <div className="space-y-2">
+              {event.date && (
+                <div className="flex items-center gap-2.5 text-sm text-foreground">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-4 h-4 text-accent" />
+                  </div>
+                  <span>{format(new Date(event.date), 'EEEE, MMMM d, yyyy')} · {format(new Date(event.date), 'h:mm a')}</span>
+                </div>
+              )}
+              {event.venue_name && (
+                <div className="flex items-center gap-2.5 text-sm text-foreground">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-4 h-4 text-accent" />
+                  </div>
+                  <span>{event.venue_name}{event.address && ` · ${event.address}`}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Ticket Types */}
+        <div>
+          <h2 className="text-lg font-bold text-foreground mb-3">Tickets</h2>
+          {activeTicketTypes.length === 0 ? (
+            <div className="text-center py-14 bg-card border border-dashed border-border rounded-2xl">
+              <Ticket className="w-10 h-10 mx-auto text-muted-foreground opacity-30 mb-3" />
+              <p className="text-muted-foreground font-medium">No tickets available right now</p>
+              <p className="text-sm text-muted-foreground mt-1">Check back closer to the event date</p>
             </div>
           ) : (
-            <div className="flex gap-2">
-              <input
-                className="flex-1 px-3 py-2 rounded-lg border border-input bg-transparent text-sm uppercase focus:outline-none focus:ring-1 focus:ring-ring tracking-wider"
-                placeholder="Enter promo code"
-                value={promoCode}
-                onChange={e => setPromoCode(e.target.value.toUpperCase())}
-                onKeyDown={e => e.key === 'Enter' && validatePromo()}
-              />
-              <Button onClick={validatePromo} disabled={validatingPromo || !promoCode.trim()} variant="outline" size="sm">
-                {validatingPromo ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Apply'}
-              </Button>
+            <div className="space-y-3">
+              {activeTicketTypes.map(tt => {
+                const available = (tt.quantity_total || 0) - (tt.quantity_sold || 0);
+                const maxCanBuy = tt.max_per_buyer ? Math.min(available, tt.max_per_buyer) : Math.min(available, 10);
+                const selected = selectedTickets[tt.id] || 0;
+                const isSoldOut = available <= 0;
+                const GroupIcon = GROUP_ICONS[tt.ticket_type_group] || Ticket;
+                const accent = GROUP_ACCENT[tt.ticket_type_group] || GROUP_ACCENT.general;
+                const isSelected = selected > 0;
+
+                return (
+                  <div
+                    key={tt.id}
+                    className={`relative rounded-2xl border-2 transition-all duration-200 bg-card overflow-hidden
+                      ${isSelected ? 'border-accent shadow-md' : 'border-border hover:border-accent/40'}
+                      ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}
+                    `}
+                  >
+                    {/* Selected indicator stripe */}
+                    {isSelected && <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent" />}
+
+                    <div className="p-5 pl-6">
+                      <div className="flex items-start gap-4">
+                        {/* Icon */}
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${accent.badge}`}>
+                          <GroupIcon className="w-5 h-5" />
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                            <span className="font-bold text-foreground text-base">{tt.name}</span>
+                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${accent.badge}`}>
+                              {GROUP_LABELS[tt.ticket_type_group] || tt.ticket_type_group}
+                            </span>
+                            {isSoldOut && <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">Sold Out</span>}
+                            {!isSoldOut && available <= 10 && <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">⚡ {available} left</span>}
+                          </div>
+
+                          {tt.description && <p className="text-sm text-muted-foreground mb-2">{tt.description}</p>}
+
+                          {tt.perks?.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mb-3">
+                              {tt.perks.map(p => (
+                                <span key={p} className="inline-flex items-center gap-1 text-xs text-accent font-medium">
+                                  <CheckCircle2 className="w-3 h-3" /> {p}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between mt-2">
+                            <div>
+                              <span className="text-2xl font-extrabold text-foreground">
+                                {tt.price === 0 ? 'Free' : `$${tt.price.toFixed(2)}`}
+                              </span>
+                              {tt.price > 0 && <span className="text-xs text-muted-foreground ml-1">+ fees</span>}
+                            </div>
+
+                            {/* Quantity stepper */}
+                            {!isSoldOut && (
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => adjustQty(tt.id, -1, maxCanBuy)}
+                                  disabled={selected === 0}
+                                  className="w-9 h-9 rounded-xl border-2 border-border flex items-center justify-center text-foreground hover:border-accent hover:bg-accent/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                  <Minus className="w-4 h-4" />
+                                </button>
+                                <span className="w-10 text-center font-bold text-foreground text-lg tabular-nums">{selected}</span>
+                                <button
+                                  onClick={() => adjustQty(tt.id, 1, maxCanBuy)}
+                                  disabled={selected >= maxCanBuy}
+                                  className="w-9 h-9 rounded-xl border-2 border-border flex items-center justify-center text-foreground hover:border-accent hover:bg-accent/5 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          {tt.max_per_buyer && (
+                            <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1">
+                              <Info className="w-3 h-3" /> Max {tt.max_per_buyer} per order
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
-          {promoError && <p className="text-xs text-destructive">{promoError}</p>}
         </div>
-      )}
 
-      {/* Order Summary */}
-      {totalQty > 0 && (
-        <div className="bg-card border border-border rounded-xl p-5 space-y-3">
-          <h3 className="font-bold text-foreground">Order Summary</h3>
-          {Object.entries(selectedTickets).map(([typeId, qty]) => {
-            const tt = ticketTypes.find(t => t.id === typeId);
-            return (
-              <div key={typeId} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{tt?.name} × {qty}</span>
-                <span className="font-medium text-foreground">{tt?.price === 0 ? 'Free' : `$${((tt?.price || 0) * qty).toFixed(2)}`}</span>
+        {/* Promo Code */}
+        <div className="bg-card border border-border rounded-2xl overflow-hidden">
+          <button
+            onClick={() => setShowPromo(!showPromo)}
+            className="w-full flex items-center justify-between px-5 py-4 text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Tag className="w-4 h-4 text-accent" />
+              {promoData ? <span className="text-accent font-semibold">✓ Promo applied: {promoData.code}</span> : 'Have a promo code?'}
+            </span>
+            {showPromo ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+          </button>
+          {showPromo && (
+            <div className="px-5 pb-4 border-t border-border pt-4 space-y-3">
+              {promoData ? (
+                <div className="flex items-center justify-between p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span className="text-sm text-emerald-700 font-semibold">
+                      {promoData.discount_type === 'percentage' ? `${promoData.discount_value}% off` : `$${promoData.discount_value} off`}
+                    </span>
+                  </div>
+                  <button onClick={() => { setPromoData(null); setPromoCode(''); }} className="text-xs text-muted-foreground hover:text-destructive transition-colors">Remove</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    className="flex-1 px-4 py-2.5 rounded-xl border border-input bg-background text-sm uppercase font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+                    placeholder="PROMO CODE"
+                    value={promoCode}
+                    onChange={e => setPromoCode(e.target.value.toUpperCase())}
+                    onKeyDown={e => e.key === 'Enter' && validatePromo()}
+                  />
+                  <Button onClick={validatePromo} disabled={validatingPromo || !promoCode.trim()} variant="outline" className="rounded-xl px-4">
+                    {validatingPromo ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Apply'}
+                  </Button>
+                </div>
+              )}
+              {promoError && (
+                <div className="flex items-center gap-2 text-xs text-destructive">
+                  <AlertCircle className="w-3.5 h-3.5" /> {promoError}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Spacer for sticky footer */}
+        <div className="h-4" />
+      </div>
+
+      {/* Sticky Checkout Footer */}
+      <div className="fixed bottom-0 left-0 right-0 z-20 bg-background/95 backdrop-blur-lg border-t border-border safe-area-bottom">
+        <div className="max-w-2xl mx-auto px-4 py-4 space-y-3">
+          {/* Mini order summary */}
+          {totalQty > 0 && (
+            <div className="bg-secondary/60 rounded-xl px-4 py-3 space-y-1.5">
+              {Object.entries(selectedTickets).map(([typeId, qty]) => {
+                const tt = ticketTypes.find(t => t.id === typeId);
+                const lineTotal = (tt?.price || 0) * qty;
+                return (
+                  <div key={typeId} className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{tt?.name} × {qty}</span>
+                    <span className="font-medium text-foreground">{lineTotal === 0 ? 'Free' : `$${lineTotal.toFixed(2)}`}</span>
+                  </div>
+                );
+              })}
+              {promoDiscount > 0 && (
+                <div className="flex justify-between text-sm text-emerald-600 font-medium">
+                  <span>Promo discount</span>
+                  <span>-${promoDiscount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Platform fee (5%)</span>
+                <span>${platformFee.toFixed(2)}</span>
               </div>
-            );
-          })}
-          {promoDiscount > 0 && (
-            <div className="flex justify-between text-sm text-green-600">
-              <span>Promo Discount</span>
-              <span>-${promoDiscount.toFixed(2)}</span>
+              <div className="border-t border-border pt-1.5 flex justify-between font-bold text-foreground">
+                <span>Total</span>
+                <span>{total === 0 ? 'Free' : `$${total.toFixed(2)}`}</span>
+              </div>
             </div>
           )}
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span className="flex items-center gap-1"><Info className="w-3.5 h-3.5" />Platform fee (5%)</span>
-            <span>${platformFee.toFixed(2)}</span>
-          </div>
-          <div className="border-t border-border pt-3 flex justify-between font-bold text-foreground text-lg">
-            <span>Total</span>
-            <span>{total === 0 ? 'Free' : `$${total.toFixed(2)}`}</span>
-          </div>
+
+          <Button
+            onClick={() => checkoutMutation.mutate()}
+            disabled={totalQty === 0 || checkoutMutation.isPending}
+            className={`w-full h-13 rounded-xl font-bold text-base gap-2 transition-all
+              ${totalQty > 0 ? 'bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg shadow-accent/20' : 'bg-secondary text-muted-foreground cursor-not-allowed'}
+            `}
+            style={{ height: '52px' }}
+          >
+            {checkoutMutation.isPending ? (
+              <><Loader2 className="w-5 h-5 animate-spin" /> Processing…</>
+            ) : totalQty > 0 ? (
+              <><ShieldCheck className="w-5 h-5" /> {total === 0 ? `Get ${totalQty} Free Ticket${totalQty > 1 ? 's' : ''}` : `Checkout — $${total.toFixed(2)}`}</>
+            ) : (
+              'Select tickets above to continue'
+            )}
+          </Button>
+          {totalQty > 0 && (
+            <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+              <ShieldCheck className="w-3 h-3" /> Secured by Stripe · We never store your card details
+            </p>
+          )}
         </div>
-      )}
-
-      {/* Checkout Button */}
-      <Button
-        onClick={() => checkoutMutation.mutate()}
-        disabled={totalQty === 0 || checkoutMutation.isPending}
-        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-14 rounded-xl font-bold text-base gap-2"
-      >
-        {checkoutMutation.isPending ? (
-          <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
-        ) : totalQty > 0 ? (
-          <><ShieldCheck className="w-5 h-5" /> {total === 0 ? 'Get Free Tickets' : `Pay $${total.toFixed(2)} — Secure Checkout`}</>
-        ) : (
-          'Select Tickets to Continue'
-        )}
-      </Button>
-
-      {totalQty > 0 && (
-        <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
-          <ShieldCheck className="w-3.5 h-3.5" /> Secured by Stripe. We never store your card details.
-        </p>
-      )}
+      </div>
     </div>
   );
 }
