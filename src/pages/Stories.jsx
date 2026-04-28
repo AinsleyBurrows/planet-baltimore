@@ -59,7 +59,7 @@ export default function Stories() {
         <Link to="/create-story">
           <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
             <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Write Story</span>
+            <span className="hidden sm:inline">Write A Story</span>
           </Button>
         </Link>
       </div>
