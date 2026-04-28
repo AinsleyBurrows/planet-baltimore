@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus, Grid2X2, List, Pin } from 'lucide-react';
+import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus, Grid2X2, List, Pin, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -112,14 +112,24 @@ export default function ArtsOrgDetail() {
         {org.banner_url && <img src={org.banner_url} alt="" className="w-full h-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         {isOwner && (
-          <button
-            onClick={() => bannerInputRef.current?.click()}
-            disabled={uploading === 'banner_url'}
-            className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            {uploading === 'banner_url' ? 'Uploading...' : org.banner_url ? 'Edit banner' : 'Add banner'}
-          </button>
+          <div className="absolute bottom-3 right-3 flex items-center gap-2">
+            {org.banner_url && (
+              <button
+                onClick={() => { if (window.confirm('Remove banner image?')) { base44.entities.ArtsOrganization.update(id, { banner_url: '' }).then(() => queryClient.invalidateQueries({ queryKey: ['arts-org', id] })); } }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-red-600/80 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />Remove
+              </button>
+            )}
+            <button
+              onClick={() => bannerInputRef.current?.click()}
+              disabled={uploading === 'banner_url'}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              {uploading === 'banner_url' ? 'Uploading...' : org.banner_url ? 'Change banner' : 'Add banner'}
+            </button>
+          </div>
         )}
         <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banner_url')} />
       </div>
@@ -127,15 +137,30 @@ export default function ArtsOrgDetail() {
       {/* Profile row */}
       <div className="relative px-1 -mt-10">
         <div className="flex items-end justify-between">
-          <div className="relative">
+          <div className="relative group">
             <Avatar className="w-20 h-20 border-4 border-background rounded-xl cursor-pointer" onClick={isOwner ? () => avatarInputRef.current?.click() : undefined}>
               <AvatarImage src={org.image_url} />
               <AvatarFallback className="rounded-xl text-2xl font-bold bg-accent/10 text-accent">{org.name?.charAt(0)}</AvatarFallback>
             </Avatar>
             {isOwner && (
-              <span className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
-                <Camera className="w-3 h-3 text-background" />
-              </span>
+              <>
+                <span
+                  className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm cursor-pointer"
+                  onClick={() => avatarInputRef.current?.click()}
+                  title="Change photo"
+                >
+                  <Camera className="w-3 h-3 text-background" />
+                </span>
+                {org.image_url && (
+                  <span
+                    className="absolute top-0.5 right-0.5 w-6 h-6 rounded-full bg-destructive border-2 border-background flex items-center justify-center shadow-sm cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => { if (window.confirm('Remove profile picture?')) { base44.entities.ArtsOrganization.update(id, { image_url: '' }).then(() => queryClient.invalidateQueries({ queryKey: ['arts-org', id] })); } }}
+                    title="Remove photo"
+                  >
+                    <Trash2 className="w-3 h-3 text-white" />
+                  </span>
+                )}
+              </>
             )}
             <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'image_url')} />
           </div>
