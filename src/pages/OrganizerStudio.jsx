@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Settings, ChevronDown } from 'lucide-react';
+import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Settings, ChevronDown, Mail } from 'lucide-react';
 import EventSelector from '@/components/organizer/EventSelector';
 import OrganizerTicketManager from '@/components/organizer/OrganizerTicketManager';
 import OrganizerAttendeeList from '@/components/organizer/OrganizerAttendeeList';
@@ -12,6 +12,7 @@ import OrganizerPromoterManager from '@/components/organizer/OrganizerPromoterMa
 import OrganizerPayouts from '@/components/organizer/OrganizerPayouts';
 import OrganizerCheckIn from '@/components/organizer/OrganizerCheckIn';
 import OrganizerAnalytics from '@/components/organizer/OrganizerAnalytics';
+import AttendeeMessaging from '@/components/organizer/AttendeeMessaging';
 
 export default function OrganizerStudio() {
   const queryClient = useQueryClient();
@@ -92,7 +93,7 @@ export default function OrganizerStudio() {
 
           {/* Main Tabs */}
           <Tabs defaultValue="tickets">
-            <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-3 sm:grid-cols-6 h-auto gap-1 p-1">
+            <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-4 sm:grid-cols-7 h-auto gap-1 p-1">
               <TabsTrigger value="tickets" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
                 <Ticket className="w-3.5 h-3.5 hidden sm:block" /> Tickets
               </TabsTrigger>
@@ -101,6 +102,9 @@ export default function OrganizerStudio() {
               </TabsTrigger>
               <TabsTrigger value="checkin" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
                 <QrCode className="w-3.5 h-3.5 hidden sm:block" /> Check-In
+              </TabsTrigger>
+              <TabsTrigger value="message" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
+                <Mail className="w-3.5 h-3.5 hidden sm:block" /> Message
               </TabsTrigger>
               <TabsTrigger value="promoters" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
                 <Users className="w-3.5 h-3.5 hidden sm:block" /> Promoters
@@ -123,6 +127,10 @@ export default function OrganizerStudio() {
 
             <TabsContent value="checkin" className="mt-4">
               <OrganizerCheckIn event={selectedEvent} tickets={tickets} ticketTypes={ticketTypes} orders={orders} />
+            </TabsContent>
+
+            <TabsContent value="message" className="mt-4">
+              <AttendeeMessaging event={selectedEvent} orders={orders} ticketTypes={ticketTypes} />
             </TabsContent>
 
             <TabsContent value="promoters" className="mt-4">
