@@ -38,6 +38,8 @@ import CreateCommunityAssociation from '@/pages/CreateCommunityAssociation';
 import NotificationSettings from '@/pages/NotificationSettings';
 import CityMap from '@/pages/CityMap';
 import OrganizerStudio from '@/pages/OrganizerStudio';
+import TicketingHub from '@/pages/TicketingHub';
+import EventTicketingPage from '@/pages/EventTicketing';
 import PromoterDashboard from '@/pages/PromoterDashboard';
 import OrderConfirmation from '@/pages/OrderConfirmation';
 import TicketSalesDashboard from '@/pages/TicketSalesDashboard';
@@ -92,6 +94,8 @@ const AuthenticatedApp = () => {
         <Route path="/notification-settings" element={<NotificationSettings />} />
         <Route path="/map" element={<CityMap />} />
         <Route path="/organizer-studio" element={<OrganizerStudio />} />
+        <Route path="/ticketing" element={<TicketingHub />} />
+        <Route path="/events/:id/tickets" element={<EventTicketingPage />} />
         <Route path="/promoter-dashboard" element={<PromoterDashboard />} />
         <Route path="/ticket-sales-dashboard" element={<TicketSalesDashboard />} />
 

@@ -21,96 +21,123 @@ Deno.serve(async (req) => {
       Deno.env.get('STRIPE_WEBHOOK_SECRET')
     );
 
-    // Only handle payment_intent.succeeded
-    if (event.type !== 'payment_intent.succeeded') {
-      return Response.json({ success: true });
-    }
-
     const base44 = createClientFromRequest(req);
-    const paymentIntent = event.data.object;
-    
-    // Get metadata from either checkout session or payment intent
-    let metadata = paymentIntent.metadata;
-    if (!metadata.eventId && paymentIntent.client_secret) {
-      // Try to get from checkout session
-      const sessions = await stripe.checkout.sessions.list({ limit: 1 });
-      const session = sessions.data.find(s => s.payment_intent === paymentIntent.id);
-      metadata = session?.metadata || metadata;
-    }
-    
-    const { eventId, ticketTypeId, quantity, buyerId, promoterId } = metadata;
 
-    // Create ticket order
-    const orderNumber = `ORD-${Date.now()}`;
-    const subtotal = (paymentIntent.amount_received / 100) * 0.952; // Remove platform fee
-    const platformFee = paymentIntent.amount_received / 100 - subtotal;
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      const metadata = session.metadata || {};
+      const { eventId, ticketTypeId, quantity, buyerId, promoterId } = metadata;
 
-    const ticketOrder = await base44.entities.TicketOrder.create({
-      event_id: eventId,
-      ticket_type_id: ticketTypeId,
-      buyer_id: buyerId,
-      buyer_email: paymentIntent.receipt_email,
-      buyer_name: paymentIntent.billing_details?.name || 'Customer',
-      quantity: parseInt(quantity),
-      subtotal,
-      platform_fee: platformFee,
-      total_amount: paymentIntent.amount_received / 100,
-      payment_status: 'completed',
-      payment_intent_id: paymentIntent.id,
-      order_number: orderNumber,
-    });
+      if (!eventId || !ticketTypeId || !quantity || !buyerId) {
+        console.log('Missing metadata, skipping:', metadata);
+        return Response.json({ success: true });
+      }
 
-    // Generate unique ticket codes
-    const tickets = [];
-    for (let i = 0; i < parseInt(quantity); i++) {
-      const uniqueCode = `${eventId.slice(0, 8)}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`.toUpperCase();
-      tickets.push({
-        order_id: ticketOrder.id,
-        ticket_type_id: ticketTypeId,
-        event_id: eventId,
-        owner_id: buyerId,
-        owner_email: paymentIntent.receipt_email,
-        unique_code: uniqueCode,
-        ticket_number: `Ticket #${i + 1} of ${quantity}`,
+      // Idempotency check
+      const existingOrders = await base44.asServiceRole.entities.TicketOrder.filter({
+        payment_intent_id: session.payment_intent,
       });
-    }
+      if (existingOrders.length > 0) {
+        console.log('Order already exists for session:', session.id);
+        return Response.json({ success: true });
+      }
 
-    // Bulk create tickets
-    await base44.entities.Ticket.bulkCreate(tickets);
+      const amountPaid = (session.amount_total || 0) / 100;
+      const platformFeeRate = 0.05;
+      const subtotal = amountPaid / (1 + platformFeeRate);
+      const platformFee = amountPaid - subtotal;
+      const qty = parseInt(quantity);
 
-    // Update ticket type sold count
-    const ticketTypeResults = await base44.entities.TicketType.filter({ id: ticketTypeId });
-    const ticketType = ticketTypeResults[0];
-    await base44.entities.TicketType.update(ticketTypeId, {
-      quantity_sold: (ticketType.quantity_sold || 0) + parseInt(quantity),
-    });
+      // Create order
+      const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      const ticketOrder = await base44.asServiceRole.entities.TicketOrder.create({
+        event_id: eventId,
+        ticket_type_id: ticketTypeId,
+        buyer_id: buyerId,
+        buyer_email: session.customer_email || session.customer_details?.email || '',
+        buyer_name: session.customer_details?.name || 'Customer',
+        quantity: qty,
+        subtotal: parseFloat(subtotal.toFixed(2)),
+        platform_fee: parseFloat(platformFee.toFixed(2)),
+        total_amount: amountPaid,
+        payment_status: 'completed',
+        payment_intent_id: session.payment_intent || session.id,
+        order_number: orderNumber,
+        promo_code_used: promoterId || '',
+      });
 
-    // Create ticket sale record for commission tracking
-    if (promoterId) {
-      const promoterResults = await base44.entities.Promoter.filter({ promoter_id: promoterId, event_id: eventId });
-      const promoter = promoterResults[0];
-      if (promoter) {
-        const commissionAmount = subtotal * (promoter.commission_rate / 100);
-        await base44.entities.TicketSale.create({
+      // Create individual tickets
+      const ticketBatch = [];
+      for (let i = 0; i < qty; i++) {
+        const uniqueCode = `TKT-${eventId.slice(0, 6).toUpperCase()}-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        ticketBatch.push({
           order_id: ticketOrder.id,
-          event_id: eventId,
           ticket_type_id: ticketTypeId,
-          sold_by_promoter_id: promoterId,
-          sold_by_promoter_name: promoter.promoter_name,
-          quantity: parseInt(quantity),
-          unit_price: ticketType.price,
-          total_amount: subtotal,
-          commission_rate: promoter.commission_rate,
-          commission_amount: commissionAmount,
-          sale_date: new Date().toISOString(),
-        });
-
-        // Update promoter stats
-        await base44.entities.Promoter.update(promoter.id, {
-          total_tickets_sold: (promoter.total_tickets_sold || 0) + parseInt(quantity),
-          total_commission_earned: (promoter.total_commission_earned || 0) + commissionAmount,
+          event_id: eventId,
+          owner_id: buyerId,
+          owner_email: session.customer_email || session.customer_details?.email || '',
+          unique_code: uniqueCode,
+          ticket_number: `${i + 1} of ${qty}`,
+          is_checked_in: false,
         });
       }
+      await base44.asServiceRole.entities.Ticket.bulkCreate(ticketBatch);
+
+      // Update ticket type sold count
+      const ticketTypeData = await base44.asServiceRole.entities.TicketType.filter({ id: ticketTypeId });
+      if (ticketTypeData[0]) {
+        await base44.asServiceRole.entities.TicketType.update(ticketTypeId, {
+          quantity_sold: (ticketTypeData[0].quantity_sold || 0) + qty,
+        });
+      }
+
+      // Track promoter commission
+      if (promoterId) {
+        const promoterData = await base44.asServiceRole.entities.Promoter.filter({ id: promoterId });
+        const promoter = promoterData[0];
+        if (promoter && promoter.status === 'active') {
+          const commissionAmount = subtotal * (promoter.commission_rate / 100);
+          await base44.asServiceRole.entities.TicketSale.create({
+            order_id: ticketOrder.id,
+            event_id: eventId,
+            ticket_type_id: ticketTypeId,
+            sold_by_promoter_id: promoter.promoter_id || promoterId,
+            sold_by_promoter_name: promoter.promoter_name,
+            quantity: qty,
+            unit_price: ticketTypeData[0]?.price || 0,
+            total_amount: subtotal,
+            commission_rate: promoter.commission_rate,
+            commission_amount: commissionAmount,
+            sale_date: new Date().toISOString(),
+          });
+          await base44.asServiceRole.entities.Promoter.update(promoter.id, {
+            total_tickets_sold: (promoter.total_tickets_sold || 0) + qty,
+            total_commission_earned: (promoter.total_commission_earned || 0) + commissionAmount,
+          });
+        }
+      }
+
+      // Send confirmation email
+      const buyerEmail = session.customer_email || session.customer_details?.email;
+      const buyerName = session.customer_details?.name || 'Customer';
+      if (buyerEmail) {
+        const eventData = await base44.asServiceRole.entities.Event.filter({ id: eventId });
+        const ev = eventData[0];
+        const ttData = ticketTypeData[0];
+        await base44.integrations.Core.SendEmail({
+          to: buyerEmail,
+          subject: `Your tickets for ${ev?.title || 'the event'}!`,
+          body: `Hi ${buyerName},\n\nYour purchase is confirmed!\n\nOrder #: ${orderNumber}\nEvent: ${ev?.title || 'Event'}\nTickets: ${qty}x ${ttData?.name || 'Ticket'}\nTotal Paid: $${amountPaid.toFixed(2)}\n\n${ev?.date ? `Date: ${new Date(ev.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}\n` : ''}${ev?.venue_name ? `Venue: ${ev.venue_name}\n` : ''}${ev?.address ? `Address: ${ev.address}\n` : ''}\nView your tickets: ${req.headers.get('origin') || 'https://app.base44.com'}/profile\n\nSee you there!\nPlanet Baltimore`,
+          from_name: 'Planet Baltimore Tickets',
+        });
+      }
+
+      console.log(`Order ${orderNumber} created for ${qty} tickets.`);
+    }
+
+    if (event.type === 'payment_intent.payment_failed') {
+      const pi = event.data.object;
+      console.log('Payment failed:', pi.id);
     }
 
     return Response.json({ success: true });

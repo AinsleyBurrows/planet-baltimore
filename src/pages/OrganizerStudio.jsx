@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Ticket, Users, TrendingUp, Loader2, DollarSign } from 'lucide-react';
-import { format } from 'date-fns';
+import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Settings, ChevronDown } from 'lucide-react';
 import EventSelector from '@/components/organizer/EventSelector';
-import TicketTypeManager from '@/components/organizer/TicketTypeManager';
-import PromotorManager from '@/components/organizer/PromotorManager';
-import PayoutDashboard from '@/components/organizer/PayoutDashboard';
+import OrganizerTicketManager from '@/components/organizer/OrganizerTicketManager';
+import OrganizerAttendeeList from '@/components/organizer/OrganizerAttendeeList';
+import OrganizerPromoterManager from '@/components/organizer/OrganizerPromoterManager';
+import OrganizerPayouts from '@/components/organizer/OrganizerPayouts';
+import OrganizerCheckIn from '@/components/organizer/OrganizerCheckIn';
+import OrganizerAnalytics from '@/components/organizer/OrganizerAnalytics';
 
 export default function OrganizerStudio() {
   const queryClient = useQueryClient();
@@ -32,119 +34,135 @@ export default function OrganizerStudio() {
     enabled: !!selectedEvent?.id,
   });
 
-  const { data: promoters = [] } = useQuery({
-    queryKey: ['event-promoters', selectedEvent?.id],
-    queryFn: () => base44.entities.Promoter.filter({ event_id: selectedEvent.id, status: 'active' }, '-created_date', 50),
+  const { data: orders = [] } = useQuery({
+    queryKey: ['event-orders', selectedEvent?.id],
+    queryFn: () => base44.entities.TicketOrder.filter({ event_id: selectedEvent.id }, '-created_date', 500),
     enabled: !!selectedEvent?.id,
   });
 
-  const { data: orders = [] } = useQuery({
-    queryKey: ['event-orders', selectedEvent?.id],
-    queryFn: () => base44.entities.TicketOrder.filter({ event_id: selectedEvent.id, payment_status: 'completed' }, '-created_date', 100),
+  const { data: tickets = [] } = useQuery({
+    queryKey: ['event-tickets', selectedEvent?.id],
+    queryFn: () => base44.entities.Ticket.filter({ event_id: selectedEvent.id }, '-created_date', 500),
+    enabled: !!selectedEvent?.id,
+  });
+
+  const { data: promoters = [] } = useQuery({
+    queryKey: ['event-promoters', selectedEvent?.id],
+    queryFn: () => base44.entities.Promoter.filter({ event_id: selectedEvent.id }, '-created_date', 50),
+    enabled: !!selectedEvent?.id,
+  });
+
+  const { data: payouts = [] } = useQuery({
+    queryKey: ['event-payouts', selectedEvent?.id],
+    queryFn: () => base44.entities.Payout.filter({ event_id: selectedEvent.id }, '-created_date', 20),
     enabled: !!selectedEvent?.id,
   });
 
   if (!currentUser) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-6 h-6 animate-spin text-accent" />
-      </div>
-    );
+    return <div className="flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-accent" /></div>;
   }
 
-  const totalRevenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
-  const totalTicketsSold = orders.reduce((sum, o) => sum + (o.quantity || 0), 0);
-  const platformFees = orders.reduce((sum, o) => sum + (o.platform_fee || 0), 0);
+  const completedOrders = orders.filter(o => o.payment_status === 'completed');
+  const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+  const totalTicketsSold = completedOrders.reduce((sum, o) => sum + (o.quantity || 0), 0);
+  const platformFees = completedOrders.reduce((sum, o) => sum + (o.platform_fee || 0), 0);
+  const netRevenue = totalRevenue - platformFees;
+  const checkedIn = tickets.filter(t => t.is_checked_in).length;
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Organizer Studio</h1>
-        <p className="text-muted-foreground mt-1">Manage events, tickets, promoters, and payouts</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Organizer Studio</h1>
+          <p className="text-muted-foreground mt-1 text-sm">Manage events, tickets, promoters, and payouts</p>
+        </div>
       </div>
 
-      {/* Event Selector */}
       <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} isLoading={eventsLoading} />
 
       {selectedEvent ? (
         <>
-          {/* Dashboard Stats */}
+          {/* Stats Row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-card border border-border rounded-xl p-4">
-              <p className="text-xs text-muted-foreground mb-1">Total Revenue</p>
-              <p className="text-2xl font-bold text-foreground">${totalRevenue.toFixed(2)}</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-4">
-              <p className="text-xs text-muted-foreground mb-1">Tickets Sold</p>
-              <p className="text-2xl font-bold text-foreground">{totalTicketsSold}</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-4">
-              <p className="text-xs text-muted-foreground mb-1">Platform Fees</p>
-              <p className="text-2xl font-bold text-foreground">${platformFees.toFixed(2)}</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-4">
-              <p className="text-xs text-muted-foreground mb-1">Promoters</p>
-              <p className="text-2xl font-bold text-foreground">{promoters.length}</p>
-            </div>
+            <StatCard label="Revenue" value={`$${totalRevenue.toFixed(2)}`} sub={`$${netRevenue.toFixed(2)} net`} color="text-accent" />
+            <StatCard label="Tickets Sold" value={totalTicketsSold} sub={`${completedOrders.length} orders`} color="text-primary" />
+            <StatCard label="Checked In" value={checkedIn} sub={`of ${tickets.length} total`} color="text-green-600" />
+            <StatCard label="Promoters" value={promoters.filter(p => p.status === 'active').length} sub={`${promoters.reduce((s, p) => s + (p.total_tickets_sold || 0), 0)} tickets via promo`} color="text-blue-500" />
           </div>
 
-          {/* Tabs */}
+          {/* Main Tabs */}
           <Tabs defaultValue="tickets">
-            <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-4">
-              <TabsTrigger value="tickets" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
-                <Ticket className="w-3.5 h-3.5" /> Tickets
+            <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-3 sm:grid-cols-6 h-auto gap-1 p-1">
+              <TabsTrigger value="tickets" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
+                <Ticket className="w-3.5 h-3.5 hidden sm:block" /> Tickets
               </TabsTrigger>
-              <TabsTrigger value="promoters" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
-                <Users className="w-3.5 h-3.5" /> Promoters
+              <TabsTrigger value="attendees" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
+                <Users className="w-3.5 h-3.5 hidden sm:block" /> Attendees
               </TabsTrigger>
-              <TabsTrigger value="payouts" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
-                <DollarSign className="w-3.5 h-3.5" /> Payouts
+              <TabsTrigger value="checkin" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
+                <QrCode className="w-3.5 h-3.5 hidden sm:block" /> Check-In
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
-                <TrendingUp className="w-3.5 h-3.5" /> Analytics
+              <TabsTrigger value="promoters" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
+                <Users className="w-3.5 h-3.5 hidden sm:block" /> Promoters
+              </TabsTrigger>
+              <TabsTrigger value="payouts" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
+                <DollarSign className="w-3.5 h-3.5 hidden sm:block" /> Payouts
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5 hidden sm:block" /> Analytics
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="tickets" className="mt-4">
-              <TicketTypeManager event={selectedEvent} ticketTypes={ticketTypes} />
+              <OrganizerTicketManager event={selectedEvent} ticketTypes={ticketTypes} />
+            </TabsContent>
+
+            <TabsContent value="attendees" className="mt-4">
+              <OrganizerAttendeeList event={selectedEvent} orders={orders} tickets={tickets} ticketTypes={ticketTypes} />
+            </TabsContent>
+
+            <TabsContent value="checkin" className="mt-4">
+              <OrganizerCheckIn event={selectedEvent} tickets={tickets} ticketTypes={ticketTypes} orders={orders} />
             </TabsContent>
 
             <TabsContent value="promoters" className="mt-4">
-              <PromotorManager event={selectedEvent} promoters={promoters} />
+              <OrganizerPromoterManager event={selectedEvent} promoters={promoters} orders={completedOrders} />
             </TabsContent>
 
             <TabsContent value="payouts" className="mt-4">
-              <PayoutDashboard event={selectedEvent} orders={orders} promoters={promoters} />
+              <OrganizerPayouts
+                event={selectedEvent}
+                orders={completedOrders}
+                promoters={promoters}
+                payouts={payouts}
+                currentUser={currentUser}
+                totalRevenue={totalRevenue}
+                platformFees={platformFees}
+              />
             </TabsContent>
 
             <TabsContent value="analytics" className="mt-4">
-              <div className="bg-card border border-border rounded-xl p-6">
-                <h3 className="font-semibold text-foreground mb-4">Event Analytics</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Average Ticket Price</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      ${totalTicketsSold > 0 ? (totalRevenue / totalTicketsSold).toFixed(2) : '0.00'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Net Revenue (after fees)</p>
-                    <p className="text-2xl font-bold text-accent">
-                      ${(totalRevenue - platformFees).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <OrganizerAnalytics event={selectedEvent} orders={completedOrders} tickets={tickets} ticketTypes={ticketTypes} promoters={promoters} />
             </TabsContent>
           </Tabs>
         </>
       ) : (
         <div className="text-center py-16 bg-card border border-dashed border-border rounded-xl">
-          <Ticket className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-50" />
-          <p className="text-muted-foreground mb-2">No event selected</p>
-          <p className="text-xs text-muted-foreground">Choose an event above to manage tickets and promoters</p>
+          <Ticket className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-30" />
+          <p className="text-muted-foreground mb-2 font-medium">Select an event to manage</p>
+          <p className="text-xs text-muted-foreground">Choose from your events above to view tickets, attendees, and payouts</p>
         </div>
       )}
+    </div>
+  );
+}
+
+function StatCard({ label, value, sub, color }) {
+  return (
+    <div className="bg-card border border-border rounded-xl p-4">
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   );
 }
