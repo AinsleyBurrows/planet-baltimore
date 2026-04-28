@@ -119,6 +119,7 @@ export default function CommunityAssociationDetail() {
     setUploading(false);
   };
 
+  const isSiteAdmin = currentUser?.role === 'admin';
   const isAdmin = currentUser && association && (
     association.owner_id === currentUser.id ||
     (association.admins || []).includes(currentUser.id)
@@ -135,6 +136,14 @@ export default function CommunityAssociationDetail() {
   if (!association) return (
     <div className="text-center py-16">
       <p className="text-muted-foreground">Association not found</p>
+      <Button variant="ghost" onClick={() => navigate('/community-associations')} className="mt-4">Back</Button>
+    </div>
+  );
+
+  // Block non-site-admins from viewing deleted or muted associations
+  if (!isSiteAdmin && (association.is_deleted || association.is_muted)) return (
+    <div className="text-center py-16">
+      <p className="text-muted-foreground">This association is not available.</p>
       <Button variant="ghost" onClick={() => navigate('/community-associations')} className="mt-4">Back</Button>
     </div>
   );
