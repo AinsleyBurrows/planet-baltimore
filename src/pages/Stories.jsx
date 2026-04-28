@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, BookOpen, TrendingUp, Star } from 'lucide-react';
+import { Plus, BookOpen, TrendingUp, Star, BookMarked, Feather, Mic2, Film, ScrollText, NotebookPen, AlignLeft, BookText, Newspaper, Pencil } from 'lucide-react';
 import StoryCard from '@/components/shared/StoryCard';
 
 export default function Stories() {
@@ -43,6 +43,19 @@ export default function Stories() {
     displayStories = featuredStories;
   }
 
+  const WRITING_FORMATS = [
+    { label: 'Novels', value: 'novel', icon: BookMarked, color: 'bg-purple-100 text-purple-700' },
+    { label: 'Short Stories', value: 'short_story', icon: BookOpen, color: 'bg-blue-100 text-blue-700' },
+    { label: 'Poetry', value: 'poetry', icon: Feather, color: 'bg-pink-100 text-pink-700' },
+    { label: 'Plays', value: 'play', icon: Mic2, color: 'bg-orange-100 text-orange-700' },
+    { label: 'Screenplays', value: 'screenplay', icon: Film, color: 'bg-red-100 text-red-700' },
+    { label: 'Memoirs', value: 'memoir', icon: ScrollText, color: 'bg-amber-100 text-amber-700' },
+    { label: 'Novellas', value: 'novella', icon: BookText, color: 'bg-indigo-100 text-indigo-700' },
+    { label: 'Flash Fiction', value: 'flash_fiction', icon: AlignLeft, color: 'bg-cyan-100 text-cyan-700' },
+    { label: 'Spoken Word', value: 'spoken_word', icon: Mic2, color: 'bg-green-100 text-green-700' },
+    { label: 'Journals / Diaries', value: 'journal', icon: NotebookPen, color: 'bg-rose-100 text-rose-700' },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -62,6 +75,29 @@ export default function Stories() {
             <span className="hidden sm:inline">Write A Story</span>
           </Button>
         </Link>
+      </div>
+
+      {/* Writing Formats */}
+      <div>
+        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Browse by Format</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {WRITING_FORMATS.map(({ label, value, icon: Icon, color }) => {
+            const isActive = activeCategory === value;
+            return (
+              <button
+                key={value}
+                onClick={() => { setActiveView('discover'); setActiveCategory(isActive ? 'all' : value); }}
+                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 transition-all text-sm font-medium text-left
+                  ${isActive ? 'border-accent bg-accent/10 text-accent' : 'border-border hover:border-accent/30 text-foreground'}`}
+              >
+                <span className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${color}`}>
+                  <Icon className="w-3.5 h-3.5" />
+                </span>
+                <span className="truncate">{label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* View Tabs */}
@@ -111,7 +147,7 @@ export default function Stories() {
                   : 'bg-secondary text-muted-foreground hover:text-foreground'
               }`}
             >
-              {cat === 'all' ? 'All' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+              {cat === 'all' ? 'All' : (WRITING_FORMATS.find(f => f.value === cat)?.label || cat.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()))}
             </button>
           ))}
         </div>

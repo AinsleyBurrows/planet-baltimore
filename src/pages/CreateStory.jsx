@@ -9,7 +9,11 @@ import { useToast } from '@/components/ui/use-toast';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const categories = ['blog', 'newsletter', 'essay', 'announcement', 'event_recap', 'resource'];
+const categories = [
+  'blog', 'newsletter', 'essay', 'announcement', 'event_recap', 'resource',
+  'novel', 'short_story', 'poetry', 'play', 'screenplay', 'memoir',
+  'novella', 'flash_fiction', 'spoken_word', 'journal',
+];
 
 export default function CreateStory() {
   const navigate = useNavigate();

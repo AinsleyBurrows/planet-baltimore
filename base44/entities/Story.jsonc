@@ -32,7 +32,17 @@
         "essay",
         "announcement",
         "event_recap",
-        "resource"
+        "resource",
+        "novel",
+        "short_story",
+        "poetry",
+        "play",
+        "screenplay",
+        "memoir",
+        "novella",
+        "flash_fiction",
+        "spoken_word",
+        "journal"
       ],
       "default": "blog"
     },
