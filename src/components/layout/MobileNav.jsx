@@ -6,7 +6,7 @@ const mobileItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Search, label: 'Search', path: '/search' },
   { icon: Plus, label: 'Create', path: '/create-post', isCreate: true },
-  { icon: Ticket, label: 'Tickets', path: '/ticketing' },
+  { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 
