@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Home, Compass, Map, MapPin, Calendar, Users, Shield,
+  Home, Compass, Map, MapPin, Users, Shield,
   Palette, Landmark, Building2, BookOpen, MessageCircle,
-  Bell, User, Menu, Plus
+  Bell, User, Menu, Plus, Search
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import {
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
+  { icon: Search, label: 'Search', path: '/search' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
@@ -21,9 +22,8 @@ const navItems = [
   { icon: Map, label: 'City Map', path: '/map' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Compass, label: 'Discover', path: '/discover' },
-  { icon: Calendar, label: 'Events', path: '/events' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
-  { icon: BookOpen, label: 'Your Story', path: '/stories' },
+  { icon: BookOpen, label: 'Stories', path: '/stories' },
 ];
 
 const utilItems = [
@@ -46,6 +46,9 @@ export default function TopMenuBar() {
 
         <div className="flex items-center gap-2">
           {/* Quick-access icons */}
+          <Link to="/search" aria-label="Search" className={`p-2 rounded-lg transition-colors ${location.pathname === '/search' ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
+            <Search className="w-5 h-5" />
+          </Link>
           <Link to="/notifications" aria-label="Notifications" className={`p-2 rounded-lg transition-colors ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
             <Bell className="w-5 h-5" />
           </Link>

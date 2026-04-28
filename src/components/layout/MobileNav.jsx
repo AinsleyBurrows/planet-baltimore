@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, Calendar, Plus, User, Map } from 'lucide-react';
+import { Home, Search, Plus, User, BookOpen } from 'lucide-react';
 
 const mobileItems = [
   { icon: Home, label: 'Home', path: '/' },
-  { icon: Map, label: 'Map', path: '/map' },
+  { icon: Search, label: 'Search', path: '/search' },
   { icon: Plus, label: 'Create', path: '/create-post', isCreate: true },
-  { icon: Calendar, label: 'Events', path: '/events' },
+  { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: User, label: 'Profile', path: '/profile' },
 ];
 

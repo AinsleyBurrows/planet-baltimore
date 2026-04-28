@@ -22,6 +22,7 @@ import CreateCommunity from '@/pages/CreateCommunity';
 import CreateArtist from '@/pages/CreateArtist';
 import CreateBusiness from '@/pages/CreateBusiness';
 import Stories from '@/pages/Stories';
+import Search from '@/pages/Search';
 import StoryDetail from '@/pages/StoryDetail';
 import CreateStory from '@/pages/CreateStory';
 import Neighborhoods from '@/pages/Neighborhoods';
@@ -104,6 +105,7 @@ const AuthenticatedApp = () => {
         <Route path="/create-artist" element={<CreateArtist />} />
         <Route path="/create-business" element={<CreateBusiness />} />
         <Route path="/stories" element={<Stories />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/stories/:id" element={<StoryDetail />} />
         <Route path="/create-story" element={<CreateStory />} />
       </Route>
