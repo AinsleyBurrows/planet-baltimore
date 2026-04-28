@@ -7,7 +7,6 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: Search, label: 'Search', path: '/search' },
-  { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
@@ -15,6 +14,7 @@ const navItems = [
   { icon: Map, label: 'City Map', path: '/map' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Compass, label: 'Discover', path: '/discover' },
+  { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
