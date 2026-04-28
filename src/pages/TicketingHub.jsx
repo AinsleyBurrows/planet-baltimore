@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Calendar, MapPin, Ticket, Star, TrendingUp, Clock, Filter, ChevronRight, Plus } from 'lucide-react';
+import EventLikeShareButtons from '@/components/events/EventLikeShareButtons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format, isAfter } from 'date-fns';
@@ -68,6 +69,9 @@ function EventCard({ event, ticketTypes = [] }) {
           <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground text-xs rounded-lg h-8 gap-1">
             <Ticket className="w-3.5 h-3.5" /> Get Tickets
           </Button>
+        </div>
+        <div className="flex justify-end mt-2">
+          <EventLikeShareButtons event={event} />
         </div>
         {totalCapacity > 0 && (
           <div className="mt-3">

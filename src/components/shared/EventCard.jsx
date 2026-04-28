@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import AppImage from './AppImage';
 import InlineRSVP from '@/components/events/InlineRSVP';
+import EventLikeShareButtons from '@/components/events/EventLikeShareButtons';
 
 export default function EventCard({ event, compact = false }) {
   const eventDate = event.date ? new Date(event.date) : null;
@@ -63,7 +64,10 @@ export default function EventCard({ event, compact = false }) {
           <MapPin className="w-3 h-3 flex-shrink-0" />
           <span className="truncate">{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
         </div>
-        <InlineRSVP eventId={event.id} />
+        <div className="flex items-center justify-between mt-3">
+          <InlineRSVP eventId={event.id} />
+          <EventLikeShareButtons event={event} />
+        </div>
       </div>
     </Link>
   );
