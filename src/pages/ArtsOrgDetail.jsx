@@ -17,6 +17,12 @@ import ArtsOrgMessageModal from '@/components/arts/ArtsOrgMessageModal';
 import ArtsOrgEditModal from '@/components/arts/ArtsOrgEditModal';
 import ArtsOrgCreatePostModal from '@/components/arts/ArtsOrgCreatePostModal';
 import ShareModal from '@/components/shared/ShareModal';
+import ExhibitionsTab from '@/components/arts/tabs/ExhibitionsTab';
+import ArtistRosterTab from '@/components/arts/tabs/ArtistRosterTab';
+import MembershipTab from '@/components/arts/tabs/MembershipTab';
+import OpportunitiesTab from '@/components/arts/tabs/OpportunitiesTab';
+import PressKitTab from '@/components/arts/tabs/PressKitTab';
+import AnnouncementsTab from '@/components/arts/tabs/AnnouncementsTab';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -193,12 +199,18 @@ export default function ArtsOrgDetail() {
       {/* Tabs */}
       <div className="mt-4">
         <Tabs defaultValue="posts">
-          <TabsList className="w-full bg-secondary/50 rounded-xl">
-            <TabsTrigger value="posts" className="flex-1 rounded-lg">Posts</TabsTrigger>
-            <TabsTrigger value="events" className="flex-1 rounded-lg">Events</TabsTrigger>
-            <TabsTrigger value="invite" className="flex-1 rounded-lg">Invite</TabsTrigger>
-            <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
-            <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
+          <TabsList className="w-full bg-secondary/50 rounded-xl h-auto flex-wrap gap-1 p-1">
+            <TabsTrigger value="posts" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Posts</TabsTrigger>
+            <TabsTrigger value="exhibitions" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Exhibitions</TabsTrigger>
+            <TabsTrigger value="events" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Events</TabsTrigger>
+            <TabsTrigger value="artists" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Artists</TabsTrigger>
+            <TabsTrigger value="membership" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Support</TabsTrigger>
+            <TabsTrigger value="opportunities" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Opportunities</TabsTrigger>
+            <TabsTrigger value="press" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Press</TabsTrigger>
+            <TabsTrigger value="announcements" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Updates</TabsTrigger>
+            <TabsTrigger value="invite" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Invite</TabsTrigger>
+            <TabsTrigger value="about" className="flex-1 rounded-lg text-xs sm:text-sm py-2">About</TabsTrigger>
+            <TabsTrigger value="comments" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Comments</TabsTrigger>
           </TabsList>
 
           <TabsContent value="posts" className="mt-4 space-y-4">
@@ -269,6 +281,30 @@ export default function ArtsOrgDetail() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          <TabsContent value="exhibitions" className="mt-4">
+            <ExhibitionsTab org={org} isOwner={isOwner} />
+          </TabsContent>
+
+          <TabsContent value="artists" className="mt-4">
+            <ArtistRosterTab org={org} isOwner={isOwner} />
+          </TabsContent>
+
+          <TabsContent value="membership" className="mt-4">
+            <MembershipTab org={org} isOwner={isOwner} />
+          </TabsContent>
+
+          <TabsContent value="opportunities" className="mt-4">
+            <OpportunitiesTab org={org} isOwner={isOwner} />
+          </TabsContent>
+
+          <TabsContent value="press" className="mt-4">
+            <PressKitTab org={org} isOwner={isOwner} />
+          </TabsContent>
+
+          <TabsContent value="announcements" className="mt-4">
+            <AnnouncementsTab org={org} isOwner={isOwner} />
           </TabsContent>
 
           <TabsContent value="events" className="mt-4 space-y-4">

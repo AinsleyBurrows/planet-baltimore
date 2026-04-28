@@ -102,6 +102,164 @@
       "items": {
         "type": "string"
       }
+    },
+    "exhibitions": {
+      "type": "array",
+      "description": "Current and upcoming exhibitions / programs",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "start_date": {
+            "type": "string"
+          },
+          "end_date": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "is_current": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "artist_roster": {
+      "type": "array",
+      "description": "Affiliated or represented artists",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "artist_page_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "membership_tiers": {
+      "type": "array",
+      "description": "Supporter / membership levels",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "perks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "join_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "description": "Open calls, grants, jobs, residencies",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "deadline": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "press_kit": {
+      "type": "object",
+      "description": "Press & media kit info",
+      "properties": {
+        "press_contact": {
+          "type": "string"
+        },
+        "press_email": {
+          "type": "string"
+        },
+        "bio_text": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "press_images": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "press_releases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "announcements": {
+      "type": "array",
+      "description": "Newsletter / announcement archive",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "sent_at": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [
