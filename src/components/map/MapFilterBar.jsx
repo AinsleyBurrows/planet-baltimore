@@ -32,12 +32,11 @@ export default function MapFilterBar({ activeLayers, onToggleLayer, search, onSe
               onClick={() => onToggleLayer(key)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                 active
-                  ? 'text-white border-transparent'
+                  ? 'bg-foreground text-background border-foreground'
                   : 'bg-secondary text-muted-foreground border-border opacity-60 hover:opacity-80'
               }`}
-              style={active ? { backgroundColor: layer.color, borderColor: layer.color } : {}}
             >
-              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? 'bg-white/60' : ''}`} style={!active ? { backgroundColor: layer.color } : {}} />
+              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${active ? 'bg-background/60' : 'bg-foreground/40'}`} />
               {layer.label}
             </button>
           );
