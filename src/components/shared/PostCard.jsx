@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import AppImage from './AppImage';
 import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
+import EditPostModal from './EditPostModal';
 import { format } from 'date-fns';
 
 function FeedVideo({ src, thumbnail }) {
@@ -75,8 +76,11 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
   const [saved, setSaved] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [localPost, setLocalPost] = useState(post);
   const isOwner = currentUserId === post.author_id;
   const postUrl = `${window.location.origin}/profile/${post.author_id}`;
+  const displayPost = localPost;
 
   const handleLike = () => {
     setLiked(!liked);
@@ -112,7 +116,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
           <DropdownMenuContent align="end">
             {isOwner && (
               <>
-                <DropdownMenuItem onClick={() => onEdit?.(post)}>
+                <DropdownMenuItem onClick={() => setShowEdit(true)}>
                   <Pencil className="w-4 h-4 mr-2" />Edit Post
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-destructive" onClick={() => onDelete?.(post.id)}>
@@ -129,23 +133,23 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
       {/* Content + Media */}
       {(() => {
-        const hasText = !!post.content && !post.bg_color;
-        const firstUrl = post.media_urls?.[0] || '';
+        const hasText = !!displayPost.content && !displayPost.bg_color;
+        const firstUrl = displayPost.media_urls?.[0] || '';
         const isVideoUrl = /\.(mp4|webm|mov|avi)/i.test(firstUrl);
-        const isVideo = post.media_urls?.length > 0 && (post.media_type === 'video' || isVideoUrl);
-        const hasImages = post.media_urls?.length > 0 && !isVideo;
-        const singleImage = hasImages && post.media_urls.length === 1;
+        const isVideo = displayPost.media_urls?.length > 0 && (displayPost.media_type === 'video' || isVideoUrl);
+        const hasImages = displayPost.media_urls?.length > 0 && !isVideo;
+        const singleImage = hasImages && displayPost.media_urls.length === 1;
 
         // Audio post
-        if (post.media_type === 'audio' && post.media_urls?.length > 0) {
+        if (displayPost.media_type === 'audio' && displayPost.media_urls?.length > 0) {
           return (
             <div className="space-y-0">
-              {post.thumbnail_url && (
-                <img src={post.thumbnail_url} alt="Audio thumbnail" className="w-full aspect-video object-cover" />
+              {displayPost.thumbnail_url && (
+                <img src={displayPost.thumbnail_url} alt="Audio thumbnail" className="w-full aspect-video object-cover" />
               )}
               <div className="px-4 pt-3 pb-3 space-y-3">
-                {post.content && <TruncatedText text={post.content} />}
-                {post.media_urls.map((url, idx) => (
+                {displayPost.content && <TruncatedText text={displayPost.content} />}
+                {displayPost.media_urls.map((url, idx) => (
                   <div key={idx} className="flex flex-col gap-1 bg-secondary/40 rounded-xl p-3">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                       <span className="text-lg">🎵</span>
@@ -160,14 +164,14 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         }
 
         // Colored text frame post
-        if (post.bg_color && post.content) {
+        if (displayPost.bg_color && displayPost.content) {
           return (
             <div
               className="mx-4 mb-3 rounded-xl flex items-center justify-center p-6 min-h-[180px]"
-              style={{ backgroundColor: post.bg_color }}
+              style={{ backgroundColor: displayPost.bg_color }}
             >
-              <p className="font-serif text-xl leading-snug font-medium text-center" style={{ color: getTextColor(post.bg_color) }}>
-                {post.content}
+              <p className="font-serif text-xl leading-snug font-medium text-center" style={{ color: getTextColor(displayPost.bg_color) }}>
+                {displayPost.content}
               </p>
             </div>
           );
@@ -177,9 +181,9 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         if (hasText && singleImage) {
           return (
             <div>
-              <AppImage src={post.media_urls[0]} images={post.media_urls} index={0} className="w-full" aspectRatio="16:9" />
+              <AppImage src={displayPost.media_urls[0]} images={displayPost.media_urls} index={0} className="w-full" aspectRatio="16:9" />
               <div className="px-4 pt-3 pb-2">
-                <TruncatedText text={post.content} />
+                <TruncatedText text={displayPost.content} />
               </div>
             </div>
           );
@@ -189,7 +193,7 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         if (hasText) {
           return (
             <div className="px-4 pb-3">
-              <TruncatedText text={post.content} />
+              <TruncatedText text={displayPost.content} />
             </div>
           );
         }
@@ -198,10 +202,10 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         if (isVideo) {
           return (
             <div>
-              <FeedVideo src={post.media_urls[0]} thumbnail={post.thumbnail_url} />
+              <FeedVideo src={displayPost.media_urls[0]} thumbnail={displayPost.thumbnail_url} />
               {hasText && (
                 <div className="px-4 pt-3 pb-2">
-                  <TruncatedText text={post.content} />
+                  <TruncatedText text={displayPost.content} />
                 </div>
               )}
             </div>
@@ -212,14 +216,14 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         if (hasImages) {
           return (
             <div>
-              <div className={`grid gap-0.5 bg-white ${post.media_urls.length === 1 ? '' : 'grid-cols-2'}`}>
-                {post.media_urls.slice(0, 4).map((url, idx) => (
-                  <AppImage key={idx} src={url} images={post.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
+              <div className={`grid gap-0.5 bg-white ${displayPost.media_urls.length === 1 ? '' : 'grid-cols-2'}`}>
+                {displayPost.media_urls.slice(0, 4).map((url, idx) => (
+                  <AppImage key={idx} src={url} images={displayPost.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
                 ))}
               </div>
               {hasText && (
                 <div className="px-4 pt-3 pb-2">
-                  <TruncatedText text={post.content} />
+                  <TruncatedText text={displayPost.content} />
                 </div>
               )}
             </div>
@@ -230,9 +234,9 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
       })()}
 
       {/* Tags */}
-      {post.tags?.length > 0 && (
+      {displayPost.tags?.length > 0 && (
         <div className="px-3 sm:px-4 pt-2 flex flex-wrap gap-1">
-          {post.tags.map((tag, idx) => (
+          {displayPost.tags.map((tag, idx) => (
             <Badge key={idx} variant="secondary" className="text-[10px] sm:text-xs font-normal">#{tag}</Badge>
           ))}
         </div>
@@ -285,9 +289,17 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         isOpen={showShare}
         onClose={() => setShowShare(false)}
         url={postUrl}
-        title={post.content ? post.content.slice(0, 100) : `Post by ${post.author_name}`}
-        description={post.content}
+        title={displayPost.content ? displayPost.content.slice(0, 100) : `Post by ${displayPost.author_name}`}
+        description={displayPost.content}
       />
+
+      {showEdit && (
+        <EditPostModal
+          post={displayPost}
+          onClose={() => setShowEdit(false)}
+          onSaved={(updated) => setLocalPost(updated)}
+        />
+      )}
     </article>
   );
 }
