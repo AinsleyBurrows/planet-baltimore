@@ -153,10 +153,10 @@ export default function Home() {
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary via-primary/80 to-accent text-white p-8 sm:p-12">
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
         <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Planet Baltimore</h1>
-          <p className="text-white/70 text-sm sm:text-base">Your city. Your community. Your feed.</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Planet Baltimore</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Your city. Your community. Your feed.</p>
         </div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
