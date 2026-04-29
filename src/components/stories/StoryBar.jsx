@@ -73,7 +73,7 @@ export default function StoryBar({ currentUser }) {
                 <Plus className="w-3 h-3 text-white" />
               </div>
             </div>
-            <span className="text-[11px] text-muted-foreground font-medium max-w-[64px] truncate text-center">Your story</span>
+            <span className="text-[11px] text-muted-foreground font-medium max-w-[64px] truncate text-center">Post</span>
           </button>
         )}
 
