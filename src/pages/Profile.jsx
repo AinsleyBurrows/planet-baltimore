@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil, Bookmark } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +25,7 @@ const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
   { id: 'feed', label: 'Feed', icon: Rss },
   { id: 'writings', label: 'My Writings', icon: BookOpen },
+  { id: 'saved', label: 'Saved', icon: Bookmark },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
 ];
@@ -173,6 +174,24 @@ export default function Profile() {
     queryKey: ['user-stories', user?.id],
     queryFn: () => base44.entities.Story.filter({ author_id: user.id }, '-created_date', 50),
     enabled: !!user?.id,
+  });
+
+  const { data: savedStoryRecords = [] } = useQuery({
+    queryKey: ['saved-stories-profile', user?.id],
+    queryFn: () => base44.entities.SavedStory.filter({ user_id: user.id }, '-created_date', 50),
+    enabled: !!user?.id && isOwnProfile,
+  });
+
+  const savedStoryIds = savedStoryRecords.map(s => s.story_id);
+
+  const { data: savedStories = [] } = useQuery({
+    queryKey: ['saved-stories-data', savedStoryIds.join(',')],
+    queryFn: async () => {
+      if (!savedStoryIds.length) return [];
+      const all = await base44.entities.Story.list('-created_date', 200);
+      return all.filter(s => savedStoryIds.includes(s.id));
+    },
+    enabled: savedStoryIds.length > 0,
   });
 
   const handleDeleteStory = async (storyId) => {
@@ -358,6 +377,16 @@ export default function Profile() {
             posts.filter(p => !p.is_deleted).map(p => <PostCard key={p.id} post={p} currentUserId={user.id} onDelete={handleDeletePost} />)
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">Your activity feed is empty.</div>
+          )
+        )}
+
+        {activeTab === 'saved' && isOwnProfile && (
+          savedStories.length > 0 ? (
+            <div className="space-y-4">
+              {savedStories.map(story => <StoryCard key={story.id} story={story} />)}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground text-sm">No saved stories yet. Bookmark stories to find them here.</div>
           )
         )}
 
