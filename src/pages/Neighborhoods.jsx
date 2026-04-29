@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { MapPin, Users, Calendar, Building2, X } from 'lucide-react';
+import { MapPin, Users, Calendar, Building2, X, Palette, Landmark, Shield as ShieldIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -45,6 +45,24 @@ export default function Neighborhoods() {
   const { data: communities = [], isLoading: loadingCommunities } = useQuery({
     queryKey: ['neighborhood-communities', selected?.name],
     queryFn: () => base44.entities.Community.filter({ neighborhood_name: selected.name }, '-created_date', 12),
+    enabled: !!selected,
+  });
+
+  const { data: artists = [], isLoading: loadingArtists } = useQuery({
+    queryKey: ['neighborhood-artists', selected?.name],
+    queryFn: () => base44.entities.ArtistPage.filter({ neighborhood_name: selected.name }, '-created_date', 12),
+    enabled: !!selected,
+  });
+
+  const { data: artsOrgs = [], isLoading: loadingArtsOrgs } = useQuery({
+    queryKey: ['neighborhood-arts-orgs', selected?.name],
+    queryFn: () => base44.entities.ArtsOrganization.filter({ neighborhood_name: selected.name }, '-created_date', 12),
+    enabled: !!selected,
+  });
+
+  const { data: associations = [], isLoading: loadingAssociations } = useQuery({
+    queryKey: ['neighborhood-associations', selected?.name],
+    queryFn: () => base44.entities.CommunityAssociation.filter({ neighborhood_name: selected.name }, '-created_date', 12),
     enabled: !!selected,
   });
 
@@ -99,15 +117,24 @@ export default function Neighborhoods() {
 
           {/* Filtered content tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full bg-secondary/50 rounded-xl">
-              <TabsTrigger value="events" className="flex-1 rounded-lg gap-1.5">
+            <TabsList className="w-full bg-secondary/50 rounded-xl flex-wrap h-auto gap-1 p-1">
+              <TabsTrigger value="events" className="flex-1 rounded-lg gap-1.5 text-xs">
                 <Calendar className="w-3.5 h-3.5" />Events
               </TabsTrigger>
-              <TabsTrigger value="businesses" className="flex-1 rounded-lg gap-1.5">
+              <TabsTrigger value="businesses" className="flex-1 rounded-lg gap-1.5 text-xs">
                 <Building2 className="w-3.5 h-3.5" />Businesses
               </TabsTrigger>
-              <TabsTrigger value="communities" className="flex-1 rounded-lg gap-1.5">
+              <TabsTrigger value="communities" className="flex-1 rounded-lg gap-1.5 text-xs">
                 <Users className="w-3.5 h-3.5" />Communities
+              </TabsTrigger>
+              <TabsTrigger value="artists" className="flex-1 rounded-lg gap-1.5 text-xs">
+                <Palette className="w-3.5 h-3.5" />Artists
+              </TabsTrigger>
+              <TabsTrigger value="arts-orgs" className="flex-1 rounded-lg gap-1.5 text-xs">
+                <Landmark className="w-3.5 h-3.5" />Arts Orgs
+              </TabsTrigger>
+              <TabsTrigger value="associations" className="flex-1 rounded-lg gap-1.5 text-xs">
+                <ShieldIcon className="w-3.5 h-3.5" />Associations
               </TabsTrigger>
             </TabsList>
 
@@ -167,6 +194,81 @@ export default function Neighborhoods() {
                       <p className="text-xs text-muted-foreground capitalize">{com.category}</p>
                     </div>
                     <span className="text-xs text-muted-foreground whitespace-nowrap">{(com.members_count || 0).toLocaleString()} members</span>
+                  </Link>
+                ))
+              )}
+            </TabsContent>
+
+            <TabsContent value="artists" className="mt-4 space-y-3">
+              {loadingArtists ? (
+                Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)
+              ) : artists.length === 0 ? (
+                <EmptyState icon={Palette} label="No artists listed in this neighborhood yet" />
+              ) : (
+                artists.map(artist => (
+                  <Link key={artist.id} to={`/artists/${artist.id}`} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:shadow-sm transition-all group">
+                    <Avatar className="w-12 h-12 rounded-xl flex-shrink-0">
+                      <AvatarImage src={artist.image_url} />
+                      <AvatarFallback className="rounded-xl bg-accent/10 text-accent font-bold">{artist.name?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-semibold text-sm text-foreground group-hover:text-accent transition-colors truncate">{artist.name}</p>
+                        {artist.is_verified && <Shield className="w-3.5 h-3.5 text-accent flex-shrink-0" />}
+                      </div>
+                      <p className="text-xs text-muted-foreground capitalize">{artist.category?.replace('_', ' ')}</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{(artist.followers_count || 0).toLocaleString()} followers</span>
+                  </Link>
+                ))
+              )}
+            </TabsContent>
+
+            <TabsContent value="arts-orgs" className="mt-4 space-y-3">
+              {loadingArtsOrgs ? (
+                Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)
+              ) : artsOrgs.length === 0 ? (
+                <EmptyState icon={Landmark} label="No arts organizations in this neighborhood yet" />
+              ) : (
+                artsOrgs.map(org => (
+                  <Link key={org.id} to={`/arts-organizations/${org.id}`} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:shadow-sm transition-all group">
+                    <Avatar className="w-12 h-12 rounded-xl flex-shrink-0">
+                      <AvatarImage src={org.image_url} />
+                      <AvatarFallback className="rounded-xl bg-accent/10 text-accent font-bold">{org.name?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-semibold text-sm text-foreground group-hover:text-accent transition-colors truncate">{org.name}</p>
+                        {org.is_verified && <Shield className="w-3.5 h-3.5 text-accent flex-shrink-0" />}
+                      </div>
+                      <p className="text-xs text-muted-foreground capitalize">{org.org_type?.replace('_', ' ')}</p>
+                    </div>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{(org.followers_count || 0).toLocaleString()} followers</span>
+                  </Link>
+                ))
+              )}
+            </TabsContent>
+
+            <TabsContent value="associations" className="mt-4 space-y-3">
+              {loadingAssociations ? (
+                Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)
+              ) : associations.length === 0 ? (
+                <EmptyState icon={ShieldIcon} label="No community associations in this neighborhood yet" />
+              ) : (
+                associations.map(assoc => (
+                  <Link key={assoc.id} to={`/community-associations/${assoc.id}`} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl hover:shadow-sm transition-all group">
+                    <Avatar className="w-12 h-12 rounded-xl flex-shrink-0">
+                      <AvatarImage src={assoc.image_url} />
+                      <AvatarFallback className="rounded-xl bg-primary/10 text-primary font-bold">{assoc.name?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="font-semibold text-sm text-foreground group-hover:text-accent transition-colors truncate">{assoc.name}</p>
+                        {assoc.is_verified && <Shield className="w-3.5 h-3.5 text-accent flex-shrink-0" />}
+                      </div>
+                      {assoc.tagline && <p className="text-xs text-muted-foreground truncate">{assoc.tagline}</p>}
+                    </div>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">{(assoc.members_count || 0).toLocaleString()} members</span>
                   </Link>
                 ))
               )}
