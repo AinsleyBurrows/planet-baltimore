@@ -125,7 +125,7 @@ export default function Neighborhoods() {
                 <Building2 className="w-3.5 h-3.5" />Businesses
               </TabsTrigger>
               <TabsTrigger value="communities" className="flex-1 rounded-lg gap-1.5 text-xs">
-                <Users className="w-3.5 h-3.5" />Communities
+                <Users className="w-3.5 h-3.5" />Groups / Communities
               </TabsTrigger>
               <TabsTrigger value="artists" className="flex-1 rounded-lg gap-1.5 text-xs">
                 <Palette className="w-3.5 h-3.5" />Artists
