@@ -47,26 +47,32 @@ export default function ArtsOrganizations() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Arts Organizations</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">The living cultural map of Baltimore</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowMap(v => !v)}
-            className="gap-1.5 rounded-lg"
-          >
-            <MapPin className="w-4 h-4" />{showMap ? 'List' : 'Map'}
-          </Button>
-          <Link to="/create-arts-org">
-            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-              <Plus className="w-4 h-4" />
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
+        <div className="relative z-10 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Arts Organizations</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">The living cultural map of Baltimore.</p>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowMap(v => !v)}
+              className="gap-1.5 rounded-lg bg-white/20 border-white/30 hover:bg-white/30"
+            >
+              <MapPin className="w-4 h-4" />{showMap ? 'List' : 'Map'}
             </Button>
-          </Link>
+            <Link to="/create-arts-org">
+              <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
+                <Plus className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
         </div>
       </div>
 
