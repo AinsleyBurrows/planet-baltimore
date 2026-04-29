@@ -12,7 +12,7 @@ const navItems = [
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
   { icon: Map, label: 'City Map', path: '/map' },
-  { icon: Users, label: 'Communities', path: '/communities' },
+  { icon: Users, label: 'Groups / Communities', path: '/communities' },
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
