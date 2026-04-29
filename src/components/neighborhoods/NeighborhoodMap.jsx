@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -91,6 +91,15 @@ function FlyToSelected({ selected }) {
 
 const BALTIMORE_CENTER = [39.2904, -76.6122];
 
+// Approximate geographic centers for each region with soft fill colors
+const REGION_ZONES = [
+  { region: 'North Baltimore',   center: [39.3550, -76.6250], color: '#22c55e', radius: 3800 },
+  { region: 'South Baltimore',   center: [39.2500, -76.5900], color: '#3b82f6', radius: 3200 },
+  { region: 'East Baltimore',    center: [39.2950, -76.5600], color: '#f97316', radius: 3500 },
+  { region: 'West Baltimore',    center: [39.2950, -76.6700], color: '#8b5cf6', radius: 3500 },
+  { region: 'Central/Downtown',  center: [39.2904, -76.6122], color: '#ef4444', radius: 2200 },
+];
+
 export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
   const pinnable = neighborhoods.filter(n => n.latitude && n.longitude);
 
@@ -106,6 +115,16 @@ export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {/* Soft region shading */}
+        {REGION_ZONES.map(({ region, center, color, radius }) => (
+          <Circle
+            key={region}
+            center={center}
+            radius={radius}
+            pathOptions={{ color, fillColor: color, fillOpacity: 0.08, weight: 1, opacity: 0.25 }}
+          />
+        ))}
 
         <FlyToSelected selected={selected} />
 
