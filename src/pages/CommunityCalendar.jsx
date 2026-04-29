@@ -162,7 +162,7 @@ export default function CommunityCalendar() {
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-6 sm:p-10">
         <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-1 text-foreground">Community Calendar</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 text-foreground">Calendar</h1>
             <p className="text-muted-foreground text-sm">Events from local businesses, organizations & communities</p>
           </div>
           {user && (
