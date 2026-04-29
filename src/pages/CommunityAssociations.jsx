@@ -61,7 +61,7 @@ export default function CommunityAssociations() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Neighborhood Associations</h1>
+          <h1 className="text-2xl font-bold text-foreground">Community Associations</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Official community governance hubs</p>
         </div>
         <Link to="/create-community-association">
