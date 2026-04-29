@@ -72,6 +72,18 @@ export default function Search() {
 
   return (
     <div className="space-y-6">
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
+        <div className="relative z-10">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Search</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Find people, stories, communities, artists, and more across Baltimore.</p>
+        </div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        </div>
+      </div>
+
       {/* Search Input */}
       <div className="relative">
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
