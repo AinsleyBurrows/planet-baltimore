@@ -125,7 +125,7 @@ export default function Profile() {
 
   const { data: neighborhoods = [] } = useQuery({
     queryKey: ['neighborhoods'],
-    queryFn: () => base44.entities.Neighborhood.list('name', 100),
+    queryFn: () => base44.entities.Neighborhood.list('name', 500),
   });
 
   const handleNeighborhoodSelect = async (neighborhood) => {
