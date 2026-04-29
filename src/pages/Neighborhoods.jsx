@@ -27,7 +27,7 @@ export default function Neighborhoods() {
 
   const { data: neighborhoods = [], isLoading: loadingNeighborhoods } = useQuery({
     queryKey: ['neighborhoods'],
-    queryFn: () => base44.entities.Neighborhood.list('name', 100),
+    queryFn: () => base44.entities.Neighborhood.list('name', 500),
   });
 
   const { data: events = [], isLoading: loadingEvents } = useQuery({
