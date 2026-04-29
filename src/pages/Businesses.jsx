@@ -32,13 +32,23 @@ export default function Businesses() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Businesses</h1>
-        <Link to="/create-business">
-          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </Link>
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
+        <div className="relative z-10 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Businesses</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Discover and support local Baltimore businesses.</p>
+          </div>
+          <Link to="/create-business" className="flex-shrink-0 ml-4">
+            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        </div>
       </div>
 
       <div className="flex gap-2">
