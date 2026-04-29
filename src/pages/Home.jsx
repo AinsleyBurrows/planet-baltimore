@@ -156,7 +156,7 @@ export default function Home() {
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary via-primary/80 to-accent text-white p-8 sm:p-12">
         <div className="relative z-10">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">Planet Baltimore</h1>
-          <p className="text-white/70 text-sm sm:text-base">Your city. Your community. Your feed.</p>
+          <p className="text-white/70 text-sm sm:text-base">Post from Home. Connect with Baltimore.</p>
         </div>
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
