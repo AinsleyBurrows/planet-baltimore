@@ -112,12 +112,18 @@ export default function CityMap() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] -mx-4 -mb-4 sm:-mx-6">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border bg-card flex-shrink-0">
-        <div className="flex items-center gap-2">
+      <div className="relative flex items-center justify-between px-4 sm:px-6 py-4 flex-shrink-0 bg-gradient-to-r from-accent/20 via-accent/10 to-accent/5 overflow-hidden">
+        <div className="relative z-10 flex items-center gap-2">
           <Layers className="w-5 h-5 text-accent" />
-          <h1 className="text-lg font-bold text-foreground">Explore Baltimore</h1>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Explore Baltimore</h1>
+            <p className="text-xs text-muted-foreground">Interactive map of the city's culture & community</p>
+          </div>
         </div>
-        <span className="text-xs text-muted-foreground">{allPins.length} locations</span>
+        <span className="relative z-10 text-xs font-medium text-muted-foreground bg-background/60 backdrop-blur-sm px-2.5 py-1 rounded-full border border-border">{allPins.length} locations</span>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+        </div>
       </div>
 
       {/* Filter bar */}
