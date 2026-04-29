@@ -69,11 +69,13 @@ export default function StoryBar({ currentUser }) {
                   <span className="text-lg font-bold text-muted-foreground">{currentUser.full_name?.charAt(0)}</span>
                 )}
               </div>
-              <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center border-2 border-card shadow-sm">
-                <Plus className="w-3 h-3 text-white" />
+              <div className="flex flex-col items-center gap-1">
+                <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center border-2 border-card shadow-sm">
+                  <Plus className="w-3 h-3 text-white" />
+                </div>
+                <span className="text-[11px] text-muted-foreground font-medium">Post</span>
               </div>
             </div>
-            <span className="text-[11px] text-muted-foreground font-medium max-w-[64px] truncate text-center">Post</span>
           </button>
         )}
 
