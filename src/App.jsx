@@ -36,7 +36,6 @@ import CommunityAssociations from '@/pages/CommunityAssociations';
 import CommunityAssociationDetail from '@/pages/CommunityAssociationDetail';
 import CreateCommunityAssociation from '@/pages/CreateCommunityAssociation';
 import NotificationSettings from '@/pages/NotificationSettings';
-import CityMap from '@/pages/CityMap';
 import OrganizerStudio from '@/pages/OrganizerStudio';
 import TicketingHub from '@/pages/TicketingHub';
 import EventTicketingPage from '@/pages/EventTicketing';
@@ -92,7 +91,6 @@ const AuthenticatedApp = () => {
         <Route path="/community-associations/:id" element={<CommunityAssociationDetail />} />
         <Route path="/create-community-association" element={<CreateCommunityAssociation />} />
         <Route path="/notification-settings" element={<NotificationSettings />} />
-        <Route path="/map" element={<CityMap />} />
         <Route path="/organizer-studio" element={<OrganizerStudio />} />
         <Route path="/ticketing" element={<TicketingHub />} />
         <Route path="/events/:id/tickets" element={<EventTicketingPage />} />
