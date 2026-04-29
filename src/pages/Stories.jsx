@@ -58,23 +58,24 @@ export default function Stories() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
-            <BookOpen className="w-6 h-6 text-accent" />
-          </div>
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
+        <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Stories</h1>
-            <p className="text-sm text-muted-foreground">Discover stories from our writing community</p>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Stories</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Discover stories from Baltimore's writing community.</p>
           </div>
+          <Link to="/create-story" className="flex-shrink-0 ml-4">
+            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Write A Story</span>
+            </Button>
+          </Link>
         </div>
-        <Link to="/create-story">
-          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Write A Story</span>
-          </Button>
-        </Link>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        </div>
       </div>
 
       {/* Writing Formats */}
