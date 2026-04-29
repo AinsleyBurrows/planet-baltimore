@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +40,7 @@ export default function Profile() {
   const [showShare, setShowShare] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [showNeighborhoodPicker, setShowNeighborhoodPicker] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -118,6 +119,20 @@ export default function Profile() {
   const handleDeleteEvent = async (eventId) => {
     await base44.entities.Event.delete(eventId);
     queryClient.invalidateQueries({ queryKey: ['my-created-events', user?.id] });
+  };
+
+  const { data: neighborhoods = [] } = useQuery({
+    queryKey: ['neighborhoods'],
+    queryFn: () => base44.entities.Neighborhood.list('name', 100),
+  });
+
+  const handleNeighborhoodSelect = async (neighborhood) => {
+    const updated = await base44.auth.updateMe({
+      neighborhoods: [neighborhood.id],
+      neighborhood_names: [neighborhood.name],
+    });
+    setUser(prev => ({ ...prev, neighborhoods: [neighborhood.id], neighborhood_names: [neighborhood.name] }));
+    setShowNeighborhoodPicker(false);
   };
 
   const { data: posts = [] } = useQuery({
@@ -267,8 +282,34 @@ export default function Profile() {
               <LinkIcon className="w-3.5 h-3.5" />{user.website.replace(/https?:\/\//, '')}
             </a>
           )}
-          {user.neighborhood_names?.length > 0 && (
-            <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1"><MapPin className="w-3.5 h-3.5" />{user.neighborhood_names[0]}</span>
+          {isOwnProfile ? (
+            <div className="relative mt-1">
+              <button
+                onClick={() => setShowNeighborhoodPicker(v => !v)}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-accent transition-colors"
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                <span>{user.neighborhood_names?.[0] || 'Add neighborhood'}</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+              {showNeighborhoodPicker && (
+                <div className="absolute top-7 left-0 z-30 bg-card border border-border rounded-xl shadow-xl w-56 max-h-60 overflow-y-auto">
+                  {neighborhoods.map(n => (
+                    <button
+                      key={n.id}
+                      onClick={() => handleNeighborhoodSelect(n)}
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors ${user.neighborhood_names?.[0] === n.name ? 'text-accent font-medium' : 'text-foreground'}`}
+                    >
+                      {n.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            user.neighborhood_names?.length > 0 && (
+              <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1"><MapPin className="w-3.5 h-3.5" />{user.neighborhood_names[0]}</span>
+            )
           )}
           {user.bio && <p className="text-sm text-muted-foreground mt-2">{user.bio}</p>}
           {user.account_type && (
