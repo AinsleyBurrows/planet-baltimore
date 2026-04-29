@@ -122,7 +122,7 @@ export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
             key={region}
             center={center}
             radius={radius}
-            pathOptions={{ color, fillColor: color, fillOpacity: 0.08, weight: 1, opacity: 0.25 }}
+            pathOptions={{ color, fillColor: color, fillOpacity: 0.18, weight: 1, opacity: 0.35 }}
           />
         ))}
 
