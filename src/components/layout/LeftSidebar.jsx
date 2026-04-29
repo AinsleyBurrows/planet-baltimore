@@ -13,6 +13,7 @@ const navItems = [
   { icon: Shield, label: 'Community Associations', path: '/community-associations' },
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
+  { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
   { icon: Users, label: 'Groups / Communities', path: '/communities' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },

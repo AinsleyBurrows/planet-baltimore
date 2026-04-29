@@ -42,6 +42,7 @@ import EventTicketingPage from '@/pages/EventTicketing';
 import PromoterDashboard from '@/pages/PromoterDashboard';
 import OrderConfirmation from '@/pages/OrderConfirmation';
 import TicketSalesDashboard from '@/pages/TicketSalesDashboard';
+import CommunityCalendar from '@/pages/CommunityCalendar';
 
 // Routes already exist in App.jsx - verify they're present
 
@@ -96,6 +97,7 @@ const AuthenticatedApp = () => {
         <Route path="/events/:id/tickets" element={<EventTicketingPage />} />
         <Route path="/promoter-dashboard" element={<PromoterDashboard />} />
         <Route path="/ticket-sales-dashboard" element={<TicketSalesDashboard />} />
+        <Route path="/community-calendar" element={<CommunityCalendar />} />
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:id" element={<Profile />} />
