@@ -3,8 +3,9 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
   Utensils, Star, CalendarDays, Megaphone, Plus, Trash2, Pencil,
-  ExternalLink, ShoppingBag, X, Loader2, ChevronDown, ChevronUp, Image as ImageIcon
+  ExternalLink, ShoppingBag, X, Loader2, ChevronDown, ChevronUp, Image as ImageIcon, Rss
 } from 'lucide-react';
+import PostCard from '@/components/shared/PostCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -264,8 +265,15 @@ export default function RestaurantHub({ business, isOwner, user, events = [] }) 
   const [showAddMenuItem, setShowAddMenuItem] = useState(false);
   const [showAnnounce, setShowAnnounce] = useState(false);
 
+  const { data: posts = [] } = useQuery({
+    queryKey: ['business-posts', business.id],
+    queryFn: () => base44.entities.Post.filter({ page_id: business.id, page_type: 'business' }, '-created_date', 10),
+    staleTime: 30000,
+  });
+
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ['business', business.id] });
+    queryClient.invalidateQueries({ queryKey: ['business-posts', business.id] });
     setShowAddSpecial(false);
     setShowAddMenuItem(false);
     setShowAnnounce(false);
@@ -381,10 +389,37 @@ export default function RestaurantHub({ business, isOwner, user, events = [] }) 
         </div>
       )}
 
+      {/* Posts / Updates Feed */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-foreground flex items-center gap-2"><Rss className="w-4 h-4 text-accent" /> Posts & Updates</h2>
+          {isOwner && (
+            <button onClick={() => setShowAnnounce(true)} className="flex items-center gap-1.5 text-xs text-accent hover:underline font-medium">
+              <Plus className="w-3.5 h-3.5" /> Add Post
+            </button>
+          )}
+        </div>
+        {isOwner && posts.length === 0 && (
+          <button
+            onClick={() => setShowAnnounce(true)}
+            className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2 mb-3"
+          >
+            <Plus className="w-4 h-4" /> Share an update with your followers
+          </button>
+        )}
+        {posts.length === 0 && !isOwner ? (
+          <p className="text-sm text-muted-foreground py-4 text-center bg-secondary/30 rounded-xl">No posts yet.</p>
+        ) : (
+          <div className="space-y-4">
+            {posts.map(post => <PostCard key={post.id} post={post} currentUserId={user?.id} />)}
+          </div>
+        )}
+      </div>
+
       {/* Modals */}
       {showAddSpecial && <AddSpecialModal business={business} onClose={() => setShowAddSpecial(false)} onSaved={refresh} />}
       {showAddMenuItem && <AddMenuItemModal business={business} onClose={() => setShowAddMenuItem(false)} onSaved={refresh} />}
-      {showAnnounce && user && <AnnounceModal business={business} user={user} onClose={() => setShowAnnounce(false)} onSaved={() => { refresh(); queryClient.invalidateQueries({ queryKey: ['business-posts'] }); }} />}
+      {showAnnounce && user && <AnnounceModal business={business} user={user} onClose={() => setShowAnnounce(false)} onSaved={refresh} />}
     </div>
   );
 }
