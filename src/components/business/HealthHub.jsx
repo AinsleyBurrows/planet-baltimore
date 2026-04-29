@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Heart, CalendarDays, Shield, Clock, Plus, Trash2, X, Loader2, Megaphone, CheckCircle, Phone } from 'lucide-react';
+import { Heart, CalendarDays, Shield, Clock, Plus, Trash2, X, Loader2, CheckCircle, Phone } from 'lucide-react';
+import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EventCard from '@/components/shared/EventCard';
@@ -65,45 +66,13 @@ function AddTreatmentModal({ business, onClose, onSaved }) {
   );
 }
 
-function AnnounceModal({ business, user, onClose, onSaved }) {
-  const [content, setContent] = useState('');
-  const [saving, setSaving] = useState(false);
-  const handlePost = async () => {
-    setSaving(true);
-    await base44.entities.Post.create({
-      author_id: user.id, author_name: business.name, author_avatar: business.image_url,
-      author_type: 'business', page_id: business.id, page_type: 'business',
-      content, post_type: 'announcement', visibility: 'public',
-      neighborhood_id: business.neighborhood_id, neighborhood_name: business.neighborhood_name,
-    });
-    setSaving(false); onSaved();
-  };
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-2xl p-5 space-y-3" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">Post Health Tip or Update</h3>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="w-4 h-4" /></button>
-        </div>
-        <textarea className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring min-h-[100px]"
-          placeholder={`Share wellness tips, new services, or updates from ${business.name}…`}
-          value={content} onChange={e => setContent(e.target.value)} />
-        <Button onClick={handlePost} disabled={!content || saving} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl gap-2">
-          {saving ? <><Loader2 className="w-4 h-4 animate-spin" />Posting…</> : <><Megaphone className="w-4 h-4" />Post Update</>}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 export default function HealthHub({ business, isOwner, user, events = [] }) {
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
-  const [showAnnounce, setShowAnnounce] = useState(false);
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ['business', business.id] });
-    setShowAdd(false); setShowAnnounce(false);
+    setShowAdd(false);
   };
 
   const deleteTreatment = async (treatment) => {
@@ -122,11 +91,7 @@ export default function HealthHub({ business, isOwner, user, events = [] }) {
   return (
     <div className="space-y-6">
       {isOwner && (
-        <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => setShowAnnounce(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
-            <Megaphone className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Post Tip / Update</span>
-          </button>
+        <div className="grid grid-cols-1 gap-3">
           <button onClick={() => setShowAdd(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
             <Plus className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
             <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Add Treatment</span>
@@ -193,8 +158,9 @@ export default function HealthHub({ business, isOwner, user, events = [] }) {
         </div>
       )}
 
+      <BusinessPostsFeed business={business} isOwner={isOwner} user={user} />
+
       {showAdd && <AddTreatmentModal business={business} onClose={() => setShowAdd(false)} onSaved={refresh} />}
-      {showAnnounce && user && <AnnounceModal business={business} user={user} onClose={() => setShowAnnounce(false)} onSaved={refresh} />}
     </div>
   );
 }

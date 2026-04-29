@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Heart, HandHeart, Users, ExternalLink, Megaphone, X, Loader2, Image as ImageIcon, Target, Mail } from 'lucide-react';
+import { Heart, HandHeart, Users, X, Loader2, Target, Mail, Megaphone, Image as ImageIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EventCard from '@/components/shared/EventCard';
@@ -150,14 +152,12 @@ function AnnounceModal({ business, user, onClose, onSaved }) {
 
 export default function NonprofitHub({ business, isOwner, user, events = [] }) {
   const queryClient = useQueryClient();
-  const [showAnnounce, setShowAnnounce] = useState(false);
   const [showImpact, setShowImpact] = useState(false);
   const [showVolunteer, setShowVolunteer] = useState(false);
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ['business', business.id] });
-    queryClient.invalidateQueries({ queryKey: ['business-posts'] });
-    setShowAnnounce(false); setShowImpact(false);
+    setShowImpact(false);
   };
 
   const deleteImpact = async (item) => {
@@ -175,11 +175,7 @@ export default function NonprofitHub({ business, isOwner, user, events = [] }) {
   return (
     <div className="space-y-6">
       {isOwner && (
-        <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => setShowAnnounce(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
-            <Megaphone className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Post Update</span>
-          </button>
+        <div className="grid grid-cols-1 gap-3">
           <button onClick={() => setShowImpact(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
             <Target className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
             <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Add Impact Metric</span>
@@ -240,7 +236,8 @@ export default function NonprofitHub({ business, isOwner, user, events = [] }) {
         </div>
       )}
 
-      {showAnnounce && user && <AnnounceModal business={business} user={user} onClose={() => setShowAnnounce(false)} onSaved={refresh} />}
+      <BusinessPostsFeed business={business} isOwner={isOwner} user={user} />
+
       {showImpact && <AddImpactModal business={business} onClose={() => setShowImpact(false)} onSaved={refresh} />}
     </div>
   );

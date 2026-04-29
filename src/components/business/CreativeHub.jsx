@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Palette, ExternalLink, ShoppingBag, Mail, Megaphone, Image as ImageIcon, X, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Palette, ShoppingBag, Mail, Image as ImageIcon, X, Loader2, Plus, Trash2 } from 'lucide-react';
+import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import AppImage from '@/components/shared/AppImage';
@@ -106,64 +107,14 @@ function CommissionInquiryForm({ business }) {
   );
 }
 
-function AnnounceModal({ business, user, onClose, onSaved }) {
-  const [content, setContent] = useState('');
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
-  const [saving, setSaving] = useState(false);
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
-  };
-  const handlePost = async () => {
-    setSaving(true);
-    let mediaUrls = [];
-    if (imageFile) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
-      mediaUrls = [file_url];
-    }
-    await base44.entities.Post.create({
-      author_id: user.id, author_name: business.name, author_avatar: business.image_url,
-      author_type: 'business', page_id: business.id, page_type: 'business',
-      content, media_urls: mediaUrls, media_type: mediaUrls.length ? 'image' : 'text',
-      post_type: 'announcement', visibility: 'public',
-      neighborhood_id: business.neighborhood_id, neighborhood_name: business.neighborhood_name,
-    });
-    setSaving(false); onSaved();
-  };
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-2xl p-5 space-y-3" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">Share Work / Update</h3>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="w-4 h-4" /></button>
-        </div>
-        <textarea className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring min-h-[100px]"
-          placeholder={`Share new work, a process update, or news from ${business.name}…`}
-          value={content} onChange={e => setContent(e.target.value)} />
-        {imagePreview && <img src={imagePreview} alt="" className="w-full h-36 object-cover rounded-xl" />}
-        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-          <ImageIcon className="w-4 h-4" /> Attach image
-          <input type="file" accept="image/*" className="hidden" onChange={handleImage} />
-        </label>
-        <Button onClick={handlePost} disabled={!content || saving} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl gap-2">
-          {saving ? <><Loader2 className="w-4 h-4 animate-spin" />Posting…</> : <><Megaphone className="w-4 h-4" />Post Update</>}
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 export default function CreativeHub({ business, isOwner, user, events = [] }) {
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
-  const [showAnnounce, setShowAnnounce] = useState(false);
   const [showInquiry, setShowInquiry] = useState(false);
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ['business', business.id] });
-    queryClient.invalidateQueries({ queryKey: ['business-posts'] });
-    setShowAdd(false); setShowAnnounce(false);
+    setShowAdd(false);
   };
 
   const deletePortfolioItem = async (item) => {
@@ -181,11 +132,7 @@ export default function CreativeHub({ business, isOwner, user, events = [] }) {
   return (
     <div className="space-y-6">
       {isOwner && (
-        <div className="grid grid-cols-2 gap-3">
-          <button onClick={() => setShowAnnounce(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
-            <Megaphone className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Share Work / Update</span>
-          </button>
+        <div className="grid grid-cols-1 gap-3">
           <button onClick={() => setShowAdd(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
             <ImageIcon className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
             <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Add to Portfolio</span>
@@ -254,8 +201,9 @@ export default function CreativeHub({ business, isOwner, user, events = [] }) {
         </div>
       )}
 
+      <BusinessPostsFeed business={business} isOwner={isOwner} user={user} />
+
       {showAdd && <AddPortfolioModal business={business} onClose={() => setShowAdd(false)} onSaved={refresh} />}
-      {showAnnounce && user && <AnnounceModal business={business} user={user} onClose={() => setShowAnnounce(false)} onSaved={refresh} />}
     </div>
   );
 }

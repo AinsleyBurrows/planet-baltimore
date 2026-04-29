@@ -1,72 +1,14 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Music, Ticket, Users, Play, ExternalLink, Megaphone, X, Loader2, Image as ImageIcon, CalendarDays } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Music, Ticket, Users, Play, CalendarDays } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import EventCard from '@/components/shared/EventCard';
 import AppImage from '@/components/shared/AppImage';
-
-function AnnounceModal({ business, user, onClose, onSaved }) {
-  const [content, setContent] = useState('');
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  const handleImage = (e) => {
-    const file = e.target.files[0];
-    if (file) { setImageFile(file); setImagePreview(URL.createObjectURL(file)); }
-  };
-
-  const handlePost = async () => {
-    setSaving(true);
-    let mediaUrls = [];
-    if (imageFile) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file: imageFile });
-      mediaUrls = [file_url];
-    }
-    await base44.entities.Post.create({
-      author_id: user.id, author_name: business.name, author_avatar: business.image_url,
-      author_type: 'business', page_id: business.id, page_type: 'business',
-      content, media_urls: mediaUrls, media_type: mediaUrls.length ? 'image' : 'text',
-      post_type: 'announcement', visibility: 'public',
-      neighborhood_id: business.neighborhood_id, neighborhood_name: business.neighborhood_name,
-    });
-    setSaving(false); onSaved();
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full sm:max-w-md bg-card rounded-t-2xl sm:rounded-2xl shadow-2xl p-5 space-y-3" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">Post Announcement</h3>
-          <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="w-4 h-4" /></button>
-        </div>
-        <textarea className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring min-h-[100px]"
-          placeholder={`New show, event, or update from ${business.name}…`}
-          value={content} onChange={e => setContent(e.target.value)} />
-        {imagePreview && <img src={imagePreview} alt="" className="w-full h-36 object-cover rounded-xl" />}
-        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors">
-          <ImageIcon className="w-4 h-4" /> Add flyer / photo
-          <input type="file" accept="image/*" className="hidden" onChange={handleImage} />
-        </label>
-        <Button onClick={handlePost} disabled={!content || saving} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl gap-2">
-          {saving ? <><Loader2 className="w-4 h-4 animate-spin" />Posting…</> : <><Megaphone className="w-4 h-4" />Post Announcement</>}
-        </Button>
-      </div>
-    </div>
-  );
-}
+import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
 
 export default function EntertainmentHub({ business, isOwner, user, events = [] }) {
   const queryClient = useQueryClient();
-  const [showAnnounce, setShowAnnounce] = useState(false);
-
-  const refresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['business', business.id] });
-    queryClient.invalidateQueries({ queryKey: ['business-posts'] });
-    setShowAnnounce(false);
-  };
 
   const ticketUrl = business.hub_data?.ticket_url;
   const capacity = business.hub_data?.capacity;
@@ -78,12 +20,7 @@ export default function EntertainmentHub({ business, isOwner, user, events = [] 
 
   return (
     <div className="space-y-6">
-      {isOwner && (
-        <button onClick={() => setShowAnnounce(true)} className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
-          <Megaphone className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
-          <span className="text-sm font-medium text-muted-foreground group-hover:text-accent">Post Show / Event Announcement</span>
-        </button>
-      )}
+
 
       {ticketUrl && (
         <a href={ticketUrl} target="_blank" rel="noopener noreferrer"
@@ -140,7 +77,7 @@ export default function EntertainmentHub({ business, isOwner, user, events = [] 
         )}
       </div>
 
-      {showAnnounce && user && <AnnounceModal business={business} user={user} onClose={() => setShowAnnounce(false)} onSaved={refresh} />}
+      <BusinessPostsFeed business={business} isOwner={isOwner} user={user} />
     </div>
   );
 }
