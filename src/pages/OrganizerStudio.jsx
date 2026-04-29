@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Settings, ChevronDown, Mail } from 'lucide-react';
+import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Settings, ChevronDown, Mail, Plus } from 'lucide-react';
 import EventSelector from '@/components/organizer/EventSelector';
 import OrganizerTicketManager from '@/components/organizer/OrganizerTicketManager';
 import OrganizerAttendeeList from '@/components/organizer/OrganizerAttendeeList';
@@ -13,6 +13,7 @@ import OrganizerPayouts from '@/components/organizer/OrganizerPayouts';
 import OrganizerCheckIn from '@/components/organizer/OrganizerCheckIn';
 import OrganizerAnalytics from '@/components/organizer/OrganizerAnalytics';
 import AttendeeMessaging from '@/components/organizer/AttendeeMessaging';
+import CreateEventInline from '@/components/organizer/CreateEventInline';
 
 export default function OrganizerStudio() {
   const queryClient = useQueryClient();
@@ -79,6 +80,17 @@ export default function OrganizerStudio() {
         </div>
       </div>
 
+      <Tabs defaultValue="manage" className="w-full">
+        <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-2 h-auto gap-1 p-1 mb-4">
+          <TabsTrigger value="manage" className="rounded-lg text-sm">Manage Events</TabsTrigger>
+          <TabsTrigger value="create" className="rounded-lg text-sm flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />Create Event</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="create">
+          <CreateEventInline currentUser={currentUser} onCreated={(event) => { queryClient.invalidateQueries({ queryKey: ['user-events', currentUser?.id] }); }} />
+        </TabsContent>
+
+        <TabsContent value="manage">
       <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} isLoading={eventsLoading} />
 
       {selectedEvent ? (
@@ -161,6 +173,8 @@ export default function OrganizerStudio() {
           <p className="text-xs text-muted-foreground">Choose from your events above to view tickets, attendees, and payouts</p>
         </div>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
