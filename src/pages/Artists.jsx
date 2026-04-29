@@ -33,16 +33,27 @@ export default function Artists() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Artists</h1>
-        <Link to="/create-artist">
-          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </Link>
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
+        <div className="relative z-10 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Artists</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Discover Baltimore's creative voices — visual art, music, photography & more.</p>
+          </div>
+          <Link to="/create-artist" className="flex-shrink-0 ml-4">
+            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </Link>
+        </div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        </div>
       </div>
 
       {/* Search + sort */}
+
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
