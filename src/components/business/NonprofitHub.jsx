@@ -3,9 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
 import { Heart, HandHeart, Users, X, Loader2, Target, Mail, Megaphone, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
 import EventCard from '@/components/shared/EventCard';
 
 function VolunteerSignupForm({ business }) {
