@@ -152,8 +152,16 @@ export default function Home() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Home</h1>
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary via-primary/80 to-accent text-white p-8 sm:p-12">
+        <div className="relative z-10">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">Planet Baltimore</h1>
+          <p className="text-white/70 text-sm sm:text-base">Your city. Your community. Your feed.</p>
+        </div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        </div>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-3 sm:-mx-4 px-3 sm:px-4">
