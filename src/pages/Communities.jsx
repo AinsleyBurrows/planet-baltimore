@@ -37,7 +37,7 @@ export default function Communities() {
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
         <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Communities</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Groups / Communities</h1>
             <p className="text-muted-foreground text-sm sm:text-base">Find your people and build something together in Baltimore.</p>
           </div>
           <Link to="/create-community" className="flex-shrink-0 ml-4">
