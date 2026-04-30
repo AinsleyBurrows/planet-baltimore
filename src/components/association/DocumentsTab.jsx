@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, FileText, Download, Trash2, Upload, Loader2, File, Calendar } from 'lucide-react';
+import { FileText, Download, Trash2, Upload, X, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import DocumentUploadModal from './DocumentUploadModal';
 
@@ -25,15 +25,87 @@ const docTypeIcons = {
   other: '📄',
 };
 
-function DocumentCard({ doc, isAdmin, onDelete }) {
+function DocumentViewer({ doc, onClose }) {
+  const isPdf = doc.file_url?.toLowerCase().includes('.pdf') || doc.file_url?.toLowerCase().includes('pdf');
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-lg">{docTypeIcons[doc.document_type]}</span>
+          <div className="min-w-0">
+            <p className="font-semibold text-foreground text-sm truncate">{doc.name}</p>
+            {doc.created_date && (
+              <p className="text-xs text-muted-foreground">{format(new Date(doc.created_date), 'MMM d, yyyy')}</p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+          <a
+            href={doc.file_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            aria-label="Open in new tab"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            aria-label="Close viewer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-hidden">
+        {isPdf ? (
+          <iframe
+            src={`${doc.file_url}#view=FitH`}
+            className="w-full h-full border-none"
+            title={doc.name}
+          />
+        ) : (
+          /* For non-PDF files, show a preview or fallback */
+          <div className="flex flex-col items-center justify-center h-full gap-4 p-8 text-center">
+            <span className="text-6xl">{docTypeIcons[doc.document_type]}</span>
+            <div>
+              <p className="font-semibold text-foreground text-lg">{doc.name}</p>
+              {doc.description && <p className="text-sm text-muted-foreground mt-1">{doc.description}</p>}
+            </div>
+            <p className="text-sm text-muted-foreground">This file type cannot be previewed in-app.</p>
+            <a
+              href={doc.file_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-accent text-accent-foreground font-medium text-sm hover:bg-accent/90 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+              Download & Open
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DocumentCard({ doc, isAdmin, onDelete, onView }) {
   return (
     <div className="flex items-center justify-between p-4 bg-card border border-border rounded-xl hover:shadow-sm transition-all">
-      <div className="flex items-start gap-3 flex-1 min-w-0">
+      <button
+        className="flex items-start gap-3 flex-1 min-w-0 text-left"
+        onClick={() => onView(doc)}
+      >
         <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0 text-lg">
           {docTypeIcons[doc.document_type]}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-foreground truncate">{doc.name}</p>
+          <p className="font-medium text-foreground truncate hover:text-accent transition-colors">{doc.name}</p>
           {doc.description && <p className="text-xs text-muted-foreground line-clamp-1">{doc.description}</p>}
           <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground flex-wrap">
             <Badge variant="secondary" className="text-xs">{docTypeLabels[doc.document_type]}</Badge>
@@ -46,7 +118,7 @@ function DocumentCard({ doc, isAdmin, onDelete }) {
             )}
           </div>
         </div>
-      </div>
+      </button>
       <div className="flex items-center gap-2 flex-shrink-0 ml-3">
         <a
           href={doc.file_url}
@@ -54,6 +126,7 @@ function DocumentCard({ doc, isAdmin, onDelete }) {
           rel="noopener noreferrer"
           className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
           aria-label="Download document"
+          onClick={e => e.stopPropagation()}
         >
           <Download className="w-4 h-4" />
         </a>
@@ -79,6 +152,7 @@ export default function DocumentsTab({ associationId, isAdmin }) {
   const queryClient = useQueryClient();
   const [showUpload, setShowUpload] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [viewingDoc, setViewingDoc] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => {});
@@ -115,6 +189,8 @@ export default function DocumentsTab({ associationId, isAdmin }) {
   const sortedTypes = typeOrder.filter(type => docsByType[type]);
 
   return (
+    <>
+    {viewingDoc && <DocumentViewer doc={viewingDoc} onClose={() => setViewingDoc(null)} />}
     <div className="space-y-6">
       {isAdmin && (
         <button
@@ -147,6 +223,7 @@ export default function DocumentsTab({ associationId, isAdmin }) {
                     doc={doc}
                     isAdmin={isAdmin}
                     onDelete={deleteDocMutation.mutate}
+                    onView={setViewingDoc}
                   />
                 ))}
               </div>
@@ -164,5 +241,6 @@ export default function DocumentsTab({ associationId, isAdmin }) {
         />
       )}
     </div>
+    </>
   );
 }
