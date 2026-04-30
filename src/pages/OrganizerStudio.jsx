@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Settings, ChevronDown, Mail, Plus } from 'lucide-react';
+import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Mail, Plus, Clapperboard } from 'lucide-react';
 import EventSelector from '@/components/organizer/EventSelector';
 import OrganizerTicketManager from '@/components/organizer/OrganizerTicketManager';
 import OrganizerAttendeeList from '@/components/organizer/OrganizerAttendeeList';
@@ -14,6 +13,29 @@ import OrganizerCheckIn from '@/components/organizer/OrganizerCheckIn';
 import OrganizerAnalytics from '@/components/organizer/OrganizerAnalytics';
 import AttendeeMessaging from '@/components/organizer/AttendeeMessaging';
 import CreateEventInline from '@/components/organizer/CreateEventInline';
+
+function StatCard({ label, value, sub, icon: Icon }) {
+  return (
+    <div className="bg-foreground text-background rounded-2xl p-5 flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-widest opacity-50">{label}</p>
+        {Icon && <Icon className="w-4 h-4 opacity-40" />}
+      </div>
+      <p className="text-3xl font-bold tracking-tight">{value}</p>
+      {sub && <p className="text-xs opacity-50 -mt-1">{sub}</p>}
+    </div>
+  );
+}
+
+const TABS = [
+  { value: 'tickets',   label: 'Tickets',   Icon: Ticket },
+  { value: 'attendees', label: 'Attendees',  Icon: Users },
+  { value: 'checkin',   label: 'Check-In',   Icon: QrCode },
+  { value: 'message',   label: 'Message',    Icon: Mail },
+  { value: 'promoters', label: 'Promoters',  Icon: Users },
+  { value: 'payouts',   label: 'Payouts',    Icon: DollarSign },
+  { value: 'analytics', label: 'Analytics',  Icon: TrendingUp },
+];
 
 export default function OrganizerStudio() {
   const queryClient = useQueryClient();
@@ -61,7 +83,11 @@ export default function OrganizerStudio() {
   });
 
   if (!currentUser) {
-    return <div className="flex items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-accent" /></div>;
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="w-6 h-6 animate-spin text-foreground/40" />
+      </div>
+    );
   }
 
   const completedOrders = orders.filter(o => o.payment_status === 'completed');
@@ -72,119 +98,111 @@ export default function OrganizerStudio() {
   const checkedIn = tickets.filter(t => t.is_checked_in).length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Organizer Studio</h1>
-          <p className="text-muted-foreground mt-1 text-sm">Manage events, tickets, promoters, and payouts</p>
+    <div className="space-y-8">
+
+      {/* ── Hero Header ─────────────────────────────────────────── */}
+      <div className="relative bg-foreground text-background rounded-3xl px-6 py-8 overflow-hidden">
+        {/* subtle grid texture */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 24px,currentColor 24px,currentColor 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,currentColor 24px,currentColor 25px)' }} />
+        <div className="relative flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-9 h-9 rounded-xl bg-background/10 border border-background/20 flex items-center justify-center">
+                <Clapperboard className="w-5 h-5 text-background" />
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-widest opacity-50">Planet Baltimore</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Organizer Studio</h1>
+            <p className="text-sm opacity-50 mt-1">Manage events, tickets, promoters &amp; payouts</p>
+          </div>
         </div>
       </div>
 
+      {/* ── Top-level tabs: Manage / Create ─────────────────────── */}
       <Tabs defaultValue="manage" className="w-full">
-        <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-2 h-auto gap-1 p-1 mb-4">
-          <TabsTrigger value="manage" className="rounded-lg text-sm">Manage Events</TabsTrigger>
-          <TabsTrigger value="create" className="rounded-lg text-sm flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" />Create Event</TabsTrigger>
+        <TabsList className="w-full bg-foreground/5 border border-border rounded-2xl grid grid-cols-2 h-auto gap-1 p-1.5 mb-6">
+          <TabsTrigger
+            value="manage"
+            className="rounded-xl text-sm font-medium py-2.5 data-[state=active]:bg-foreground data-[state=active]:text-background transition-all"
+          >
+            Manage Events
+          </TabsTrigger>
+          <TabsTrigger
+            value="create"
+            className="rounded-xl text-sm font-medium py-2.5 flex items-center gap-1.5 data-[state=active]:bg-foreground data-[state=active]:text-background transition-all"
+          >
+            <Plus className="w-3.5 h-3.5" /> Create Event
+          </TabsTrigger>
         </TabsList>
 
+        {/* ── CREATE ──────────────────────────────────────────────── */}
         <TabsContent value="create">
-          <CreateEventInline currentUser={currentUser} onCreated={(event) => { queryClient.invalidateQueries({ queryKey: ['user-events', currentUser?.id] }); }} />
+          <CreateEventInline
+            currentUser={currentUser}
+            onCreated={() => queryClient.invalidateQueries({ queryKey: ['user-events', currentUser?.id] })}
+          />
         </TabsContent>
 
-        <TabsContent value="manage">
-      <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} isLoading={eventsLoading} />
+        {/* ── MANAGE ──────────────────────────────────────────────── */}
+        <TabsContent value="manage" className="space-y-6">
+          <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} isLoading={eventsLoading} />
 
-      {selectedEvent ? (
-        <>
-          {/* Stats Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label="Revenue" value={`$${totalRevenue.toFixed(2)}`} sub={`$${netRevenue.toFixed(2)} net`} color="text-accent" />
-            <StatCard label="Tickets Sold" value={totalTicketsSold} sub={`${completedOrders.length} orders`} color="text-primary" />
-            <StatCard label="Checked In" value={checkedIn} sub={`of ${tickets.length} total`} color="text-green-600" />
-            <StatCard label="Promoters" value={promoters.filter(p => p.status === 'active').length} sub={`${promoters.reduce((s, p) => s + (p.total_tickets_sold || 0), 0)} tickets via promo`} color="text-blue-500" />
-          </div>
+          {selectedEvent ? (
+            <>
+              {/* Stats Row */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <StatCard label="Revenue"      value={`$${totalRevenue.toFixed(2)}`}   sub={`$${netRevenue.toFixed(2)} net`}           icon={DollarSign} />
+                <StatCard label="Tickets Sold" value={totalTicketsSold}                  sub={`${completedOrders.length} orders`}         icon={Ticket} />
+                <StatCard label="Checked In"   value={checkedIn}                         sub={`of ${tickets.length} total`}              icon={QrCode} />
+                <StatCard label="Promoters"    value={promoters.filter(p => p.status === 'active').length} sub={`${promoters.reduce((s, p) => s + (p.total_tickets_sold || 0), 0)} via promo`} icon={Users} />
+              </div>
 
-          {/* Main Tabs */}
-          <Tabs defaultValue="tickets">
-            <TabsList className="w-full bg-secondary/50 rounded-xl grid grid-cols-4 sm:grid-cols-7 h-auto gap-1 p-1">
-              <TabsTrigger value="tickets" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
-                <Ticket className="w-3.5 h-3.5 hidden sm:block" /> Tickets
-              </TabsTrigger>
-              <TabsTrigger value="attendees" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 hidden sm:block" /> Attendees
-              </TabsTrigger>
-              <TabsTrigger value="checkin" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
-                <QrCode className="w-3.5 h-3.5 hidden sm:block" /> Check-In
-              </TabsTrigger>
-              <TabsTrigger value="message" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5 hidden sm:block" /> Message
-              </TabsTrigger>
-              <TabsTrigger value="promoters" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 hidden sm:block" /> Promoters
-              </TabsTrigger>
-              <TabsTrigger value="payouts" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
-                <DollarSign className="w-3.5 h-3.5 hidden sm:block" /> Payouts
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-lg text-xs sm:text-sm flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5 hidden sm:block" /> Analytics
-              </TabsTrigger>
-            </TabsList>
+              {/* Management Tabs */}
+              <Tabs defaultValue="tickets">
+                <TabsList className="w-full bg-foreground/5 border border-border rounded-2xl grid grid-cols-4 sm:grid-cols-7 h-auto gap-1 p-1.5">
+                  {TABS.map(({ value, label, Icon }) => (
+                    <TabsTrigger
+                      key={value}
+                      value={value}
+                      className="rounded-xl text-xs sm:text-sm py-2.5 flex flex-col sm:flex-row items-center gap-1 data-[state=active]:bg-foreground data-[state=active]:text-background transition-all"
+                    >
+                      <Icon className="w-3.5 h-3.5 opacity-70" />
+                      <span className="hidden sm:inline">{label}</span>
+                      <span className="sm:hidden text-[10px]">{label}</span>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
 
-            <TabsContent value="tickets" className="mt-4">
-              <OrganizerTicketManager event={selectedEvent} ticketTypes={ticketTypes} />
-            </TabsContent>
-
-            <TabsContent value="attendees" className="mt-4">
-              <OrganizerAttendeeList event={selectedEvent} orders={orders} tickets={tickets} ticketTypes={ticketTypes} />
-            </TabsContent>
-
-            <TabsContent value="checkin" className="mt-4">
-              <OrganizerCheckIn event={selectedEvent} tickets={tickets} ticketTypes={ticketTypes} orders={orders} />
-            </TabsContent>
-
-            <TabsContent value="message" className="mt-4">
-              <AttendeeMessaging event={selectedEvent} orders={orders} ticketTypes={ticketTypes} />
-            </TabsContent>
-
-            <TabsContent value="promoters" className="mt-4">
-              <OrganizerPromoterManager event={selectedEvent} promoters={promoters} orders={completedOrders} />
-            </TabsContent>
-
-            <TabsContent value="payouts" className="mt-4">
-              <OrganizerPayouts
-                event={selectedEvent}
-                orders={completedOrders}
-                promoters={promoters}
-                payouts={payouts}
-                currentUser={currentUser}
-                totalRevenue={totalRevenue}
-                platformFees={platformFees}
-              />
-            </TabsContent>
-
-            <TabsContent value="analytics" className="mt-4">
-              <OrganizerAnalytics event={selectedEvent} orders={completedOrders} tickets={tickets} ticketTypes={ticketTypes} promoters={promoters} />
-            </TabsContent>
-          </Tabs>
-        </>
-      ) : (
-        <div className="text-center py-16 bg-card border border-dashed border-border rounded-xl">
-          <Ticket className="w-12 h-12 mx-auto text-muted-foreground mb-3 opacity-30" />
-          <p className="text-muted-foreground mb-2 font-medium">Select an event to manage</p>
-          <p className="text-xs text-muted-foreground">Choose from your events above to view tickets, attendees, and payouts</p>
-        </div>
-      )}
+                <TabsContent value="tickets"   className="mt-5"><OrganizerTicketManager event={selectedEvent} ticketTypes={ticketTypes} /></TabsContent>
+                <TabsContent value="attendees" className="mt-5"><OrganizerAttendeeList event={selectedEvent} orders={orders} tickets={tickets} ticketTypes={ticketTypes} /></TabsContent>
+                <TabsContent value="checkin"   className="mt-5"><OrganizerCheckIn event={selectedEvent} tickets={tickets} ticketTypes={ticketTypes} orders={orders} /></TabsContent>
+                <TabsContent value="message"   className="mt-5"><AttendeeMessaging event={selectedEvent} orders={orders} ticketTypes={ticketTypes} /></TabsContent>
+                <TabsContent value="promoters" className="mt-5"><OrganizerPromoterManager event={selectedEvent} promoters={promoters} orders={completedOrders} /></TabsContent>
+                <TabsContent value="payouts"   className="mt-5">
+                  <OrganizerPayouts
+                    event={selectedEvent}
+                    orders={completedOrders}
+                    promoters={promoters}
+                    payouts={payouts}
+                    currentUser={currentUser}
+                    totalRevenue={totalRevenue}
+                    platformFees={platformFees}
+                  />
+                </TabsContent>
+                <TabsContent value="analytics" className="mt-5"><OrganizerAnalytics event={selectedEvent} orders={completedOrders} tickets={tickets} ticketTypes={ticketTypes} promoters={promoters} /></TabsContent>
+              </Tabs>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-border rounded-3xl">
+              <div className="w-16 h-16 rounded-2xl bg-foreground/5 border border-border flex items-center justify-center mb-4">
+                <Ticket className="w-7 h-7 text-foreground/30" />
+              </div>
+              <p className="font-semibold text-foreground">Select an event to manage</p>
+              <p className="text-xs text-muted-foreground mt-1 text-center max-w-xs">Choose from your events above to view tickets, attendees, and payouts</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
-    </div>
-  );
-}
-
-function StatCard({ label, value, sub, color }) {
-  return (
-    <div className="bg-card border border-border rounded-xl p-4">
-      <p className="text-xs text-muted-foreground mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${color}`}>{value}</p>
-      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   );
 }
