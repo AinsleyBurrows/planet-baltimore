@@ -257,7 +257,7 @@ export default function CommunityAssociationDetail() {
           <TabsTrigger value="posts" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Posts</TabsTrigger>
           <TabsTrigger value="events" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Events</TabsTrigger>
           <TabsTrigger value="voting" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Voting</TabsTrigger>
-          <TabsTrigger value="documents" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Documents</TabsTrigger>
+          <TabsTrigger value="documents" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Minutes</TabsTrigger>
           <TabsTrigger value="members" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Members</TabsTrigger>
           <TabsTrigger value="board" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Board</TabsTrigger>
           <TabsTrigger value="bylaws" className="flex-1 rounded-lg text-xs sm:text-sm py-2">By Laws</TabsTrigger>
