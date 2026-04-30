@@ -16,7 +16,7 @@ export default function AppLayout() {
         </div>
         <main className="flex-1 w-full">
           {/* pb-20 ensures content isn't hidden behind the mobile bottom nav */}
-          <div className="max-w-4xl mx-auto px-[5px] sm:px-0 py-4 sm:py-6 lg:py-8 pb-20 lg:pb-8">
+          <div className="max-w-4xl mx-auto px-[5px] sm:px-0 py-4 sm:py-6 lg:py-8 pb-24 lg:pb-8">
             <Outlet />
           </div>
         </main>

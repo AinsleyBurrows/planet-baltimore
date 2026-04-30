@@ -31,7 +31,7 @@ export default function MobileNav() {
   return (
     <nav
       className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 8px)' }}
     >
       <div className="flex items-center justify-around py-2 px-1">
         {primaryItems.map((item) => {
