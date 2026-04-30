@@ -246,7 +246,7 @@ export default function CommunityAssociationDetail() {
         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5"><Users className="w-4 h-4" />{members.length.toLocaleString()} members</span>
           {association.neighborhood_name && <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" />{association.neighborhood_name}</span>}
-          {association.website && <a href={association.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-accent hover:underline"><Globe className="w-4 h-4" />Website</a>}
+          {association.website && <a href={association.website.startsWith('http') ? association.website : `https://${association.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-accent hover:underline"><Globe className="w-4 h-4" />Website</a>}
           {association.contact_email && <a href={`mailto:${association.contact_email}`} className="flex items-center gap-1.5 text-accent hover:underline"><Mail className="w-4 h-4" />{association.contact_email}</a>}
         </div>
       </div>
