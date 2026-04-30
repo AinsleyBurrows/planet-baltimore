@@ -21,6 +21,7 @@ import BoardMemberForm from '@/components/association/BoardMemberForm';
 import BylawsEditor from '@/components/association/BylawsEditor';
 import MassMessageModal from '@/components/association/MassMessageModal';
 import VotingTab from '@/components/association/VotingTab';
+import AssociationPollsTab from '@/components/association/AssociationPollsTab';
 import DocumentsTab from '@/components/association/DocumentsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import AssociationEditModal from '@/components/association/AssociationEditModal';
@@ -256,6 +257,7 @@ export default function CommunityAssociationDetail() {
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex-wrap gap-1">
           <TabsTrigger value="posts" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Posts</TabsTrigger>
           <TabsTrigger value="events" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Events</TabsTrigger>
+          <TabsTrigger value="polls" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Polls</TabsTrigger>
           <TabsTrigger value="voting" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Voting</TabsTrigger>
           <TabsTrigger value="documents" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Minutes</TabsTrigger>
           <TabsTrigger value="members" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Members</TabsTrigger>
@@ -278,6 +280,11 @@ export default function CommunityAssociationDetail() {
           {events.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground text-sm">No upcoming events in this area.</div>
           ) : events.map(event => <EventCard key={event.id} event={event} compact />)}
+        </TabsContent>
+
+        {/* POLLS */}
+        <TabsContent value="polls" className="mt-4">
+          <AssociationPollsTab associationId={assocId} isAdmin={isAdmin} />
         </TabsContent>
 
         {/* VOTING */}
