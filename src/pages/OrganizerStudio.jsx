@@ -101,7 +101,7 @@ export default function OrganizerStudio() {
     <div className="space-y-8">
 
       {/* ── Hero Header ─────────────────────────────────────────── */}
-      <div className="relative bg-card border border-border rounded-3xl px-6 py-8 overflow-hidden">
+      <div className="relative rounded-3xl px-6 py-8 overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5">
         <div className="relative flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
