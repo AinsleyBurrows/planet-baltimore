@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Home, Compass, Map, MapPin, Users, Shield,
+  Home, Compass, Calendar, MapPin, Users, Shield,
   Palette, Landmark, Building2, BookOpen, MessageCircle,
   Bell, User, Menu, Plus, Search, Ticket
 } from 'lucide-react';
@@ -14,17 +14,16 @@ import {
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
-  { icon: Search, label: 'Search', path: '/search' },
-  { icon: Ticket, label: 'Ticketing', path: '/ticketing' },
+  { icon: Compass, label: 'Discover', path: '/discover' },
+  { icon: BookOpen, label: 'Stories', path: '/stories' },
+  { icon: Ticket, label: 'Events', path: '/ticketing' },
+  { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
+  { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
-  { icon: Map, label: 'City Map', path: '/map' },
-  { icon: Users, label: 'Communities', path: '/communities' },
-  { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
-  { icon: BookOpen, label: 'Stories', path: '/stories' },
 ];
 
 const utilItems = [
