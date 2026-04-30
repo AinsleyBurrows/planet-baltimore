@@ -63,14 +63,20 @@ export default function PromoterDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Promoter Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Track your sales, commissions, and event performance</p>
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8">
+        <div className="relative z-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Promoter Dashboard</h1>
+            <p className="text-sm text-muted-foreground mt-1">Track your sales, commissions, and event performance</p>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        </div>
       </div>
 
       {/* Stats */}
