@@ -16,13 +16,13 @@ import CreateEventInline from '@/components/organizer/CreateEventInline';
 
 function StatCard({ label, value, sub, icon: Icon }) {
   return (
-    <div className="bg-foreground text-background rounded-2xl p-5 flex flex-col gap-3">
+    <div className="bg-card border border-border rounded-2xl p-5 flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-widest opacity-50">{label}</p>
-        {Icon && <Icon className="w-4 h-4 opacity-40" />}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
+        {Icon && <Icon className="w-4 h-4 text-muted-foreground" />}
       </div>
-      <p className="text-3xl font-bold tracking-tight">{value}</p>
-      {sub && <p className="text-xs opacity-50 -mt-1">{sub}</p>}
+      <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
+      {sub && <p className="text-xs text-muted-foreground -mt-1">{sub}</p>}
     </div>
   );
 }
@@ -101,35 +101,33 @@ export default function OrganizerStudio() {
     <div className="space-y-8">
 
       {/* ── Hero Header ─────────────────────────────────────────── */}
-      <div className="relative bg-foreground text-background rounded-3xl px-6 py-8 overflow-hidden">
-        {/* subtle grid texture */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'repeating-linear-gradient(0deg,transparent,transparent 24px,currentColor 24px,currentColor 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,currentColor 24px,currentColor 25px)' }} />
+      <div className="relative bg-card border border-border rounded-3xl px-6 py-8 overflow-hidden">
         <div className="relative flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-9 h-9 rounded-xl bg-background/10 border border-background/20 flex items-center justify-center">
-                <Clapperboard className="w-5 h-5 text-background" />
+              <div className="w-9 h-9 rounded-xl bg-secondary border border-border flex items-center justify-center">
+                <Clapperboard className="w-5 h-5 text-foreground" />
               </div>
-              <span className="text-xs font-semibold uppercase tracking-widest opacity-50">Planet Baltimore</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Planet Baltimore</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Organizer Studio</h1>
-            <p className="text-sm opacity-50 mt-1">Manage events, tickets, promoters &amp; payouts</p>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Organizer Studio</h1>
+            <p className="text-sm text-muted-foreground mt-1">Manage events, tickets, promoters &amp; payouts</p>
           </div>
         </div>
       </div>
 
       {/* ── Top-level tabs: Manage / Create ─────────────────────── */}
       <Tabs defaultValue="manage" className="w-full">
-        <TabsList className="w-full bg-foreground/5 border border-border rounded-2xl grid grid-cols-2 h-auto gap-1 p-1.5 mb-6">
+        <TabsList className="w-full bg-secondary/50 border border-border rounded-2xl grid grid-cols-2 h-auto gap-1 p-1.5 mb-6">
           <TabsTrigger
             value="manage"
-            className="rounded-xl text-sm font-medium py-2.5 data-[state=active]:bg-foreground data-[state=active]:text-background transition-all"
+            className="rounded-xl text-sm font-medium py-2.5 transition-all"
           >
             Manage Events
           </TabsTrigger>
           <TabsTrigger
             value="create"
-            className="rounded-xl text-sm font-medium py-2.5 flex items-center gap-1.5 data-[state=active]:bg-foreground data-[state=active]:text-background transition-all"
+            className="rounded-xl text-sm font-medium py-2.5 flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-3.5 h-3.5" /> Create Event
           </TabsTrigger>
@@ -159,12 +157,12 @@ export default function OrganizerStudio() {
 
               {/* Management Tabs */}
               <Tabs defaultValue="tickets">
-                <TabsList className="w-full bg-foreground/5 border border-border rounded-2xl grid grid-cols-4 sm:grid-cols-7 h-auto gap-1 p-1.5">
+                <TabsList className="w-full bg-secondary/50 border border-border rounded-2xl grid grid-cols-4 sm:grid-cols-7 h-auto gap-1 p-1.5">
                   {TABS.map(({ value, label, Icon }) => (
                     <TabsTrigger
                       key={value}
                       value={value}
-                      className="rounded-xl text-xs sm:text-sm py-2.5 flex flex-col sm:flex-row items-center gap-1 data-[state=active]:bg-foreground data-[state=active]:text-background transition-all"
+                      className="rounded-xl text-xs sm:text-sm py-2.5 flex flex-col sm:flex-row items-center gap-1 transition-all"
                     >
                       <Icon className="w-3.5 h-3.5 opacity-70" />
                       <span className="hidden sm:inline">{label}</span>
