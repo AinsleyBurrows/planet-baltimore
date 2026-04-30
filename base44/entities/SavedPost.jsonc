@@ -1,0 +1,19 @@
+{
+  "name": "SavedPost",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "post_id": {
+      "type": "string"
+    },
+    "saved_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "post_id"
+  ]
+}

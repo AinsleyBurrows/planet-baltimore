@@ -194,6 +194,24 @@ export default function Profile() {
     enabled: savedStoryIds.length > 0,
   });
 
+  const { data: savedPostRecords = [] } = useQuery({
+    queryKey: ['saved-posts-profile', user?.id],
+    queryFn: () => base44.entities.SavedPost.filter({ user_id: user.id }, '-created_date', 50),
+    enabled: !!user?.id && isOwnProfile,
+  });
+
+  const savedPostIds = savedPostRecords.map(s => s.post_id);
+
+  const { data: savedPosts = [] } = useQuery({
+    queryKey: ['saved-posts-data', savedPostIds.join(',')],
+    queryFn: async () => {
+      if (!savedPostIds.length) return [];
+      const all = await base44.entities.Post.list('-created_date', 200);
+      return all.filter(p => savedPostIds.includes(p.id) && !p.is_deleted);
+    },
+    enabled: savedPostIds.length > 0,
+  });
+
   const handleDeleteStory = async (storyId) => {
     await base44.entities.Story.delete(storyId);
     queryClient.invalidateQueries({ queryKey: ['user-stories', user?.id] });
@@ -381,12 +399,23 @@ export default function Profile() {
         )}
 
         {activeTab === 'saved' && isOwnProfile && (
-          savedStories.length > 0 ? (
-            <div className="space-y-4">
-              {savedStories.map(story => <StoryCard key={story.id} story={story} />)}
-            </div>
+          savedPosts.length === 0 && savedStories.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground text-sm">No saved items yet. Bookmark posts and stories to find them here.</div>
           ) : (
-            <div className="text-center py-12 text-muted-foreground text-sm">No saved stories yet. Bookmark stories to find them here.</div>
+            <div className="space-y-4">
+              {savedPosts.length > 0 && (
+                <div className="space-y-4">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Saved Posts</p>
+                  {savedPosts.map(p => <PostCard key={p.id} post={p} currentUserId={user?.id} />)}
+                </div>
+              )}
+              {savedStories.length > 0 && (
+                <div className="space-y-4">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Saved Stories</p>
+                  {savedStories.map(story => <StoryCard key={story.id} story={story} />)}
+                </div>
+              )}
+            </div>
           )
         )}
 

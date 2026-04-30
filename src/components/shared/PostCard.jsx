@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Pencil, Trash2, Flag, Play } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,6 +9,8 @@ import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
 import EditPostModal from './EditPostModal';
 import { format } from 'date-fns';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 function FeedVideo({ src, thumbnail }) {
   const [playing, setPlaying] = useState(false);
@@ -73,14 +75,39 @@ function TruncatedText({ text }) {
 
 export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
+  const [currentUser, setCurrentUser] = useState(null);
+  const queryClient = useQueryClient();
   const isOwner = currentUserId === post.author_id;
   const postUrl = `${window.location.origin}/profile/${post.author_id}`;
   const displayPost = localPost;
+
+  useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
+
+  const { data: savedRecords = [] } = useQuery({
+    queryKey: ['saved-post', post.id, currentUser?.id],
+    queryFn: () => base44.entities.SavedPost.filter({ user_id: currentUser.id, post_id: post.id }),
+    enabled: !!currentUser?.id,
+  });
+
+  const isSaved = savedRecords.length > 0;
+
+  const toggleSaveMutation = useMutation({
+    mutationFn: async () => {
+      if (isSaved) {
+        await base44.entities.SavedPost.delete(savedRecords[0].id);
+      } else {
+        await base44.entities.SavedPost.create({ user_id: currentUser.id, post_id: post.id, saved_at: new Date().toISOString() });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['saved-post', post.id, currentUser?.id] });
+      queryClient.invalidateQueries({ queryKey: ['saved-posts-profile', currentUser?.id] });
+    },
+  });
 
   const handleLike = () => {
     setLiked(!liked);
@@ -125,7 +152,6 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
               </>
             )}
             <DropdownMenuItem onClick={() => setShowShare(true)}><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
-            <DropdownMenuItem><Bookmark className="w-4 h-4 mr-2" />Save</DropdownMenuItem>
             {!isOwner && <DropdownMenuItem><Flag className="w-4 h-4 mr-2" />Report</DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -269,13 +295,16 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
             <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
-        <button
-          onClick={() => setSaved(!saved)}
-          aria-label={saved ? 'Unsave post' : 'Save post'}
-          className={`transition-all duration-150 active:scale-90 ${saved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
-        >
-          <Bookmark className={`w-5 h-5 ${saved ? 'fill-accent' : ''}`} />
-        </button>
+        {currentUser && (
+          <button
+            onClick={() => toggleSaveMutation.mutate()}
+            disabled={toggleSaveMutation.isPending}
+            aria-label={isSaved ? 'Unsave post' : 'Save post'}
+            className={`transition-all duration-150 active:scale-90 ${isSaved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-accent' : ''}`} />
+          </button>
+        )}
       </div>
 
       {/* Comments */}
