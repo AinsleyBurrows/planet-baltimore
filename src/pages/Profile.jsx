@@ -310,7 +310,7 @@ export default function Profile() {
             {user.is_verified && <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />}
           </div>
           {user.website && (
-            <a href={user.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline text-sm mt-1">
+            <a href={user.website.startsWith('http') ? user.website : `https://${user.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline text-sm mt-1">
               <LinkIcon className="w-3.5 h-3.5" />{user.website.replace(/https?:\/\//, '')}
             </a>
           )}
