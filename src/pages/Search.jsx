@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Search as SearchIcon, User, Users, Palette, Building2, Landmark, BookOpen, Shield, X } from 'lucide-react';
+import { Search as SearchIcon, User, Users, Palette, Building2, Landmark, BookOpen, Shield, X, Calendar } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
@@ -14,6 +14,7 @@ const SECTIONS = [
   { key: 'businesses', label: 'Businesses' },
   { key: 'arts_orgs', label: 'Arts Orgs' },
   { key: 'associations', label: 'Associations' },
+  { key: 'events', label: 'Events' },
 ];
 
 function useDebounce(value, delay = 350) {
@@ -48,9 +49,10 @@ export default function Search() {
       base44.entities.BusinessPage.list('-created_date', 200),
       base44.entities.ArtsOrganization.list('-created_date', 200),
       base44.entities.CommunityAssociation.list('-created_date', 200),
+      base44.entities.Event.list('-date', 200),
     ];
 
-    Promise.all(searches).then(([users, stories, communities, artists, businesses, artsOrgs, associations]) => {
+    Promise.all(searches).then(([users, stories, communities, artists, businesses, artsOrgs, associations, events]) => {
       const match = (str) => str?.toLowerCase().includes(q);
 
       setResults({
@@ -61,6 +63,7 @@ export default function Search() {
         businesses: businesses.filter(b => match(b.name) || match(b.description) || match(b.neighborhood_name)),
         arts_orgs: artsOrgs.filter(o => match(o.name) || match(o.description) || match(o.neighborhood_name)),
         associations: associations.filter(a => match(a.name) || match(a.description) || match(a.neighborhood_name)),
+        events: events.filter(e => match(e.title) || match(e.description) || match(e.venue_name) || match(e.neighborhood_name) || match(e.organizer_name)),
       });
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -236,6 +239,25 @@ export default function Search() {
                     <p className="text-sm font-medium text-foreground truncate">{o.name}</p>
                     {o.neighborhood_name && <p className="text-xs text-muted-foreground truncate">{o.neighborhood_name}</p>}
                   </div>
+                </Link>
+              ))}
+            </ResultSection>
+          )}
+
+          {/* Events */}
+          {visible('events') && results.events?.length > 0 && (
+            <ResultSection title="Events" icon={Calendar} count={results.events.length}>
+              {results.events.map(e => (
+                <Link key={e.id} to={`/events/${e.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors">
+                  {e.image_url
+                    ? <img src={e.image_url} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                    : <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0"><Calendar className="w-5 h-5 text-accent" /></div>
+                  }
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{e.title}</p>
+                    <p className="text-xs text-muted-foreground truncate">{e.venue_name || e.neighborhood_name}{e.date ? ` · ${new Date(e.date).toLocaleDateString()}` : ''}</p>
+                  </div>
+                  {e.is_free && <Badge className="text-xs flex-shrink-0 bg-green-100 text-green-700 border-0">Free</Badge>}
                 </Link>
               ))}
             </ResultSection>
