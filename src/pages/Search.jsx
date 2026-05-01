@@ -13,7 +13,7 @@ const SECTIONS = [
   { key: 'artists', label: 'Artists' },
   { key: 'businesses', label: 'Businesses' },
   { key: 'arts_orgs', label: 'Arts Orgs' },
-  { key: 'associations', label: 'Associations' },
+  { key: 'associations', label: 'Community Associations' },
   { key: 'events', label: 'Events' },
 ];
 
