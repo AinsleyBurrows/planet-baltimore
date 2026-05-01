@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Calendar, MapPin, Ticket, Star, TrendingUp, Clock, Filter, ChevronRight, Plus } from 'lucide-react';
+import { Search, Calendar, MapPin, Ticket, Star, TrendingUp, Clock, Filter, ChevronRight, Plus, MessageCircle } from 'lucide-react';
 import EventLikeShareButtons from '@/components/events/EventLikeShareButtons';
+import CommentSection from '@/components/shared/CommentSection';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format, isAfter } from 'date-fns';
@@ -12,6 +13,7 @@ const CATEGORIES = ['All', 'Music', 'Art', 'Community', 'Nightlife', 'Food', 'We
 
 function EventCard({ event, ticketTypes = [] }) {
   const navigate = useNavigate();
+  const [showComments, setShowComments] = useState(false);
   const lowestPrice = ticketTypes.length > 0
     ? Math.min(...ticketTypes.filter(t => t.is_active && t.price > 0).map(t => t.price))
     : null;
@@ -70,7 +72,14 @@ function EventCard({ event, ticketTypes = [] }) {
             <Ticket className="w-3.5 h-3.5" /> Get Tickets
           </Button>
         </div>
-        <div className="flex justify-end mt-2">
+        <div className="flex items-center justify-between mt-2">
+          <button
+            onClick={e => { e.stopPropagation(); setShowComments(v => !v); }}
+            className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${showComments ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <MessageCircle className="w-4 h-4" />
+            {showComments ? 'Hide hype' : 'Hype this event'}
+          </button>
           <EventLikeShareButtons event={event} />
         </div>
         {totalCapacity > 0 && (
@@ -85,6 +94,11 @@ function EventCard({ event, ticketTypes = [] }) {
                 style={{ width: `${Math.min(soldOutPct, 100)}%` }}
               />
             </div>
+          </div>
+        )}
+        {showComments && (
+          <div className="mt-4 pt-4 border-t border-border" onClick={e => e.stopPropagation()}>
+            <CommentSection targetType="event" targetId={event.id} />
           </div>
         )}
       </div>
