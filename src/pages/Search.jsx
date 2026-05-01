@@ -9,7 +9,7 @@ const SECTIONS = [
   { key: 'all', label: 'All' },
   { key: 'people', label: 'People' },
   { key: 'stories', label: 'Stories' },
-  { key: 'communities', label: 'Communities' },
+  { key: 'communities', label: 'Groups/Communities' },
   { key: 'artists', label: 'Artists' },
   { key: 'businesses', label: 'Businesses' },
   { key: 'arts_orgs', label: 'Arts Orgs' },
@@ -172,7 +172,7 @@ export default function Search() {
 
           {/* Communities */}
           {visible('communities') && results.communities?.length > 0 && (
-            <ResultSection title="Communities" icon={Users} count={results.communities.length}>
+            <ResultSection title="Groups/Communities" icon={Users} count={results.communities.length}>
               {results.communities.map(c => (
                 <Link key={c.id} to={`/communities/${c.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors">
                   <Avatar className="w-10 h-10 flex-shrink-0 rounded-lg">
