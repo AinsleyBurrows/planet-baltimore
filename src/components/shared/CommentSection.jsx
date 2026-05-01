@@ -74,10 +74,12 @@ function CommentItem({ comment, user, replies, allReplies, onDelete, onEdit, onR
 
   return (
     <div className={`flex gap-3 group ${depth > 0 ? 'ml-10 mt-2' : ''}`}>
-      <Avatar className="w-8 h-8 flex-shrink-0 mt-0.5">
-        <AvatarImage src={comment.author_avatar} />
-        <AvatarFallback className="bg-secondary text-foreground text-xs font-bold">{comment.author_name?.charAt(0) || '?'}</AvatarFallback>
-      </Avatar>
+      <Link to={`/profile/${comment.author_id}`} className="flex-shrink-0 mt-0.5">
+        <Avatar className="w-8 h-8 hover:opacity-80 transition-opacity">
+          <AvatarImage src={comment.author_avatar} />
+          <AvatarFallback className="bg-secondary text-foreground text-xs font-bold">{comment.author_name?.charAt(0) || '?'}</AvatarFallback>
+        </Avatar>
+      </Link>
       <div className="flex-1 min-w-0">
         {/* Bubble */}
         <div className="bg-secondary rounded-xl px-3 py-2">

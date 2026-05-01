@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { X, Heart, MessageCircle, Share2, Bookmark, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -157,18 +158,18 @@ export default function PostDetailModal({ post, onClose }) {
           {/* RIGHT: Info panel */}
           <div className="flex flex-col md:w-[40%] overflow-y-auto">
             {/* Author */}
-            <div className="flex items-center gap-3 p-4 border-b border-border">
-              <Avatar className="w-9 h-9">
+            <Link to={`/profile/${post.author_id}`} className="flex items-center gap-3 p-4 border-b border-border hover:bg-secondary/50 transition-colors">
+              <Avatar className="w-9 h-9 hover:opacity-80 transition-opacity">
                 <AvatarImage src={post.author_avatar} />
                 <AvatarFallback className="bg-accent/10 text-accent text-sm font-bold">
                   {post.author_name?.charAt(0) || '?'}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-semibold text-foreground">{post.author_name || 'Anonymous'}</p>
+                <p className="text-sm font-semibold text-foreground hover:text-accent transition-colors">{post.author_name || 'Anonymous'}</p>
                 {post.neighborhood_name && <p className="text-xs text-muted-foreground">{post.neighborhood_name}</p>}
               </div>
-            </div>
+            </Link>
 
             {/* Caption (for media posts) */}
             {!isText && post.content && (
