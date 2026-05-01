@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Compass, Calendar, MapPin, Users, Shield,
   Palette, Landmark, Building2, BookOpen, MessageCircle,
-  Bell, User, Menu, Plus, Search, Ticket
+  Bell, User, Menu, Plus, Search, Ticket, ShoppingBag
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ const navItems = [
   { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
+  { icon: ShoppingBag, label: 'Marketplace', path: '/marketplace' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },

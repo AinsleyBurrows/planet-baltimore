@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket } from 'lucide-react';
+import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, ShoppingBag } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const primaryItems = [
@@ -15,7 +15,8 @@ const moreItems = [
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
-  { icon: Calendar, label: 'Calendar', path: '/community-calendar' },
+  { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
+  { icon: ShoppingBag, label: 'Marketplace', path: '/marketplace' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
