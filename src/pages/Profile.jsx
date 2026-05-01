@@ -62,6 +62,7 @@ export default function Profile() {
       return follows.length > 0;
     },
     enabled: !!currentUser?.id && !!user?.id && currentUser.id !== user.id,
+    staleTime: 30000,
   });
 
   useEffect(() => {
@@ -127,6 +128,7 @@ export default function Profile() {
   const { data: neighborhoods = [] } = useQuery({
     queryKey: ['neighborhoods'],
     queryFn: () => base44.entities.Neighborhood.list('name', 500),
+    staleTime: 300000,
   });
 
   const handleNeighborhoodSelect = async (neighborhood) => {
@@ -142,6 +144,7 @@ export default function Profile() {
     queryKey: ['my-posts', user?.id],
     queryFn: () => base44.entities.Post.filter({ author_id: user.id, page_type: 'personal' }, '-created_date', 50),
     enabled: !!user?.id,
+    staleTime: 30000,
   });
 
 
@@ -150,12 +153,14 @@ export default function Profile() {
     queryKey: ['my-created-events', user?.id],
     queryFn: () => base44.entities.Event.filter({ organizer_id: user.id }, '-date', 20),
     enabled: !!user?.id,
+    staleTime: 30000,
   });
 
   const { data: myRsvps = [] } = useQuery({
     queryKey: ['my-rsvps', user?.id],
     queryFn: () => base44.entities.RSVP.filter({ user_id: user.id }),
     enabled: !!user?.id,
+    staleTime: 30000,
   });
 
   const rsvpEventIds = myRsvps.map(r => r.event_id);
@@ -168,18 +173,21 @@ export default function Profile() {
       return all.filter(e => rsvpEventIds.includes(e.id));
     },
     enabled: rsvpEventIds.length > 0,
+    staleTime: 30000,
   });
 
   const { data: userStories = [] } = useQuery({
     queryKey: ['user-stories', user?.id],
     queryFn: () => base44.entities.Story.filter({ author_id: user.id }, '-created_date', 50),
     enabled: !!user?.id,
+    staleTime: 30000,
   });
 
   const { data: savedStoryRecords = [] } = useQuery({
     queryKey: ['saved-stories-profile', user?.id],
     queryFn: () => base44.entities.SavedStory.filter({ user_id: user.id }, '-created_date', 50),
     enabled: !!user?.id && isOwnProfile,
+    staleTime: 30000,
   });
 
   const savedStoryIds = savedStoryRecords.map(s => s.story_id);
@@ -192,12 +200,14 @@ export default function Profile() {
       return all.filter(s => savedStoryIds.includes(s.id));
     },
     enabled: savedStoryIds.length > 0,
+    staleTime: 30000,
   });
 
   const { data: savedPostRecords = [] } = useQuery({
     queryKey: ['saved-posts-profile', user?.id],
     queryFn: () => base44.entities.SavedPost.filter({ user_id: user.id }, '-created_date', 50),
     enabled: !!user?.id && isOwnProfile,
+    staleTime: 30000,
   });
 
   const savedPostIds = savedPostRecords.map(s => s.post_id);
@@ -210,6 +220,7 @@ export default function Profile() {
       return all.filter(p => savedPostIds.includes(p.id) && !p.is_deleted);
     },
     enabled: savedPostIds.length > 0,
+    staleTime: 30000,
   });
 
   const handleDeleteStory = async (storyId) => {
