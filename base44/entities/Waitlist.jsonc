@@ -1,0 +1,35 @@
+{
+  "name": "Waitlist",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "ticket_type_id": {
+      "type": "string",
+      "description": "Which sold-out ticket type they want"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "notified": {
+      "type": "boolean",
+      "default": false
+    },
+    "notified_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "ticket_type_id",
+    "user_id",
+    "user_email"
+  ]
+}

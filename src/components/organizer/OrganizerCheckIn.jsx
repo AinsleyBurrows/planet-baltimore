@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, CheckCircle2, XCircle, QrCode, List, User, Loader2, RotateCcw, AlertCircle } from 'lucide-react';
+import { Search, CheckCircle2, XCircle, QrCode, List, User, Loader2, RotateCcw, AlertCircle, Bell } from 'lucide-react';
 import QRScanner from './QRScanner';
 
 export default function OrganizerCheckIn({ event, tickets, ticketTypes, orders }) {
@@ -18,6 +18,18 @@ export default function OrganizerCheckIn({ event, tickets, ticketTypes, orders }
 
   const checkedIn = tickets.filter(t => t.is_checked_in).length;
   const total = tickets.length;
+
+  const [notifyingWaitlist, setNotifyingWaitlist] = useState({});
+  const [notifyResults, setNotifyResults] = useState({});
+
+  const notifyWaitlist = async (tt) => {
+    setNotifyingWaitlist(prev => ({ ...prev, [tt.id]: true }));
+    try {
+      const res = await base44.functions.invoke('notifyWaitlist', { eventId: event.id, ticketTypeId: tt.id });
+      setNotifyResults(prev => ({ ...prev, [tt.id]: res.data?.notified ?? 0 }));
+    } catch {}
+    setNotifyingWaitlist(prev => ({ ...prev, [tt.id]: false }));
+  };
 
   // Core check-in via backend function
   const doCheckIn = async (uniqueCode) => {
@@ -103,6 +115,36 @@ export default function OrganizerCheckIn({ event, tickets, ticketTypes, orders }
               {lastResult.error || (lastResult.undone ? 'Check-in status reversed' : lastResult.success ? '✓ Successfully checked in' : '')}
             </p>
           </div>
+        </div>
+      )}
+
+      {/* Waitlist Notify Panel */}
+      {ticketTypes?.length > 0 && (
+        <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+            <Bell className="w-3.5 h-3.5" /> Notify Waitlist
+          </p>
+          {ticketTypes.map(tt => {
+            const available = (tt.quantity_total || 0) - (tt.quantity_sold || 0);
+            return (
+              <div key={tt.id} className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{tt.name}</p>
+                  <p className="text-xs text-muted-foreground">{available > 0 ? `${available} available` : 'Sold out'}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={notifyingWaitlist[tt.id] || available <= 0}
+                  onClick={() => notifyWaitlist(tt)}
+                  className="text-xs gap-1.5 flex-shrink-0 h-8"
+                >
+                  {notifyingWaitlist[tt.id] ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />}
+                  {notifyResults[tt.id] != null ? `Notified ${notifyResults[tt.id]}` : 'Notify'}
+                </Button>
+              </div>
+            );
+          })}
         </div>
       )}
 

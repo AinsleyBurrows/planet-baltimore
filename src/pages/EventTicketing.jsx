@@ -36,8 +36,37 @@ export default function EventTicketing() {
   const [validatingPromo, setValidatingPromo] = useState(false);
   const [showPromo, setShowPromo] = useState(false);
   const [user, setUser] = useState(null);
+  const [waitlistJoined, setWaitlistJoined] = useState({});
+  const [joiningWaitlist, setJoiningWaitlist] = useState({});
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
+
+  // Check which sold-out types user is already on waitlist for
+  useEffect(() => {
+    if (!user?.id || !eventId) return;
+    base44.entities.Waitlist.filter({ event_id: eventId, user_id: user.id })
+      .then(entries => {
+        const joined = {};
+        entries.forEach(e => { joined[e.ticket_type_id] = true; });
+        setWaitlistJoined(joined);
+      })
+      .catch(() => {});
+  }, [user?.id, eventId]);
+
+  const joinWaitlist = async (tt) => {
+    if (!user) { base44.auth.redirectToLogin(window.location.pathname); return; }
+    setJoiningWaitlist(prev => ({ ...prev, [tt.id]: true }));
+    await base44.entities.Waitlist.create({
+      event_id: eventId,
+      ticket_type_id: tt.id,
+      user_id: user.id,
+      user_email: user.email,
+      user_name: user.full_name,
+      notified: false,
+    });
+    setWaitlistJoined(prev => ({ ...prev, [tt.id]: true }));
+    setJoiningWaitlist(prev => ({ ...prev, [tt.id]: false }));
+  };
 
   const { data: event, isLoading: eventLoading } = useQuery({
     queryKey: ['event', eventId],
@@ -211,7 +240,7 @@ export default function EventTicketing() {
                     key={tt.id}
                     className={`relative rounded-2xl border-2 transition-all duration-200 bg-card overflow-hidden
                       ${isSelected ? 'border-accent shadow-md' : 'border-border hover:border-accent/40'}
-                      ${isSoldOut ? 'opacity-50 pointer-events-none' : ''}
+                      ${isSoldOut ? 'opacity-60' : ''}
                     `}
                   >
                     {/* Selected indicator stripe */}
@@ -254,6 +283,23 @@ export default function EventTicketing() {
                               </span>
                               {tt.price > 0 && <span className="text-xs text-muted-foreground ml-1">+ fees</span>}
                             </div>
+
+                            {/* Waitlist button for sold-out */}
+                            {isSoldOut && (
+                              <Button
+                                size="sm"
+                                onClick={() => joinWaitlist(tt)}
+                                disabled={waitlistJoined[tt.id] || joiningWaitlist[tt.id]}
+                                className={waitlistJoined[tt.id]
+                                  ? 'bg-secondary text-muted-foreground text-xs gap-1 h-8 pointer-events-none'
+                                  : 'bg-accent hover:bg-accent/90 text-accent-foreground text-xs gap-1 h-8'
+                                }
+                              >
+                                {joiningWaitlist[tt.id] ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> :
+                                  waitlistJoined[tt.id] ? <><CheckCircle2 className="w-3.5 h-3.5" /> On Waitlist</> :
+                                  'Join Waitlist'}
+                              </Button>
+                            )}
 
                             {/* Quantity stepper */}
                             {!isSoldOut && (
