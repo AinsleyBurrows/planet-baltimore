@@ -43,10 +43,7 @@ import PromoterDashboard from '@/pages/PromoterDashboard';
 import OrderConfirmation from '@/pages/OrderConfirmation';
 import TicketSalesDashboard from '@/pages/TicketSalesDashboard';
 import CommunityCalendar from '@/pages/CommunityCalendar';
-import Marketplace from '@/pages/Marketplace';
-import MarketplaceDetail from '@/pages/MarketplaceDetail';
-import MarketplaceConfirmation from '@/pages/MarketplaceConfirmation';
-import MarketplaceSell from '@/pages/MarketplaceSell';
+
 
 // Routes already exist in App.jsx - verify they're present
 
@@ -102,10 +99,7 @@ const AuthenticatedApp = () => {
         <Route path="/promoter-dashboard" element={<PromoterDashboard />} />
         <Route path="/ticket-sales-dashboard" element={<TicketSalesDashboard />} />
         <Route path="/community-calendar" element={<CommunityCalendar />} />
-        <Route path="/marketplace" element={<Marketplace />} />
-        <Route path="/marketplace/sell" element={<MarketplaceSell />} />
-        <Route path="/marketplace/confirmation" element={<MarketplaceConfirmation />} />
-        <Route path="/marketplace/:id" element={<MarketplaceDetail />} />
+
 
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/:id" element={<Profile />} />
