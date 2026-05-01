@@ -1,0 +1,72 @@
+{
+  "name": "MarketplaceListing",
+  "type": "object",
+  "properties": {
+    "seller_id": {
+      "type": "string"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "seller_avatar": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "music",
+        "art",
+        "photography",
+        "writing",
+        "video",
+        "design",
+        "other"
+      ],
+      "default": "other"
+    },
+    "price": {
+      "type": "number",
+      "default": 0
+    },
+    "is_free": {
+      "type": "boolean",
+      "default": false
+    },
+    "cover_image": {
+      "type": "string"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Downloadable file URL (private)"
+    },
+    "preview_url": {
+      "type": "string",
+      "description": "Public preview/sample"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sales_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "seller_id",
+    "title",
+    "price"
+  ]
+}

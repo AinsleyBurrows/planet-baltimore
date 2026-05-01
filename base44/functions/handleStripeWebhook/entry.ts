@@ -135,6 +135,60 @@ Deno.serve(async (req) => {
       console.log(`Order ${orderNumber} created for ${qty} tickets.`);
     }
 
+    // ── Marketplace order fulfillment ──────────────────────────────────
+    if (event.type === 'checkout.session.completed') {
+      const session2 = event.data.object;
+      if (session2.metadata?.type === 'marketplace') {
+        const { listingId, buyerId, sellerId } = session2.metadata;
+        const amountPaid = (session2.amount_total || 0) / 100;
+        const platformFee = amountPaid * 0.10;
+        const sellerPayout = amountPaid - platformFee;
+
+        // Idempotency
+        const existingMktOrders = await base44.asServiceRole.entities.MarketplaceOrder.filter({
+          payment_intent_id: session2.payment_intent,
+        });
+        if (existingMktOrders.length === 0) {
+          const listing = (await base44.asServiceRole.entities.MarketplaceListing.filter({ id: listingId }))[0];
+          const orderNumber = `MKT-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+          await base44.asServiceRole.entities.MarketplaceOrder.create({
+            listing_id: listingId,
+            listing_title: listing?.title || '',
+            seller_id: sellerId,
+            seller_name: listing?.seller_name || '',
+            buyer_id: buyerId,
+            buyer_email: session2.customer_email || session2.customer_details?.email || '',
+            buyer_name: session2.customer_details?.name || 'Customer',
+            amount: amountPaid,
+            platform_fee: parseFloat(platformFee.toFixed(2)),
+            seller_payout: parseFloat(sellerPayout.toFixed(2)),
+            payment_status: 'completed',
+            payment_intent_id: session2.payment_intent || session2.id,
+            order_number: orderNumber,
+            download_url: listing?.file_url || '',
+          });
+
+          // Update sales count
+          if (listing) {
+            await base44.asServiceRole.entities.MarketplaceListing.update(listingId, {
+              sales_count: (listing.sales_count || 0) + 1,
+            });
+          }
+
+          // Send confirmation email
+          const buyerEmail = session2.customer_email || session2.customer_details?.email;
+          if (buyerEmail && listing) {
+            await base44.integrations.Core.SendEmail({
+              to: buyerEmail,
+              subject: `Your purchase: ${listing.title}`,
+              body: `Hi ${session2.customer_details?.name || 'there'},\n\nThank you for your purchase!\n\nOrder #: ${orderNumber}\nItem: ${listing.title}\nAmount: $${amountPaid.toFixed(2)}\n\nVisit your profile to download your purchase.\n\nPlanet Baltimore`,
+              from_name: 'Planet Baltimore Marketplace',
+            });
+          }
+        }
+      }
+    }
+
     if (event.type === 'payment_intent.payment_failed') {
       const pi = event.data.object;
       console.log('Payment failed:', pi.id);
