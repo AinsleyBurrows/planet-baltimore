@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { ArrowLeft, MapPin, Navigation, Trash2, Edit3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ShareModal from '@/components/shared/ShareModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -138,16 +139,16 @@ export default function EventDetail() {
       )}
 
       {/* Organizer */}
-      <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl">
+      <Link to={`/profile/${event.organizer_id}`} className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl hover:bg-secondary transition-colors">
         <Avatar className="w-10 h-10">
           <AvatarImage src={event.organizer_avatar} />
           <AvatarFallback className="bg-accent/10 text-accent">{event.organizer_name?.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
           <p className="text-sm text-muted-foreground">Hosted by</p>
-          <p className="font-medium text-foreground">{event.organizer_name}</p>
+          <p className="font-medium text-foreground hover:text-accent transition-colors">{event.organizer_name}</p>
         </div>
-      </div>
+      </Link>
 
       {/* Description */}
       {event.description && (

@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Trash2, Send, MessageCircle, Reply, Edit2, Check, X } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 function CommentInput({ user, onSubmit, isPending, placeholder = 'Add a comment…', autoFocus = false, onCancel }) {
   const [text, setText] = useState('');
@@ -80,7 +81,7 @@ function CommentItem({ comment, user, replies, allReplies, onDelete, onEdit, onR
       <div className="flex-1 min-w-0">
         {/* Bubble */}
         <div className="bg-secondary rounded-xl px-3 py-2">
-          <p className="text-xs font-semibold text-foreground">{comment.author_name || 'Anonymous'}</p>
+          <Link to={`/profile/${comment.author_id}`} className="text-xs font-semibold text-foreground hover:text-accent transition-colors">{comment.author_name || 'Anonymous'}</Link>
           {editing ? (
             <EditInput
               initialValue={comment.content}
