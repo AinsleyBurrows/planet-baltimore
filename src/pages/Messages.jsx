@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ConversationSidebar from '@/components/messages/ConversationSidebar';
 import ChatWindow from '@/components/messages/ChatWindow';
 import NewConversationModal from '@/components/messages/NewConversationModal';
+import BroadcastModal from '@/components/messages/BroadcastModal';
 
 // Build a stable conversation_id from two user IDs
 function makeConvoId(a, b) {
@@ -17,6 +18,7 @@ export default function Messages() {
   const [activeConvo, setActiveConvo] = useState(null);
   const [search, setSearch] = useState('');
   const [showNew, setShowNew] = useState(false);
+  const [showBroadcast, setShowBroadcast] = useState(false);
   const [showChat, setShowChat] = useState(false); // mobile toggle
 
   useEffect(() => {
@@ -116,13 +118,20 @@ export default function Messages() {
           search={search}
           onSearch={setSearch}
         />
-        {/* New Message Button */}
-        <div className="p-3 border-t border-border bg-card">
+        {/* New Message / Broadcast Buttons */}
+        <div className="p-3 border-t border-border bg-card space-y-2">
           <Button
             onClick={() => setShowNew(true)}
             className="w-full gap-2 bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl"
           >
             <Plus className="w-4 h-4" /> New Message
+          </Button>
+          <Button
+            onClick={() => setShowBroadcast(true)}
+            variant="outline"
+            className="w-full gap-2 rounded-xl"
+          >
+            <Users className="w-4 h-4" /> Message All Followers
           </Button>
         </div>
       </div>
@@ -157,6 +166,13 @@ export default function Messages() {
           onSelect={handleNewConvo}
           onClose={() => setShowNew(false)}
           currentUserId={currentUser.id}
+        />
+      )}
+
+      {showBroadcast && (
+        <BroadcastModal
+          currentUser={currentUser}
+          onClose={() => setShowBroadcast(false)}
         />
       )}
     </div>
