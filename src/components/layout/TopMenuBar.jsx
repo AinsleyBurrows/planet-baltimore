@@ -36,23 +36,26 @@ export default function TopMenuBar() {
   const location = useLocation();
 
   return (
-    <header className="lg:hidden sticky top-0 z-[1000] bg-background/95 backdrop-blur border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-      <div className="flex items-center justify-between px-5 sm:px-5 py-3 sm:py-4">
+    <header
+      className="lg:hidden sticky top-0 z-[1000] bg-background/95 backdrop-blur-md border-b border-border"
+      style={{ paddingTop: 'env(safe-area-inset-top)', paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}
+    >
+      <div className="flex items-center justify-between px-4 py-3 min-h-[52px]">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-1.5">
           <span className="text-lg font-bold text-accent">Planet</span>
           <span className="text-lg font-light text-foreground">Baltimore</span>
         </Link>
 
-        <div className="flex items-center gap-2">
-          {/* Quick-access icons */}
-          <Link to="/search" aria-label="Search" className={`p-2 rounded-lg transition-colors ${location.pathname === '/search' ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
+        <div className="flex items-center gap-1">
+          {/* Quick-access icons — 44px minimum touch targets */}
+          <Link to="/search" aria-label="Search" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/search' ? 'text-accent' : 'text-muted-foreground'}`}>
             <Search className="w-5 h-5" />
           </Link>
-          <Link to="/notifications" aria-label="Notifications" className={`p-2 rounded-lg transition-colors ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
+          <Link to="/notifications" aria-label="Notifications" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground'}`}>
             <Bell className="w-5 h-5" />
           </Link>
-          <Link to="/messages" aria-label="Messages" className={`p-2 rounded-lg transition-colors ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}>
+          <Link to="/messages" aria-label="Messages" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground'}`}>
             <MessageCircle className="w-5 h-5" />
           </Link>
           {/* Hamburger menu */}

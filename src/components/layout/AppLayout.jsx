@@ -7,7 +7,7 @@ import MobileNav from './MobileNav';
 
 export default function AppLayout() {
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="min-h-[100dvh] min-h-[-webkit-fill-available] bg-background">
       <LeftSidebar />
       <RightSidebar />
       <div className="lg:ml-[18%] lg:mr-[19%] min-h-[100dvh] flex flex-col">
@@ -15,13 +15,15 @@ export default function AppLayout() {
           <TopMenuBar />
         </div>
         <main className="flex-1 w-full">
-          {/* pb-20 ensures content isn't hidden behind the mobile bottom nav */}
-          <div className="max-w-4xl mx-auto px-[5px] sm:px-0 py-4 sm:py-6 lg:py-8 pb-24 lg:pb-8">
+          {/* 
+            px-4 on mobile for comfortable reading margins (matches iOS/Android HIG)
+            pb-[calc(5rem+env(safe-area-inset-bottom))] ensures content clears bottom nav + home indicator
+          */}
+          <div className="max-w-4xl mx-auto px-4 sm:px-5 lg:px-0 py-4 sm:py-6 lg:py-8 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-8">
             <Outlet />
           </div>
         </main>
       </div>
-      {/* Bottom nav visible on all mobile/tablet sizes below lg */}
       <MobileNav />
     </div>
   );
