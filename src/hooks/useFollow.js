@@ -8,6 +8,7 @@ async function updateFollowersCount(targetType, targetId, delta) {
       artist: 'ArtistPage',
       arts_org: 'ArtsOrganization',
       community: 'Community',
+      user: 'User',
     };
     const entityName = entityMap[targetType];
     if (!entityName) return;
@@ -18,6 +19,18 @@ async function updateFollowersCount(targetType, targetId, delta) {
     await base44.entities[entityName].update(targetId, { followers_count: Math.max(0, current + delta) });
   } catch {
     // Non-critical — follow record is still created/deleted
+  }
+}
+
+async function updateFollowingCount(followerId, delta) {
+  try {
+    const records = await base44.entities.User.filter({ id: followerId });
+    const record = records[0];
+    if (!record) return;
+    const current = record.following_count || 0;
+    await base44.entities.User.update(followerId, { following_count: Math.max(0, current + delta) });
+  } catch {
+    // Non-critical
   }
 }
 
@@ -36,7 +49,10 @@ export function useFollow(currentUserId) {
       const existing = follows.find(f => f.target_id === targetId && f.target_type === targetType);
       if (existing) {
         await base44.entities.Follow.delete(existing.id);
-        await updateFollowersCount(targetType, targetId, -1);
+        await Promise.all([
+          updateFollowersCount(targetType, targetId, -1),
+          updateFollowingCount(currentUserId, -1),
+        ]);
         return { action: 'unfollowed' };
       } else {
         await base44.entities.Follow.create({
@@ -45,7 +61,10 @@ export function useFollow(currentUserId) {
           target_id: targetId,
           target_name: targetName,
         });
-        await updateFollowersCount(targetType, targetId, +1);
+        await Promise.all([
+          updateFollowersCount(targetType, targetId, +1),
+          updateFollowingCount(currentUserId, +1),
+        ]);
         return { action: 'followed' };
       }
     },

@@ -110,6 +110,12 @@ export default function Profile() {
       if (follows.length > 0) {
         await base44.entities.Follow.delete(follows[0].id);
       }
+      // Update follower count on target user and following count on current user
+      await Promise.all([
+        base44.entities.User.update(user.id, { followers_count: Math.max(0, (user.followers_count || 0) - 1) }),
+        base44.entities.User.update(currentUser.id, { following_count: Math.max(0, (currentUser.following_count || 0) - 1) }),
+      ]);
+      setUser(prev => ({ ...prev, followers_count: Math.max(0, (prev.followers_count || 0) - 1) }));
     } else {
       await base44.entities.Follow.create({
         follower_id: currentUser.id,
@@ -117,6 +123,12 @@ export default function Profile() {
         target_id: user.id,
         target_name: user.full_name,
       });
+      // Update follower count on target user and following count on current user
+      await Promise.all([
+        base44.entities.User.update(user.id, { followers_count: (user.followers_count || 0) + 1 }),
+        base44.entities.User.update(currentUser.id, { following_count: (currentUser.following_count || 0) + 1 }),
+      ]);
+      setUser(prev => ({ ...prev, followers_count: (prev.followers_count || 0) + 1 }));
     }
     setIsFollowing(!isFollowing);
     queryClient.invalidateQueries({ queryKey: ['follow-status', currentUser?.id, user?.id] });
