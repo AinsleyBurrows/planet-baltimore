@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil, Bookmark } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil, Bookmark, MessageCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ import PostDetailModal from '@/components/shared/PostDetailModal';
 import ImageUploadModal from '@/components/profile/ImageUploadModal';
 import ShareModal from '@/components/shared/ShareModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import BroadcastModal from '@/components/messages/BroadcastModal';
 import EditProfileModal from '@/components/profile/EditProfileModal';
 import PostsGrid from '@/components/profile/PostsGrid';
 import RSVPEvents from '@/components/profile/RSVPEvents';
@@ -41,6 +42,7 @@ export default function Profile() {
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
   const [showShare, setShowShare] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+  const [showBroadcast, setShowBroadcast] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showNeighborhoodPicker, setShowNeighborhoodPicker] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -304,6 +306,17 @@ export default function Profile() {
               <Button
                 size="sm"
                 variant="outline"
+                onClick={() => setShowBroadcast(true)}
+                className="rounded-lg transition-all duration-150 active:scale-95 w-8 h-8 p-0"
+                title="Message followers"
+              >
+                <MessageCircle className="w-4 h-4" />
+              </Button>
+            )}
+            {isOwnProfile && (
+              <Button
+                size="sm"
+                variant="outline"
                 onClick={() => setShowInvite(true)}
                 className="rounded-lg transition-all duration-150 active:scale-95 w-8 h-8 p-0"
               >
@@ -522,6 +535,7 @@ export default function Profile() {
     </div>
 
     {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
+    {showBroadcast && <BroadcastModal currentUser={user} onClose={() => setShowBroadcast(false)} />}
     {showEditProfile && (
       <EditProfileModal
         user={user}
