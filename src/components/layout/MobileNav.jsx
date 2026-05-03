@@ -15,7 +15,7 @@ const moreItems = [
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
-  { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
+  { icon: Calendar, label: 'Calendar', path: '/community-calendar' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
