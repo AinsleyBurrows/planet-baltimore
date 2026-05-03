@@ -10,7 +10,7 @@ const navItems = [
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
-  { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
+  { icon: Calendar, label: 'Calendar', path: '/community-calendar' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
