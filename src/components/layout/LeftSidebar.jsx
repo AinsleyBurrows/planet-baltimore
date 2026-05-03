@@ -6,19 +6,19 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
-  { icon: Search, label: 'Search', path: '/search' },
+  { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
-  { icon: Shield, label: 'Associations', path: '/community-associations' },
-  { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
-  { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: Users, label: 'Communities', path: '/communities' },
+  { icon: Compass, label: 'Discover', path: '/discover' },
+  { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: User, label: 'Profile', path: '/profile' },
+  { icon: Search, label: 'Search', path: '/search' },
   { icon: BookOpen, label: 'Stories', path: '/stories' },
 ];
 
