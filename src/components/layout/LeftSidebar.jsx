@@ -28,15 +28,15 @@ export default function LeftSidebar() {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <aside className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen bg-card border-r border-border z-40 transition-all duration-300 ${collapsed ? 'w-[15%] min-w-[60px]' : 'w-[18%] min-w-[200px]'}`}>
+      <aside className={`hidden lg:flex flex-col fixed left-0 top-0 h-screen z-40 transition-all duration-300 ${collapsed ? 'w-[15%] min-w-[60px]' : 'w-[18%] min-w-[200px]'}`} style={{background: 'linear-gradient(180deg, #8B0032 0%, #6B0060 40%, #4400CC 100%)'}}>
         {/* Logo */}
-        <div className={`flex items-center h-16 border-b border-border px-4 sm:px-5 ${collapsed ? 'justify-center' : ''}`}>
+        <div className={`flex items-center h-16 border-b border-white/10 px-4 sm:px-5 ${collapsed ? 'justify-center' : ''}`}>
           {collapsed ? (
-            <span className="text-xl font-bold text-accent">P</span>
+            <span className="text-xl font-bold text-white">P</span>
           ) : (
             <Link to="/" className="flex items-center gap-2">
-              <span className="text-xl font-bold text-accent">Planet</span>
-              <span className="text-xl font-light text-foreground">Baltimore</span>
+              <span className="text-xl font-bold text-white">Planet</span>
+              <span className="text-xl font-light text-white/80">Baltimore</span>
             </Link>
           )}
         </div>
@@ -47,14 +47,14 @@ export default function LeftSidebar() {
             {collapsed ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full aspect-square">
+                  <Button size="icon" className="bg-white/20 hover:bg-white/30 text-white rounded-full aspect-square border border-white/30">
                     <Plus className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">Create Post</TooltipContent>
               </Tooltip>
             ) : (
-              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg py-2.5">
+              <Button className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg py-2.5 font-semibold backdrop-blur-sm">
                 <Plus className="w-5 h-5" />
               </Button>
             )}
@@ -71,7 +71,7 @@ export default function LeftSidebar() {
               return (
                 <Tooltip key={item.path}>
                   <TooltipTrigger asChild>
-                    <Link to={item.path} className={`flex items-center justify-center w-full py-2 rounded-lg transition-all ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}>
+                    <Link to={item.path} className={`flex items-center justify-center w-full py-2 rounded-lg transition-all ${isActive ? 'bg-white/25 text-white' : 'text-white/70 hover:bg-white/15 hover:text-white'}`}>
                       <Icon className="w-5 h-5" />
                     </Link>
                   </TooltipTrigger>
@@ -84,7 +84,7 @@ export default function LeftSidebar() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] ${isActive ? 'bg-accent/10 text-accent' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}`}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 active:scale-[0.98] ${isActive ? 'bg-white/25 text-white' : 'text-white/70 hover:bg-white/15 hover:text-white'}`}
               >
                 <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-150 ${isActive ? 'scale-110' : ''}`} />
                 <span className="truncate">{item.label}</span>
@@ -94,8 +94,8 @@ export default function LeftSidebar() {
         </nav>
 
         {/* Collapse Toggle */}
-        <div className="border-t border-border p-2 sm:p-3">
-          <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="flex items-center justify-center w-full py-2 rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <div className="border-t border-white/10 p-2 sm:p-3">
+          <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="flex items-center justify-center w-full py-2 rounded-lg text-white/60 hover:bg-white/15 hover:text-white active:scale-95 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40">
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
