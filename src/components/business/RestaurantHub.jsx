@@ -3,13 +3,14 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
   Utensils, Star, CalendarDays, Plus, Trash2,
-  ShoppingBag, X, Loader2, ChevronDown, ChevronUp, Image as ImageIcon
+  ShoppingBag, X, Loader2, ChevronDown, ChevronUp, Image as ImageIcon, MessageCircle
 } from 'lucide-react';
 import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import EventCard from '@/components/shared/EventCard';
+import RestaurantBroadcastModal from '@/components/business/RestaurantBroadcastModal';
 
 // ─── Today's Specials ────────────────────────────────────────────────────────
 
@@ -198,6 +199,7 @@ export default function RestaurantHub({ business, isOwner, user, events = [] }) 
   const queryClient = useQueryClient();
   const [showAddSpecial, setShowAddSpecial] = useState(false);
   const [showAddMenuItem, setShowAddMenuItem] = useState(false);
+  const [showBroadcast, setShowBroadcast] = useState(false);
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ['business', business.id] });
@@ -234,10 +236,14 @@ export default function RestaurantHub({ business, isOwner, user, events = [] }) 
 
       {/* Quick Actions for Owner */}
       {isOwner && (
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <button onClick={() => setShowAddSpecial(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
             <Star className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
             <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Add Today's Special</span>
+          </button>
+          <button onClick={() => setShowBroadcast(true)} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-border hover:border-accent/50 hover:bg-accent/5 transition-all group">
+            <MessageCircle className="w-6 h-6 text-muted-foreground group-hover:text-accent transition-colors" />
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent">Message Followers</span>
           </button>
         </div>
       )}
@@ -317,6 +323,7 @@ export default function RestaurantHub({ business, isOwner, user, events = [] }) 
       {/* Modals */}
       {showAddSpecial && <AddSpecialModal business={business} onClose={() => setShowAddSpecial(false)} onSaved={refresh} />}
       {showAddMenuItem && <AddMenuItemModal business={business} onClose={() => setShowAddMenuItem(false)} onSaved={refresh} />}
+      {showBroadcast && user && <RestaurantBroadcastModal business={business} currentUser={user} onClose={() => setShowBroadcast(false)} />}
     </div>
   );
 }
