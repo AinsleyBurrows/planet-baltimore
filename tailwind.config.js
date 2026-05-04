@@ -4,8 +4,7 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   safelist: [
     'bg-coral', 'text-coral', 'bg-gold', 'text-gold', 'bg-navy', 'text-navy',
-    'border-coral', 'border-gold', 'border-navy',
-    'bg-violet', 'text-violet', 'border-violet'
+    'border-coral', 'border-gold', 'border-navy'
   ],
   theme: {
     extend: {
