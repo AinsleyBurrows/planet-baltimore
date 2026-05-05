@@ -3,8 +3,9 @@ module.exports = {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   safelist: [
-    'bg-coral', 'text-coral', 'bg-gold', 'text-gold', 'bg-navy', 'text-navy',
-    'border-coral', 'border-gold', 'border-navy'
+  'bg-coral', 'text-coral', 'bg-gold', 'text-gold', 'bg-navy', 'text-navy',
+  'border-coral', 'border-gold', 'border-navy',
+  'bg-blush', 'text-blush', 'border-blush'
   ],
   theme: {
     extend: {
@@ -57,6 +58,7 @@ module.exports = {
         coral: 'hsl(var(--coral))',
         gold: 'hsl(var(--gold))',
         navy: 'hsl(var(--navy))',
+        blush: 'hsl(var(--blush))',
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',
