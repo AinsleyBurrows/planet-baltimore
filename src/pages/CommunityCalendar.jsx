@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Calendar, List, Plus, MapPin, Filter, Building2, Users, Palette, X } from 'lucide-react';
+import { Calendar, List, Plus, MapPin, Filter, Building2, Users, Palette, X, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EventCard from '@/components/shared/EventCard';
@@ -80,6 +80,76 @@ function MiniCalendar({ currentMonth, events, selectedDay, onSelectDay, onPrevMo
           <X className="w-3 h-3" /> Clear date filter
         </button>
       )}
+    </div>
+  );
+}
+
+function ForYouSection({ user }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['event-recommendations', user?.id],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getEventRecommendations', {});
+      return res.data;
+    },
+    enabled: !!user?.id,
+    staleTime: 300000,
+  });
+
+  const recommendations = data?.recommendations || [];
+
+  if (!isLoading && recommendations.length === 0) return null;
+
+  return (
+    <div className="mb-6">
+      <div className="flex items-center gap-2 mb-3">
+        <Sparkles className="w-4 h-4 text-accent" />
+        <h2 className="font-semibold text-sm text-foreground">For You</h2>
+        <Badge variant="secondary" className="text-xs">Personalized</Badge>
+      </div>
+
+      {isLoading ? (
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="flex-shrink-0 w-64 h-36 rounded-xl" />
+          ))}
+        </div>
+      ) : (
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {recommendations.map(event => (
+            <Link
+              key={event.id}
+              to={`/events/${event.id}`}
+              className="flex-shrink-0 w-64 bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] transition-all duration-200 group"
+            >
+              <div className="relative h-28 bg-gradient-to-br from-accent/20 to-primary/10 overflow-hidden">
+                {event.image_url && (
+                  <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+                )}
+                {event.category && (
+                  <Badge className="absolute top-2 left-2 bg-black/50 text-white border-0 backdrop-blur-sm text-xs capitalize">
+                    {event.category}
+                  </Badge>
+                )}
+                {event.score && (
+                  <div className="absolute top-2 right-2 flex items-center gap-1 bg-accent/90 text-accent-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    <Sparkles className="w-2.5 h-2.5" /> {event.score}/10
+                  </div>
+                )}
+              </div>
+              <div className="p-3">
+                <p className="text-xs font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-1">{event.title}</p>
+                <p className="text-[10px] text-accent mt-0.5 font-medium">
+                  {event.date ? format(new Date(event.date), 'EEE, MMM d') : 'Date TBD'}
+                </p>
+                {event.reason && (
+                  <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2 italic">"{event.reason}"</p>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+      <div className="border-b border-border mt-4" />
     </div>
   );
 }
@@ -256,6 +326,9 @@ export default function CommunityCalendar() {
 
         {/* Events List */}
         <div className="flex-1 min-w-0">
+          {/* For You Section */}
+          {user && <ForYouSection user={user} />}
+
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-foreground">
