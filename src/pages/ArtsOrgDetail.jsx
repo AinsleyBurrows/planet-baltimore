@@ -299,23 +299,23 @@ export default function ArtsOrgDetail() {
       {/* Tabs */}
       <div className="mt-4">
         <Tabs defaultValue="posts">
-          <TabsList className="w-full bg-secondary/50 rounded-xl h-auto flex-wrap gap-1 p-1">
-            <TabsTrigger value="posts" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Posts</TabsTrigger>
-            <TabsTrigger value="exhibitions" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Exhibitions</TabsTrigger>
-            <TabsTrigger value="events" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Events</TabsTrigger>
-            <TabsTrigger value="artists" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Artists</TabsTrigger>
-            <TabsTrigger value="membership" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Support</TabsTrigger>
-            <TabsTrigger value="opportunities" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Opportunities</TabsTrigger>
-            <TabsTrigger value="press" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Press</TabsTrigger>
-            <TabsTrigger value="announcements" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Updates</TabsTrigger>
-            {isNonprofit && <TabsTrigger value="grants" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Grants</TabsTrigger>}
-            {isNonprofit && <TabsTrigger value="volunteers" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Volunteers</TabsTrigger>}
-            {isNonprofit && <TabsTrigger value="impact" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Impact</TabsTrigger>}
-            {isNonprofit && <TabsTrigger value="sponsors" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Sponsors</TabsTrigger>}
-            {isNonprofit && <TabsTrigger value="newsletter" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Newsletter</TabsTrigger>}
-            <TabsTrigger value="invite" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Invite</TabsTrigger>
-            <TabsTrigger value="about" className="flex-1 rounded-lg text-xs sm:text-sm py-2">About</TabsTrigger>
-            <TabsTrigger value="comments" className="flex-1 rounded-lg text-xs sm:text-sm py-2">Comments</TabsTrigger>
+          <TabsList className="w-full bg-secondary/50 rounded-xl h-auto flex flex-wrap gap-1 p-1.5 justify-start">
+            <TabsTrigger value="posts" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Posts</TabsTrigger>
+            <TabsTrigger value="exhibitions" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Exhibitions</TabsTrigger>
+            <TabsTrigger value="events" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Events</TabsTrigger>
+            <TabsTrigger value="artists" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Artists</TabsTrigger>
+            <TabsTrigger value="membership" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Support</TabsTrigger>
+            <TabsTrigger value="opportunities" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Opportunities</TabsTrigger>
+            <TabsTrigger value="press" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Press</TabsTrigger>
+            <TabsTrigger value="announcements" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Updates</TabsTrigger>
+            {isNonprofit && <TabsTrigger value="grants" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Grants</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="volunteers" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Volunteers</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="impact" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Impact</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="sponsors" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Sponsors</TabsTrigger>}
+            {isNonprofit && <TabsTrigger value="newsletter" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Newsletter</TabsTrigger>}
+            <TabsTrigger value="invite" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Invite</TabsTrigger>
+            <TabsTrigger value="about" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">About</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap">Comments</TabsTrigger>
           </TabsList>
 
           <TabsContent value="posts" className="mt-4 space-y-4">
