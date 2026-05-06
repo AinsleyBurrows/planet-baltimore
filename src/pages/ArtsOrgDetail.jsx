@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PostCard from '@/components/shared/PostCard';
+import EditPostModal from '@/components/shared/EditPostModal';
 import EventCard from '@/components/shared/EventCard';
 import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
@@ -46,6 +47,7 @@ export default function ArtsOrgDetail() {
   const [showMessage, setShowMessage] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
   const [showShare, setShowShare] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [uploading, setUploading] = useState(null); // 'banner_url' | 'image_url' | null
@@ -123,6 +125,12 @@ export default function ArtsOrgDetail() {
     });
     queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
     setShowNeighborhoodPicker(false);
+  };
+
+  const deletePost = async (postId) => {
+    if (!window.confirm('Delete this post?')) return;
+    await base44.entities.Post.delete(postId);
+    queryClient.invalidateQueries({ queryKey: ['arts-org-posts', id] });
   };
 
   const { data: posts = [] } = useQuery({
@@ -357,7 +365,17 @@ export default function ArtsOrgDetail() {
                         <Pin className="w-3 h-3" />Pinned
                       </div>
                     )}
-                    <PostCard post={p} currentUserId={currentUser?.id} />
+                    <PostCard post={p} currentUserId={currentUser?.id} onDelete={isOwner ? deletePost : undefined} />
+                    {isOwner && (
+                      <div className="flex gap-2 mt-1 ml-1">
+                        <button onClick={() => setEditingPost(p)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-accent transition-colors">
+                          <Pencil className="w-3 h-3" />Edit
+                        </button>
+                        <button onClick={() => deletePost(p.id)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors">
+                          <Trash2 className="w-3 h-3" />Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -507,7 +525,15 @@ export default function ArtsOrgDetail() {
       {showMessage && <ArtsOrgMessageModal org={org} onClose={() => setShowMessage(false)} />}
       {showEdit && <ArtsOrgEditModal org={org} onClose={() => setShowEdit(false)} />}
       {showCreatePost && currentUser && <ArtsOrgCreatePostModal org={org} user={currentUser} onClose={() => setShowCreatePost(false)} />}
+      {editingPost && (
+        <EditPostModal
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+          onSaved={() => { setEditingPost(null); queryClient.invalidateQueries({ queryKey: ['arts-org-posts', id] }); }}
+        />
+      )}
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={window.location.href} title={org.name} description={org.tagline || org.description} />
+
 
       {showAvatarFit && (
         <ImageFitScaleModal
