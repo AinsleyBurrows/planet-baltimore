@@ -116,6 +116,11 @@
     "is_featured": {
       "type": "boolean",
       "default": false
+    },
+    "is_hidden": {
+      "type": "boolean",
+      "default": false,
+      "description": "Hidden from public listings \u2014 only visible to the organizer"
     }
   },
   "required": [

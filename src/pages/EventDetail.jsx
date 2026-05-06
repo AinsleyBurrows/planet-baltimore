@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, MapPin, Navigation, Trash2, Edit3 } from 'lucide-react';
+import { ArrowLeft, MapPin, Navigation, Trash2, Edit3, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ShareModal from '@/components/shared/ShareModal';
 import { Button } from '@/components/ui/button';
@@ -88,6 +88,11 @@ export default function EventDetail() {
         <div className="flex items-center gap-2 mb-2">
           {event.category && <Badge className="bg-accent/10 text-accent border-0 capitalize">{event.category}</Badge>}
           {event.is_free && <Badge className="bg-green-500/10 text-green-600 border-0">Free</Badge>}
+          {event.is_hidden && user?.id === event.organizer_id && (
+            <Badge className="bg-muted text-muted-foreground border-0 flex items-center gap-1">
+              <EyeOff className="w-3 h-3" />Hidden from public
+            </Badge>
+          )}
         </div>
         <h1 className="text-2xl font-bold text-foreground">{event.title}</h1>
       </div>

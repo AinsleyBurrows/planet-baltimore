@@ -39,6 +39,7 @@ export default function Events() {
   const artsOrgIds = new Set(artsOrgs.map(o => o.owner_id));
 
   const filtered = events.filter(e => {
+    if (e.is_hidden) return false;
     const catMatch = activeCategory === 'All' || e.category === activeCategory.toLowerCase();
     const artsMatch = artsFilter === 'All Events' || (() => {
       const allowedCats = ARTS_FILTER_MAP[artsFilter] || [];

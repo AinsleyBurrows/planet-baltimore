@@ -21,6 +21,7 @@ export default function EventEditModal({ event, onClose }) {
     category: event.category || 'other',
     is_free: event.is_free || true,
     allow_donations: event.allow_donations || false,
+    is_hidden: event.is_hidden || false,
     tags: (event.tags || []).join(', '),
   });
 
@@ -55,6 +56,7 @@ export default function EventEditModal({ event, onClose }) {
       category: form.category,
       is_free: form.is_free,
       allow_donations: form.allow_donations,
+      is_hidden: form.is_hidden,
       tags,
       image_url,
     });
@@ -218,6 +220,15 @@ export default function EventEditModal({ event, onClose }) {
                 className="rounded"
               />
               <span className="text-muted-foreground">Allow donations</span>
+            </label>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.is_hidden}
+                onChange={e => setForm(p => ({ ...p, is_hidden: e.target.checked }))}
+                className="rounded"
+              />
+              <span className="text-muted-foreground">Hide from public listings</span>
             </label>
           </div>
         </div>
