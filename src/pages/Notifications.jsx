@@ -81,7 +81,7 @@ export default function Notifications() {
                   <AvatarFallback className="bg-accent/10 text-accent text-xs">{notif.actor_name?.charAt(0) || <Icon className="w-4 h-4" />}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-foreground"><span className="font-semibold">{notif.actor_name}</span> {notif.body || notif.title}</p>
+                  <p className="text-sm text-foreground"><Link to={`/profile/${notif.actor_id}`} onClick={e => e.stopPropagation()} className="font-semibold hover:text-accent transition-colors">{notif.actor_name}</Link> {notif.body || notif.title}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{notif.created_date ? format(new Date(notif.created_date), 'MMM d, h:mm a') : ''}</p>
                 </div>
                 {!notif.is_read && <div className="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0" />}
