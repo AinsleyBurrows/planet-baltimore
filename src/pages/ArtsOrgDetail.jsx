@@ -164,7 +164,7 @@ export default function ArtsOrgDetail() {
             }}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+
         {isOwner && (
           <div className="absolute bottom-3 right-3 flex items-center gap-2">
             {org.banner_url && (
