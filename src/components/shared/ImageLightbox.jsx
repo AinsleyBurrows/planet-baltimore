@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -53,16 +53,30 @@ export default function ImageLightbox({ images, initialIndex = 0, isOpen, onClos
           </button>
         )}
 
-        <motion.img
-          key={currentIndex}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          src={images[currentIndex]}
-          alt=""
-          className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-          onClick={(e) => e.stopPropagation()}
-        />
+        {/\.(mp4|webm|mov|avi)/i.test(images[currentIndex]) ? (
+          <motion.video
+            key={currentIndex}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            src={images[currentIndex]}
+            controls
+            autoPlay
+            className="max-w-[90vw] max-h-[85vh] rounded-lg bg-black"
+            onClick={(e) => e.stopPropagation()}
+          />
+        ) : (
+          <motion.img
+            key={currentIndex}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            src={images[currentIndex]}
+            alt=""
+            className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+        )}
 
         {images.length > 1 && (
           <div className="absolute bottom-6 flex gap-2">
