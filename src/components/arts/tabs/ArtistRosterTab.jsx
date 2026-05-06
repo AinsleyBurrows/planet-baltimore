@@ -273,7 +273,7 @@ export default function ArtistRosterTab({ org, isOwner }) {
 
       {portfolioArtist && (
         <PortfolioModal
-          artist={portfolioArtist.artist}
+          artist={roster[portfolioArtist.idx] || portfolioArtist.artist}
           artistIdx={portfolioArtist.idx}
           org={org}
           isOwner={isOwner}
