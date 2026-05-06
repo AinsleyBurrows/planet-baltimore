@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart, Plus } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart, Plus, Rss, BookOpen, Bookmark, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,6 +22,9 @@ import NonprofitHub from '@/components/business/NonprofitHub';
 import BusinessEditProfileModal from '@/components/business/BusinessEditProfileModal';
 import BusinessMessageModal from '@/components/business/BusinessMessageModal';
 import BusinessCreatePostModal from '@/components/business/BusinessCreatePostModal';
+import BusinessStoriesTab from '@/components/business/BusinessStoriesTab';
+import BusinessSavedTab from '@/components/business/BusinessSavedTab';
+import BusinessEventsTab from '@/components/business/BusinessEventsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ShareModal from '@/components/shared/ShareModal';
 
@@ -210,23 +213,39 @@ export default function BusinessDetail() {
 
       {/* Tabs */}
       <Tabs defaultValue={hasCategoryHub ? 'hub' : 'posts'}>
-        <TabsList className={`w-full bg-secondary/50 rounded-xl grid ${hasCategoryHub ? 'grid-cols-4' : 'grid-cols-3'}`}>
-          {hasCategoryHub && (
-            <TabsTrigger value="hub" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm">
-              {isRestaurant && <><Utensils className="w-3.5 h-3.5" /> Menu</>}
-              {isRetail && <><ShoppingCart className="w-3.5 h-3.5" /> Shop</>}
-              {isService && <><Briefcase className="w-3.5 h-3.5" /> Services</>}
-              {isEntertainment && <>Posts</>}
-              {isHealth && <><HeartPulse className="w-3.5 h-3.5" /> Health</>}
-              {isCreative && <><Palette className="w-3.5 h-3.5" /> Portfolio</>}
-              {isNonprofit && <><HandHeart className="w-3.5 h-3.5" /> Mission</>}
+        {/* Scrollable tab strip */}
+        <div className="overflow-x-auto -mx-1 px-1">
+          <TabsList className="w-max min-w-full bg-secondary/50 rounded-xl flex gap-0.5">
+            {hasCategoryHub && (
+              <TabsTrigger value="hub" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap">
+                {isRestaurant && <><Utensils className="w-3.5 h-3.5" /> Menu</>}
+                {isRetail && <><ShoppingCart className="w-3.5 h-3.5" /> Shop</>}
+                {isService && <><Briefcase className="w-3.5 h-3.5" /> Services</>}
+                {isEntertainment && <>Hub</>}
+                {isHealth && <><HeartPulse className="w-3.5 h-3.5" /> Health</>}
+                {isCreative && <><Palette className="w-3.5 h-3.5" /> Portfolio</>}
+                {isNonprofit && <><HandHeart className="w-3.5 h-3.5" /> Mission</>}
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="posts" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+              <Rss className="w-3.5 h-3.5" /> Feed
             </TabsTrigger>
-          )}
-          <TabsTrigger value="posts" className="rounded-lg">Updates</TabsTrigger>
-          <TabsTrigger value="about" className="rounded-lg">About</TabsTrigger>
-          <TabsTrigger value="invite" className="rounded-lg">Invite</TabsTrigger>
-          <TabsTrigger value="comments" className="rounded-lg">Comments</TabsTrigger>
+            <TabsTrigger value="stories" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+              <BookOpen className="w-3.5 h-3.5" /> Stories
+            </TabsTrigger>
+            <TabsTrigger value="events" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+              <CalendarDays className="w-3.5 h-3.5" /> Events
+            </TabsTrigger>
+            {isOwner && (
+              <TabsTrigger value="saved" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+                <Bookmark className="w-3.5 h-3.5" /> Saved
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="about" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">About</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Comments</TabsTrigger>
+            <TabsTrigger value="invite" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Invite</TabsTrigger>
           </TabsList>
+        </div>
 
         {hasCategoryHub && (
           <TabsContent value="hub" className="mt-4">
@@ -246,7 +265,7 @@ export default function BusinessDetail() {
               onClick={() => setShowCreatePost(true)}
               className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
             >
-              <Plus className="w-4 h-4" />Post Update
+              <Plus className="w-4 h-4" /> Post Update
             </button>
           )}
           {posts.length === 0
@@ -254,6 +273,20 @@ export default function BusinessDetail() {
             : posts.map(post => <PostCard key={post.id} post={post} currentUserId={user?.id} />)
           }
         </TabsContent>
+
+        <TabsContent value="stories" className="mt-4">
+          <BusinessStoriesTab business={business} isOwner={isOwner} />
+        </TabsContent>
+
+        <TabsContent value="events" className="mt-4">
+          <BusinessEventsTab business={business} isOwner={isOwner} />
+        </TabsContent>
+
+        {isOwner && (
+          <TabsContent value="saved" className="mt-4">
+            <BusinessSavedTab business={business} user={user} />
+          </TabsContent>
+        )}
 
         <TabsContent value="comments" className="mt-4">
           <CommentSection targetType="business" targetId={businessId} />
