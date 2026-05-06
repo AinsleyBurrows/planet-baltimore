@@ -41,6 +41,14 @@
     "muted": {
       "type": "boolean",
       "default": false
+    },
+    "address": {
+      "type": "string",
+      "description": "Member's home address \u2014 visible to admins only"
+    },
+    "years_in_neighborhood": {
+      "type": "string",
+      "description": "How long the member has lived in the neighborhood \u2014 visible to admins only"
     }
   },
   "required": [

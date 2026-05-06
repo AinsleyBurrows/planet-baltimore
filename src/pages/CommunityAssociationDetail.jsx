@@ -25,6 +25,7 @@ import AssociationPollsTab from '@/components/association/AssociationPollsTab';
 import DocumentsTab from '@/components/association/DocumentsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import AssociationEditModal from '@/components/association/AssociationEditModal';
+import JoinAssociationModal from '@/components/association/JoinAssociationModal';
 import FollowButton from '@/components/shared/FollowButton';
 import ShareModal from '@/components/shared/ShareModal';
 import { format } from 'date-fns';
@@ -40,6 +41,7 @@ export default function CommunityAssociationDetail() {
   const [showInvite, setShowInvite] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const [editingBoardMember, setEditingBoardMember] = useState(null);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
@@ -85,7 +87,7 @@ export default function CommunityAssociationDetail() {
   });
 
   const joinMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ address, years_in_neighborhood } = {}) => {
       if (isMember) {
         const existing = members.find(m => m.user_id === currentUser?.id);
         if (existing) await base44.entities.AssociationMember.delete(existing.id);
@@ -97,11 +99,14 @@ export default function CommunityAssociationDetail() {
           user_email: currentUser.email,
           user_avatar: currentUser.avatar_url,
           joined_at: new Date().toISOString(),
+          address: address || '',
+          years_in_neighborhood: years_in_neighborhood || '',
         });
       }
     },
     onSuccess: () => {
       setIsMember(!isMember);
+      setShowJoinModal(false);
       queryClient.invalidateQueries({ queryKey: ['assoc-members', assocId] });
     },
   });
@@ -228,7 +233,14 @@ export default function CommunityAssociationDetail() {
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}><Share2 className="w-4 h-4" /></Button>
             {!isAdmin && <FollowButton targetType="community" targetId={assocId} targetName={association.name} />}
             <Button
-              onClick={() => currentUser && joinMutation.mutate()}
+              onClick={() => {
+                if (!currentUser) return;
+                if (isMember) {
+                  joinMutation.mutate({});
+                } else {
+                  setShowJoinModal(true);
+                }
+              }}
               disabled={joinMutation.isPending}
               className={`rounded-lg h-9 px-4 gap-1.5 ${isMember ? 'bg-secondary text-foreground' : 'bg-primary hover:bg-primary/90 text-primary-foreground'}`}
             >
@@ -308,17 +320,35 @@ export default function CommunityAssociationDetail() {
             ) : (
               <div className="grid grid-cols-1 gap-2">
                 {members.map(member => (
-                  <div key={member.id} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={member.user_avatar} />
-                      <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">{member.user_name?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{member.user_name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{member.role || 'member'}</p>
+                  <div key={member.id} className="p-3 bg-card border border-border rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={member.user_avatar} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">{member.user_name?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{member.user_name}</p>
+                        <p className="text-xs text-muted-foreground capitalize">{member.role || 'member'}</p>
+                      </div>
+                      {member.joined_at && (
+                        <span className="text-xs text-muted-foreground flex-shrink-0">Joined {format(new Date(member.joined_at), 'MMM yyyy')}</span>
+                      )}
                     </div>
-                    {member.joined_at && (
-                      <span className="text-xs text-muted-foreground">Joined {format(new Date(member.joined_at), 'MMM yyyy')}</span>
+                    {isAdmin && (member.address || member.years_in_neighborhood) && (
+                      <div className="mt-2 pt-2 border-t border-border/60 space-y-1">
+                        {member.address && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <MapPin className="w-3 h-3 text-primary flex-shrink-0" />
+                            {member.address}
+                          </p>
+                        )}
+                        {member.years_in_neighborhood && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                            <Calendar className="w-3 h-3 text-primary flex-shrink-0" />
+                            Resident for: {member.years_in_neighborhood}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
@@ -509,6 +539,14 @@ export default function CommunityAssociationDetail() {
         <AssociationEditModal association={association} onClose={() => setShowEditProfile(false)} />
       )}
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={`${window.location.origin}/community-associations/${assocId}`} title={association.name} description={association.description} />
+
+      {showJoinModal && (
+        <JoinAssociationModal
+          associationName={association.name}
+          onConfirm={(data) => joinMutation.mutate(data)}
+          onClose={() => setShowJoinModal(false)}
+        />
+      )}
     </div>
   );
 }
