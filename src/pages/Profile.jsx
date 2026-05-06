@@ -21,6 +21,7 @@ import EditProfileModal from '@/components/profile/EditProfileModal';
 import PostsGrid from '@/components/profile/PostsGrid';
 import RSVPEvents from '@/components/profile/RSVPEvents';
 import StoryCard from '@/components/shared/StoryCard';
+import MyPagesTab from '@/components/profile/MyPagesTab';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -29,6 +30,7 @@ const tabs = [
   { id: 'saved', label: 'Saved', icon: Bookmark },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
+  { id: 'pages', label: 'My Pages', icon: Shield },
 ];
 
 export default function Profile() {
@@ -413,7 +415,7 @@ export default function Profile() {
 
       {/* Tabs */}
       <div className="flex border-b border-border mt-3 overflow-x-auto gap-0.5">
-        {tabs.map((tab) => {
+        {tabs.filter(tab => tab.id !== 'pages' || isOwnProfile).map((tab) => {
           const Icon = tab.icon;
           return (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
@@ -499,6 +501,10 @@ export default function Profile() {
             <div className="text-center py-12 text-muted-foreground text-sm">No events organized yet.</div>
           )
         )}
+        {activeTab === 'pages' && isOwnProfile && (
+          <MyPagesTab userId={user?.id} />
+        )}
+
         {activeTab === 'media' && (
           mediaPosts.length > 0 ? (
             <div className="px-3 sm:px-4"><div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
