@@ -9,7 +9,7 @@ import TextBgPicker, { getTextColor } from '@/components/shared/TextBgPicker';
 export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
   const queryClient = useQueryClient();
   const [content, setContent] = useState('');
-  const [mediaFiles, setMediaFiles] = useState([]); // { file, previewUrl, type }
+  const [mediaFiles, setMediaFiles] = useState([]); // { file, previewUrl, type, fit }
   const [bgColor, setBgColor] = useState(null);
   const [isPinned, setIsPinned] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -24,13 +24,18 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
       file,
       previewUrl: URL.createObjectURL(file),
       type,
+      fit: 'cover',
     }));
     setMediaFiles(prev => [...prev, ...newFiles].slice(0, 4));
-    setBgColor(null); // clear color when media is added
+    setBgColor(null);
   };
 
   const removeFile = (idx) => {
     setMediaFiles(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const toggleFit = (idx) => {
+    setMediaFiles(prev => prev.map((m, i) => i === idx ? { ...m, fit: m.fit === 'cover' ? 'contain' : 'cover' } : m));
   };
 
   const handlePost = async () => {
@@ -39,6 +44,7 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
 
     let media_urls = [];
     let media_type = 'text';
+    let media_fits = [];
 
     if (mediaFiles.length > 0) {
       setUploading(true);
@@ -46,6 +52,7 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
         mediaFiles.map(m => base44.integrations.Core.UploadFile({ file: m.file }))
       );
       media_urls = uploaded.map(r => r.file_url);
+      media_fits = mediaFiles.map(m => m.fit || 'cover');
       media_type = mediaFiles[0].type === 'video' ? 'video' : 'image';
       setUploading(false);
     }
@@ -61,6 +68,7 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
       visibility: 'public',
       media_urls,
       media_type,
+      media_fits: media_fits.length ? media_fits : undefined,
       bg_color: isTextOnly && bgColor ? bgColor : undefined,
       is_pinned: isPinned,
     });
@@ -122,11 +130,11 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
             {mediaFiles.length > 0 && (
               <div className={`grid gap-2 ${mediaFiles.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
                 {mediaFiles.map((m, idx) => (
-                  <div key={idx} className="relative rounded-xl overflow-hidden aspect-square bg-secondary">
+                  <div key={idx} className="relative rounded-xl overflow-hidden bg-secondary" style={{ aspectRatio: m.fit === 'contain' ? 'auto' : '1/1', minHeight: '120px' }}>
                     {m.type === 'video' ? (
                       <video src={m.previewUrl} className="w-full h-full object-cover" muted />
                     ) : (
-                      <img src={m.previewUrl} alt="" className="w-full h-full object-cover" />
+                      <img src={m.previewUrl} alt="" className="w-full h-full" style={{ objectFit: m.fit || 'cover', maxHeight: m.fit === 'contain' ? '320px' : undefined }} />
                     )}
                     <button
                       onClick={() => removeFile(idx)}
@@ -134,6 +142,14 @@ export default function ArtsOrgCreatePostModal({ org, user, onClose }) {
                     >
                       <Trash2 className="w-3 h-3 text-white" />
                     </button>
+                    {m.type !== 'video' && (
+                      <button
+                        onClick={() => toggleFit(idx)}
+                        className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-white text-[10px] font-medium hover:bg-black/80 transition-colors"
+                      >
+                        {m.fit === 'cover' ? 'Crop: Fill' : 'Fit: Full'}
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

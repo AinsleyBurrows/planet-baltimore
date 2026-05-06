@@ -43,6 +43,13 @@
         "type": "string"
       }
     },
+    "media_fits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Per-image object-fit values: 'cover' or 'contain'"
+    },
     "media_type": {
       "type": "string",
       "enum": [

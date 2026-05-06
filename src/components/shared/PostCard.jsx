@@ -205,9 +205,14 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
 
         // Single image + text: image on top, text below
         if (hasText && singleImage) {
+          const fit0 = displayPost.media_fits?.[0] || 'cover';
           return (
             <div>
-              <AppImage src={displayPost.media_urls[0]} images={displayPost.media_urls} index={0} className="w-full" aspectRatio="16:9" />
+              {fit0 === 'contain' ? (
+                <img src={displayPost.media_urls[0]} alt="" className="w-full max-h-[400px] object-contain bg-secondary" onClick={() => {}} />
+              ) : (
+                <AppImage src={displayPost.media_urls[0]} images={displayPost.media_urls} index={0} className="w-full" aspectRatio="16:9" />
+              )}
               <div className="px-4 pt-3 pb-2">
                 <TruncatedText text={displayPost.content} />
               </div>
@@ -242,10 +247,15 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
         if (hasImages) {
           return (
             <div>
-              <div className={`grid gap-0.5 bg-white ${displayPost.media_urls.length === 1 ? '' : 'grid-cols-2'}`}>
-                {displayPost.media_urls.slice(0, 4).map((url, idx) => (
-                  <AppImage key={idx} src={url} images={displayPost.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
-                ))}
+              <div className={`grid gap-0.5 bg-secondary ${displayPost.media_urls.length === 1 ? '' : 'grid-cols-2'}`}>
+                {displayPost.media_urls.slice(0, 4).map((url, idx) => {
+                  const fit = displayPost.media_fits?.[idx] || 'cover';
+                  return fit === 'contain' ? (
+                    <img key={idx} src={url} alt="" className="w-full max-h-[400px] object-contain bg-secondary" />
+                  ) : (
+                    <AppImage key={idx} src={url} images={displayPost.media_urls} index={idx} className="w-full aspect-square" aspectRatio="square" />
+                  );
+                })}
               </div>
               {hasText && (
                 <div className="px-4 pt-3 pb-2">

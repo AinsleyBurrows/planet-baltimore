@@ -388,7 +388,7 @@ export default function ArtsOrgDetail() {
                       {isVideo ? (
                         <video src={p.media_urls[0]} className="w-full h-full object-cover" muted preload="metadata" />
                       ) : (
-                        <img src={p.media_urls[0]} alt="" className="w-full h-full object-cover" />
+                        <img src={p.media_urls[0]} alt="" className="w-full h-full" style={{ objectFit: p.media_fits?.[0] || 'cover' }} />
                       )}
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-end p-2 opacity-0 group-hover:opacity-100">
                         <p className="text-white text-xs line-clamp-2">{p.content}</p>
