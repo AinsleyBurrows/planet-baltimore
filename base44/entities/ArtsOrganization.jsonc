@@ -40,8 +40,56 @@
     "image_url": {
       "type": "string"
     },
+    "image_fit": {
+      "type": "string",
+      "enum": [
+        "cover",
+        "contain",
+        "fill"
+      ],
+      "default": "cover",
+      "description": "CSS object-fit for profile photo"
+    },
+    "image_scale": {
+      "type": "number",
+      "default": 1,
+      "description": "Scale factor for profile photo"
+    },
+    "image_offset_x": {
+      "type": "number",
+      "default": 50,
+      "description": "Horizontal position % for profile photo"
+    },
+    "image_offset_y": {
+      "type": "number",
+      "default": 50,
+      "description": "Vertical position % for profile photo"
+    },
     "banner_url": {
       "type": "string"
+    },
+    "banner_fit": {
+      "type": "string",
+      "enum": [
+        "cover",
+        "contain",
+        "fill"
+      ],
+      "default": "cover",
+      "description": "CSS object-fit for banner"
+    },
+    "banner_scale": {
+      "type": "number",
+      "default": 1,
+      "description": "Scale factor for banner"
+    },
+    "banner_offset_x": {
+      "type": "number",
+      "default": 50
+    },
+    "banner_offset_y": {
+      "type": "number",
+      "default": 50
     },
     "owner_id": {
       "type": "string"

@@ -17,6 +17,7 @@ import ArtsOrgMessageModal from '@/components/arts/ArtsOrgMessageModal';
 import ArtsOrgEditModal from '@/components/arts/ArtsOrgEditModal';
 import ArtsOrgCreatePostModal from '@/components/arts/ArtsOrgCreatePostModal';
 import ShareModal from '@/components/shared/ShareModal';
+import ImageFitScaleModal from '@/components/shared/ImageFitScaleModal';
 import ExhibitionsTab from '@/components/arts/tabs/ExhibitionsTab';
 import ArtistRosterTab from '@/components/arts/tabs/ArtistRosterTab';
 import MembershipTab from '@/components/arts/tabs/MembershipTab';
@@ -47,8 +48,10 @@ export default function ArtsOrgDetail() {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [uploading, setUploading] = useState(null); // 'banner' | 'avatar' | null
+  const [uploading, setUploading] = useState(null); // 'banner_url' | 'image_url' | null
   const [showNeighborhoodPicker, setShowNeighborhoodPicker] = useState(false);
+  const [showAvatarFit, setShowAvatarFit] = useState(false);
+  const [showBannerFit, setShowBannerFit] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -73,6 +76,44 @@ export default function ArtsOrgDetail() {
     await base44.entities.ArtsOrganization.update(id, { [field]: file_url });
     queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
     setUploading(null);
+  };
+
+  const handleAvatarFitSave = async (file, settings) => {
+    setUploading('image_url');
+    let image_url = org.image_url;
+    if (file) {
+      const res = await base44.integrations.Core.UploadFile({ file });
+      image_url = res.file_url;
+    }
+    await base44.entities.ArtsOrganization.update(id, {
+      image_url,
+      image_fit: settings.objectFit,
+      image_scale: settings.scale,
+      image_offset_x: settings.offsetX,
+      image_offset_y: settings.offsetY,
+    });
+    queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
+    setUploading(null);
+    setShowAvatarFit(false);
+  };
+
+  const handleBannerFitSave = async (file, settings) => {
+    setUploading('banner_url');
+    let banner_url = org.banner_url;
+    if (file) {
+      const res = await base44.integrations.Core.UploadFile({ file });
+      banner_url = res.file_url;
+    }
+    await base44.entities.ArtsOrganization.update(id, {
+      banner_url,
+      banner_fit: settings.objectFit,
+      banner_scale: settings.scale,
+      banner_offset_x: settings.offsetX,
+      banner_offset_y: settings.offsetY,
+    });
+    queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
+    setUploading(null);
+    setShowBannerFit(false);
   };
 
   const handleNeighborhoodSelect = async (neighborhood) => {
@@ -109,7 +150,20 @@ export default function ArtsOrgDetail() {
     <div className="space-y-0">
       {/* Banner */}
       <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
-        {org.banner_url && <img src={org.banner_url} alt="" className="w-full h-full object-cover" />}
+        {org.banner_url && (
+          <img
+            src={org.banner_url}
+            alt=""
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: org.banner_fit || 'cover',
+              objectPosition: `${org.banner_offset_x ?? 50}% ${org.banner_offset_y ?? 50}%`,
+              transform: `scale(${org.banner_scale || 1})`,
+              transformOrigin: `${org.banner_offset_x ?? 50}% ${org.banner_offset_y ?? 50}%`,
+            }}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         {isOwner && (
           <div className="absolute bottom-3 right-3 flex items-center gap-2">
@@ -122,32 +176,48 @@ export default function ArtsOrgDetail() {
               </button>
             )}
             <button
-              onClick={() => bannerInputRef.current?.click()}
+              onClick={() => setShowBannerFit(true)}
               disabled={uploading === 'banner_url'}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/55 hover:bg-black/75 text-white text-xs font-semibold backdrop-blur-sm transition-colors"
             >
               <Camera className="w-3.5 h-3.5" />
-              {uploading === 'banner_url' ? 'Uploading...' : org.banner_url ? 'Change banner' : 'Add banner'}
+              {uploading === 'banner_url' ? 'Uploading...' : org.banner_url ? 'Adjust banner' : 'Add banner'}
             </button>
           </div>
         )}
-        <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'banner_url')} />
       </div>
 
       {/* Profile row */}
       <div className="relative px-1 -mt-10">
         <div className="flex items-end justify-between">
           <div className="relative group">
-            <Avatar className="w-20 h-20 border-4 border-background rounded-xl cursor-pointer" onClick={isOwner ? () => avatarInputRef.current?.click() : undefined}>
-              <AvatarImage src={org.image_url} />
-              <AvatarFallback className="rounded-xl text-2xl font-bold bg-accent/10 text-accent">{org.name?.charAt(0)}</AvatarFallback>
-            </Avatar>
+            <div
+              className="w-20 h-20 border-4 border-background rounded-xl overflow-hidden bg-accent/10 flex items-center justify-center cursor-pointer shadow-lg"
+              onClick={isOwner ? () => setShowAvatarFit(true) : undefined}
+            >
+              {org.image_url ? (
+                <img
+                  src={org.image_url}
+                  alt={org.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: org.image_fit || 'cover',
+                    objectPosition: `${org.image_offset_x ?? 50}% ${org.image_offset_y ?? 50}%`,
+                    transform: `scale(${org.image_scale || 1})`,
+                    transformOrigin: `${org.image_offset_x ?? 50}% ${org.image_offset_y ?? 50}%`,
+                  }}
+                />
+              ) : (
+                <span className="text-2xl font-bold text-accent">{org.name?.charAt(0)}</span>
+              )}
+            </div>
             {isOwner && (
               <>
                 <span
                   className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full bg-foreground border-2 border-background flex items-center justify-center shadow-sm cursor-pointer"
-                  onClick={() => avatarInputRef.current?.click()}
-                  title="Change photo"
+                  onClick={() => setShowAvatarFit(true)}
+                  title="Adjust photo"
                 >
                   <Camera className="w-3 h-3 text-background" />
                 </span>
@@ -162,7 +232,6 @@ export default function ArtsOrgDetail() {
                 )}
               </>
             )}
-            <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'image_url')} />
           </div>
           <div className="flex gap-2 mb-1">
             {org && !isOwner && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
@@ -439,6 +508,25 @@ export default function ArtsOrgDetail() {
       {showEdit && <ArtsOrgEditModal org={org} onClose={() => setShowEdit(false)} />}
       {showCreatePost && currentUser && <ArtsOrgCreatePostModal org={org} user={currentUser} onClose={() => setShowCreatePost(false)} />}
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={window.location.href} title={org.name} description={org.tagline || org.description} />
+
+      {showAvatarFit && (
+        <ImageFitScaleModal
+          imageUrl={org.image_url}
+          aspectRatio="1/1"
+          onSave={handleAvatarFitSave}
+          onClose={() => setShowAvatarFit(false)}
+          isLoading={uploading === 'image_url'}
+        />
+      )}
+      {showBannerFit && (
+        <ImageFitScaleModal
+          imageUrl={org.banner_url}
+          aspectRatio="16/9"
+          onSave={handleBannerFitSave}
+          onClose={() => setShowBannerFit(false)}
+          isLoading={uploading === 'banner_url'}
+        />
+      )}
     </div>
   );
 }
