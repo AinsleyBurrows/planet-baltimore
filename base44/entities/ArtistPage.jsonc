@@ -65,6 +65,205 @@
       "items": {
         "type": "string"
       }
+    },
+    "discography": {
+      "type": "array",
+      "description": "Albums, EPs, and singles",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "album",
+              "ep",
+              "single"
+            ]
+          },
+          "release_date": {
+            "type": "string"
+          },
+          "cover_url": {
+            "type": "string"
+          },
+          "spotify_url": {
+            "type": "string"
+          },
+          "apple_music_url": {
+            "type": "string"
+          },
+          "soundcloud_url": {
+            "type": "string"
+          },
+          "bandcamp_url": {
+            "type": "string"
+          },
+          "other_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tracks": {
+      "type": "array",
+      "description": "Individual tracks with audio previews",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "audio_url": {
+            "type": "string"
+          },
+          "cover_url": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "string"
+          },
+          "stream_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tour_dates": {
+      "type": "array",
+      "description": "Upcoming shows and tour dates",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "ticket_url": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "music_videos": {
+      "type": "array",
+      "description": "YouTube/Vimeo embedded music videos",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "embed_url": {
+            "type": "string"
+          },
+          "thumbnail_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "epk": {
+      "type": "object",
+      "description": "Electronic Press Kit",
+      "properties": {
+        "bio_text": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string"
+        },
+        "press_photos": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "press_contact": {
+          "type": "string"
+        },
+        "press_email": {
+          "type": "string"
+        },
+        "press_releases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "booking_info": {
+      "type": "object",
+      "description": "Booking and contact details",
+      "properties": {
+        "manager_name": {
+          "type": "string"
+        },
+        "manager_email": {
+          "type": "string"
+        },
+        "booking_email": {
+          "type": "string"
+        },
+        "booking_phone": {
+          "type": "string"
+        },
+        "rider_url": {
+          "type": "string"
+        }
+      }
+    },
+    "streaming_links": {
+      "type": "object",
+      "description": "Streaming platform links",
+      "properties": {
+        "spotify": {
+          "type": "string"
+        },
+        "apple_music": {
+          "type": "string"
+        },
+        "soundcloud": {
+          "type": "string"
+        },
+        "youtube": {
+          "type": "string"
+        },
+        "instagram": {
+          "type": "string"
+        },
+        "tiktok": {
+          "type": "string"
+        },
+        "bandcamp": {
+          "type": "string"
+        },
+        "twitter": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": [

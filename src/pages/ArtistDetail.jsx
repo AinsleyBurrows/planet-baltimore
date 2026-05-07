@@ -29,6 +29,15 @@ import ArtistGallery from '@/components/artist/ArtistGallery';
 import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
 import PostCard from '@/components/shared/PostCard';
 
+// Music-specific tabs
+import DiscographyTab from '@/components/artist/music/DiscographyTab';
+import TracksTab from '@/components/artist/music/TracksTab';
+import TourDatesTab from '@/components/artist/music/TourDatesTab';
+import MusicVideosTab from '@/components/artist/music/MusicVideosTab';
+import EPKTab from '@/components/artist/music/EPKTab';
+import BookingTab from '@/components/artist/music/BookingTab';
+import StreamingLinksTab from '@/components/artist/music/StreamingLinksTab';
+
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
   performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', other: 'Other'
@@ -99,6 +108,7 @@ export default function ArtistDetail() {
   );
 
   const isOwner = user?.id === artist.owner_id;
+  const isMusic = artist.category === 'music';
   const mediaPosts = posts.filter(p => p.media_urls?.length > 0 && p.media_type !== 'audio');
   const upcomingCount = events.filter(e => e.date && new Date(e.date) > new Date()).length;
 
@@ -205,35 +215,60 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="journal">
-        <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex-wrap gap-0.5">
-          <TabsTrigger value="posts" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+      <Tabs defaultValue={isMusic ? "discography" : "journal"}>
+        <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
+          <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
           </TabsTrigger>
-          <TabsTrigger value="journal" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
-            <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
-          </TabsTrigger>
-          <TabsTrigger value="series" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
-            <Layers className="w-3.5 h-3.5" /><span className="hidden xs:inline">Series</span>
-          </TabsTrigger>
-          <TabsTrigger value="gallery" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
-            <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Gallery</span>
-          </TabsTrigger>
-          <TabsTrigger value="events" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+          {isMusic && <>
+            <TabsTrigger value="discography" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎵 <span className="hidden xs:inline">Music</span>
+            </TabsTrigger>
+            <TabsTrigger value="tracks" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              ▶️ <span className="hidden xs:inline">Tracks</span>
+            </TabsTrigger>
+            <TabsTrigger value="tour" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shows</span>
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎬 <span className="hidden xs:inline">Videos</span>
+            </TabsTrigger>
+            <TabsTrigger value="epk" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">EPK</span>
+            </TabsTrigger>
+            <TabsTrigger value="booking" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
+            </TabsTrigger>
+            <TabsTrigger value="streaming" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🔗 <span className="hidden xs:inline">Links</span>
+            </TabsTrigger>
+          </>}
+          {!isMusic && <>
+            <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
+            </TabsTrigger>
+            <TabsTrigger value="series" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Layers className="w-3.5 h-3.5" /><span className="hidden xs:inline">Series</span>
+            </TabsTrigger>
+            <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Gallery</span>
+            </TabsTrigger>
+          </>}
+          <TabsTrigger value="events" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Calendar className="w-3.5 h-3.5" />
             <span className="hidden xs:inline">Events</span>
             {upcomingCount > 0 && <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground text-[9px] font-bold">{upcomingCount}</span>}
           </TabsTrigger>
-          <TabsTrigger value="cv" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+          <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV</span>
           </TabsTrigger>
-          <TabsTrigger value="discussion" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+          <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Talk</span>
           </TabsTrigger>
-          <TabsTrigger value="contact" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+          {!isMusic && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
-          </TabsTrigger>
-          <TabsTrigger value="invite" className="flex-1 rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm min-w-[70px]">
+          </TabsTrigger>}
+          <TabsTrigger value="invite" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Users className="w-3.5 h-3.5" /><span className="hidden xs:inline">Invite</span>
           </TabsTrigger>
         </TabsList>
@@ -257,6 +292,31 @@ export default function ArtistDetail() {
             )
           }
         </TabsContent>
+
+        {/* Music tabs */}
+        {isMusic && <>
+          <TabsContent value="discography" className="mt-4">
+            <DiscographyTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="tracks" className="mt-4">
+            <TracksTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="tour" className="mt-4">
+            <TourDatesTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="videos" className="mt-4">
+            <MusicVideosTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="epk" className="mt-4">
+            <EPKTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="booking" className="mt-4">
+            <BookingTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="streaming" className="mt-4">
+            <StreamingLinksTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+        </>}
 
         {/* Studio Journal */}
         <TabsContent value="journal" className="mt-4">
