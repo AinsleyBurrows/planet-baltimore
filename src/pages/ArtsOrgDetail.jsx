@@ -18,6 +18,8 @@ import ArtsOrgMessageModal from '@/components/arts/ArtsOrgMessageModal';
 import ArtsOrgEditModal from '@/components/arts/ArtsOrgEditModal';
 import ArtsOrgCreatePostModal from '@/components/arts/ArtsOrgCreatePostModal';
 import ShareModal from '@/components/shared/ShareModal';
+import PageAdminBar from '@/components/shared/PageAdminBar';
+import { useNavigate } from 'react-router-dom';
 import ImageFitScaleModal from '@/components/shared/ImageFitScaleModal';
 import ExhibitionsTab from '@/components/arts/tabs/ExhibitionsTab';
 import ArtistRosterTab from '@/components/arts/tabs/ArtistRosterTab';
@@ -41,6 +43,7 @@ const ORG_TYPE_LABELS = {
 
 export default function ArtsOrgDetail() {
   const id = window.location.pathname.split('/').pop();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('posts');
   const [postView, setPostView] = useState('feed'); // 'feed' | 'grid'
@@ -71,7 +74,23 @@ export default function ArtsOrgDetail() {
   });
 
   const isOwner = currentUser?.id === org?.owner_id;
+  const isPlatformAdmin = currentUser?.role === 'admin';
   const isNonprofit = (org?.org_type === 'nonprofit') || (org?.secondary_types || []).includes('nonprofit');
+
+  const handleDelete = async () => {
+    await base44.entities.ArtsOrganization.delete(id);
+    navigate('/arts-organizations');
+  };
+
+  const handleMute = async (reason) => {
+    await base44.entities.ArtsOrganization.update(id, { is_muted: true, mute_reason: reason });
+    queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
+  };
+
+  const handleUnmute = async () => {
+    await base44.entities.ArtsOrganization.update(id, { is_muted: false, mute_reason: '' });
+    queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
+  };
 
   const uploadImage = async (file, field) => {
     setUploading(field);
@@ -296,6 +315,16 @@ export default function ArtsOrgDetail() {
               {org.tags.map((t, i) => <Badge key={i} variant="outline" className="text-xs">#{t}</Badge>)}
             </div>
           )}
+
+          <PageAdminBar
+            isOwner={isOwner}
+            isPlatformAdmin={isPlatformAdmin}
+            isMuted={org.is_muted}
+            muteReason={org.mute_reason}
+            onDelete={handleDelete}
+            onMute={handleMute}
+            onUnmute={handleUnmute}
+          />
         </div>
 
         <div className="flex gap-6 mt-4 py-3 border-b border-border">

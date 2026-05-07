@@ -28,6 +28,7 @@ import AssociationEditModal from '@/components/association/AssociationEditModal'
 import JoinAssociationModal from '@/components/association/JoinAssociationModal';
 import FollowButton from '@/components/shared/FollowButton';
 import ShareModal from '@/components/shared/ShareModal';
+import PageAdminBar from '@/components/shared/PageAdminBar';
 import { format } from 'date-fns';
 
 export default function CommunityAssociationDetail() {
@@ -126,6 +127,23 @@ export default function CommunityAssociationDetail() {
   };
 
   const isSiteAdmin = currentUser?.role === 'admin';
+  const isOwner = currentUser?.id === association?.owner_id;
+
+  const handleDelete = async () => {
+    await base44.entities.CommunityAssociation.update(assocId, { is_deleted: true });
+    navigate('/community-associations');
+  };
+
+  const handleMute = async (reason) => {
+    await base44.entities.CommunityAssociation.update(assocId, { is_muted: true, mute_reason: reason });
+    queryClient.invalidateQueries({ queryKey: ['community-association', assocId] });
+  };
+
+  const handleUnmute = async () => {
+    await base44.entities.CommunityAssociation.update(assocId, { is_muted: false, mute_reason: '' });
+    queryClient.invalidateQueries({ queryKey: ['community-association', assocId] });
+  };
+
   const isAdmin = currentUser && association && (
     association.owner_id === currentUser.id ||
     (association.admins || []).includes(currentUser.id)
@@ -262,6 +280,16 @@ export default function CommunityAssociationDetail() {
           {association.website && <a href={association.website.startsWith('http') ? association.website : `https://${association.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-accent hover:underline"><Globe className="w-4 h-4" />Website</a>}
           {association.contact_email && <a href={`mailto:${association.contact_email}`} className="flex items-center gap-1.5 text-accent hover:underline"><Mail className="w-4 h-4" />{association.contact_email}</a>}
         </div>
+
+        <PageAdminBar
+          isOwner={isOwner}
+          isPlatformAdmin={isSiteAdmin}
+          isMuted={association.is_muted}
+          muteReason={association.mute_reason}
+          onDelete={handleDelete}
+          onMute={handleMute}
+          onUnmute={handleUnmute}
+        />
       </div>
 
       {/* Tabs */}
