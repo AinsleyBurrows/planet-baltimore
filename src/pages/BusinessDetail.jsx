@@ -27,6 +27,7 @@ import BusinessSavedTab from '@/components/business/BusinessSavedTab';
 import BusinessEventsTab from '@/components/business/BusinessEventsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ShareModal from '@/components/shared/ShareModal';
+import PageAdminBar from '@/components/shared/PageAdminBar';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -95,6 +96,23 @@ export default function BusinessDetail() {
   );
 
   const isOwner = user?.id === business.owner_id;
+  const isPlatformAdmin = user?.role === 'admin';
+
+  const handleDelete = async () => {
+    await base44.entities.BusinessPage.delete(businessId);
+    navigate('/businesses');
+  };
+
+  const handleMute = async (reason) => {
+    await base44.entities.BusinessPage.update(businessId, { is_muted: true, mute_reason: reason });
+    queryClient.invalidateQueries({ queryKey: ['business', businessId] });
+  };
+
+  const handleUnmute = async () => {
+    await base44.entities.BusinessPage.update(businessId, { is_muted: false, mute_reason: '' });
+    queryClient.invalidateQueries({ queryKey: ['business', businessId] });
+  };
+
   const category = business.category;
   const isRestaurant = category === 'restaurant';
   const isRetail = category === 'retail';
@@ -209,6 +227,16 @@ export default function BusinessDetail() {
             {business.tags.map((tag, i) => <Badge key={i} variant="secondary" className="text-xs">#{tag}</Badge>)}
           </div>
         )}
+
+        <PageAdminBar
+          isOwner={isOwner}
+          isPlatformAdmin={isPlatformAdmin}
+          isMuted={business.is_muted}
+          muteReason={business.mute_reason}
+          onDelete={handleDelete}
+          onMute={handleMute}
+          onUnmute={handleUnmute}
+        />
       </div>
 
       {/* Tabs */}

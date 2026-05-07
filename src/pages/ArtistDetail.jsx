@@ -28,6 +28,7 @@ import ArtistCreateEvent from '@/components/artist/ArtistCreateEvent';
 import ArtistGallery from '@/components/artist/ArtistGallery';
 import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
 import PostCard from '@/components/shared/PostCard';
+import PageAdminBar from '@/components/shared/PageAdminBar';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
@@ -108,7 +109,23 @@ export default function ArtistDetail() {
   );
 
   const isOwner = user?.id === artist.owner_id;
+  const isPlatformAdmin = user?.role === 'admin';
   const isMusic = artist.category === 'music';
+
+  const handleDelete = async () => {
+    await base44.entities.ArtistPage.delete(artistId);
+    navigate('/artists');
+  };
+
+  const handleMute = async (reason) => {
+    await base44.entities.ArtistPage.update(artistId, { is_muted: true, mute_reason: reason });
+    queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
+  };
+
+  const handleUnmute = async () => {
+    await base44.entities.ArtistPage.update(artistId, { is_muted: false, mute_reason: '' });
+    queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
+  };
   const mediaPosts = posts.filter(p => p.media_urls?.length > 0 && p.media_type !== 'audio');
   const upcomingCount = events.filter(e => e.date && new Date(e.date) > new Date()).length;
 
@@ -212,6 +229,16 @@ export default function ArtistDetail() {
             {artist.tags.map((tag, i) => <Badge key={i} variant="secondary" className="text-xs">#{tag}</Badge>)}
           </div>
         )}
+
+        <PageAdminBar
+          isOwner={isOwner}
+          isPlatformAdmin={isPlatformAdmin}
+          isMuted={artist.is_muted}
+          muteReason={artist.mute_reason}
+          onDelete={handleDelete}
+          onMute={handleMute}
+          onUnmute={handleUnmute}
+        />
       </div>
 
       {/* Tabs */}

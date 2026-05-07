@@ -18,6 +18,7 @@ import CommunityInviteModal from '@/components/community/CommunityInviteModal';
 import CommunityMessageModal from '@/components/community/CommunityMessageModal';
 import ShareModal from '@/components/shared/ShareModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
+import PageAdminBar from '@/components/shared/PageAdminBar';
 import CommunityCreatePostModal from '@/components/community/CommunityCreatePostModal';
 import CommunityCreateEventModal from '@/components/community/CommunityCreateEventModal';
 
@@ -79,6 +80,22 @@ export default function CommunityDetail() {
   );
 
   const isOwner = user?.id === community?.owner_id;
+  const isPlatformAdmin = user?.role === 'admin';
+
+  const handleDelete = async () => {
+    await base44.entities.Community.delete(communityId);
+    navigate('/communities');
+  };
+
+  const handleMute = async (reason) => {
+    await base44.entities.Community.update(communityId, { is_muted: true, mute_reason: reason });
+    queryClient.invalidateQueries({ queryKey: ['community', communityId] });
+  };
+
+  const handleUnmute = async () => {
+    await base44.entities.Community.update(communityId, { is_muted: false, mute_reason: '' });
+    queryClient.invalidateQueries({ queryKey: ['community', communityId] });
+  };
 
   if (!community) return (
     <div className="text-center py-16">
@@ -173,6 +190,16 @@ export default function CommunityDetail() {
             {community.tags.map((tag, i) => <Badge key={i} variant="secondary" className="text-xs">#{tag}</Badge>)}
           </div>
         )}
+
+        <PageAdminBar
+          isOwner={isOwner}
+          isPlatformAdmin={isPlatformAdmin}
+          isMuted={community.is_muted}
+          muteReason={community.mute_reason}
+          onDelete={handleDelete}
+          onMute={handleMute}
+          onUnmute={handleUnmute}
+        />
       </div>
 
       {/* Tabs */}
