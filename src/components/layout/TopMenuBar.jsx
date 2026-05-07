@@ -13,17 +13,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const navItems = [
-  { icon: Home, label: 'Home', path: '/' },
-  { icon: Compass, label: 'Discover', path: '/discover' },
-  { icon: BookOpen, label: 'Stories', path: '/stories' },
-  { icon: Ticket, label: 'Events', path: '/ticketing' },
-  { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
-  { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
+  { icon: Users, label: 'Communities', path: '/communities' },
+  { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
+  { icon: Compass, label: 'Discover', path: '/discover' },
+  { icon: Ticket, label: 'Events', path: '/ticketing' },
+  { icon: Home, label: 'Home', path: '/' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
+  { icon: BookOpen, label: 'Stories', path: '/stories' },
 ];
 
 const utilItems = [
