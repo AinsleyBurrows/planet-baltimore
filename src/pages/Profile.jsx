@@ -22,6 +22,7 @@ import PostsGrid from '@/components/profile/PostsGrid';
 import RSVPEvents from '@/components/profile/RSVPEvents';
 import StoryCard from '@/components/shared/StoryCard';
 import MyPagesTab from '@/components/profile/MyPagesTab';
+import FollowersModal from '@/components/profile/FollowersModal';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -48,6 +49,7 @@ export default function Profile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [showNeighborhoodPicker, setShowNeighborhoodPicker] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showFollowModal, setShowFollowModal] = useState(null); // 'followers' | 'following' | null
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -408,8 +410,14 @@ export default function Profile() {
         {/* Stats */}
         <div className="flex gap-6 sm:gap-8 mt-4 py-3 border-b border-border">
           <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.posts_count || posts.length}</span><span className="text-xs text-muted-foreground ml-1">Posts</span></div>
-          <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.followers_count || 0}</span><span className="text-xs text-muted-foreground ml-1">Followers</span></div>
-          <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.following_count || 0}</span><span className="text-xs text-muted-foreground ml-1">Following</span></div>
+          <button onClick={() => setShowFollowModal('followers')} className="text-center hover:opacity-70 transition-opacity">
+            <span className="font-bold text-foreground text-sm sm:text-base">{user.followers_count || 0}</span>
+            <span className="text-xs text-muted-foreground ml-1">Followers</span>
+          </button>
+          <button onClick={() => setShowFollowModal('following')} className="text-center hover:opacity-70 transition-opacity">
+            <span className="font-bold text-foreground text-sm sm:text-base">{user.following_count || 0}</span>
+            <span className="text-xs text-muted-foreground ml-1">Following</span>
+          </button>
         </div>
       </div>
 
@@ -552,6 +560,7 @@ export default function Profile() {
       </div>
     </div>
 
+    {showFollowModal && <FollowersModal userId={user?.id} mode={showFollowModal} onClose={() => setShowFollowModal(null)} />}
     {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
     {showBroadcast && <BroadcastModal currentUser={user} onClose={() => setShowBroadcast(false)} />}
     {showEditProfile && (
