@@ -301,7 +301,7 @@ export default function Profile() {
               </Link>
             )}
             {isOwnProfile && (
-              <Link to="/create-post">
+              <Link to="/create-post?from=profile">
                 <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0">
                   <Plus className="w-4 h-4" />
                 </Button>

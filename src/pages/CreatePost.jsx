@@ -153,7 +153,9 @@ export default function CreatePost() {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['my-posts'] });
 
-      navigate('/');
+      const params = new URLSearchParams(window.location.search);
+      const from = params.get('from');
+      navigate(from === 'profile' ? '/profile' : '/');
     },
     onError: () => {
       setIsUploading(false);
