@@ -23,7 +23,6 @@ import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 // New feature tabs
 import ArtistSeriesTab from '@/components/artist/ArtistSeriesTab';
 import ArtistStudioJournal from '@/components/artist/ArtistStudioJournal';
-import ArtistCVTab from '@/components/artist/ArtistCVTab';
 import ArtistCreateEvent from '@/components/artist/ArtistCreateEvent';
 import ArtistGallery from '@/components/artist/ArtistGallery';
 import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
@@ -286,9 +285,6 @@ export default function ArtistDetail() {
             <span className="hidden xs:inline">Events</span>
             {upcomingCount > 0 && <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground text-[9px] font-bold">{upcomingCount}</span>}
           </TabsTrigger>
-          <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-            <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV</span>
-          </TabsTrigger>
           <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Talk</span>
           </TabsTrigger>
@@ -363,11 +359,6 @@ export default function ArtistDetail() {
         {/* Events */}
         <TabsContent value="events" className="mt-4">
           <ArtistCreateEvent artist={artist} events={events} isOwner={isOwner} user={user} />
-        </TabsContent>
-
-        {/* CV */}
-        <TabsContent value="cv" className="mt-4">
-          <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />
         </TabsContent>
 
         {/* Community Discussion */}
