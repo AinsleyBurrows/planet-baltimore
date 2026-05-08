@@ -248,7 +248,7 @@ export default function ArtistDetail() {
           </TabsTrigger>
           {isMusic && <>
             <TabsTrigger value="discography" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              🎵 <span className="hidden xs:inline">Music</span>
+              🎵 <span className="hidden xs:inline">Album</span>
             </TabsTrigger>
             <TabsTrigger value="tracks" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               ▶️ <span className="hidden xs:inline">Singles</span>
