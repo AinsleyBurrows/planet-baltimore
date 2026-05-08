@@ -19,7 +19,9 @@ export default function ArtistMessageModal({ artist, onClose }) {
       target_id: artist.id,
     });
 
-    const emails = follows.map(f => f.follower_email).filter(Boolean);
+    const followerIds = follows.map(f => f.follower_id).filter(Boolean);
+    const users = await Promise.all(followerIds.map(id => base44.entities.User.filter({ id }).then(r => r[0]).catch(() => null)));
+    const emails = users.filter(u => u?.email).map(u => u.email);
 
     await Promise.all(emails.map(email =>
       base44.integrations.Core.SendEmail({
