@@ -256,9 +256,7 @@ export default function ArtistDetail() {
             <TabsTrigger value="tour" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shows</span>
             </TabsTrigger>
-            <TabsTrigger value="videos" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              🎬 <span className="hidden xs:inline">Videos</span>
-            </TabsTrigger>
+
             <TabsTrigger value="epk" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">EPK</span>
             </TabsTrigger>
@@ -327,9 +325,7 @@ export default function ArtistDetail() {
           <TabsContent value="tour" className="mt-4">
             <TourDatesTab artist={artist} isOwner={isOwner} />
           </TabsContent>
-          <TabsContent value="videos" className="mt-4">
-            <MusicVideosTab artist={artist} isOwner={isOwner} />
-          </TabsContent>
+
           <TabsContent value="epk" className="mt-4">
             <EPKTab artist={artist} isOwner={isOwner} />
           </TabsContent>
