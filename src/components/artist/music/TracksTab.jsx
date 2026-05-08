@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, Music, ExternalLink, Play } from 'lucide-react';
+import { Plus, Trash2, Music, ExternalLink, Play, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const EMPTY = { title: '', audio_url: '', cover_url: '', duration: '', stream_url: '' };
@@ -48,6 +48,7 @@ export default function TracksTab({ artist, isOwner }) {
   const queryClient = useQueryClient();
   const tracks = artist.tracks || [];
   const [showForm, setShowForm] = useState(false);
+  const [editIdx, setEditIdx] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const save = async (list) => {
@@ -56,11 +57,12 @@ export default function TracksTab({ artist, isOwner }) {
   };
 
   const saveNew = async (form) => { setSaving(true); await save([...tracks, form]); setShowForm(false); setSaving(false); };
+  const saveEdit = async (form) => { setSaving(true); await save(tracks.map((t, i) => i === editIdx ? { ...t, ...form } : t)); setEditIdx(null); setSaving(false); };
   const remove = async (idx) => { if (!window.confirm('Remove this track?')) return; await save(tracks.filter((_, i) => i !== idx)); };
 
   return (
     <div className="space-y-4">
-      {isOwner && !showForm && (
+      {isOwner && !showForm && editIdx === null && (
         <div className="flex justify-end">
           <Button size="sm" onClick={() => setShowForm(true)} className="gap-1.5 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg">
             <Plus className="w-3.5 h-3.5" /> Add Track
@@ -74,31 +76,40 @@ export default function TracksTab({ artist, isOwner }) {
       ) : (
         <div className="space-y-2">
           {tracks.map((t, i) => (
-            <div key={i} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl">
-              <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-secondary flex items-center justify-center">
-                {t.cover_url ? <img src={t.cover_url} alt="" className="w-full h-full object-cover" /> : <Music className="w-5 h-5 text-muted-foreground" />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground text-sm truncate">{t.title}</p>
-                {t.duration && <p className="text-xs text-muted-foreground">{t.duration}</p>}
-                {t.audio_url && (
-                  <audio src={t.audio_url} controls className="w-full h-8 mt-1" preload="metadata" />
-                )}
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {t.stream_url && (
-                  <a href={t.stream_url} target="_blank" rel="noopener noreferrer"
-                    className="p-1.5 rounded-full hover:bg-secondary text-accent transition-colors" title="Stream">
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                )}
-                {isOwner && (
-                  <button onClick={() => remove(i)} className="p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-            </div>
+            editIdx === i
+              ? <TrackForm key={i} initial={t} onSave={saveEdit} onCancel={() => setEditIdx(null)} saving={saving} />
+              : (
+                <div key={i} className="flex items-center gap-3 p-3 bg-card border border-border rounded-xl">
+                  <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-secondary flex items-center justify-center">
+                    {t.cover_url ? <img src={t.cover_url} alt="" className="w-full h-full object-cover" /> : <Music className="w-5 h-5 text-muted-foreground" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground text-sm truncate">{t.title}</p>
+                    {t.duration && <p className="text-xs text-muted-foreground">{t.duration}</p>}
+                    {t.audio_url && (
+                      <audio src={t.audio_url} controls className="w-full h-8 mt-1" preload="metadata" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {t.stream_url && (
+                      <a href={t.stream_url} target="_blank" rel="noopener noreferrer"
+                        className="p-1.5 rounded-full hover:bg-secondary text-accent transition-colors" title="Stream">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {isOwner && (
+                      <>
+                        <button onClick={() => setEditIdx(i)} className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => remove(i)} className="p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )
           ))}
         </div>
       )}
