@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, Upload, FileText, Image } from 'lucide-react';
+import { Plus, Trash2, Upload, FileText, Image, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 
@@ -15,8 +15,11 @@ export default function EPKTab({ artist, isOwner }) {
   const [prTitle, setPrTitle] = useState('');
   const [prDate, setPrDate] = useState('');
   const [prUrl, setPrUrl] = useState('');
+  const [prFileUrl, setPrFileUrl] = useState('');
+  const [uploadingPR, setUploadingPR] = useState(false);
   const logoRef = useRef(null);
   const photoRef = useRef(null);
+  const prFileRef = useRef(null);
 
   const update = async (patch) => {
     const updated = { ...epk, ...patch };
@@ -48,11 +51,18 @@ export default function EPKTab({ artist, isOwner }) {
     await update({ press_photos: photos });
   };
 
+  const uploadPRFile = async (file) => {
+    setUploadingPR(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setPrFileUrl(file_url);
+    setUploadingPR(false);
+  };
+
   const addPressRelease = async () => {
     if (!prTitle) return;
-    const prs = [...(epk.press_releases || []), { title: prTitle, date: prDate, url: prUrl }];
+    const prs = [...(epk.press_releases || []), { title: prTitle, date: prDate, url: prUrl, file_url: prFileUrl }];
     await update({ press_releases: prs });
-    setPrTitle(''); setPrDate(''); setPrUrl('');
+    setPrTitle(''); setPrDate(''); setPrUrl(''); setPrFileUrl('');
   };
 
   const removePR = async (idx) => {
@@ -134,9 +144,18 @@ export default function EPKTab({ artist, isOwner }) {
             <input className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Title *" value={prTitle} onChange={e => setPrTitle(e.target.value)} />
             <div className="flex gap-2">
               <input type="date" className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm" value={prDate} onChange={e => setPrDate(e.target.value)} />
-              <input className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Link (optional)" value={prUrl} onChange={e => setPrUrl(e.target.value)} />
+              <input className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="External link (optional)" value={prUrl} onChange={e => setPrUrl(e.target.value)} />
             </div>
-            <Button size="sm" onClick={addPressRelease} disabled={!prTitle} className="bg-accent hover:bg-accent/90 text-accent-foreground"><Plus className="w-3.5 h-3.5 mr-1" />Add</Button>
+            <button
+              onClick={() => prFileRef.current?.click()}
+              disabled={uploadingPR}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-xs transition-colors disabled:opacity-50"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              {uploadingPR ? 'Uploading…' : prFileUrl ? '✓ File uploaded — click to replace' : 'Upload PDF / Document (optional)'}
+            </button>
+            <Button size="sm" onClick={addPressRelease} disabled={!prTitle || uploadingPR} className="bg-accent hover:bg-accent/90 text-accent-foreground"><Plus className="w-3.5 h-3.5 mr-1" />Add</Button>
+            <input ref={prFileRef} type="file" accept=".pdf,.doc,.docx,.txt" className="hidden" onChange={e => e.target.files[0] && uploadPRFile(e.target.files[0])} />
           </div>
         )}
         {(epk.press_releases || []).length === 0
@@ -150,6 +169,7 @@ export default function EPKTab({ artist, isOwner }) {
                   </div>
                   <div className="flex items-center gap-2">
                     {pr.url && <a href={pr.url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1"><FileText className="w-3 h-3" />View</a>}
+                    {pr.file_url && <a href={pr.file_url} download target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1"><Download className="w-3 h-3" />Download</a>}
                     {isOwner && <button onClick={() => removePR(i)} className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>}
                   </div>
                 </div>
