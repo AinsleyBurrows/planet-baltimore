@@ -177,7 +177,7 @@ export default function ArtsOrgDetail() {
   return (
     <div className="space-y-0">
       {/* Banner */}
-      <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
+      <div className="relative h-44 sm:h-56 rounded-xl overflow-hidden bg-secondary">
         {org.banner_url && (
           <img
             src={org.banner_url}
@@ -263,6 +263,11 @@ export default function ArtsOrgDetail() {
           </div>
           <div className="flex gap-2 mb-1">
             {org && !isOwner && <FollowButton targetType="arts_org" targetId={org.id} targetName={org.name} />}
+            {isOwner && (
+              <Button size="sm" variant="outline" onClick={() => setShowEdit(true)} className="rounded-lg gap-1.5 text-xs h-9">
+                <Pencil className="w-3.5 h-3.5" />Edit Profile
+              </Button>
+            )}
             <Button size="sm" variant="outline" onClick={() => setShowShare(true)} className="rounded-lg transition-all duration-150 active:scale-95" aria-label="Share"><Share2 className="w-4 h-4" /></Button>
           </div>
         </div>
