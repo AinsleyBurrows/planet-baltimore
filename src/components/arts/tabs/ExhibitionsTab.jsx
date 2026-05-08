@@ -5,7 +5,15 @@ import { Plus, Trash2, ImageIcon, Pencil, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 
-const EMPTY = { title: '', description: '', start_date: '', end_date: '', image_url: '', is_current: false };
+const formatTime = (t) => {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hour = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2, '0')} ${ampm}`;
+};
+
+const EMPTY = { title: '', description: '', start_date: '', end_date: '', start_time: '', end_time: '', image_url: '', is_current: false };
 
 function ExhibitionForm({ initial, onSave, onCancel, saving }) {
   const [form, setForm] = useState(initial || EMPTY);
@@ -38,6 +46,16 @@ function ExhibitionForm({ initial, onSave, onCancel, saving }) {
           <div className="flex gap-2">
             <input type="date" className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Start date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
             <input type="date" className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="End date" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} />
+          </div>
+          <div className="flex gap-2">
+            <div className="flex-1 space-y-0.5">
+              <label className="text-xs text-muted-foreground">Opening time</label>
+              <input type="time" className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))} />
+            </div>
+            <div className="flex-1 space-y-0.5">
+              <label className="text-xs text-muted-foreground">Closing time</label>
+              <input type="time" className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))} />
+            </div>
           </div>
         </div>
         <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0])} />
@@ -126,6 +144,16 @@ export default function ExhibitionsTab({ org, isOwner }) {
                       <p className="text-xs text-muted-foreground mt-1">
                         {ex.start_date && format(new Date(ex.start_date), 'MMM d, yyyy')}
                         {ex.end_date && ` – ${format(new Date(ex.end_date), 'MMM d, yyyy')}`}
+                        {(ex.start_time || ex.end_time) && (
+                          <span className="ml-2">
+                            · {ex.start_time && formatTime(ex.start_time)}{ex.end_time && ` – ${formatTime(ex.end_time)}`}
+                          </span>
+                        )}
+                      </p>
+                    )}
+                    {!(ex.start_date || ex.end_date) && (ex.start_time || ex.end_time) && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {ex.start_time && formatTime(ex.start_time)}{ex.end_time && ` – ${formatTime(ex.end_time)}`}
                       </p>
                     )}
                     {ex.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{ex.description}</p>}
