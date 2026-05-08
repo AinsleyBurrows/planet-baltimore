@@ -140,7 +140,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Banner */}
-      <div className="relative h-52 rounded-xl overflow-hidden bg-gradient-to-br from-accent/20 via-primary/10 to-secondary">
+      <div className="relative h-52 rounded-xl overflow-hidden bg-secondary">
         {artist.banner_url && <img src={artist.banner_url} alt="Banner" className="w-full h-full object-cover" />}
         {artist.category && (
           <div className="absolute top-3 left-3">
