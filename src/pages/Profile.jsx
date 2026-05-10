@@ -31,6 +31,7 @@ const tabs = [
   { id: 'saved', label: 'Saved', icon: Bookmark },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
+  { id: 'media', label: 'Media', icon: Music },
   { id: 'pages', label: 'My Pages', icon: Shield },
 ];
 

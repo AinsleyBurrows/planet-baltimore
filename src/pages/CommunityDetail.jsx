@@ -235,7 +235,7 @@ export default function CommunityDetail() {
 
         <TabsContent value="posts" className="mt-4 space-y-4">
           <div className="flex items-center justify-between">
-            {isOwner ? (
+            {user ? (
               <button
                 onClick={() => setShowCreatePost(true)}
                 className="px-3 py-1.5 rounded-lg border border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-xs font-medium transition-colors flex items-center gap-1.5"

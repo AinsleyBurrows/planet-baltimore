@@ -152,6 +152,7 @@ export default function CreatePost() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['my-posts'] });
+      queryClient.invalidateQueries({ queryKey: ['home-posts'] });
 
       const params = new URLSearchParams(window.location.search);
       const from = params.get('from');
@@ -224,6 +225,10 @@ export default function CreatePost() {
                     <span className="truncate">{mediaFiles[idx]?.name}</span>
                   </div>
                   <audio src={preview} controls className="w-full h-10" />
+                </div>
+              ) : activeType === 'video' ? (
+                <div className="aspect-square">
+                  <video src={preview} className="w-full h-full object-cover" muted preload="metadata" />
                 </div>
               ) : (
                 <div className="aspect-square">

@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Bell, Heart, MessageCircle, Users, Calendar, Check, Settings } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,6 +21,7 @@ const iconMap = {
 
 export default function Notifications() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ['notifications'],
@@ -75,7 +76,7 @@ export default function Notifications() {
           {notifications.map((notif) => {
             const Icon = iconMap[notif.type] || Bell;
             return (
-              <div key={notif.id} onClick={() => !notif.is_read && markReadMutation.mutate(notif.id)} className={`flex items-start gap-3 p-3 rounded-xl transition-colors cursor-pointer ${notif.is_read ? 'hover:bg-secondary/50' : 'bg-accent/5 hover:bg-accent/10'}`}>
+              <div key={notif.id} onClick={() => { if (!notif.is_read) markReadMutation.mutate(notif.id); if (notif.link) navigate(notif.link); }} className={`flex items-start gap-3 p-3 rounded-xl transition-colors cursor-pointer ${notif.is_read ? 'hover:bg-secondary/50' : 'bg-accent/5 hover:bg-accent/10'}`}>
                 <Avatar className="w-10 h-10">
                   <AvatarImage src={notif.actor_avatar} />
                   <AvatarFallback className="bg-accent/10 text-accent text-xs">{notif.actor_name?.charAt(0) || <Icon className="w-4 h-4" />}</AvatarFallback>

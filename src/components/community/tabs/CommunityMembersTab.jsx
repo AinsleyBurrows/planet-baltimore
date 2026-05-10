@@ -37,7 +37,7 @@ export default function CommunityMembersTab({ community, isOwner }) {
   };
 
   const filtered = follows.filter(f =>
-    !search || f.follower_id?.toLowerCase().includes(search.toLowerCase())
+    !search || f.target_name?.toLowerCase().includes(search.toLowerCase()) || f.follower_id?.toLowerCase().includes(search.toLowerCase())
   );
 
   // Featured members first
@@ -98,7 +98,7 @@ export default function CommunityMembersTab({ community, isOwner }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-medium text-foreground truncate">{f.follower_id}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{f.target_name || f.follower_id}</p>
                       {isFeatured && <span className="text-xs text-muted-foreground font-normal">· Featured</span>}
                     </div>
                     {f.created_date && <p className="text-xs text-muted-foreground">Joined {format(new Date(f.created_date), 'MMM yyyy')}</p>}
