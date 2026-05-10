@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus, Camera, MessageSquare, Plus, Grid2X2, List, Pin } from 'lucide-react';
+import { ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell, Pencil, UserPlus, Camera, MessageSquare, Plus, Grid2X2, List, Pin, Megaphone, CalendarDays, MessageCircle, BarChart2, Image, FolderOpen, Briefcase, Trophy, ClipboardList, UserRoundPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -175,7 +175,7 @@ export default function CommunityDetail() {
 
         <div className="flex items-center gap-2 mb-1">
           <h1 className="text-xl font-bold text-foreground">{community.name}</h1>
-          {community.is_verified && <CheckCircle className="w-5 h-5 text-accent fill-accent/20" />}
+          {community.is_verified && <CheckCircle className="w-5 h-5 text-foreground" />}
           {community.is_official && <Badge className="bg-primary/10 text-primary border-0 text-xs">Official</Badge>}
         </div>
 
@@ -216,20 +216,20 @@ export default function CommunityDetail() {
       <Tabs defaultValue="posts" className="mt-[15px]">
         <div className="overflow-x-auto -mx-1 px-1">
           <TabsList className="w-max min-w-full bg-secondary/50 rounded-xl flex gap-0.5">
-            <TabsTrigger value="posts" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Posts</TabsTrigger>
-            <TabsTrigger value="announcements" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📢 Announcements</TabsTrigger>
-            <TabsTrigger value="events" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Events</TabsTrigger>
-            <TabsTrigger value="calendar" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📅 Calendar</TabsTrigger>
-            <TabsTrigger value="members" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">👥 Members</TabsTrigger>
-            <TabsTrigger value="threads" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">💬 Threads</TabsTrigger>
-            <TabsTrigger value="polls" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📊 Polls</TabsTrigger>
-            <TabsTrigger value="media" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">🖼 Gallery</TabsTrigger>
-            <TabsTrigger value="resources" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📂 Resources</TabsTrigger>
-            <TabsTrigger value="jobs" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">💼 Jobs</TabsTrigger>
-            <TabsTrigger value="leaderboard" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">🏆 Leaderboard</TabsTrigger>
-            <TabsTrigger value="rules" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📋 Rules</TabsTrigger>
-            <TabsTrigger value="invite" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Invite</TabsTrigger>
-            <TabsTrigger value="comments" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Comments</TabsTrigger>
+            <TabsTrigger value="posts" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><List className="w-3.5 h-3.5" />Posts</TabsTrigger>
+            <TabsTrigger value="announcements" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><Megaphone className="w-3.5 h-3.5" />Announcements</TabsTrigger>
+            <TabsTrigger value="events" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><CalendarDays className="w-3.5 h-3.5" />Events</TabsTrigger>
+            <TabsTrigger value="calendar" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><CalendarDays className="w-3.5 h-3.5" />Calendar</TabsTrigger>
+            <TabsTrigger value="members" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><Users className="w-3.5 h-3.5" />Members</TabsTrigger>
+            <TabsTrigger value="threads" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><MessageCircle className="w-3.5 h-3.5" />Threads</TabsTrigger>
+            <TabsTrigger value="polls" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><BarChart2 className="w-3.5 h-3.5" />Polls</TabsTrigger>
+            <TabsTrigger value="media" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><Image className="w-3.5 h-3.5" />Gallery</TabsTrigger>
+            <TabsTrigger value="resources" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><FolderOpen className="w-3.5 h-3.5" />Resources</TabsTrigger>
+            <TabsTrigger value="jobs" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><Briefcase className="w-3.5 h-3.5" />Jobs</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><Trophy className="w-3.5 h-3.5" />Leaderboard</TabsTrigger>
+            <TabsTrigger value="rules" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><ClipboardList className="w-3.5 h-3.5" />Rules</TabsTrigger>
+            <TabsTrigger value="invite" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><UserRoundPlus className="w-3.5 h-3.5" />Invite</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-lg whitespace-nowrap text-xs sm:text-sm flex items-center gap-1"><MessageSquare className="w-3.5 h-3.5" />Comments</TabsTrigger>
           </TabsList>
         </div>
 
