@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Copy, Mail, Check, MessageCircle } from 'lucide-react';
+import { X, Copy, Mail, Check, MessageCircle, Send, Search, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { base44 } from '@/api/base44Client';
 
 const SOCIAL_PLATFORMS = [
   {
@@ -57,9 +59,65 @@ const SOCIAL_PLATFORMS = [
 
 export default function ShareModal({ isOpen, onClose, url, title, description }) {
   const [copied, setCopied] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [followers, setFollowers] = useState([]);
+  const [followerUsers, setFollowerUsers] = useState([]);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState([]);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const shareUrl = url || window.location.href;
   const shareTitle = title || document.title;
+
+  useEffect(() => {
+    if (!isOpen) { setSelected([]); setSent(false); setSearch(''); return; }
+    base44.auth.me().then(async (me) => {
+      if (!me) return;
+      setCurrentUser(me);
+      // fetch people this user follows (so they can send to people they know)
+      const follows = await base44.entities.Follow.filter({ follower_id: me.id, target_type: 'user' }, '-created_date', 100);
+      setFollowers(follows);
+      // Also fetch people who follow this user
+      const inbound = await base44.entities.Follow.filter({ target_type: 'user', target_id: me.id }, '-created_date', 100);
+      // Merge unique user IDs
+      const allIds = [...new Set([...follows.map(f => f.target_id), ...inbound.map(f => f.follower_id)])];
+      // Build lightweight user objects from follow records
+      const userMap = {};
+      follows.forEach(f => { userMap[f.target_id] = { id: f.target_id, full_name: f.target_name || f.target_id, avatar_url: null }; });
+      inbound.forEach(f => { if (!userMap[f.follower_id]) userMap[f.follower_id] = { id: f.follower_id, full_name: f.follower_id, avatar_url: null }; });
+      setFollowerUsers(Object.values(userMap));
+    }).catch(() => {});
+  }, [isOpen]);
+
+  const filtered = followerUsers.filter(u =>
+    !search || u.full_name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const toggle = (id) => setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+  const handleSendToFollowers = async () => {
+    if (!currentUser || selected.length === 0) return;
+    setSending(true);
+    const messageContent = `${currentUser.full_name} shared something with you: ${shareTitle}\n${shareUrl}`;
+    await Promise.all(selected.map(recipientId => {
+      const recipient = followerUsers.find(u => u.id === recipientId);
+      const convId = [currentUser.id, recipientId].sort().join('_');
+      return base44.entities.Message.create({
+        conversation_id: convId,
+        sender_id: currentUser.id,
+        sender_name: currentUser.full_name,
+        sender_avatar: currentUser.avatar_url,
+        recipient_id: recipientId,
+        recipient_name: recipient?.full_name || recipientId,
+        content: messageContent,
+      });
+    }));
+    setSending(false);
+    setSent(true);
+    setTimeout(() => setSent(false), 2500);
+    setSelected([]);
+  };
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(shareUrl);
@@ -108,6 +166,55 @@ export default function ShareModal({ isOpen, onClose, url, title, description })
               {/* Title preview */}
               {title && (
                 <p className="text-sm text-muted-foreground line-clamp-2 bg-secondary/50 rounded-lg px-3 py-2">{title}</p>
+              )}
+
+              {/* Send to followers */}
+              {currentUser && followerUsers.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-foreground flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />Send to people you know</p>
+                    {selected.length > 0 && (
+                      <Button size="sm" onClick={handleSendToFollowers} disabled={sending}
+                        className={`h-7 px-3 text-xs rounded-lg gap-1 ${sent ? 'bg-green-500 hover:bg-green-500 text-white' : 'bg-accent hover:bg-accent/90 text-accent-foreground'}`}>
+                        {sent ? <><Check className="w-3 h-3" />Sent!</> : sending ? 'Sending…' : <><Send className="w-3 h-3" />Send ({selected.length})</>}
+                      </Button>
+                    )}
+                  </div>
+                  {followerUsers.length > 4 && (
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                      <input
+                        className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-input bg-secondary text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        placeholder="Search…"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                      />
+                    </div>
+                  )}
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                    {filtered.slice(0, 20).map(u => {
+                      const isSelected = selected.includes(u.id);
+                      return (
+                        <button key={u.id} onClick={() => toggle(u.id)}
+                          className={`flex flex-col items-center gap-1 flex-shrink-0 p-1.5 rounded-xl transition-all ${isSelected ? 'bg-accent/15 ring-2 ring-accent' : 'hover:bg-secondary'}`}>
+                          <div className="relative">
+                            <Avatar className="w-11 h-11">
+                              <AvatarImage src={u.avatar_url} />
+                              <AvatarFallback className="bg-secondary text-foreground font-semibold text-sm">{u.full_name?.charAt(0)?.toUpperCase() || '?'}</AvatarFallback>
+                            </Avatar>
+                            {isSelected && (
+                              <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-accent flex items-center justify-center">
+                                <Check className="w-2.5 h-2.5 text-accent-foreground" />
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[10px] text-foreground w-12 text-center truncate leading-tight">{u.full_name?.split(' ')[0]}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="border-b border-border" />
+                </div>
               )}
 
               {/* Social platforms grid */}
