@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, Music, ExternalLink, Play, Pencil } from 'lucide-react';
+import { Plus, Trash2, Music, ExternalLink, Play, Pause, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const EMPTY = { title: '', audio_url: '', cover_url: '', duration: '', stream_url: '' };
@@ -40,6 +40,66 @@ function TrackForm({ initial, onSave, onCancel, saving }) {
       </div>
       <input ref={audioRef} type="file" accept="audio/*" className="hidden" onChange={e => e.target.files[0] && uploadFile(e.target.files[0], 'audio_url')} />
       <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadFile(e.target.files[0], 'cover_url')} />
+    </div>
+  );
+}
+
+function TrackPlayer({ track }) {
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onTime = () => { setCurrentTime(audio.currentTime); setProgress(audio.duration ? (audio.currentTime / audio.duration) * 100 : 0); };
+    const onLoad = () => setDuration(audio.duration);
+    const onEnded = () => setPlaying(false);
+    audio.addEventListener('timeupdate', onTime);
+    audio.addEventListener('loadedmetadata', onLoad);
+    audio.addEventListener('ended', onEnded);
+    return () => { audio.removeEventListener('timeupdate', onTime); audio.removeEventListener('loadedmetadata', onLoad); audio.removeEventListener('ended', onEnded); };
+  }, []);
+
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) { audio.pause(); setPlaying(false); } else { audio.play(); setPlaying(true); }
+  };
+
+  const seek = (e) => {
+    const audio = audioRef.current;
+    if (!audio || !audio.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  };
+
+  const fmt = (s) => { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s / 60); const sec = Math.floor(s % 60); return `${m}:${sec.toString().padStart(2, '0')}`; };
+
+  return (
+    <div className="flex items-center gap-3 mt-2">
+      <audio ref={audioRef} src={track.audio_url} preload="metadata" />
+      <button
+        onClick={togglePlay}
+        className="w-9 h-9 rounded-full bg-accent flex items-center justify-center flex-shrink-0 hover:bg-accent/90 active:scale-95 transition-all shadow-sm"
+      >
+        {playing ? <Pause className="w-4 h-4 text-accent-foreground fill-accent-foreground" /> : <Play className="w-4 h-4 text-accent-foreground fill-accent-foreground ml-0.5" />}
+      </button>
+      <div className="flex-1 space-y-1">
+        <div
+          className="w-full h-1.5 bg-secondary rounded-full overflow-hidden cursor-pointer"
+          onClick={seek}
+        >
+          <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex justify-between text-[10px] text-muted-foreground">
+          <span>{fmt(currentTime)}</span>
+          <span>{track.duration || fmt(duration)}</span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -85,10 +145,10 @@ export default function TracksTab({ artist, isOwner }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground text-sm truncate">{t.title}</p>
-                    {t.duration && <p className="text-xs text-muted-foreground">{t.duration}</p>}
-                    {t.audio_url && (
-                      <audio src={t.audio_url} controls className="w-full h-8 mt-1" preload="metadata" />
-                    )}
+                    {t.audio_url
+                      ? <TrackPlayer track={t} />
+                      : t.duration && <p className="text-xs text-muted-foreground">{t.duration}</p>
+                    }
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     {t.stream_url && (
