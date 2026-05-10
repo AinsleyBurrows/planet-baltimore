@@ -17,6 +17,14 @@ export const TEXT_BG_PALETTE = [
   { value: '#fef9ef', label: 'Cream',           text: '#1a1a1a' },
   { value: '#f0f4f8', label: 'Mist',            text: '#1a1a1a' },
   { value: '#e8f4f8', label: 'Sky',             text: '#1a1a1a' },
+  { value: '#e53e3e', label: 'Red',             text: '#ffffff' },
+  { value: '#dd6b20', label: 'Orange',          text: '#ffffff' },
+  { value: '#d69e2e', label: 'Yellow',          text: '#1a1a1a' },
+  { value: '#38a169', label: 'Green',           text: '#ffffff' },
+  { value: '#3182ce', label: 'Blue',            text: '#ffffff' },
+  { value: '#805ad5', label: 'Purple',          text: '#ffffff' },
+  { value: '#d53f8c', label: 'Pink',            text: '#ffffff' },
+  { value: '#319795', label: 'Teal',            text: '#ffffff' },
 ];
 
 export function getTextColor(bg) {
