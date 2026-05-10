@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Calendar, CalendarCheck, Trash2 } from 'lucide-react';
+import { Calendar, CalendarCheck, Trash2, Plus } from 'lucide-react';
 import EventCard from '@/components/shared/EventCard';
 
 export default function BusinessEventsTab({ business, isOwner }) {
@@ -42,13 +42,25 @@ export default function BusinessEventsTab({ business, isOwner }) {
     queryClient.invalidateQueries({ queryKey: ['biz-organized-events', business.owner_id] });
   };
 
+  const createEventUrl = `/create-event?organizer_name=${encodeURIComponent(business.name)}&organizer_id=${business.owner_id}`;
+
   return (
     <div className="space-y-8">
       {/* Organized Events */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
-          <Calendar className="w-4 h-4 text-accent" /> Organized Events
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-foreground flex items-center gap-2 text-sm">
+            <Calendar className="w-4 h-4 text-accent" /> Organized Events
+          </h3>
+          {isOwner && (
+            <a
+              href={createEventUrl}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground text-xs font-medium transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Create Event
+            </a>
+          )}
+        </div>
         {organizedEvents.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6 bg-secondary/30 rounded-xl">No events organized yet.</p>
         ) : (
