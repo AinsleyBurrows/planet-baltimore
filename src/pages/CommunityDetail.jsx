@@ -21,6 +21,16 @@ import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
 import CommunityCreatePostModal from '@/components/community/CommunityCreatePostModal';
 import CommunityCreateEventModal from '@/components/community/CommunityCreateEventModal';
+import CommunityAnnouncementsTab from '@/components/community/tabs/CommunityAnnouncementsTab';
+import CommunityMembersTab from '@/components/community/tabs/CommunityMembersTab';
+import CommunityResourcesTab from '@/components/community/tabs/CommunityResourcesTab';
+import CommunityPollsTab from '@/components/community/tabs/CommunityPollsTab';
+import CommunityThreadsTab from '@/components/community/tabs/CommunityThreadsTab';
+import CommunityMediaGalleryTab from '@/components/community/tabs/CommunityMediaGalleryTab';
+import CommunityLeaderboardTab from '@/components/community/tabs/CommunityLeaderboardTab';
+import CommunityCalendarTab from '@/components/community/tabs/CommunityCalendarTab';
+import CommunityJobsTab from '@/components/community/tabs/CommunityJobsTab';
+import CommunityRulesTab from '@/components/community/tabs/CommunityRulesTab';
 
 export default function CommunityDetail() {
   const navigate = useNavigate();
@@ -204,13 +214,24 @@ export default function CommunityDetail() {
 
       {/* Tabs */}
       <Tabs defaultValue="posts" className="mt-[15px]">
-        <TabsList className="w-full bg-secondary/50 rounded-xl">
-          <TabsTrigger value="posts" className="flex-1 rounded-lg">Posts</TabsTrigger>
-          <TabsTrigger value="events" className="flex-1 rounded-lg">Events</TabsTrigger>
-          <TabsTrigger value="invite" className="flex-1 rounded-lg">Invite</TabsTrigger>
-          <TabsTrigger value="comments" className="flex-1 rounded-lg">Comments</TabsTrigger>
-          <TabsTrigger value="about" className="flex-1 rounded-lg">About</TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto -mx-1 px-1">
+          <TabsList className="w-max min-w-full bg-secondary/50 rounded-xl flex gap-0.5">
+            <TabsTrigger value="posts" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Posts</TabsTrigger>
+            <TabsTrigger value="announcements" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📢 Announcements</TabsTrigger>
+            <TabsTrigger value="events" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Events</TabsTrigger>
+            <TabsTrigger value="calendar" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📅 Calendar</TabsTrigger>
+            <TabsTrigger value="members" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">👥 Members</TabsTrigger>
+            <TabsTrigger value="threads" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">💬 Threads</TabsTrigger>
+            <TabsTrigger value="polls" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📊 Polls</TabsTrigger>
+            <TabsTrigger value="media" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">🖼 Gallery</TabsTrigger>
+            <TabsTrigger value="resources" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📂 Resources</TabsTrigger>
+            <TabsTrigger value="jobs" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">💼 Jobs</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">🏆 Leaderboard</TabsTrigger>
+            <TabsTrigger value="rules" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">📋 Rules</TabsTrigger>
+            <TabsTrigger value="invite" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Invite</TabsTrigger>
+            <TabsTrigger value="comments" className="rounded-lg whitespace-nowrap text-xs sm:text-sm">Comments</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="posts" className="mt-4 space-y-4">
           <div className="flex items-center justify-between">
@@ -323,27 +344,48 @@ export default function CommunityDetail() {
           </button>
         </TabsContent>
 
-        <TabsContent value="comments" className="mt-4">
-          <CommentSection targetType="community" targetId={communityId} />
+        <TabsContent value="announcements" className="mt-4">
+          <CommunityAnnouncementsTab community={community} isOwner={isOwner} />
         </TabsContent>
 
-        <TabsContent value="about" className="mt-4">
-          <div className="bg-card rounded-xl border border-border p-5 space-y-4">
-            <div>
-              <h3 className="font-semibold text-foreground mb-1">About</h3>
-              <p className="text-sm text-muted-foreground">{community.description}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-foreground mb-1">Organizer</h3>
-              <p className="text-sm text-muted-foreground">{community.owner_name}</p>
-            </div>
-            {community.neighborhood_name && (
-              <div>
-                <h3 className="font-semibold text-foreground mb-1">Neighborhood</h3>
-                <p className="text-sm text-muted-foreground">{community.neighborhood_name}</p>
-              </div>
-            )}
-          </div>
+        <TabsContent value="calendar" className="mt-4">
+          <CommunityCalendarTab community={community} />
+        </TabsContent>
+
+        <TabsContent value="members" className="mt-4">
+          <CommunityMembersTab community={community} />
+        </TabsContent>
+
+        <TabsContent value="threads" className="mt-4">
+          <CommunityThreadsTab community={community} isOwner={isOwner} user={user} />
+        </TabsContent>
+
+        <TabsContent value="polls" className="mt-4">
+          <CommunityPollsTab community={community} isOwner={isOwner} currentUserId={user?.id} />
+        </TabsContent>
+
+        <TabsContent value="media" className="mt-4">
+          <CommunityMediaGalleryTab community={community} />
+        </TabsContent>
+
+        <TabsContent value="resources" className="mt-4">
+          <CommunityResourcesTab community={community} isOwner={isOwner} />
+        </TabsContent>
+
+        <TabsContent value="jobs" className="mt-4">
+          <CommunityJobsTab community={community} user={user} />
+        </TabsContent>
+
+        <TabsContent value="leaderboard" className="mt-4">
+          <CommunityLeaderboardTab community={community} />
+        </TabsContent>
+
+        <TabsContent value="rules" className="mt-4">
+          <CommunityRulesTab community={community} isOwner={isOwner} />
+        </TabsContent>
+
+        <TabsContent value="comments" className="mt-4">
+          <CommentSection targetType="community" targetId={communityId} />
         </TabsContent>
       </Tabs>
 

@@ -74,6 +74,11 @@
     },
     "contact_email": {
       "type": "string"
+    },
+    "hub_data": {
+      "type": "object",
+      "description": "Flexible community feature data: announcements, rules, resources, polls, threads, jobs",
+      "additionalProperties": true
     }
   },
   "required": [
