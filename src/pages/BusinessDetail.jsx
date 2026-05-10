@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart, Plus, Rss, BookOpen, Bookmark, CalendarDays, Zap } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart, Plus, Rss, BookOpen, Bookmark, CalendarDays, Zap, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -24,6 +24,7 @@ import BusinessMessageModal from '@/components/business/BusinessMessageModal';
 import BusinessCreatePostModal from '@/components/business/BusinessCreatePostModal';
 import BusinessStoriesTab from '@/components/business/BusinessStoriesTab';
 import BusinessPromotionsTab from '@/components/business/BusinessPromotionsTab';
+import BusinessReviewsTab from '@/components/business/BusinessReviewsTab';
 import BusinessSavedTab from '@/components/business/BusinessSavedTab';
 import BusinessEventsTab from '@/components/business/BusinessEventsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
@@ -268,6 +269,9 @@ export default function BusinessDetail() {
             <TabsTrigger value="promotions" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
               <Zap className="w-3.5 h-3.5" /> Promotions
             </TabsTrigger>
+            <TabsTrigger value="reviews" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+              <Star className="w-3.5 h-3.5" /> Reviews
+            </TabsTrigger>
             {isOwner && (
               <TabsTrigger value="saved" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
                 <Bookmark className="w-3.5 h-3.5" /> Saved
@@ -316,6 +320,10 @@ export default function BusinessDetail() {
 
         <TabsContent value="promotions" className="mt-4">
           <BusinessPromotionsTab business={business} isOwner={isOwner} />
+        </TabsContent>
+
+        <TabsContent value="reviews" className="mt-4">
+          <BusinessReviewsTab business={business} isOwner={isOwner} />
         </TabsContent>
 
         {isOwner && (
