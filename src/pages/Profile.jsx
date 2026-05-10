@@ -42,7 +42,7 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState('posts');
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPostIndex, setSelectedPostIndex] = useState(null);
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
   const [showShare, setShowShare] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
@@ -257,6 +257,11 @@ export default function Profile() {
   const mediaPosts = posts.filter(p => p.media_urls?.length > 0 && p.media_type !== 'audio');
   const allMedia = mediaPosts.flatMap(p => p.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)));
 
+  // Sorted list used for the posts grid — same order as PostsGrid
+  const visiblePosts = posts.filter(p => !p.is_deleted);
+  const sortedPosts = [...visiblePosts.filter(p => p.is_pinned), ...visiblePosts.filter(p => !p.is_pinned)];
+  const selectedPost = selectedPostIndex !== null ? sortedPosts[selectedPostIndex] : null;
+
   return (
     <>
     <div className="space-y-0">
@@ -436,7 +441,7 @@ export default function Profile() {
 
       {/* Content */}
       <div className="mt-[10px] space-y-4">
-        {activeTab === 'posts' && <PostsGrid posts={posts} onSelect={setSelectedPost} onDelete={handleDeletePost} onTogglePin={handleTogglePin} />}
+        {activeTab === 'posts' && <PostsGrid posts={posts} onSelect={(post) => setSelectedPostIndex(sortedPosts.findIndex(p => p.id === post.id))} onDelete={handleDeletePost} onTogglePin={handleTogglePin} />}
         {activeTab === 'feed' && (
           posts.filter(p => !p.is_deleted).length > 0 ? (
             posts.filter(p => !p.is_deleted).map(p => <PostCard key={p.id} post={p} currentUserId={user.id} onDelete={handleDeletePost} />)
@@ -521,9 +526,12 @@ export default function Profile() {
                 const isVideo = post.media_type === 'video' || post.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i);
                 const isAudio = post.media_type === 'audio' || post.media_urls?.[0]?.match(/\.(mp3|wav|ogg|aac)$/i);
                 
+                const postIdx = sortedPosts.findIndex(p => p.id === post.id);
+                const handleClick = () => setSelectedPostIndex(postIdx);
+
                 if (isVideo) {
                   return (
-                    <div key={post.id} className="rounded-lg overflow-hidden relative aspect-square bg-black">
+                    <div key={post.id} onClick={handleClick} className="rounded-lg overflow-hidden relative aspect-square bg-black cursor-pointer">
                       {post.thumbnail_url ? (
                         <img src={post.thumbnail_url} alt="" className="w-full h-full object-cover" />
                       ) : (
@@ -540,15 +548,15 @@ export default function Profile() {
                 
                 if (isAudio) {
                   return (
-                    <div key={post.id} className="rounded-lg overflow-hidden relative aspect-square bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center">
+                    <div key={post.id} onClick={handleClick} className="rounded-lg overflow-hidden relative aspect-square bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center cursor-pointer">
                       <Music className="w-8 h-8 text-accent" />
                     </div>
                   );
                 }
                 
                 return post.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)).map((url, idx) => (
-                  <div key={`${post.id}-${idx}`} className="rounded-lg overflow-hidden aspect-square">
-                    <AppImage src={url} images={allMedia} index={allMedia.indexOf(url)} className="w-full h-full" aspectRatio="square" />
+                  <div key={`${post.id}-${idx}`} onClick={handleClick} className="rounded-lg overflow-hidden aspect-square cursor-pointer">
+                    <AppImage src={url} images={allMedia} index={allMedia.indexOf(url)} className="w-full h-full" aspectRatio="square" clickable={false} />
                   </div>
                 ));
               })}
@@ -571,7 +579,15 @@ export default function Profile() {
         onSave={(updated) => setUser(prev => ({ ...prev, ...updated }))}
       />
     )}
-    {selectedPost && <PostDetailModal post={selectedPost} onClose={() => setSelectedPost(null)} />}
+    {selectedPost && (
+      <PostDetailModal
+        post={selectedPost}
+        posts={sortedPosts}
+        currentIndex={selectedPostIndex}
+        onNavigate={(idx) => setSelectedPostIndex(idx)}
+        onClose={() => setSelectedPostIndex(null)}
+      />
+    )}
 
     <ShareModal
       isOpen={showShare}

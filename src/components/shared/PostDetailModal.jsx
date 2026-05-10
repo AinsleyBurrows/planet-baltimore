@@ -21,26 +21,37 @@ function getTextColor(bg) {
   return TEXT_BG_TEXT_COLORS[bg] || '#ffffff';
 }
 
-export default function PostDetailModal({ post, onClose }) {
+export default function PostDetailModal({ post, posts = [], currentIndex = 0, onClose, onNavigate }) {
   const [imgIndex, setImgIndex] = useState(0);
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex < posts.length - 1;
+
   const images = post?.media_urls || [];
-  const isImage = post?.media_type === 'image' || (images.length > 0 && !post?.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i));
   const isVideo = post?.media_type === 'video' || post?.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i);
   const isText = !images.length || post?.media_type === 'text';
   const hasBg = !!post?.bg_color;
 
-  const prev = useCallback(() => setImgIndex(i => Math.max(0, i - 1)), []);
-  const next = useCallback(() => setImgIndex(i => Math.min(images.length - 1, i + 1)), [images.length]);
+  const prevImg = useCallback(() => setImgIndex(i => Math.max(0, i - 1)), []);
+  const nextImg = useCallback(() => setImgIndex(i => Math.min(images.length - 1, i + 1)), [images.length]);
+
+  // Reset image index when post changes
+  useEffect(() => { setImgIndex(0); setLiked(false); }, [post?.id]);
 
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') {
+        if (images.length > 1) prevImg();
+        else if (hasPrev) onNavigate?.(currentIndex - 1);
+      }
+      if (e.key === 'ArrowRight') {
+        if (images.length > 1) nextImg();
+        else if (hasNext) onNavigate?.(currentIndex + 1);
+      }
     };
     document.addEventListener('keydown', handler);
     document.body.style.overflow = 'hidden';
@@ -48,7 +59,7 @@ export default function PostDetailModal({ post, onClose }) {
       document.removeEventListener('keydown', handler);
       document.body.style.overflow = '';
     };
-  }, [onClose, prev, next]);
+  }, [onClose, prevImg, nextImg, hasPrev, hasNext, currentIndex, onNavigate, images.length]);
 
   if (!post) return null;
 
@@ -83,6 +94,26 @@ export default function PostDetailModal({ post, onClose }) {
             <X className="w-4 h-4" />
           </button>
 
+          {/* Post navigation arrows */}
+          {hasPrev && (
+            <button
+              onClick={() => onNavigate?.(currentIndex - 1)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all shadow-lg"
+              title="Previous post"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          )}
+          {hasNext && (
+            <button
+              onClick={() => onNavigate?.(currentIndex + 1)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/50 text-white hover:bg-black/70 transition-all shadow-lg"
+              title="Next post"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          )}
+
           {/* LEFT: Media or text bg */}
           {!isText ? (
             <div className="relative md:w-[60%] bg-white flex items-center justify-center min-h-[300px] md:min-h-full">
@@ -104,14 +135,14 @@ export default function PostDetailModal({ post, onClose }) {
                   {images.length > 1 && (
                     <>
                       <button
-                        onClick={prev}
+                        onClick={prevImg}
                         disabled={imgIndex === 0}
                         className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 disabled:opacity-30 transition-all"
                       >
                         <ChevronLeft className="w-5 h-5" />
                       </button>
                       <button
-                        onClick={next}
+                        onClick={nextImg}
                         disabled={imgIndex === images.length - 1}
                         className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 disabled:opacity-30 transition-all"
                       >
