@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Search, Users } from 'lucide-react';
+import { Search, Users, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 
@@ -13,7 +13,8 @@ const ROLE_COLORS = {
   member: 'bg-secondary text-secondary-foreground border-border',
 };
 
-export default function CommunityMembersTab({ community }) {
+export default function CommunityMembersTab({ community, isOwner }) {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
 
   const { data: follows = [] } = useQuery({
@@ -22,9 +23,29 @@ export default function CommunityMembersTab({ community }) {
     enabled: !!community.id,
   });
 
+  const featuredIds = community.hub_data?.featured_members || [];
+
+  const toggleFeatured = async (followerId) => {
+    const current = community.hub_data?.featured_members || [];
+    const updated = current.includes(followerId)
+      ? current.filter(id => id !== followerId)
+      : [...current, followerId];
+    await base44.entities.Community.update(community.id, {
+      hub_data: { ...(community.hub_data || {}), featured_members: updated }
+    });
+    queryClient.invalidateQueries({ queryKey: ['community', community.id] });
+  };
+
   const filtered = follows.filter(f =>
-    !search || f.target_name?.toLowerCase().includes(search.toLowerCase())
+    !search || f.follower_id?.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Featured members first
+  const sorted = [...filtered].sort((a, b) => {
+    const aFeat = featuredIds.includes(a.follower_id) ? -1 : 0;
+    const bFeat = featuredIds.includes(b.follower_id) ? -1 : 0;
+    return aFeat - bFeat;
+  });
 
   const getRole = (f) => {
     if (f.follower_id === community.owner_id) return 'admin';
@@ -46,27 +67,54 @@ export default function CommunityMembersTab({ community }) {
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Users className="w-4 h-4" />
         <span>{follows.length} member{follows.length !== 1 ? 's' : ''}</span>
+        {featuredIds.length > 0 && (
+          <span className="flex items-center gap-1 ml-2 text-foreground font-medium">
+            <Star className="w-3.5 h-3.5 fill-foreground" />{featuredIds.length} featured
+          </span>
+        )}
       </div>
 
-      {filtered.length === 0 ? (
+      {sorted.length === 0 ? (
         <p className="text-center py-12 text-sm text-muted-foreground">No members found.</p>
       ) : (
         <div className="space-y-2">
-          {filtered.map((f, i) => {
+          {sorted.map((f, i) => {
             const role = getRole(f);
+            const isFeatured = featuredIds.includes(f.follower_id);
             return (
-              <Link key={i} to={`/profile/${f.follower_id}`} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border hover:shadow-sm transition-all">
-                <Avatar className="w-9 h-9 flex-shrink-0">
-                  <AvatarFallback className="bg-accent/10 text-accent font-semibold text-sm">
-                    {f.follower_id?.charAt(0)?.toUpperCase() || '?'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{f.follower_id}</p>
-                  {f.created_date && <p className="text-xs text-muted-foreground">Joined {format(new Date(f.created_date), 'MMM yyyy')}</p>}
-                </div>
-                <Badge variant="outline" className={`text-xs capitalize ${ROLE_COLORS[role]}`}>{role}</Badge>
-              </Link>
+              <div key={i} className={`flex items-center gap-3 p-3 rounded-xl bg-card border transition-all ${isFeatured ? 'border-foreground/30 shadow-sm' : 'border-border'}`}>
+                <Link to={`/profile/${f.follower_id}`} className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="relative flex-shrink-0">
+                    <Avatar className="w-9 h-9">
+                      <AvatarFallback className="bg-secondary text-foreground font-semibold text-sm">
+                        {f.follower_id?.charAt(0)?.toUpperCase() || '?'}
+                      </AvatarFallback>
+                    </Avatar>
+                    {isFeatured && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-foreground flex items-center justify-center">
+                        <Star className="w-2.5 h-2.5 text-background fill-background" />
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-medium text-foreground truncate">{f.follower_id}</p>
+                      {isFeatured && <span className="text-xs text-muted-foreground font-normal">· Featured</span>}
+                    </div>
+                    {f.created_date && <p className="text-xs text-muted-foreground">Joined {format(new Date(f.created_date), 'MMM yyyy')}</p>}
+                  </div>
+                  <Badge variant="outline" className={`text-xs capitalize flex-shrink-0 ${ROLE_COLORS[role]}`}>{role}</Badge>
+                </Link>
+                {isOwner && (
+                  <button
+                    onClick={() => toggleFeatured(f.follower_id)}
+                    title={isFeatured ? 'Remove featured' : 'Feature member'}
+                    className={`p-1.5 rounded-full transition-colors flex-shrink-0 ${isFeatured ? 'text-foreground bg-secondary hover:bg-destructive/10 hover:text-destructive' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}`}
+                  >
+                    <Star className={`w-4 h-4 ${isFeatured ? 'fill-foreground' : ''}`} />
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>

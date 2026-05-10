@@ -353,7 +353,7 @@ export default function CommunityDetail() {
         </TabsContent>
 
         <TabsContent value="members" className="mt-4">
-          <CommunityMembersTab community={community} />
+          <CommunityMembersTab community={community} isOwner={isOwner} />
         </TabsContent>
 
         <TabsContent value="threads" className="mt-4">
