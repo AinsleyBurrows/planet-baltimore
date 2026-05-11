@@ -67,6 +67,7 @@ export default function ArtsOrganizations() {
             <Link to="/create-arts-org">
               <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
                 <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Create Arts Org Page</span>
               </Button>
             </Link>
           </div>
