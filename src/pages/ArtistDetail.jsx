@@ -162,8 +162,8 @@ export default function ArtistDetail() {
       </div>
 
       {/* Profile header */}
-      <div className="px-1 pb-4">
-        <div className="flex items-end justify-between -mt-10 mb-4">
+       <div className="px-1 pb-4" style={{marginTop: '2rem'}}>
+         <div className="flex items-end justify-between -mt-10 mb-4">
           <div className="relative">
             <Avatar className="w-20 h-20 rounded-full border-4 border-background shadow-lg cursor-pointer" onClick={isOwner ? () => avatarInputRef.current?.click() : undefined}>
               <AvatarImage src={artist.image_url} className="object-cover" />
