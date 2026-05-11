@@ -137,21 +137,6 @@ export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
           />
         ))}
       </MapContainer>
-
-      {/* Legend */}
-      <div className="absolute bottom-3 left-3 z-[1000] bg-white/90 backdrop-blur-sm rounded-xl shadow-md px-3 py-2 space-y-1 border border-gray-200">
-        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Region</p>
-        {Object.entries(REGION_COLORS).map(([region, { hex }]) => (
-          <div key={region} className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: hex }} />
-            <span className="text-[11px] text-gray-700 whitespace-nowrap">{region}</span>
-          </div>
-        ))}
-        <div className="flex items-center gap-1.5 pt-0.5 border-t border-gray-200 mt-1">
-          <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: '#eab308' }} />
-          <span className="text-[11px] text-gray-700 whitespace-nowrap">Selected</span>
-        </div>
-      </div>
     </div>
   );
 }
