@@ -38,11 +38,11 @@ export default function Notifications() {
   return (
     <div className="space-y-6">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
+      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12" style={{ backgroundColor: '#d4580a' }}>
         <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Notifications</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Stay up to date with activity across your community.</p>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">Notifications</h1>
+            <p className="text-white/80 text-sm sm:text-base">Stay up to date with activity across your community.</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ml-4">
             {unreadCount > 0 && (

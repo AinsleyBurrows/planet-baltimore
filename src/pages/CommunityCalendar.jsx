@@ -229,11 +229,11 @@ export default function CommunityCalendar() {
   return (
     <div className="space-y-5">
       {/* Hero */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-6 sm:p-10">
+      <div className="relative rounded-2xl overflow-hidden p-6 sm:p-10" style={{ backgroundColor: '#d4580a' }}>
         <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-1 text-foreground">Calendar</h1>
-            <p className="text-muted-foreground text-sm">Events from local businesses, organizations & communities</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1 text-white">Calendar</h1>
+            <p className="text-white/80 text-sm">Events from local businesses, organizations & communities</p>
           </div>
           {user && (
             <Link to="/create-event" className="flex-shrink-0 ml-4">
