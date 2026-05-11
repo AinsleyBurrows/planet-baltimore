@@ -63,13 +63,13 @@ export default function PromoterDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8">
+      <div className="relative rounded-2xl overflow-hidden p-8" style={{ backgroundColor: '#d4580a' }}>
         <div className="relative z-10 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Promoter Dashboard</h1>
-            <p className="text-sm text-muted-foreground mt-1">Track your sales, commissions, and event performance</p>
+            <h1 className="text-3xl font-bold text-white">Promoter Dashboard</h1>
+            <p className="text-sm text-white/80 mt-1">Track your sales, commissions, and event performance</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="text-white hover:bg-white/20">
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </div>
