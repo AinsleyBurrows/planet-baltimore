@@ -55,7 +55,7 @@ export default function LeftSidebar() {
               </Tooltip>
             ) : (
               <Button className="w-full text-white rounded-lg py-2.5" style={{ backgroundColor: '#d4580a' }}>
-                <Plus className="w-5 h-5" />
+                Create Post
               </Button>
             )}
           </Link>
