@@ -195,7 +195,7 @@ export default function TicketingHub() {
             onClick={() => setCategory(cat)}
             className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
               category === cat
-                ? 'bg-accent text-accent-foreground shadow-sm'
+                ? 'bg-[#d4580a] text-white shadow-sm'
                 : 'bg-secondary text-muted-foreground hover:text-foreground'
             }`}
           >

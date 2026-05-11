@@ -95,7 +95,7 @@ export default function ArtsOrganizations() {
           <button
             key={t.value}
             onClick={() => setActiveType(t.value)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeType === t.value ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
+            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${activeType === t.value ? 'bg-[#d4580a] text-white' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
           >
             {t.label}
           </button>

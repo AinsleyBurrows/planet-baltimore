@@ -125,7 +125,7 @@ export default function Stories() {
           onClick={() => setActiveView('discover')}
           className={`px-4 py-3 text-sm font-medium border-b-2 transition-all ${
             activeView === 'discover'
-              ? 'border-accent text-accent'
+              ? 'border-[#d4580a] text-[#d4580a]'
               : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -135,7 +135,7 @@ export default function Stories() {
           onClick={() => setActiveView('trending')}
           className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-all ${
             activeView === 'trending'
-              ? 'border-accent text-accent'
+              ? 'border-[#d4580a] text-[#d4580a]'
               : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -145,7 +145,7 @@ export default function Stories() {
           onClick={() => setActiveView('featured')}
           className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-all ${
             activeView === 'featured'
-              ? 'border-accent text-accent'
+              ? 'border-[#d4580a] text-[#d4580a]'
               : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -162,7 +162,7 @@ export default function Stories() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
                 activeCategory === cat
-                  ? 'bg-accent text-accent-foreground'
+                  ? 'bg-[#d4580a] text-white'
                   : 'bg-secondary text-muted-foreground hover:text-foreground'
               }`}
             >
