@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket } from 'lucide-react';
+import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { base44 } from '@/api/base44Client';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -24,7 +25,12 @@ const navItems = [
 
 export default function LeftSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [user, setUser] = useState(null);
   const location = useLocation();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => setUser(null));
+  }, []);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -92,6 +98,27 @@ export default function LeftSidebar() {
             );
           })}
         </nav>
+
+        {/* Auth Links */}
+        <div className="border-t border-border p-2 sm:p-3 space-y-0.5">
+          {user ? (
+            <button
+              onClick={() => base44.auth.logout()}
+              className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium text-destructive hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] ${collapsed ? 'justify-center' : ''}`}
+            >
+              <LogOut className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && <span className="truncate">Logout</span>}
+            </button>
+          ) : (
+            <button
+              onClick={() => base44.auth.redirectToLogin()}
+              className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium text-accent hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] ${collapsed ? 'justify-center' : ''}`}
+            >
+              <LogIn className="w-5 h-5 flex-shrink-0" />
+              {!collapsed && <span className="truncate">Login</span>}
+            </button>
+          )}
+        </div>
 
         {/* Collapse Toggle */}
         <div className="border-t border-border p-2 sm:p-3">
