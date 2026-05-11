@@ -146,10 +146,10 @@ export default function TicketingHub() {
   return (
     <div className="space-y-8 pb-8">
       {/* Hero */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-accent/10 to-accent/5 p-8 sm:p-12">
+      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12" style={{ backgroundColor: '#d4580a' }}>
         <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-foreground">Your Next Event</h1>
-          <p className="text-muted-foreground text-sm sm:text-base mb-6">Tickets for the best events in Baltimore</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">Your Next Event</h1>
+          <p className="text-white/80 text-sm sm:text-base mb-6">Tickets for the best events in Baltimore</p>
           <div className="relative max-w-xl">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
             <input
