@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, BookOpen, TrendingUp, Star, BookMarked, Feather, Mic2, Film, ScrollText, NotebookPen, AlignLeft, BookText, ChevronDown } from 'lucide-react';
+import { Plus, BookOpen, TrendingUp, Star, BookMarked, Feather, Mic2, Film, ScrollText, NotebookPen, AlignLeft, BookText, ChevronDown, MoreVertical, Trash2, VolumeX, Volume2 } from 'lucide-react';
 import StoryCard from '@/components/shared/StoryCard';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 export default function Stories() {
   const [activeView, setActiveView] = useState('discover'); // discover, trending, featured
   const [activeCategory, setActiveCategory] = useState('all');
+  const [currentUser, setCurrentUser] = useState(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
+
+  const isAdmin = currentUser?.role === 'admin';
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Story.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['published-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['featured-stories'] });
+    },
+  });
+
+  const muteMutation = useMutation({
+    mutationFn: ({ id, muted }) => base44.entities.Story.update(id, { visibility: muted ? 'private' : 'public' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['published-stories'] });
+      queryClient.invalidateQueries({ queryKey: ['featured-stories'] });
+    },
+  });
 
   const { data: publishedStories = [], isLoading } = useQuery({
     queryKey: ['published-stories'],
@@ -157,7 +180,34 @@ export default function Stories() {
       ) : displayStories.length > 0 ? (
         <div className="space-y-4">
           {displayStories.map(story => (
-            <StoryCard key={story.id} story={story} featured={activeView === 'featured'} />
+            <div key={story.id} className="relative group">
+              <StoryCard story={story} featured={activeView === 'featured'} />
+              {isAdmin && (
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/80 transition-colors">
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => muteMutation.mutate({ id: story.id, muted: story.visibility !== 'private' })}
+                        className="gap-2 text-orange-600"
+                      >
+                        {story.visibility === 'private' ? <><Volume2 className="w-4 h-4" />Unmute Story</> : <><VolumeX className="w-4 h-4" />Mute Story</>}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => { if (confirm(`Delete "${story.title}"? This cannot be undone.`)) deleteMutation.mutate(story.id); }}
+                        className="gap-2 text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" /> Delete Story
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       ) : (
