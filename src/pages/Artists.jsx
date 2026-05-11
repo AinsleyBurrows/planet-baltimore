@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 
 const categories = ['All', 'Visual Art', 'Music', 'Video', 'Photography', 'Performance', 'Literary', 'Digital'];
+
 const SORTS = [
   { value: '-created_date', label: 'Newest' },
   { value: '-followers_count', label: 'Most Followed' },
