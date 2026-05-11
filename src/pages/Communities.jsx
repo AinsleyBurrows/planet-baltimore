@@ -44,7 +44,7 @@ export default function Communities() {
           <Link to="/create-community" className="flex-shrink-0 ml-4">
             <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
               <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Create Group/Community Page</span>
+              <span className="hidden sm:inline">Create Group/Community</span>
             </Button>
           </Link>
         </div>
