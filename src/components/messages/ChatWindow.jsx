@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, CheckCheck, Check, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { format, isToday, isYesterday } from 'date-fns';
@@ -117,14 +118,16 @@ export default function ChatWindow({ conversation, messages, currentUser, onBack
         <button onClick={onBack} className="md:hidden p-1.5 rounded-full hover:bg-secondary transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <Avatar className="w-10 h-10">
-          <AvatarImage src={other.avatar} />
-          <AvatarFallback className="bg-accent/10 text-accent font-semibold">{other.name?.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="font-semibold text-sm text-foreground">{other.name}</p>
-          {other.type && <p className="text-xs text-muted-foreground capitalize">{other.type.replace('_', ' ')}</p>}
-        </div>
+        <Link to={`/profile/${other.id}`} className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={other.avatar} />
+            <AvatarFallback className="bg-accent/10 text-accent font-semibold">{other.name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm text-foreground truncate">{other.name}</p>
+            {other.type && <p className="text-xs text-muted-foreground capitalize">{other.type.replace('_', ' ')}</p>}
+          </div>
+        </Link>
       </div>
 
       {/* Messages */}
