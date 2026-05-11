@@ -51,7 +51,7 @@ const EventCard = React.memo(function EventCard({ event, compact = false }) {
     >
       <div className="relative aspect-[16/9] bg-muted overflow-hidden">
         {event.image_url ? (
-          <AppImage src={event.image_url} className="w-full h-full" clickable={false} aspectRatio="16:9" />
+          <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-accent/20 to-primary/10 flex items-center justify-center">
             <Calendar className="w-12 h-12 text-accent/40" />
