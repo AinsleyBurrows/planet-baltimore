@@ -55,30 +55,6 @@ export default function StoryBar({ currentUser }) {
   return (
     <>
       <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
-        {/* Add story bubble */}
-        {currentUser && (
-          <button
-            onClick={() => setAddingStory(true)}
-            className="flex flex-col items-center gap-1.5 flex-shrink-0 focus:outline-none group"
-          >
-            <div className="flex items-center" style={{ gap: '20px' }}>
-              <div className="w-16 h-16 rounded-full border-2 border-dashed border-border group-hover:border-accent transition-colors overflow-hidden bg-secondary flex items-center justify-center">
-                {currentUser.avatar_url ? (
-                  <img src={currentUser.avatar_url} alt="" className="w-full h-full object-cover opacity-60" />
-                ) : (
-                  <span className="text-lg font-bold text-muted-foreground">{currentUser.full_name?.charAt(0)}</span>
-                )}
-              </div>
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center border-2 border-card shadow-sm">
-                  <Plus className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-[11px] text-muted-foreground font-medium">Post</span>
-              </div>
-            </div>
-          </button>
-        )}
-
         {/* Other users' stories */}
         {sorted.filter(g => g.author_id !== currentUser?.id).map((group) => (
           <button
