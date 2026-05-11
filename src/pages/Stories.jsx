@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, BookOpen, TrendingUp, Star, BookMarked, Feather, Mic2, Film, ScrollText, NotebookPen, AlignLeft, BookText, Newspaper, Pencil } from 'lucide-react';
+import { Plus, BookOpen, TrendingUp, Star, BookMarked, Feather, Mic2, Film, ScrollText, NotebookPen, AlignLeft, BookText, ChevronDown } from 'lucide-react';
 import StoryCard from '@/components/shared/StoryCard';
 
 export default function Stories() {
@@ -81,21 +81,18 @@ export default function Stories() {
       {/* Writing Formats */}
       <div>
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">Browse by Format</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          {WRITING_FORMATS.map(({ label, value, icon: Icon }) => {
-            const isActive = activeCategory === value;
-            return (
-              <button
-                key={value}
-                onClick={() => { setActiveView('discover'); setActiveCategory(isActive ? 'all' : value); }}
-                className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 transition-all text-sm font-medium text-left
-                  ${isActive ? 'border-foreground bg-foreground text-background' : 'border-border hover:border-foreground/40 text-foreground'}`}
-              >
-                <Icon className="w-4 h-4 flex-shrink-0" />
-                <span className="truncate">{label}</span>
-              </button>
-            );
-          })}
+        <div className="relative">
+          <select
+            value={activeCategory}
+            onChange={e => { setActiveView('discover'); setActiveCategory(e.target.value); }}
+            className="w-full appearance-none px-4 py-3 pr-10 rounded-xl border-2 border-border bg-card text-foreground text-sm font-medium cursor-pointer focus:outline-none focus:border-foreground/40 transition-all"
+          >
+            <option value="all">All Formats</option>
+            {WRITING_FORMATS.map(({ label, value }) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
         </div>
       </div>
 
