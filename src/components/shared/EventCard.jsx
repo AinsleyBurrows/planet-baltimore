@@ -8,7 +8,7 @@ import AppImage from './AppImage';
 import InlineRSVP from '@/components/events/InlineRSVP';
 import EventLikeShareButtons from '@/components/events/EventLikeShareButtons';
 
-export default function EventCard({ event, compact = false }) {
+const EventCard = React.memo(function EventCard({ event, compact = false }) {
   const navigate = useNavigate();
   const eventDate = event.date ? new Date(event.date) : null;
 
@@ -89,4 +89,6 @@ export default function EventCard({ event, compact = false }) {
       </div>
     </div>
   );
-}
+});
+
+export default EventCard;

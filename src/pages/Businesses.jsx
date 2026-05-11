@@ -22,6 +22,7 @@ export default function Businesses() {
   const { data: businesses = [], isLoading } = useQuery({
     queryKey: ['businesses', sort],
     queryFn: () => base44.entities.BusinessPage.list(sort, 80),
+    staleTime: 120000,
   });
 
   const filtered = businesses.filter(b => {
@@ -87,7 +88,7 @@ export default function Businesses() {
             <Link key={biz.id} to={`/businesses/${biz.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="h-24 bg-muted overflow-hidden">
                 {biz.banner_url ? (
-                  <img src={biz.banner_url} alt="" className="w-full h-full object-cover" />
+                  <img src={biz.banner_url} alt="" loading="lazy" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-r from-primary/10 to-accent/10" />
                 )}

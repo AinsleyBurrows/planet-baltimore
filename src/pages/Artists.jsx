@@ -24,6 +24,7 @@ export default function Artists() {
   const { data: artists = [], isLoading } = useQuery({
     queryKey: ['artists', sort],
     queryFn: () => base44.entities.ArtistPage.list(sort, 80),
+    staleTime: 120000,
   });
 
   const filtered = artists.filter(a => {
@@ -91,7 +92,7 @@ export default function Artists() {
             <Link key={artist.id} to={`/artists/${artist.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="aspect-square bg-muted overflow-hidden">
                 {artist.image_url ? (
-                  <img src={artist.image_url} alt={artist.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <img src={artist.image_url} alt={artist.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-accent/20 to-primary/10 flex items-center justify-center">
                     <Palette className="w-10 h-10 text-accent/30" />

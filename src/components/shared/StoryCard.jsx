@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import AppImage from './AppImage';
 
-export default function StoryCard({ story, featured = false }) {
+const StoryCard = React.memo(function StoryCard({ story, featured = false }) {
   const navigate = useNavigate();
 
   const handleAuthorClick = (e) => {
@@ -76,4 +76,6 @@ export default function StoryCard({ story, featured = false }) {
       )}
     </Link>
   );
-}
+});
+
+export default StoryCard;

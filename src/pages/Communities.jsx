@@ -23,6 +23,7 @@ export default function Communities() {
   const { data: communities = [], isLoading } = useQuery({
     queryKey: ['communities', sort],
     queryFn: () => base44.entities.Community.list(sort, 80),
+    staleTime: 120000,
   });
 
   const filtered = communities.filter(c => {

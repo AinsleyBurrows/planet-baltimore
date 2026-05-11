@@ -35,6 +35,7 @@ export default function ArtsOrganizations() {
   const { data: orgs = [], isLoading } = useQuery({
     queryKey: ['arts-orgs'],
     queryFn: () => base44.entities.ArtsOrganization.list('-created_date', 100),
+    staleTime: 120000,
   });
 
   const filtered = orgs.filter(o => {
@@ -154,7 +155,7 @@ function OrgCard({ org, featured = false }) {
     >
       {featured && org.banner_url && (
         <div className="h-28 overflow-hidden bg-muted">
-          <img src={org.banner_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <img src={org.banner_url} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
         </div>
       )}
       <div className="p-4 flex items-start gap-3">

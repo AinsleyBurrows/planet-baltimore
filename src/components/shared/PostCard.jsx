@@ -73,7 +73,7 @@ function TruncatedText({ text }) {
   );
 }
 
-export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
+const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
@@ -341,4 +341,6 @@ export default function PostCard({ post, currentUserId, onLike, onDelete, onEdit
       )}
     </article>
   );
-}
+});
+
+export default PostCard;
