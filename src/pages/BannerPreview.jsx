@@ -9,6 +9,12 @@ const BANNERS = [
     animation: 'pan-right',
   },
   {
+    id: 4,
+    label: 'Golden Hour — Cartoon Edition',
+    url: 'https://media.base44.com/images/public/69ea6b08dd7ab098a7066584/71faea99b_generated_image.png',
+    animation: 'pan-right',
+  },
+  {
     id: 2,
     label: 'Night Cityscape — Downtown',
     url: 'https://media.base44.com/images/public/69ea6b08dd7ab098a7066584/cf8709d4a_generated_image.png',
