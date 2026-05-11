@@ -14,26 +14,33 @@ const EventCard = React.memo(function EventCard({ event, compact = false }) {
 
   if (compact) {
     return (
-      <Link to={`/events/${event.id}`} className="flex gap-3 p-2.5 sm:p-3 rounded-xl bg-card border border-border hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-accent/10 flex flex-col items-center justify-center">
-          {eventDate ? (
-            <>
-              <span className="text-[10px] sm:text-xs font-bold text-accent uppercase">{format(eventDate, 'MMM')}</span>
-              <span className="text-base sm:text-lg font-bold text-foreground">{format(eventDate, 'd')}</span>
-            </>
-          ) : (
-            <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
-          )}
+      <div className="bg-card border border-border rounded-xl p-2.5 sm:p-3 hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group">
+        <div className="flex gap-3 mb-2">
+          <Link to={`/events/${event.id}`} className="flex gap-3 flex-1 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-lg">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden flex-shrink-0 bg-accent/10 flex flex-col items-center justify-center">
+              {eventDate ? (
+                <>
+                  <span className="text-[10px] sm:text-xs font-bold text-accent uppercase">{format(eventDate, 'MMM')}</span>
+                  <span className="text-base sm:text-lg font-bold text-foreground">{format(eventDate, 'd')}</span>
+                </>
+              ) : (
+                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-accent transition-colors">{event.title}</h3>
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">{eventDate ? format(eventDate, 'EEE, MMM d · h:mm a') : ''}</p>
+              <div className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs text-muted-foreground">
+                <MapPin className="w-3 h-3 flex-shrink-0" />
+                <span className="truncate">{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
+              </div>
+            </div>
+          </Link>
         </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-accent transition-colors">{event.title}</h3>
-          <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">{eventDate ? format(eventDate, 'EEE, MMM d · h:mm a') : ''}</p>
-          <div className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs text-muted-foreground">
-            <MapPin className="w-3 h-3 flex-shrink-0" />
-            <span className="truncate">{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
-          </div>
+        <div onClick={e => e.stopPropagation()}>
+          <InlineRSVP eventId={event.id} />
         </div>
-      </Link>
+      </div>
     );
   }
 
