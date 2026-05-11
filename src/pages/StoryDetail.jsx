@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Heart, Share2, Bookmark, MoreHorizontal, Trash2, Edit, Clock, Eye, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -145,16 +145,16 @@ export default function StoryDetail() {
         </div>
 
         {/* Author */}
-        <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-lg">
+        <Link to={`/profile/${story.author_id}`} className="flex items-center gap-3 p-4 bg-secondary/50 rounded-lg hover:bg-secondary/70 transition-colors group">
           <Avatar className="w-10 h-10">
             <AvatarImage src={story.author_avatar} />
             <AvatarFallback className="bg-accent/10 text-accent">{story.author_name?.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <p className="font-semibold text-foreground">{story.author_name}</p>
+            <p className="font-semibold text-foreground group-hover:text-accent transition-colors">{story.author_name}</p>
             <p className="text-sm text-muted-foreground">Published {story.published_at ? format(new Date(story.published_at), 'MMM d, yyyy') : 'recently'}</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Category & Tags */}
