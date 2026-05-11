@@ -31,7 +31,6 @@ const tabs = [
   { id: 'saved', label: 'Saved', icon: Bookmark },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
-  { id: 'media', label: 'Media', icon: Music },
   { id: 'pages', label: 'My Pages', icon: Shield },
 ];
 
@@ -519,52 +518,6 @@ export default function Profile() {
           <MyPagesTab userId={user?.id} />
         )}
 
-        {activeTab === 'media' && (
-          mediaPosts.length > 0 ? (
-            <div className="px-3 sm:px-4"><div className="grid grid-cols-3 gap-1 sm:gap-2 bg-white">
-              {mediaPosts.map((post) => {
-                const isVideo = post.media_type === 'video' || post.media_urls?.[0]?.match(/\.(mp4|webm|mov|avi)/i);
-                const isAudio = post.media_type === 'audio' || post.media_urls?.[0]?.match(/\.(mp3|wav|ogg|aac)$/i);
-                
-                const postIdx = sortedPosts.findIndex(p => p.id === post.id);
-                const handleClick = () => setSelectedPostIndex(postIdx);
-
-                if (isVideo) {
-                  return (
-                    <div key={post.id} onClick={handleClick} className="rounded-lg overflow-hidden relative aspect-square bg-black cursor-pointer">
-                      {post.thumbnail_url ? (
-                        <img src={post.thumbnail_url} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <video src={post.media_urls?.[0]} className="w-full h-full object-cover" preload="metadata" muted />
-                      )}
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                        <div className="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center">
-                          <span className="text-white text-xs ml-0.5">▶</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-                
-                if (isAudio) {
-                  return (
-                    <div key={post.id} onClick={handleClick} className="rounded-lg overflow-hidden relative aspect-square bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center cursor-pointer">
-                      <Music className="w-8 h-8 text-accent" />
-                    </div>
-                  );
-                }
-                
-                return post.media_urls.filter(url => !url.match(/\.(mp4|webm|mov|avi|mp3|wav|ogg|aac)$/i)).map((url, idx) => (
-                  <div key={`${post.id}-${idx}`} onClick={handleClick} className="rounded-lg overflow-hidden aspect-square cursor-pointer">
-                    <AppImage src={url} images={allMedia} index={allMedia.indexOf(url)} className="w-full h-full" aspectRatio="square" clickable={false} />
-                  </div>
-                ));
-              })}
-            </div></div>
-          ) : (
-            <div className="text-center py-12 text-muted-foreground text-sm">No media shared yet.</div>
-          )
-        )}
 
       </div>
     </div>
