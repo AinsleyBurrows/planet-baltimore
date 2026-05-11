@@ -10,6 +10,63 @@ import { Users, Sparkles, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DiscoverCard from '@/components/discovery/DiscoverCard';
 import StoryBar from '@/components/stories/StoryBar.jsx';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const BANNERS = [
+  { id: 1, label: 'Golden Hour — Inner Harbor', url: 'https://media.base44.com/images/public/69ea6b08dd7ab098a7066584/d4fc1c1ab_generated_image.png', animation: 'pan-right' },
+  { id: 2, label: 'Night Cityscape — Downtown', url: 'https://media.base44.com/images/public/69ea6b08dd7ab098a7066584/bdf5f82ea_generated_image.png', animation: 'zoom-in' },
+  { id: 3, label: 'Street Level — Rowhouses & Murals', url: 'https://media.base44.com/images/public/69ea6b08dd7ab098a7066584/bde03f609_generated_image.png', animation: 'pan-left' },
+];
+
+function HomeBanner() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrent(i => (i + 1) % BANNERS.length), 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const banner = BANNERS[current];
+  const isPan = banner.animation.startsWith('pan');
+  const direction = banner.animation === 'pan-right' ? ['-5%', '5%'] : ['5%', '-5%'];
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden h-48 sm:h-64 lg:h-72">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={banner.id}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
+          className="absolute inset-0"
+        >
+          <motion.img
+            src={banner.url}
+            alt={banner.label}
+            className="w-full h-full object-cover"
+            initial={isPan ? { x: direction[0] } : { scale: 1 }}
+            animate={isPan ? { x: direction[1] } : { scale: 1.08 }}
+            transition={{ duration: 7, ease: 'linear' }}
+          />
+        </motion.div>
+      </AnimatePresence>
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+      <div className="absolute bottom-4 left-5 z-10">
+        <p className="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Baltimore</p>
+        <h1 className="text-white text-2xl sm:text-3xl font-bold drop-shadow">Planet Baltimore</h1>
+        <p className="text-white/80 text-xs sm:text-sm mt-1">Your city. Your community. Your feed.</p>
+      </div>
+      {/* Dots */}
+      <div className="absolute bottom-4 right-4 flex gap-1.5 z-10">
+        {BANNERS.map((_, i) => (
+          <button key={i} onClick={() => setCurrent(i)} className={`rounded-full transition-all duration-300 ${i === current ? 'w-5 h-2 bg-white' : 'w-2 h-2 bg-white/40'}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const FILTERS = ['For You', 'Following', 'Nearby', 'Discover'];
 
@@ -152,13 +209,7 @@ export default function Home() {
 
   return (
     <div className="space-y-5 sm:space-y-7 overflow-x-hidden">
-      {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden bg-secondary p-5 sm:p-8 lg:p-12">
-        <div className="relative z-10">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5 text-foreground">Planet Baltimore</h1>
-          <p className="text-muted-foreground text-sm">Your city. Your community. Your feed.</p>
-        </div>
-      </div>
+      <HomeBanner />
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-3 sm:-mx-4 px-3 sm:px-4">
         {FILTERS.map((filter) => (
