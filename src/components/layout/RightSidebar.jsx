@@ -66,7 +66,7 @@ export default function RightSidebar() {
         <SuggestionSection title="Trending Stories" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" isTrending />
         <SuggestionSection title="Artists to Follow" icon={Sparkles} items={suggestedArtists} badgeLabel="50% Discover" isTrending />
         <SuggestionSection title="Upcoming Events" icon={MapPin} items={suggestedEvents} isTrending />
-        <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} />
+        <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} isTrending />
         
         <div className="pt-4 border-t border-border">
           <Link to="/discover" className="flex items-center gap-2 text-sm text-accent hover:text-accent/80 font-medium transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md p-0.5">
