@@ -125,22 +125,22 @@ export default function Neighborhoods() {
           {/* Filtered content tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full bg-secondary/50 rounded-xl flex-wrap h-auto gap-1 p-1">
-              <TabsTrigger value="events" className="flex-1 rounded-lg gap-1.5 text-xs">
+              <TabsTrigger value="events" className="flex-1 rounded-lg gap-1.5 text-xs data-[state=active]:bg-[#f4a460] data-[state=active]:text-foreground">
                 <Calendar className="w-3.5 h-3.5" />Events
               </TabsTrigger>
-              <TabsTrigger value="businesses" className="flex-1 rounded-lg gap-1.5 text-xs">
+              <TabsTrigger value="businesses" className="flex-1 rounded-lg gap-1.5 text-xs data-[state=active]:bg-[#f4a460] data-[state=active]:text-foreground">
                 <Building2 className="w-3.5 h-3.5" />Businesses
               </TabsTrigger>
-              <TabsTrigger value="communities" className="flex-1 rounded-lg gap-1.5 text-xs">
+              <TabsTrigger value="communities" className="flex-1 rounded-lg gap-1.5 text-xs data-[state=active]:bg-[#f4a460] data-[state=active]:text-foreground">
                 <Users className="w-3.5 h-3.5" />Groups / Communities
               </TabsTrigger>
-              <TabsTrigger value="artists" className="flex-1 rounded-lg gap-1.5 text-xs">
+              <TabsTrigger value="artists" className="flex-1 rounded-lg gap-1.5 text-xs data-[state=active]:bg-[#f4a460] data-[state=active]:text-foreground">
                 <Palette className="w-3.5 h-3.5" />Artists
               </TabsTrigger>
-              <TabsTrigger value="arts-orgs" className="flex-1 rounded-lg gap-1.5 text-xs">
+              <TabsTrigger value="arts-orgs" className="flex-1 rounded-lg gap-1.5 text-xs data-[state=active]:bg-[#f4a460] data-[state=active]:text-foreground">
                 <Landmark className="w-3.5 h-3.5" />Arts Orgs
               </TabsTrigger>
-              <TabsTrigger value="associations" className="flex-1 rounded-lg gap-1.5 text-xs">
+              <TabsTrigger value="associations" className="flex-1 rounded-lg gap-1.5 text-xs data-[state=active]:bg-[#f4a460] data-[state=active]:text-foreground">
                 <ShieldIcon className="w-3.5 h-3.5" />Associations
               </TabsTrigger>
             </TabsList>
