@@ -32,10 +32,10 @@ export default function LeftSidebar() {
         {/* Logo */}
         <div className={`flex items-center h-16 border-b border-border px-4 sm:px-5 ${collapsed ? 'justify-center' : ''}`}>
           {collapsed ? (
-            <span className="text-xl font-bold text-accent">P</span>
+            <span className="text-xl font-bold" style={{ color: '#d4580a' }}>P</span>
           ) : (
             <Link to="/" className="flex items-center gap-2">
-              <span className="text-xl font-bold text-accent">Planet</span>
+              <span className="text-xl font-bold" style={{ color: '#d4580a' }}>Planet</span>
               <span className="text-xl font-light text-foreground">Baltimore</span>
             </Link>
           )}
