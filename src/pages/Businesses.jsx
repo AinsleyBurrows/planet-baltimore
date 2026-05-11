@@ -41,7 +41,7 @@ export default function Businesses() {
             <p className="text-white/80 text-sm sm:text-base">Discover and support local Baltimore businesses.</p>
           </div>
           <Link to="/create-business" className="flex-shrink-0 ml-4">
-            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2 rounded-lg">
+            <Button className="text-foreground gap-2 rounded-lg" style={{ backgroundColor: '#f4a460' }}>
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Create Business Page</span>
             </Button>

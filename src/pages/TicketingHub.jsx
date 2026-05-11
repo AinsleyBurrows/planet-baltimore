@@ -180,7 +180,7 @@ export default function TicketingHub() {
             </Button>
           </Link>
           <Link to="/create-event">
-            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground gap-2">
+            <Button className="text-foreground gap-2" style={{ backgroundColor: '#f4a460' }}>
               <Plus className="w-4 h-4" /> Create Event
             </Button>
           </Link>
