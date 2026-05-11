@@ -72,7 +72,7 @@ export default function Businesses() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
         </div>
       ) : filtered.length === 0 ? (
@@ -84,7 +84,7 @@ export default function Businesses() {
           <p className="text-sm text-muted-foreground">List your business and connect with the community!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((biz) => (
             <Link key={biz.id} to={`/businesses/${biz.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="h-24 bg-muted overflow-hidden">
