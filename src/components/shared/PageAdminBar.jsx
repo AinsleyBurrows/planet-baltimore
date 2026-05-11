@@ -40,7 +40,7 @@ export default function PageAdminBar({ isOwner, isPlatformAdmin, isMuted, muteRe
   return (
     <>
       <div className="flex items-center gap-2 flex-wrap mt-2">
-        {isOwner && (
+        {(isOwner || isPlatformAdmin) && (
           <Button
             size="sm"
             variant="outline"
@@ -49,7 +49,7 @@ export default function PageAdminBar({ isOwner, isPlatformAdmin, isMuted, muteRe
             className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive/10 hover:border-destructive text-xs h-8"
           >
             <Trash2 className="w-3.5 h-3.5" />
-            Delete Page
+            {isOwner ? 'Delete Page' : 'Delete Page (Admin)'}
           </Button>
         )}
         {isPlatformAdmin && (
