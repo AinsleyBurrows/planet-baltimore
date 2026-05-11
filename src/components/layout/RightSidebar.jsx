@@ -65,7 +65,7 @@ export default function RightSidebar() {
       <div className="p-4 sm:p-5 pt-20 sm:pt-24 space-y-5">
         <SuggestionSection title="Trending Stories" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" isTrending />
         <SuggestionSection title="Artists to Follow" icon={Sparkles} items={suggestedArtists} badgeLabel="50% Discover" isTrending />
-        <SuggestionSection title="Upcoming Events" icon={MapPin} items={suggestedEvents} />
+        <SuggestionSection title="Upcoming Events" icon={MapPin} items={suggestedEvents} isTrending />
         <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} />
         
         <div className="pt-4 border-t border-border">
