@@ -5,14 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-function SuggestionSection({ title, icon: Icon, items, type, badgeLabel }) {
+function SuggestionSection({ title, icon: Icon, items, type, badgeLabel, isTrending }) {
   if (!items || items.length === 0) return null;
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4 text-accent" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</h3>
+          <Icon className="w-4 h-4" style={{ color: isTrending ? '#d4580a' : 'var(--accent)' }} />
+          <h3 className="text-xs font-semibold uppercase tracking-wider" style={{ color: isTrending ? '#d4580a' : 'var(--muted-foreground)' }}>{title}</h3>
         </div>
         {badgeLabel && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{badgeLabel}</Badge>}
       </div>
@@ -63,7 +63,7 @@ export default function RightSidebar() {
   return (
     <aside className="hidden xl:block fixed right-0 top-0 h-screen w-[19%] min-w-[240px] bg-card border-l border-border overflow-y-auto z-30">
       <div className="p-4 sm:p-5 pt-20 sm:pt-24 space-y-5">
-        <SuggestionSection title="Trending Stories" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" />
+        <SuggestionSection title="Trending Stories" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" isTrending />
         <SuggestionSection title="Artists to Follow" icon={Sparkles} items={suggestedArtists} badgeLabel="50% Discover" />
         <SuggestionSection title="Upcoming Events" icon={MapPin} items={suggestedEvents} />
         <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} />
