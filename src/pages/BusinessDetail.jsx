@@ -148,8 +148,8 @@ export default function BusinessDetail() {
       </div>
 
       {/* Profile */}
-      <div className="px-1 pb-4">
-        <div className="flex items-end justify-between -mt-10 mb-4">
+       <div className="px-1 pb-4" style={{marginTop: '2rem'}}>
+         <div className="flex items-end justify-between -mt-10 mb-4">
           <div className="relative">
             <Avatar
               className="w-20 h-20 rounded-xl border-4 border-background shadow-lg"
