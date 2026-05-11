@@ -5,6 +5,7 @@ import {
   Palette, Landmark, Building2, BookOpen, MessageCircle,
   Bell, User, Menu, Plus, Search, Ticket
 } from 'lucide-react';
+import ThemeToggle from '@/components/shared/ThemeToggle';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -48,17 +49,18 @@ export default function TopMenuBar() {
         </Link>
 
         <div className="flex items-center gap-1">
-          {/* Quick-access icons — 44px minimum touch targets */}
-          <Link to="/search" aria-label="Search" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/search' ? 'text-accent' : 'text-muted-foreground'}`}>
-            <Search className="w-5 h-5" />
-          </Link>
-          <Link to="/notifications" aria-label="Notifications" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground'}`}>
-            <Bell className="w-5 h-5" />
-          </Link>
-          <Link to="/messages" aria-label="Messages" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground'}`}>
-            <MessageCircle className="w-5 h-5" />
-          </Link>
-          {/* Hamburger menu */}
+           {/* Quick-access icons — 44px minimum touch targets */}
+           <Link to="/search" aria-label="Search" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/search' ? 'text-accent' : 'text-muted-foreground'}`}>
+             <Search className="w-5 h-5" />
+           </Link>
+           <Link to="/notifications" aria-label="Notifications" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground'}`}>
+             <Bell className="w-5 h-5" />
+           </Link>
+           <Link to="/messages" aria-label="Messages" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground'}`}>
+             <MessageCircle className="w-5 h-5" />
+           </Link>
+           <ThemeToggle />
+           {/* Hamburger menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="icon" variant="ghost" aria-label="Navigation menu" className="rounded-lg">
