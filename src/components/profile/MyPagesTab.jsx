@@ -9,11 +9,17 @@ import { Button } from '@/components/ui/button';
 
 function PageCard({ page, type, editPath, viewPath, onDelete }) {
   const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    e.stopPropagation();
     if (!window.confirm(`Delete "${page.name}"? This cannot be undone.`)) return;
     setDeleting(true);
     await onDelete(page.id);
+  };
+
+  const handleCardClick = () => {
+    navigate(viewPath);
   };
 
   const typeColors = {
@@ -29,7 +35,7 @@ function PageCard({ page, type, editPath, viewPath, onDelete }) {
   };
 
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:shadow-sm transition-all group">
+    <div onClick={handleCardClick} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:shadow-md hover:-translate-y-[1px] transition-all group cursor-pointer">
       <Avatar className="w-12 h-12 rounded-xl flex-shrink-0">
         <AvatarImage src={page.image_url} className="object-cover" />
         <AvatarFallback className="rounded-xl bg-accent/10 text-accent font-bold text-lg">
@@ -39,7 +45,7 @@ function PageCard({ page, type, editPath, viewPath, onDelete }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <p className="font-semibold text-sm text-foreground truncate">{page.name}</p>
+          <p className="font-semibold text-sm text-foreground truncate group-hover:text-accent transition-colors">{page.name}</p>
           <Badge className={`text-[10px] border-0 ${typeColors[type]}`}>{typeLabels[type]}</Badge>
           {(page.is_verified || page.is_official) && (
             <Badge variant="secondary" className="text-[10px]">Verified</Badge>
@@ -55,7 +61,7 @@ function PageCard({ page, type, editPath, viewPath, onDelete }) {
         ) : null}
       </div>
 
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center gap-1.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
         <Link to={viewPath}>
           <button className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="View page">
             <ExternalLink className="w-3.5 h-3.5" />
