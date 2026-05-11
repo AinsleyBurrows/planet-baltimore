@@ -63,7 +63,7 @@ export default function RightSidebar() {
   return (
     <aside className="hidden xl:block fixed right-0 top-0 h-screen w-[19%] min-w-[240px] bg-card border-l border-border overflow-y-auto z-30">
       <div className="p-4 sm:p-5 pt-20 sm:pt-24 space-y-5">
-        <SuggestionSection title="Trending Zines" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" />
+        <SuggestionSection title="Trending Stories" icon={TrendingUp} items={suggestedZines} badgeLabel="50% For You" />
         <SuggestionSection title="Artists to Follow" icon={Sparkles} items={suggestedArtists} badgeLabel="50% Discover" />
         <SuggestionSection title="Upcoming Events" icon={MapPin} items={suggestedEvents} />
         <SuggestionSection title="People Nearby" icon={Sparkles} items={suggestedPeople} />
