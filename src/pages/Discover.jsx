@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
-const categories = ['All', 'Events', 'Artists', 'Communities', 'Businesses', 'Your Story', 'Neighborhoods'];
+const categories = ['All', 'Events', 'Artists', 'Communities', 'Businesses', 'Stories', 'Neighborhoods'];
 
 export default function Discover() {
   const [search, setSearch] = useState('');
@@ -89,7 +89,7 @@ export default function Discover() {
       )}
 
       {/* Stories */}
-      {(activeCategory === 'All' || activeCategory === 'Your Story') && filteredStories.length > 0 && (
+      {(activeCategory === 'All' || activeCategory === 'Stories') && filteredStories.length > 0 && (
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Latest Stories</h2>
