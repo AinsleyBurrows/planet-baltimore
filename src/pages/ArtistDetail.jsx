@@ -70,10 +70,7 @@ export default function ArtistDetail() {
 
   const { data: artist, isLoading } = useQuery({
     queryKey: ['artist', artistId],
-    queryFn: async () => {
-      const results = await base44.entities.ArtistPage.filter({ id: artistId });
-      return results[0];
-    },
+    queryFn: () => base44.entities.ArtistPage.get(artistId),
     enabled: !!artistId,
   });
 

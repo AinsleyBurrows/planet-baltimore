@@ -50,7 +50,7 @@ export default function EventDetail() {
 
   const deleteMutation = useMutation({
     mutationFn: () => base44.entities.Event.delete(eventId),
-    onSuccess: () => navigate('/events'),
+    onSuccess: () => navigate('/'),
   });
 
   if (isLoading) return (
@@ -64,7 +64,7 @@ export default function EventDetail() {
   if (!event) return (
     <div className="text-center py-16">
       <h3 className="font-semibold text-foreground mb-1">Event not found</h3>
-      <Button variant="ghost" onClick={() => navigate('/events')} className="mt-4">Back to Events</Button>
+      <Button variant="ghost" onClick={() => navigate('/ticketing')} className="mt-4">Back to Events</Button>
     </div>
   );
 

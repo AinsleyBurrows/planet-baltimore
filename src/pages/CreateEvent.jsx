@@ -60,7 +60,7 @@ export default function CreateEvent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
       toast({ title: 'Event created!' });
-      navigate('/events');
+      navigate('/community-calendar');
     },
   });
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, Share2, Bookmark, MoreHorizontal, Trash2, Edit, Clock, Eye, Star } from 'lucide-react';
+import { ArrowLeft, Heart, Share2, Bookmark, MoreHorizontal, Trash2, Edit, Clock, Eye, Star, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,13 +18,55 @@ export default function StoryDetail() {
   const queryClient = useQueryClient();
   const storyId = window.location.pathname.split('/stories/')[1];
   const [user, setUser] = useState(null);
-  const [liked, setLiked] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  const { data: likeRecord = [] } = useQuery({
+    queryKey: ['story-like', storyId, user?.id],
+    queryFn: () => base44.entities.Like.filter({ user_id: user.id, target_type: 'story', target_id: storyId }),
+    enabled: !!user?.id && !!storyId,
+  });
+
+  const { data: saveRecord = [] } = useQuery({
+    queryKey: ['story-save', storyId, user?.id],
+    queryFn: () => base44.entities.SavedStory.filter({ user_id: user.id, story_id: storyId }),
+    enabled: !!user?.id && !!storyId,
+  });
+
+  const liked = likeRecord.length > 0;
+  const saved = saveRecord.length > 0;
+
+  const toggleLikeMutation = useMutation({
+    mutationFn: async () => {
+      if (liked) {
+        await base44.entities.Like.delete(likeRecord[0].id);
+        await base44.entities.Story.update(storyId, { likes_count: Math.max(0, (story.likes_count || 0) - 1) });
+      } else {
+        await base44.entities.Like.create({ user_id: user.id, target_type: 'story', target_id: storyId });
+        await base44.entities.Story.update(storyId, { likes_count: (story.likes_count || 0) + 1 });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['story-like', storyId, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['story', storyId] });
+    },
+  });
+
+  const toggleSaveMutation = useMutation({
+    mutationFn: async () => {
+      if (saved) {
+        await base44.entities.SavedStory.delete(saveRecord[0].id);
+      } else {
+        await base44.entities.SavedStory.create({ user_id: user.id, story_id: storyId, saved_at: new Date().toISOString() });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['story-save', storyId, user?.id] });
+    },
+  });
 
   const { data: story, isLoading, error } = useQuery({
     queryKey: ['story', storyId],
@@ -174,24 +216,30 @@ export default function StoryDetail() {
       {/* Actions */}
       <div className="flex items-center justify-between py-4 border-t border-b border-border mb-8">
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setLiked(!liked)}
-            className={`flex items-center gap-1.5 text-sm font-medium transition-all ${
-              liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Heart className={`w-5 h-5 ${liked ? 'fill-accent' : ''}`} />
-            {(story.likes_count || 0) + (liked ? 1 : 0)}
-          </button>
-          <button
-            onClick={() => setSaved(!saved)}
-            className={`flex items-center gap-1.5 text-sm font-medium transition-all ${
-              saved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Bookmark className={`w-5 h-5 ${saved ? 'fill-accent' : ''}`} />
-            {saved ? 'Saved' : 'Save'}
-          </button>
+          {user && (
+            <button
+              onClick={() => toggleLikeMutation.mutate()}
+              disabled={toggleLikeMutation.isPending}
+              className={`flex items-center gap-1.5 text-sm font-medium transition-all active:scale-90 ${
+                liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${liked ? 'fill-accent' : ''}`} />
+              {story.likes_count || 0}
+            </button>
+          )}
+          {user && (
+            <button
+              onClick={() => toggleSaveMutation.mutate()}
+              disabled={toggleSaveMutation.isPending}
+              className={`flex items-center gap-1.5 text-sm font-medium transition-all active:scale-90 ${
+                saved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Bookmark className={`w-5 h-5 ${saved ? 'fill-accent' : ''}`} />
+              {saved ? 'Saved' : 'Save'}
+            </button>
+          )}
         </div>
         <Button
           variant="outline"

@@ -50,8 +50,8 @@ const suggestedArtists = [
 ];
 
 const suggestedEvents = [
-  { name: 'First Friday Art Walk', subtitle: 'Fri, 6 PM · Station North', image: '', tag: 'Trending', link: '/events' },
-  { name: 'Harbor Cleanup Day', subtitle: 'Sat, 9 AM · Inner Harbor', image: '', tag: 'Try New', link: '/events' },
+  { name: 'First Friday Art Walk', subtitle: 'Fri, 6 PM · Station North', image: '', tag: 'Trending', link: '/ticketing' },
+  { name: 'Harbor Cleanup Day', subtitle: 'Sat, 9 AM · Inner Harbor', image: '', tag: 'Try New', link: '/ticketing' },
 ];
 
 const suggestedPeople = [

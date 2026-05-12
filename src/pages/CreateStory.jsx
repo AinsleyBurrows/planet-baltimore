@@ -45,21 +45,22 @@ export default function CreateStory() {
       return results[0];
     },
     enabled: !!storyId,
-    onSuccess: (data) => {
-      if (data) {
-        setFormData({
-          title: data.title || '',
-          subtitle: data.subtitle || '',
-          content: data.content || '',
-          cover_image: data.cover_image || '',
-          category: data.category || 'blog',
-          tags: data.tags || [],
-          visibility: data.visibility || 'public',
-        });
-        setIsDraft(data.status === 'draft');
-      }
-    },
   });
+
+  useEffect(() => {
+    if (story) {
+      setFormData({
+        title: story.title || '',
+        subtitle: story.subtitle || '',
+        content: story.content || '',
+        cover_image: story.cover_image || '',
+        category: story.category || 'blog',
+        tags: story.tags || [],
+        visibility: story.visibility || 'public',
+      });
+      setIsDraft(story.status === 'draft');
+    }
+  }, [story]);
 
   const uploadCoverImage = async (file) => {
     if (!file) return;
