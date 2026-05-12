@@ -19,7 +19,8 @@ export default function ArtistGallery({ portfolioUrls = [], posts = [], isOwner 
     queryFn: async () => {
       const results = await base44.entities.ArtistSeries.filter({ artist_id: artist.id, title: GALLERY_SERIES_TITLE });
       if (results.length > 0) return results[0];
-      // Create it silently on first use
+      if (!isOwner) return null;
+      // Create it silently on first use (owner only)
       return await base44.entities.ArtistSeries.create({
         title: GALLERY_SERIES_TITLE,
         artist_id: artist.id,
@@ -27,7 +28,7 @@ export default function ArtistGallery({ portfolioUrls = [], posts = [], isOwner 
         status: 'active',
       });
     },
-    enabled: !!artist?.id && isOwner,
+    enabled: !!artist?.id,
   });
 
   // Fetch ArtistWork items from the gallery series
