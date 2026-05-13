@@ -34,7 +34,7 @@ export default function Artists() {
   });
 
   return (
-    <div className="space-y-0">
+    <div className="space-y-6">
       {/* Hero Banner */}
       <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12" style={{ backgroundColor: '#d4580a' }}>
         <div className="relative z-10 flex items-start justify-between">
@@ -57,7 +57,7 @@ export default function Artists() {
 
       {/* Search + sort */}
 
-      <div className="flex gap-2" style={{ marginTop: '74px' }}>
+      <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input className="pl-9 rounded-xl" placeholder="Search artists..." value={search} onChange={e => setSearch(e.target.value)} />
@@ -67,7 +67,7 @@ export default function Artists() {
         </select>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 mt-6">
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
         {categories.map((cat) => (
           <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeCategory === cat ? 'bg-[#d4580a] text-white shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'}`}>
             {cat}
@@ -76,11 +76,11 @@ export default function Artists() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {Array(6).fill(0).map((_, i) => <Skeleton key={i} className="h-44 rounded-xl" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 mt-6">
+        <div className="text-center py-16">
           <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
             <Palette className="w-7 h-7 text-accent" />
           </div>
@@ -88,7 +88,7 @@ export default function Artists() {
           <p className="text-sm text-muted-foreground">Create your artist page and share your work!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {filtered.map((artist) => (
             <Link key={artist.id} to={`/artists/${artist.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <div className="aspect-square bg-muted overflow-hidden">
