@@ -242,7 +242,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isMusic ? "discography" : "journal"}>
+      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -269,9 +269,9 @@ export default function ArtistDetail() {
             </TabsTrigger>
           </>}
           {!isMusic && <>
-            <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+            {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
-            </TabsTrigger>
+            </TabsTrigger>}
             <TabsTrigger value="series" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Layers className="w-3.5 h-3.5" /><span className="hidden xs:inline">{isFashion ? 'Fashion Line' : 'Series'}</span>
             </TabsTrigger>
