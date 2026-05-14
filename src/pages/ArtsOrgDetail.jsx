@@ -268,9 +268,7 @@ export default function ArtsOrgDetail() {
                 <Button size="sm" variant="outline" onClick={() => setShowEdit(true)} className="rounded-lg gap-1.5 text-xs h-9">
                   <Pencil className="w-3.5 h-3.5" />Edit Profile
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => setShowMessage(true)} className="rounded-lg gap-1.5 text-xs h-9">
-                  <Send className="w-3.5 h-3.5" />Message
-                </Button>
+
               </>
             )}
             <Button size="sm" variant="outline" onClick={() => setShowShare(true)} className="rounded-lg transition-all duration-150 active:scale-95" aria-label="Share"><Share2 className="w-4 h-4" /></Button>
