@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
-  Camera, Pencil, MessageSquare, Plus
+  Camera, Pencil, MessageSquare, Plus, Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,9 @@ import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ArtistSeriesTab from '@/components/artist/ArtistSeriesTab';
 import ArtistStudioJournal from '@/components/artist/ArtistStudioJournal';
 import ArtistCreateEvent from '@/components/artist/ArtistCreateEvent';
+import LookbookTab from '@/components/artist/fashion/LookbookTab';
+import DropsTab from '@/components/artist/fashion/DropsTab';
+import CollabCallsTab from '@/components/artist/fashion/CollabCallsTab';
 import ArtistGallery from '@/components/artist/ArtistGallery';
 import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
 import PostCard from '@/components/shared/PostCard';
@@ -40,7 +43,7 @@ import StreamingLinksTab from '@/components/artist/music/StreamingLinksTab';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
-  performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', other: 'Other'
+  performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', fashion: 'Fashion', other: 'Other'
 };
 
 const socialIcons = {
@@ -275,6 +278,17 @@ export default function ArtistDetail() {
             <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Gallery</span>
             </TabsTrigger>
+            {isFashion && <>
+              <TabsTrigger value="lookbook" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+                📸 <span className="hidden xs:inline">Lookbook</span>
+              </TabsTrigger>
+              <TabsTrigger value="drops" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+                <Zap className="w-3.5 h-3.5" /><span className="hidden xs:inline">Drops</span>
+              </TabsTrigger>
+              <TabsTrigger value="collabs" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+                <Users className="w-3.5 h-3.5" /><span className="hidden xs:inline">Collabs</span>
+              </TabsTrigger>
+            </>}
           </>}
           <TabsTrigger value="events" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Calendar className="w-3.5 h-3.5" />
@@ -349,6 +363,19 @@ export default function ArtistDetail() {
         <TabsContent value="gallery" className="mt-4">
           <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
         </TabsContent>
+
+        {/* Fashion-only tabs */}
+        {isFashion && <>
+          <TabsContent value="lookbook" className="mt-4">
+            <LookbookTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+          </TabsContent>
+          <TabsContent value="drops" className="mt-4">
+            <DropsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+          </TabsContent>
+          <TabsContent value="collabs" className="mt-4">
+            <CollabCallsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+          </TabsContent>
+        </>}
 
         {/* Events */}
         <TabsContent value="events" className="mt-4">
