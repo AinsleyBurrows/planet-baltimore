@@ -107,6 +107,7 @@ export default function ArtistDetail() {
   const isOwner = user?.id === artist.owner_id;
   const isPlatformAdmin = user?.role === 'admin';
   const isMusic = artist.category === 'music';
+  const isFashion = artist.category === 'fashion';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -269,7 +270,7 @@ export default function ArtistDetail() {
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>
             <TabsTrigger value="series" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Layers className="w-3.5 h-3.5" /><span className="hidden xs:inline">Series</span>
+              <Layers className="w-3.5 h-3.5" /><span className="hidden xs:inline">{isFashion ? 'Fashion Line' : 'Series'}</span>
             </TabsTrigger>
             <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Gallery</span>
