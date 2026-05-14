@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Plus, Landmark, MapPin, Shield, Search, Filter } from 'lucide-react';
+import { Plus, Landmark, MapPin, Shield, Search, Filter, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import ArtsOrgMap from '@/components/arts/ArtsOrgMap';
+import PlatformMessageModal from '@/components/admin/PlatformMessageModal';
 
 const ORG_TYPES = [
   { value: 'all', label: 'All' },
@@ -31,6 +32,13 @@ export default function ArtsOrganizations() {
   const [activeType, setActiveType] = useState('all');
   const [search, setSearch] = useState('');
   const [showMap, setShowMap] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+
+  const { data: currentUser } = useQuery({
+    queryKey: ['me'],
+    queryFn: () => base44.auth.me(),
+    staleTime: 300000,
+  });
 
   const { data: orgs = [], isLoading } = useQuery({
     queryKey: ['arts-orgs'],
@@ -56,6 +64,17 @@ export default function ArtsOrganizations() {
             <p className="text-white/80 text-sm sm:text-base">The living cultural map of Baltimore.</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+            {currentUser?.role === 'admin' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowMessageModal(true)}
+                className="gap-1.5 rounded-lg bg-white/20 border-white/30 hover:bg-white/30 text-white"
+              >
+                <Mail className="w-4 h-4" />
+                <span className="hidden sm:inline">Message All</span>
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
@@ -144,6 +163,7 @@ export default function ArtsOrganizations() {
           </div>
         )}
       </div>
+      <PlatformMessageModal open={showMessageModal} onClose={() => setShowMessageModal(false)} />
     </div>
   );
 }
