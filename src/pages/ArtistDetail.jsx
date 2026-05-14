@@ -275,9 +275,9 @@ export default function ArtistDetail() {
             <TabsTrigger value="series" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Layers className="w-3.5 h-3.5" /><span className="hidden xs:inline">{isFashion ? 'Fashion Line' : 'Series'}</span>
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+            {!isFashion && <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Gallery</span>
-            </TabsTrigger>
+            </TabsTrigger>}
             {isFashion && <>
               <TabsTrigger value="lookbook" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
                 📸 <span className="hidden xs:inline">Lookbook</span>
