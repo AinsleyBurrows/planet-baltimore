@@ -56,6 +56,16 @@ export default function Profile() {
     base44.auth.me().then(setCurrentUser);
   }, []);
 
+  const { data: actualFollowersCount } = useQuery({
+    queryKey: ['followers-count', user?.id],
+    queryFn: async () => {
+      const follows = await base44.entities.Follow.filter({ target_type: 'user', target_id: user.id });
+      return follows.length;
+    },
+    enabled: !!user?.id,
+    staleTime: 30000,
+  });
+
   const { data: followStatus } = useQuery({
     queryKey: ['follow-status', currentUser?.id, user?.id],
     queryFn: async () => {
@@ -416,7 +426,7 @@ export default function Profile() {
         <div className="flex gap-6 sm:gap-8 mt-4 py-3 border-b border-border">
           <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.posts_count || posts.length}</span><span className="text-xs text-muted-foreground ml-1">Posts</span></div>
           <button onClick={() => setShowFollowModal('followers')} className="text-center hover:opacity-70 transition-opacity">
-            <span className="font-bold text-foreground text-sm sm:text-base">{user.followers_count || 0}</span>
+            <span className="font-bold text-foreground text-sm sm:text-base">{actualFollowersCount ?? user.followers_count ?? 0}</span>
             <span className="text-xs text-muted-foreground ml-1">Followers</span>
           </button>
           <button onClick={() => setShowFollowModal('following')} className="text-center hover:opacity-70 transition-opacity">
