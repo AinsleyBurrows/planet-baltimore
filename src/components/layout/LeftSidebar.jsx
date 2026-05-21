@@ -60,7 +60,7 @@ export default function LeftSidebar() {
                 <TooltipContent side="right">Create Post</TooltipContent>
               </Tooltip>
             ) : (
-              <Button variant="outline" className="w-full rounded-lg py-2.5" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+              <Button variant="outline" className="w-full rounded-lg py-2.5 hover:bg-secondary/40" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
                 Create Post
               </Button>
             )}
