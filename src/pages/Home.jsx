@@ -155,7 +155,7 @@ export default function Home() {
       {/* Hero Banner */}
       <div className="relative rounded-2xl overflow-hidden p-5 sm:p-8 lg:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5" style={{ color: '#d4580a' }}>Planet Baltimore</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5" style={{ color: '#d4580a' }}>Planet <span className="text-black dark:text-white">Baltimore</span></h1>
           <p className="text-muted-foreground text-sm">Your city. Your community. Your feed.</p>
         </div>
         <div className="absolute inset-0 opacity-5">
