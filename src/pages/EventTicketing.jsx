@@ -125,10 +125,10 @@ export default function EventTicketing() {
         eventId, ticketTypeId: firstTypeId, quantity: firstQty,
         promoterId, promoCodeId: promoData?.id || '',
       });
-      const { sessionId, free, orderId } = response.data;
+      const { sessionId, url, free, orderId } = response.data;
       if (free) { navigate(`/order-confirmation?order_id=${orderId}`); return; }
-      if (!sessionId) throw new Error('Failed to create checkout session');
-      window.location.href = `https://checkout.stripe.com/c/pay/${sessionId}`;
+      if (!url && !sessionId) throw new Error('Failed to create checkout session');
+      window.location.href = url || `https://checkout.stripe.com/c/pay/${sessionId}`;
     },
     onError: (error) => toast({ title: 'Checkout Failed', description: error.message, variant: 'destructive' }),
   });

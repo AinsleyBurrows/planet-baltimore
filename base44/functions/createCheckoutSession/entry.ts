@@ -147,7 +147,7 @@ Deno.serve(async (req) => {
       billing_address_collection: 'required',
     });
 
-    return Response.json({ sessionId: session.id });
+    return Response.json({ sessionId: session.id, url: session.url });
   } catch (error) {
     console.error('Checkout session error:', error);
     return Response.json({ error: error.message }, { status: 500 });
