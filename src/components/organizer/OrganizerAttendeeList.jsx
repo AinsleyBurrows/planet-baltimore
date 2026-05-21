@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search, Download, Mail, CheckCircle2, XCircle, Clock, Filter } from 'lucide-react';
+import { Search, Download, Mail, CheckCircle2, XCircle, Clock, Filter, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 const STATUS_COLORS = {
@@ -16,6 +16,7 @@ export default function OrganizerAttendeeList({ event, orders, tickets, ticketTy
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [ticketFilter, setTicketFilter] = useState('all');
+  const [exportingRSVP, setExportingRSVP] = useState(false);
 
   const ttMap = Object.fromEntries((ticketTypes || []).map(t => [t.id, t]));
 
@@ -54,6 +55,31 @@ export default function OrganizerAttendeeList({ event, orders, tickets, ticketTy
     a.click();
   };
 
+  const handleExportRSVP = async () => {
+    setExportingRSVP(true);
+    const rsvps = await base44.entities.RSVP.filter({ event_id: event.id }, '-created_date', 500);
+    const rows = [
+      ['Name', 'Email', 'Phone', 'City', 'Status', 'RSVP Date'],
+      ...rsvps.map(r => [
+        r.attendee_name || '',
+        r.attendee_email || '',
+        r.attendee_phone || '',
+        r.attendee_city || '',
+        r.status || 'going',
+        r.created_date ? format(new Date(r.created_date), 'yyyy-MM-dd HH:mm') : '',
+      ])
+    ].map(row => row.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+    const blob = new Blob([rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${event.title}-rsvps.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportingRSVP(false);
+  };
+
   const ticketsForOrder = (orderId) => tickets.filter(t => t.order_id === orderId);
 
   return (
@@ -81,7 +107,11 @@ export default function OrganizerAttendeeList({ event, orders, tickets, ticketTy
             {ticketTypes.map(tt => <option key={tt.id} value={tt.id}>{tt.name}</option>)}
           </select>
           <Button size="sm" variant="outline" onClick={handleExportCSV} className="gap-2">
-            <Download className="w-4 h-4" /> CSV
+            <Download className="w-4 h-4" /> Orders CSV
+          </Button>
+          <Button size="sm" variant="outline" onClick={handleExportRSVP} disabled={exportingRSVP} className="gap-2">
+            {exportingRSVP ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            RSVPs CSV
           </Button>
         </div>
       </div>
