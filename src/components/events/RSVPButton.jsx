@@ -8,8 +8,9 @@ import {
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import RSVPFormModal from './RSVPFormModal';
+import AddToCalendarButton from '@/components/shared/AddToCalendarButton';
 
-export default function RSVPButton({ eventId }) {
+export default function RSVPButton({ eventId, event }) {
   const [user, setUser] = useState(null);
   const [pendingStatus, setPendingStatus] = useState(null); // triggers modal
   const { toast } = useToast();
@@ -102,7 +103,8 @@ export default function RSVPButton({ eventId }) {
 
   return (
     <>
-      <div className="flex-1 flex gap-1">
+      <div className="flex-1 flex flex-col gap-2">
+      <div className="flex gap-1">
         <Button
           onClick={() => handleRsvpClick('going')}
           disabled={rsvpMutation.isPending}
@@ -147,6 +149,11 @@ export default function RSVPButton({ eventId }) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+
+      {currentStatus === 'going' && event && (
+        <AddToCalendarButton event={event} className="w-full" size="sm" />
+      )}
       </div>
 
       {pendingStatus && (

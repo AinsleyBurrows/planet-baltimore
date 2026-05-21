@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Heart, Share2, Gift, Ticket } from 'lucide-react';
 import RSVPButton from './RSVPButton';
+import AddToCalendarButton from '@/components/shared/AddToCalendarButton';
 
 export default function EventTicketing({ event, rsvpCount, onShare, user }) {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function EventTicketing({ event, rsvpCount, onShare, user }) {
       <div className="sticky bottom-20 lg:bottom-4 bg-background/95 backdrop-blur py-4 -mx-4 px-4 space-y-3">
         <div className="bg-secondary/40 rounded-xl p-4">
           <p className="text-sm text-muted-foreground mb-2">This is an RSVP-only event</p>
-          <RSVPButton eventId={event.id} rsvpCount={rsvpCount} />
+          <RSVPButton eventId={event.id} event={event} rsvpCount={rsvpCount} />
         </div>
         <div className="flex gap-3">
           <Button
@@ -61,6 +62,7 @@ export default function EventTicketing({ event, rsvpCount, onShare, user }) {
             <Ticket className="w-5 h-5" />
             Buy Tickets
           </Button>
+          <AddToCalendarButton event={event} className="w-full" />
         </div>
 
         {/* Donation section */}

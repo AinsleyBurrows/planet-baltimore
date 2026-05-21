@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { CheckCircle, Download, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
+import AddToCalendarButton from '@/components/shared/AddToCalendarButton';
 
 export default function OrderConfirmation() {
   const navigate = useNavigate();
@@ -69,6 +70,9 @@ export default function OrderConfirmation() {
       )}
 
       <div className="space-y-3 pt-4">
+        {orderDetails?.event && (
+          <AddToCalendarButton event={orderDetails.event} className="w-full" size="default" />
+        )}
         <Button onClick={() => navigate('/')} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg gap-2">
           <Home className="w-4 h-4" /> Back to Home
         </Button>
