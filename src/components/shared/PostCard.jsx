@@ -57,13 +57,27 @@ const TEXT_COLOR_MAP = {
 };
 const getTextColor = (bg) => TEXT_COLOR_MAP[bg] || '#ffffff';
 
+const URL_REGEX = /(https?:\/\/[^\s]+)/g;
+
+function linkify(text) {
+  const parts = text.split(URL_REGEX);
+  return parts.map((part, i) =>
+    URL_REGEX.test(part) ? (
+      <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all hover:opacity-80" onClick={e => e.stopPropagation()}>
+        {part}
+      </a>
+    ) : part
+  );
+}
+
 function TruncatedText({ text }) {
   const [expanded, setExpanded] = useState(false);
   const limit = 180;
   const isLong = text.length > limit;
+  const displayText = isLong && !expanded ? text.slice(0, limit).trimEnd() + '…' : text;
   return (
     <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-      {isLong && !expanded ? text.slice(0, limit).trimEnd() + '…' : text}
+      {linkify(displayText)}
       {isLong && (
         <button onClick={() => setExpanded(v => !v)} className="ml-1 text-accent font-medium text-sm hover:underline focus-visible:outline-none">
           {expanded ? 'less' : 'more'}
