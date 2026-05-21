@@ -14,6 +14,7 @@ const categories = ['All', 'Visual Art', 'Music', 'Video', 'Photography', 'Perfo
 const SORTS = [
   { value: '-created_date', label: 'Newest' },
   { value: '-followers_count', label: 'Most Followed' },
+  { value: '-updated_date', label: 'Most Active' },
 ];
 
 export default function Artists() {
