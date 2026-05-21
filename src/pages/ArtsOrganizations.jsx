@@ -69,7 +69,7 @@ export default function ArtsOrganizations() {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowMessageModal(true)}
-                className="gap-1.5 rounded-lg"
+                className="gap-1.5 rounded-lg hover:bg-secondary/80"
                 style={{ borderColor: '#d4580a', color: '#d4580a' }}
               >
                 <Mail className="w-4 h-4" />
@@ -80,13 +80,13 @@ export default function ArtsOrganizations() {
               variant="outline"
               size="sm"
               onClick={() => setShowMap(v => !v)}
-              className="gap-1.5 rounded-lg"
+              className="gap-1.5 rounded-lg hover:bg-secondary/80"
               style={{ borderColor: '#d4580a', color: '#d4580a' }}
             >
               <MapPin className="w-4 h-4" />{showMap ? 'List' : 'Map'}
             </Button>
             <Link to="/create-arts-org">
-              <Button variant="outline" className="gap-2 rounded-lg" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+              <Button variant="outline" className="gap-2 rounded-lg hover:bg-secondary/80" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">Create Arts Org Page</span>
               </Button>

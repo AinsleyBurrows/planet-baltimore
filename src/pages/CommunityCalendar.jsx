@@ -237,7 +237,7 @@ export default function CommunityCalendar() {
           </div>
           {user && (
             <Link to="/create-event" className="flex-shrink-0 ml-4">
-              <Button variant="outline" className="gap-2 rounded-lg" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+              <Button variant="outline" className="gap-2 rounded-lg hover:bg-secondary/80" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
                 <Plus className="w-4 h-4" /> Create Event
               </Button>
             </Link>

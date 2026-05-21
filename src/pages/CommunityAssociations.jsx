@@ -67,7 +67,7 @@ export default function CommunityAssociations() {
             <p className="text-muted-foreground text-sm sm:text-base">Official community governance hubs for Baltimore neighborhoods.</p>
           </div>
           <Link to="/create-community-association" className="flex-shrink-0 ml-4">
-            <Button variant="outline" className="gap-2 rounded-lg" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+            <Button variant="outline" className="gap-2 rounded-lg hover:bg-secondary/80" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Create Community Association</span>
             </Button>
