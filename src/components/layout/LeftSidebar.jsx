@@ -53,14 +53,14 @@ export default function LeftSidebar() {
             {collapsed ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon" className="text-white rounded-full aspect-square" style={{ backgroundColor: '#d4580a' }}>
+                  <Button size="icon" variant="outline" className="rounded-full aspect-square" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
                     <Plus className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">Create Post</TooltipContent>
               </Tooltip>
             ) : (
-              <Button className="w-full text-white rounded-lg py-2.5" style={{ backgroundColor: '#d4580a' }}>
+              <Button variant="outline" className="w-full rounded-lg py-2.5" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
                 Create Post
               </Button>
             )}
