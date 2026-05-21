@@ -87,7 +87,7 @@ export default function CommunityAssociations() {
       />
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{Array(6).fill(0).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}</div>
+        <div className="space-y-3">{Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}</div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-16">
           <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
@@ -97,7 +97,7 @@ export default function CommunityAssociations() {
           <p className="text-sm text-muted-foreground">Start your neighborhood's official digital hub.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-3">
           {filtered.map(assoc => (
             <div key={assoc.id} className={`relative flex gap-4 p-4 bg-card border rounded-xl transition-all duration-200 group
               ${assoc.is_deleted ? 'border-destructive/40 opacity-60' : assoc.is_muted ? 'border-orange-300/60 opacity-70' : 'border-border hover:shadow-md hover:-translate-y-[1px] active:translate-y-0'}
