@@ -11,7 +11,7 @@ function SuggestionSection({ title, icon: Icon, items, type, badgeLabel, isTrend
     <div className="mb-6">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Icon className="w-4 h-4" style={{ color: isTrending ? '#d4580a' : 'var(--accent)' }} />
+          <Icon className="w-4 h-4 text-foreground" />
           <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">{title}</h3>
         </div>
         {badgeLabel && <Badge variant="outline" className="text-[10px] px-1.5 py-0">{badgeLabel}</Badge>}
