@@ -12,8 +12,19 @@ export default function FollowersModal({ userId, mode, onClose }) {
     queryKey: ['follows-modal', userId, mode],
     queryFn: async () => {
       if (mode === 'followers') {
-        // People who follow this user
-        return base44.entities.Follow.filter({ target_type: 'user', target_id: userId }, '-created_date', 100);
+        const records = await base44.entities.Follow.filter({ target_type: 'user', target_id: userId }, '-created_date', 100);
+        // Enrich with real user names by fetching each follower's User record
+        const enriched = await Promise.all(
+          records.map(async (f) => {
+            try {
+              const u = await base44.entities.User.get(f.follower_id);
+              return { ...f, follower_name: u?.full_name || u?.display_name || f.follower_name, follower_avatar: u?.avatar_url || f.follower_avatar };
+            } catch {
+              return f;
+            }
+          })
+        );
+        return enriched;
       } else {
         // People/things this user follows
         return base44.entities.Follow.filter({ follower_id: userId }, '-created_date', 100);
@@ -82,7 +93,7 @@ export default function FollowersModal({ userId, mode, onClose }) {
                       className="flex items-center gap-3 px-5 py-3 hover:bg-secondary transition-colors"
                     >
                       <Avatar className="w-9 h-9 flex-shrink-0">
-                        <AvatarImage src={follow.actor_avatar} />
+                        <AvatarImage src={mode === 'followers' ? follow.follower_avatar : follow.target_avatar} />
                         <AvatarFallback className="bg-accent/10 text-accent text-xs font-bold">
                           {name?.charAt(0) || '?'}
                         </AvatarFallback>
