@@ -38,26 +38,26 @@ export default function Notifications() {
   return (
     <div className="space-y-6">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12" style={{ backgroundColor: '#d4580a' }}>
+      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">Notifications</h1>
-            <p className="text-white/80 text-sm sm:text-base">Stay up to date with activity across your community.</p>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#d4580a' }}>Notifications</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Stay up to date with activity across your community.</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 ml-4">
             {unreadCount > 0 && (
-              <Button variant="outline" size="sm" className="text-sm gap-1 bg-white/20 border-white/30 hover:bg-white/30" onClick={() => notifications.filter(n => !n.is_read).forEach(n => markReadMutation.mutate(n.id))}>
+              <Button variant="outline" size="sm" className="text-sm gap-1" style={{ borderColor: '#d4580a', color: '#d4580a' }} onClick={() => notifications.filter(n => !n.is_read).forEach(n => markReadMutation.mutate(n.id))}>
                 <Check className="w-4 h-4" /> Mark all read
               </Button>
             )}
             <Link to="/notification-settings">
-              <Button variant="outline" size="icon" className="rounded-full bg-white/20 border-white/30 hover:bg-white/30"><Settings className="w-4 h-4" /></Button>
+              <Button variant="outline" size="icon" className="rounded-full" style={{ borderColor: '#d4580a', color: '#d4580a' }}><Settings className="w-4 h-4" /></Button>
             </Link>
           </div>
         </div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
         </div>
       </div>
 

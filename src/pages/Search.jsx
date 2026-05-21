@@ -76,14 +76,14 @@ export default function Search() {
   return (
     <div className="space-y-6">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12" style={{ backgroundColor: '#d4580a' }}>
+      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">Search</h1>
-          <p className="text-white/80 text-sm sm:text-base">Find people, stories, communities, artists, and more across Baltimore.</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#d4580a' }}>Search</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Find people, stories, communities, artists, and more across Baltimore.</p>
         </div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
         </div>
       </div>
 

@@ -229,23 +229,23 @@ export default function CommunityCalendar() {
   return (
     <div className="space-y-5">
       {/* Hero */}
-      <div className="relative rounded-2xl overflow-hidden p-6 sm:p-10" style={{ backgroundColor: '#d4580a' }}>
+      <div className="relative rounded-2xl overflow-hidden p-6 sm:p-10 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10 flex items-start justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-1 text-white">Calendar</h1>
-            <p className="text-white/80 text-sm">Events from local businesses, organizations & communities</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: '#d4580a' }}>Calendar</h1>
+            <p className="text-muted-foreground text-sm">Events from local businesses, organizations & communities</p>
           </div>
           {user && (
             <Link to="/create-event" className="flex-shrink-0 ml-4">
-              <Button className="text-foreground gap-2 rounded-lg" style={{ backgroundColor: '#f4a460' }}>
+              <Button variant="outline" className="gap-2 rounded-lg" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
                 <Plus className="w-4 h-4" /> Create Event
               </Button>
             </Link>
           )}
         </div>
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-0 right-0 w-56 h-56 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <div className="absolute top-0 right-0 w-56 h-56 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+          <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
         </div>
       </div>
 

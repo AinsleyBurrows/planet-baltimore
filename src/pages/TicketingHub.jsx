@@ -146,23 +146,23 @@ export default function TicketingHub() {
   return (
     <div className="space-y-8 pb-8">
       {/* Hero */}
-      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12" style={{ backgroundColor: '#d4580a' }}>
+      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">Your Next Event</h1>
-          <p className="text-white/80 text-sm sm:text-base mb-6">Tickets for the best events in Baltimore</p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#d4580a' }}>Your Next Event</h1>
+          <p className="text-muted-foreground text-sm sm:text-base mb-6">Tickets for the best events in Baltimore</p>
           <div className="relative max-w-xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search events, venues..."
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent shadow-lg"
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent shadow-lg"
             />
           </div>
         </div>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
         </div>
       </div>
 
