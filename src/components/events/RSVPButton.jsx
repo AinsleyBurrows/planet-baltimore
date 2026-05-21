@@ -58,12 +58,21 @@ export default function RSVPButton({ eventId }) {
         attendee_city: attendeeInfo?.city,
       });
     },
-    onSuccess: (_, vars) => {
+    onSuccess: (result, vars) => {
       queryClient.invalidateQueries({ queryKey: ['rsvp', eventId, user?.id] });
       queryClient.invalidateQueries({ queryKey: ['rsvps', eventId] });
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
       setPendingStatus(null);
-      toast({ title: vars.attendeeInfo ? `RSVP confirmed! You're marked as ${vars.status}.` : 'RSVP removed' });
+      if (vars.attendeeInfo && vars.status === 'going' && result) {
+        // Send e-ticket via email and DM
+        base44.functions.invoke('sendRSVPConfirmation', {
+          eventId,
+          attendeeInfo: vars.attendeeInfo,
+        }).catch(() => {});
+        toast({ title: `RSVP confirmed! 🎟️ Your e-ticket is on its way.` });
+      } else {
+        toast({ title: vars.attendeeInfo ? `RSVP confirmed! You're marked as ${vars.status}.` : 'RSVP removed' });
+      }
     },
   });
 
