@@ -90,6 +90,8 @@
   * {
     @apply border-border outline-ring/50;
     -webkit-tap-highlight-color: transparent;
+  }
+  button, a, [role="button"] {
     touch-action: manipulation;
   }
   html {
@@ -167,11 +169,10 @@ input, textarea, select {
   display: none;
 }
 
-/* Larger tap targets for interactive elements on mobile */
+/* Larger tap targets for interactive elements on mobile — only buttons, not links/icons */
 @media (pointer: coarse) {
-  button, a, [role="button"] {
+  button:not(.icon-btn):not([aria-label]) {
     min-height: 44px;
-    min-width: 44px;
   }
 }
 
