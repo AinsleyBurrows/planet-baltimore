@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn } from 'lucide-react';
+import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { base44 } from '@/api/base44Client';
@@ -99,6 +99,30 @@ export default function LeftSidebar() {
             );
           })}
         </nav>
+
+        {/* Admin Reports link */}
+        {user?.role === 'admin' && (
+          <div className={`px-2 sm:px-3 py-1 border-t border-border ${collapsed ? 'flex justify-center' : ''}`}>
+            {collapsed ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/admin/reports" className="flex items-center justify-center w-full py-2 rounded-lg transition-all text-destructive hover:bg-destructive/10">
+                    <Flag className="w-5 h-5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Content Reports</TooltipContent>
+              </Tooltip>
+            ) : (
+              <Link
+                to="/admin/reports"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium text-destructive hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Flag className="w-5 h-5 flex-shrink-0" />
+                <span className="truncate">Content Reports</span>
+              </Link>
+            )}
+          </div>
+        )}
 
         {/* Auth Links */}
         <div className="border-t border-border p-2 sm:p-3 space-y-0.5">
