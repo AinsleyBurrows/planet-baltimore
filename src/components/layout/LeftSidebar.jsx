@@ -43,7 +43,6 @@ export default function LeftSidebar() {
             <Link to="/" className="flex items-center gap-2">
               <span className="text-xl font-bold" style={{ color: '#d4580a' }}>Planet</span>
               <span className="text-xl font-light text-foreground">Baltimore</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-300 tracking-wide leading-none">BETA</span>
             </Link>
           )}
         </div>
