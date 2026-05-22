@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Mail, Plus, Clapperboard } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 import EventSelector from '@/components/organizer/EventSelector';
 import OrganizerTicketManager from '@/components/organizer/OrganizerTicketManager';
 import OrganizerAttendeeList from '@/components/organizer/OrganizerAttendeeList';
@@ -39,6 +40,7 @@ const TABS = [
 
 export default function OrganizerStudio() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -89,6 +91,26 @@ export default function OrganizerStudio() {
       </div>
     );
   }
+
+  const handleDuplicateEvent = async (event) => {
+    const { id, created_date, updated_date, rsvp_count, ...rest } = event;
+    const copy = {
+      ...rest,
+      title: `${rest.title} (Copy)`,
+      status: 'upcoming',
+      rsvp_count: 0,
+      organizer_id: currentUser.id,
+    };
+    const newEvent = await base44.entities.Event.create(copy);
+    // Also duplicate ticket types if any exist
+    const existingTicketTypes = await base44.entities.TicketType.filter({ event_id: event.id });
+    for (const tt of existingTicketTypes) {
+      const { id: ttId, created_date: ttCd, updated_date: ttUd, quantity_sold, ...ttRest } = tt;
+      await base44.entities.TicketType.create({ ...ttRest, event_id: newEvent.id, quantity_sold: 0 });
+    }
+    queryClient.invalidateQueries({ queryKey: ['user-events', currentUser?.id] });
+    toast({ title: 'Event duplicated', description: `"${newEvent.title}" is ready to edit.` });
+  };
 
   const completedOrders = orders.filter(o => o.payment_status === 'completed');
   const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
@@ -143,7 +165,7 @@ export default function OrganizerStudio() {
 
         {/* ── MANAGE ──────────────────────────────────────────────── */}
         <TabsContent value="manage" className="space-y-6">
-          <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} isLoading={eventsLoading} />
+          <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} onDuplicate={handleDuplicateEvent} isLoading={eventsLoading} />
 
           {selectedEvent ? (
             <>

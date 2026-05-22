@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Users } from 'lucide-react';
+import { Calendar, MapPin, Copy, Loader2 } from 'lucide-react';
 import { format, isPast } from 'date-fns';
 
-export default function EventSelector({ events, selectedEvent, onSelect, isLoading }) {
+export default function EventSelector({ events, selectedEvent, onSelect, onDuplicate, isLoading }) {
+  const [duplicatingId, setDuplicatingId] = useState(null);
+
+  const handleDuplicate = async (e, event) => {
+    e.stopPropagation();
+    setDuplicatingId(event.id);
+    await onDuplicate?.(event);
+    setDuplicatingId(null);
+  };
   if (isLoading) {
     return <div className="text-center text-muted-foreground">Loading events...</div>;
   }
@@ -36,8 +44,20 @@ export default function EventSelector({ events, selectedEvent, onSelect, isLoadi
               }`}
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="font-semibold text-foreground line-clamp-1">{event.title}</h3>
-                {isPast_ && <Badge variant="secondary" className="text-xs">Past</Badge>}
+                <h3 className="font-semibold text-foreground line-clamp-1 pr-2">{event.title}</h3>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {isPast_ && <Badge variant="secondary" className="text-xs">Past</Badge>}
+                  <button
+                    onClick={(e) => handleDuplicate(e, event)}
+                    title="Duplicate event"
+                    className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+                  >
+                    {duplicatingId === event.id
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : <Copy className="w-3.5 h-3.5" />
+                    }
+                  </button>
+                </div>
               </div>
               <div className="space-y-1 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
