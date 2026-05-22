@@ -98,7 +98,7 @@ export default function InviteFriendsModal({ onClose }) {
                     <Check className="w-7 h-7 text-green-600" />
                   </div>
                   <p className="font-semibold text-foreground">{sentCount} invite{sentCount !== 1 ? 's' : ''} sent!</p>
-                  <p className="text-sm text-muted-foreground mt-1">Your friends will receive an email to join Planet Baltimore.</p>
+                  <p className="text-sm text-muted-foreground mt-1">They'll receive an email: <span className="font-medium text-foreground">"You Are Invited To Join Planet Baltimore"</span></p>
                 </div>
                 {results.filter(r => r.status === 'error').length > 0 && (
                   <div className="space-y-1">
