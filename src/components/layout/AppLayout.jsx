@@ -7,7 +7,7 @@ import MobileNav from './MobileNav';
 
 export default function AppLayout() {
   return (
-    <div className="min-h-[100dvh] min-h-[-webkit-fill-available] bg-background">
+    <div className="min-h-screen bg-background" style={{ minHeight: '100dvh' }}>
       <LeftSidebar />
       <RightSidebar />
       <div className="lg:ml-[18%] lg:mr-[19%] min-h-[100dvh] flex flex-col">

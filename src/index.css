@@ -93,18 +93,19 @@
     touch-action: manipulation;
   }
   html {
-    height: -webkit-fill-available;
+    height: 100%;
     scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground font-sans;
+    min-height: 100vh;
     min-height: 100dvh;
-    min-height: -webkit-fill-available;
     /* Safe areas handled per-element for more control */
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+    moz-text-size-adjust: 100%;
   }
 }
 
@@ -147,9 +148,9 @@ a { cursor: pointer; }
   ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
 }
 
-/* Prevent iOS font size inflation on inputs */
+/* Prevent font size inflation on inputs (iOS zoom fix + Android Chrome) */
 input, textarea, select {
-  font-size: max(16px, 1em);
+  font-size: 16px;
 }
 
 /* Smooth momentum scrolling on iOS for scrollable containers */
