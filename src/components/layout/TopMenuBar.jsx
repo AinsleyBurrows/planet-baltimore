@@ -47,6 +47,7 @@ export default function TopMenuBar() {
         <Link to="/" className="flex items-center gap-1.5">
           <span className="text-lg font-bold" style={{ color: '#d4580a' }}>Planet</span>
           <span className="text-lg font-light text-foreground">Baltimore</span>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#d4580a]/15 text-[#d4580a] tracking-wide leading-none">BETA</span>
         </Link>
 
         <div className="flex items-center gap-1">
