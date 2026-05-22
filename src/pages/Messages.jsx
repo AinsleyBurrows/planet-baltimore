@@ -122,7 +122,7 @@ export default function Messages() {
         <div className="p-3 border-t border-border bg-card space-y-2">
           <Button
             onClick={() => setShowNew(true)}
-            className="w-full gap-2 rounded-xl" style={{ backgroundColor: '#f97316', color: 'white' }}
+            className="w-full gap-2 rounded-xl" style={{ backgroundColor: '#d4580a', color: 'white' }}
           >
             <Plus className="w-4 h-4" /> New Message
           </Button>
@@ -154,7 +154,7 @@ export default function Messages() {
             <p className="text-sm text-muted-foreground max-w-xs">
               Choose from your existing conversations or start a new one with an artist or arts organization.
             </p>
-            <Button onClick={() => setShowNew(true)} className="mt-5 gap-2 rounded-xl" style={{ backgroundColor: '#f97316', color: 'white' }}>
+            <Button onClick={() => setShowNew(true)} className="mt-5 gap-2 rounded-xl" style={{ backgroundColor: '#d4580a', color: 'white' }}>
               <Plus className="w-4 h-4" /> Start a Conversation
             </Button>
           </div>

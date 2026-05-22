@@ -184,7 +184,7 @@ export default function CreatePost() {
         {postTypes.map((type) => {
           const Icon = type.icon;
           return (
-            <button key={type.id} onClick={() => setActiveType(type.id)} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${activeType === type.id ? 'bg-accent/10 text-accent border border-accent/20' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>
+            <button key={type.id} onClick={() => setActiveType(type.id)} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${activeType === type.id ? 'border text-white' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`} style={activeType === type.id ? { backgroundColor: '#d4580a', borderColor: '#d4580a' } : {}}>
               <Icon className="w-4 h-4" />{type.label}
             </button>
           );

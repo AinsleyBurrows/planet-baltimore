@@ -46,7 +46,7 @@ export default function MobileNav() {
           if (item.isCreate) {
             return (
               <Link key={item.path} to={item.path} className="flex items-center justify-center focus-visible:outline-none min-w-[44px] min-h-[44px]" aria-label="Create post">
-                <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center shadow-lg shadow-accent/25 active:scale-95 transition-transform duration-150">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform duration-150" style={{ backgroundColor: '#d4580a' }}>
                   <Icon className="w-5 h-5 text-accent-foreground" />
                 </div>
               </Link>

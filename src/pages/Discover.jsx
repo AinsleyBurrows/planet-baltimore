@@ -58,7 +58,7 @@ export default function Discover() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold flex items-center gap-2"><TrendingUp className="w-5 h-5 text-accent" />Trending Events</h2>
-            <Link to="/events" className="text-sm text-accent font-medium">See all</Link>
+            <Link to="/ticketing" className="text-sm font-medium" style={{ color: '#d4580a' }}>See all</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filteredEvents.slice(0, 4).map((event) => <EventCard key={event.id} event={event} />)}

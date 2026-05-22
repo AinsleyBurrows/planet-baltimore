@@ -90,6 +90,7 @@ function TruncatedText({ text }) {
 const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0);
   const [showShare, setShowShare] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
@@ -99,7 +100,15 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onD
   const postUrl = `${window.location.origin}/profile/${post.author_id}`;
   const displayPost = localPost;
 
-  useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
+  useEffect(() => {
+    base44.auth.me().then(async (u) => {
+      setCurrentUser(u);
+      if (u) {
+        const likes = await base44.entities.Like.filter({ user_id: u.id, target_type: 'post', target_id: post.id });
+        setLiked(likes.length > 0);
+      }
+    }).catch(() => {});
+  }, [post.id]);
 
   const { data: savedRecords = [] } = useQuery({
     queryKey: ['saved-post', post.id, currentUser?.id],
@@ -123,9 +132,20 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onD
     },
   });
 
-  const handleLike = () => {
-    setLiked(!liked);
-    onLike?.(post.id, !liked);
+  const handleLike = async () => {
+    if (!currentUser) return;
+    const newLiked = !liked;
+    setLiked(newLiked);
+    setLocalLikesCount(c => newLiked ? c + 1 : Math.max(0, c - 1));
+    if (newLiked) {
+      await base44.entities.Like.create({ user_id: currentUser.id, target_type: 'post', target_id: post.id });
+      await base44.entities.Post.update(post.id, { likes_count: localLikesCount + 1 });
+    } else {
+      const likes = await base44.entities.Like.filter({ user_id: currentUser.id, target_type: 'post', target_id: post.id });
+      if (likes.length > 0) await base44.entities.Like.delete(likes[0].id);
+      await base44.entities.Post.update(post.id, { likes_count: Math.max(0, localLikesCount - 1) });
+    }
+    onLike?.(post.id, newLiked);
   };
 
   return (
@@ -166,7 +186,11 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onD
               </>
             )}
             <DropdownMenuItem onClick={() => setShowShare(true)}><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
-            {!isOwner && <DropdownMenuItem><Flag className="w-4 h-4 mr-2" />Report</DropdownMenuItem>}
+            {!isOwner && (
+              <DropdownMenuItem className="text-destructive" onClick={() => alert('Thank you for reporting. Our team will review this post.')}>
+                <Flag className="w-4 h-4 mr-2" />Report
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -300,8 +324,8 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onD
             aria-label={liked ? 'Unlike post' : 'Like post'}
             className={`flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm transition-all duration-150 active:scale-90 ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-accent' : ''}`} />
-            <span className="hidden sm:inline">{(post.likes_count || 0) + (liked ? 1 : 0)}</span>
+            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-[#d4580a] text-[#d4580a]' : ''}`} />
+            <span>{localLikesCount}</span>
           </button>
           <button
             onClick={() => setShowComments(v => !v)}

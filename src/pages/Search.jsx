@@ -111,7 +111,8 @@ export default function Search() {
           <button
             key={s.key}
             onClick={() => setFilter(s.key)}
-            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${filter === s.key ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
+            className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${filter === s.key ? 'text-white' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
+            style={filter === s.key ? { backgroundColor: '#d4580a' } : {}}
           >
             {s.label}
           </button>
