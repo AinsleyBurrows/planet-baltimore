@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Users, Globe, Mail, MapPin, CheckCircle, Share2, Bell,
   FileText, Crown, Shield, Edit3, Send, Eye, Plus, Trash2, ChevronDown,
-  MessageSquare, Calendar, Info, ExternalLink, Download, AlertTriangle, Camera, Loader2
+  MessageSquare, Calendar, Info, ExternalLink, Download, AlertTriangle, Camera, Loader2, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,7 @@ import DocumentsTab from '@/components/association/DocumentsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import AssociationEditModal from '@/components/association/AssociationEditModal';
 import JoinAssociationModal from '@/components/association/JoinAssociationModal';
+import CSVFollowerImportModal from '@/components/association/CSVFollowerImportModal';
 import FollowButton from '@/components/shared/FollowButton';
 import ShareModal from '@/components/shared/ShareModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
@@ -43,6 +44,7 @@ export default function CommunityAssociationDetail() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showCSVImport, setShowCSVImport] = useState(false);
   const [editingBoardMember, setEditingBoardMember] = useState(null);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
@@ -422,10 +424,19 @@ export default function CommunityAssociationDetail() {
         </TabsContent>
 
         {/* INVITE FRIENDS */}
-        <TabsContent value="invite" className="mt-4">
+        <TabsContent value="invite" className="mt-4 space-y-3">
           <button onClick={() => setShowInvite(true)} className="w-full px-4 py-3 rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground font-medium transition-colors">
             Invite Friends to Join
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowCSVImport(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed border-border hover:border-primary/50 hover:bg-primary/5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+              Import Followers from CSV
+            </button>
+          )}
         </TabsContent>
 
         {/* BY LAWS */}
@@ -573,6 +584,17 @@ export default function CommunityAssociationDetail() {
           associationName={association.name}
           onConfirm={(data) => joinMutation.mutate(data)}
           onClose={() => setShowJoinModal(false)}
+        />
+      )}
+
+      {showCSVImport && (
+        <CSVFollowerImportModal
+          association={association}
+          onClose={() => setShowCSVImport(false)}
+          onImported={() => {
+            queryClient.invalidateQueries({ queryKey: ['assoc-members', assocId] });
+            setShowCSVImport(false);
+          }}
         />
       )}
     </div>
