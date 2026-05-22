@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Compass, Calendar, MapPin, Users, Shield,
   Palette, Landmark, Building2, BookOpen, MessageCircle,
@@ -35,6 +35,7 @@ const utilItems = [
 
 export default function TopMenuBar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <header
@@ -71,11 +72,13 @@ export default function TopMenuBar() {
               {navItems.map(({ icon: Icon, label, path }) => {
                 const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
                 return (
-                  <DropdownMenuItem key={path} asChild>
-                    <Link to={path} className={`flex items-center gap-2 cursor-pointer ${isActive ? 'text-accent font-medium' : ''}`}>
-                      <Icon className="w-4 h-4 text-muted-foreground" />
-                      {label}
-                    </Link>
+                  <DropdownMenuItem
+                    key={path}
+                    onSelect={() => navigate(path)}
+                    className={`flex items-center gap-2 cursor-pointer ${isActive ? 'text-accent font-medium' : ''}`}
+                  >
+                    <Icon className="w-4 h-4 text-muted-foreground" />
+                    {label}
                   </DropdownMenuItem>
                 );
               })}
@@ -83,11 +86,13 @@ export default function TopMenuBar() {
               {utilItems.map(({ icon: Icon, label, path }) => {
                 const isActive = location.pathname === path;
                 return (
-                  <DropdownMenuItem key={path} asChild>
-                    <Link to={path} className={`flex items-center gap-2 cursor-pointer ${isActive ? 'text-accent font-medium' : ''}`}>
-                      <Icon className="w-4 h-4 text-muted-foreground" />
-                      {label}
-                    </Link>
+                  <DropdownMenuItem
+                    key={path}
+                    onSelect={() => navigate(path)}
+                    className={`flex items-center gap-2 cursor-pointer ${isActive ? 'text-accent font-medium' : ''}`}
+                  >
+                    <Icon className="w-4 h-4 text-muted-foreground" />
+                    {label}
                   </DropdownMenuItem>
                 );
               })}

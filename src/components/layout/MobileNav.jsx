@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
@@ -27,6 +27,7 @@ const moreItems = [
 
 export default function MobileNav() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <nav
@@ -75,11 +76,13 @@ export default function MobileNav() {
             {moreItems.map(({ icon: Icon, label, path }) => {
               const isActive = location.pathname === path || (path !== '/' && location.pathname.startsWith(path));
               return (
-                <DropdownMenuItem key={path} asChild>
-                  <Link to={path} className={`flex items-center gap-2 cursor-pointer ${isActive ? 'text-accent font-medium' : ''}`}>
-                    <Icon className="w-4 h-4 text-muted-foreground" />
-                    {label}
-                  </Link>
+                <DropdownMenuItem
+                  key={path}
+                  onSelect={() => navigate(path)}
+                  className={`flex items-center gap-2 cursor-pointer ${isActive ? 'text-accent font-medium' : ''}`}
+                >
+                  <Icon className="w-4 h-4 text-muted-foreground" />
+                  {label}
                 </DropdownMenuItem>
               );
             })}
