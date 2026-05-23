@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Image, Video, Type, Music, X, ArrowLeft, Tag, Loader2, Camera, RefreshCw } from 'lucide-react';
+import { Image, Video, Type, Music, X, ArrowLeft, Tag, Loader2, Camera, RefreshCw, Users, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -32,6 +32,7 @@ export default function CreatePost() {
   const [bgColor, setBgColor] = useState('#1a1a2e');
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [videoVisibility, setVideoVisibility] = useState('public');
   const videoRef = useRef(null);
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
@@ -144,7 +145,7 @@ export default function CreatePost() {
         tags,
         bg_color: activeType === 'text' && mediaUrls.length === 0 ? bgColor : undefined,
         thumbnail_url: thumbnailUrl,
-        visibility: 'public',
+        visibility: activeType === 'video' ? videoVisibility : 'public',
         post_type: 'standard',
         neighborhood_name: user.neighborhood_names?.[0],
       });
@@ -284,6 +285,27 @@ export default function CreatePost() {
               <span className="text-sm text-muted-foreground">Add {activeType === 'image' ? 'photos' : activeType === 'video' ? 'videos' : 'audio'}</span>
             </div>
           </label>
+        </div>
+      )}
+
+      {/* Video Visibility */}
+      {activeType === 'video' && (
+        <div className="mt-4 pt-4 border-t border-border">
+          <p className="text-sm font-medium text-foreground mb-2">Who can see this video?</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setVideoVisibility('public')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${videoVisibility === 'public' ? 'bg-accent text-white border-accent' : 'bg-secondary text-muted-foreground border-border hover:bg-secondary/80'}`}
+            >
+              <Globe className="w-4 h-4" /> Everyone
+            </button>
+            <button
+              onClick={() => setVideoVisibility('followers')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${videoVisibility === 'followers' ? 'bg-accent text-white border-accent' : 'bg-secondary text-muted-foreground border-border hover:bg-secondary/80'}`}
+            >
+              <Users className="w-4 h-4" /> Followers only
+            </button>
+          </div>
         </div>
       )}
 

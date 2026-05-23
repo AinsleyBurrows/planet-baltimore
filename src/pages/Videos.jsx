@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Play, Heart, MessageCircle, Share2, Search } from 'lucide-react';
+import { Play, Heart, MessageCircle, Share2, Search, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -87,6 +87,13 @@ function VideoCard({ post }) {
           </div>
         </div>
 
+        <div className="flex items-center gap-2 flex-wrap mb-2">
+          {post.visibility === 'followers' && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+              <Users className="w-3 h-3" /> Followers only
+            </span>
+          )}
+        </div>
         {post.content && (
           <p className="text-sm text-foreground mb-3 line-clamp-2">{post.content}</p>
         )}
@@ -134,13 +141,33 @@ function VideoCard({ post }) {
 
 export default function Videos() {
   const [search, setSearch] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setCurrentUser).catch(() => {});
+  }, []);
 
   const { data: videoPosts = [], isLoading } = useQuery({
     queryKey: ['video-posts'],
     queryFn: () => base44.entities.Post.filter({ media_type: 'video', is_deleted: false }, '-created_date', 50),
   });
 
-  const filtered = videoPosts.filter(p => {
+  const { data: myFollows = [] } = useQuery({
+    queryKey: ['my-follows', currentUser?.id],
+    queryFn: () => base44.entities.Follow.filter({ follower_id: currentUser.id, target_type: 'user' }),
+    enabled: !!currentUser?.id,
+  });
+
+  const followedUserIds = new Set(myFollows.map(f => f.target_id));
+
+  const accessibleVideos = videoPosts.filter(p => {
+    if (p.visibility !== 'followers') return true;
+    if (!currentUser) return false;
+    if (p.author_id === currentUser.id) return true;
+    return followedUserIds.has(p.author_id);
+  });
+
+  const filtered = accessibleVideos.filter(p => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
