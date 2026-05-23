@@ -49,6 +49,7 @@ const StoryDetail                 = lazy(() => import('@/pages/StoryDetail'));
 const CreateStory                 = lazy(() => import('@/pages/CreateStory'));
 const EventDetail                 = lazy(() => import('@/pages/EventDetail'));
 const BannerPreview               = lazy(() => import('@/pages/BannerPreview'));
+const Videos                      = lazy(() => import('@/pages/Videos'));
 
 // Minimal fallback shown while a lazy page chunk is downloading
 function PageLoader() {
@@ -127,6 +128,7 @@ const AuthenticatedApp = () => {
           <Route path="/create-story" element={<CreateStory />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/banner-preview" element={<BannerPreview />} />
+          <Route path="/videos" element={<Videos />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>
