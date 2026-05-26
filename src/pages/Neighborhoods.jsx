@@ -36,6 +36,12 @@ export default function Neighborhoods() {
     enabled: !!selected,
   });
 
+  // All events with coordinates for map display
+  const { data: mapEvents = [] } = useQuery({
+    queryKey: ['map-events'],
+    queryFn: () => base44.entities.Event.filter({ status: 'upcoming' }, '-date', 100),
+  });
+
   const { data: businesses = [], isLoading: loadingBusinesses } = useQuery({
     queryKey: ['neighborhood-businesses', selected?.name],
     queryFn: () => base44.entities.BusinessPage.filter({ neighborhood_name: selected.name }, '-created_date', 12),
@@ -89,6 +95,7 @@ export default function Neighborhoods() {
             neighborhoods={neighborhoods}
             selected={selected}
             onSelect={handleSelect}
+            events={mapEvents}
           />
         )}
       </div>

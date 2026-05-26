@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 // Fix default marker icon paths broken by bundlers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -100,8 +102,47 @@ const REGION_ZONES = [
   { region: 'Central/Downtown',  center: [39.2904, -76.6122], color: '#ef4444', radius: 2200 },
 ];
 
-export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
+const eventIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+  shadowUrl: SHADOW_URL,
+  iconSize: [20, 33],
+  iconAnchor: [10, 33],
+  popupAnchor: [1, -28],
+  shadowSize: [41, 41],
+});
+
+function EventMarker({ event }) {
+  if (!event.latitude || !event.longitude) return null;
+  const dateStr = event.date ? format(new Date(event.date), 'MMM d, h:mm a') : null;
+
+  return (
+    <Marker position={[event.latitude, event.longitude]} icon={eventIcon}>
+      <Popup>
+        <div className="min-w-[200px] max-w-[240px]">
+          {event.image_url && (
+            <img src={event.image_url} alt={event.title} className="w-full h-24 object-cover rounded mb-2" />
+          )}
+          <p className="font-semibold text-sm leading-snug">{event.title}</p>
+          {dateStr && <p className="text-xs text-gray-500 mt-0.5">📅 {dateStr}</p>}
+          {event.venue_name && <p className="text-xs text-gray-500">📍 {event.venue_name}</p>}
+          {event.description && (
+            <p className="text-xs text-gray-600 mt-1 line-clamp-2">{event.description}</p>
+          )}
+          <a
+            href={`/events/${event.id}`}
+            className="mt-2 inline-block text-xs font-medium text-blue-600 hover:underline"
+          >
+            View event →
+          </a>
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
+export default function NeighborhoodMap({ neighborhoods, selected, onSelect, events = [] }) {
   const pinnable = neighborhoods.filter(n => n.latitude && n.longitude);
+  const pinnableEvents = events.filter(e => e.latitude && e.longitude);
 
   return (
     <div className="relative h-full w-full">
@@ -136,7 +177,20 @@ export default function NeighborhoodMap({ neighborhoods, selected, onSelect }) {
             onSelect={onSelect}
           />
         ))}
+
+        {/* Event markers */}
+        {pinnableEvents.map(e => (
+          <EventMarker key={e.id} event={e} />
+        ))}
       </MapContainer>
+
+      {/* Legend */}
+      {pinnableEvents.length > 0 && (
+        <div className="absolute bottom-3 right-3 z-[1000] bg-white/90 backdrop-blur-sm rounded-lg px-2.5 py-1.5 shadow text-xs flex items-center gap-1.5 pointer-events-none">
+          <img src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png" className="h-4" alt="event" />
+          <span className="text-gray-700 font-medium">Events</span>
+        </div>
+      )}
     </div>
   );
 }
