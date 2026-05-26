@@ -20,6 +20,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
     category: business.category || 'other',
     address: business.address || '',
     phone: business.phone || '',
+    contact_email: business.contact_email || '',
     website: business.website || '',
     hours: business.hours || '',
     neighborhood_id: business.neighborhood_id || '',
@@ -112,6 +113,7 @@ export default function BusinessEditProfileModal({ business, onClose }) {
       category: form.category,
       address: form.address,
       phone: form.phone,
+      contact_email: form.contact_email,
       website: form.website,
       hours: form.hours,
       neighborhood_id: form.neighborhood_id,
@@ -225,9 +227,13 @@ export default function BusinessEditProfileModal({ business, onClose }) {
               <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="(410) 555-0100" />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Website</label>
-              <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.website} onChange={e => setForm(p => ({ ...p, website: e.target.value }))} placeholder="https://…" />
+              <label className="text-xs text-muted-foreground mb-1 block">Contact Email</label>
+              <input type="email" className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.contact_email} onChange={e => setForm(p => ({ ...p, contact_email: e.target.value }))} placeholder="hello@yourbusiness.com" />
             </div>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Website</label>
+            <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.website} onChange={e => setForm(p => ({ ...p, website: e.target.value }))} placeholder="https://…" />
           </div>
 
           <div>

@@ -44,6 +44,10 @@
     "phone": {
       "type": "string"
     },
+    "contact_email": {
+      "type": "string",
+      "description": "Public contact email for this business"
+    },
     "website": {
       "type": "string"
     },
