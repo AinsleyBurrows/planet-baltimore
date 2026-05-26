@@ -52,9 +52,19 @@ export default function Home() {
 
   const { data: posts = [], isLoading: loadingPosts } = useQuery({
     queryKey: ['home-posts'],
-    queryFn: () => base44.entities.Post.list('-created_date', 30),
-    staleTime: 120000,
+    queryFn: () => base44.entities.Post.list('-created_date', 50),
+    staleTime: 0,
   });
+
+  // Real-time: refresh feed when any post is created or deleted
+  useEffect(() => {
+    const unsub = base44.entities.Post.subscribe((event) => {
+      if (event.type === 'create' || event.type === 'delete') {
+        queryClient.invalidateQueries({ queryKey: ['home-posts'] });
+      }
+    });
+    return unsub;
+  }, [queryClient]);
   const { data: stories = [], isLoading: loadingStories } = useQuery({
     queryKey: ['home-stories'],
     queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-created_date', 15),
