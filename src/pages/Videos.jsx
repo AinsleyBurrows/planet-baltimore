@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Play, Heart, MessageCircle, Share2, Search, Users, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Heart, MessageCircle, Share2, Search, Users, X, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -182,12 +182,21 @@ function VideoLightbox({ posts, startIndex, onClose }) {
 }
 
 /* ── Thumbnail card (grid) ───────────────────────────────────────── */
-function VideoCard({ post, onPlay }) {
+function VideoCard({ post, onPlay, currentUserId, onDelete }) {
   const videoUrl = post.media_urls?.[0];
   if (!videoUrl) return null;
 
+  const isOwner = currentUserId && post.author_id === currentUserId;
+
+  const handleDelete = async (e) => {
+    e.stopPropagation();
+    if (!confirm('Delete this video?')) return;
+    await base44.entities.Post.update(post.id, { is_deleted: true });
+    onDelete();
+  };
+
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group" onClick={onPlay}>
+    <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group relative" onClick={onPlay}>
       {/* Thumbnail */}
       <div className="relative bg-black aspect-video">
         {post.thumbnail_url ? (
@@ -205,6 +214,14 @@ function VideoCard({ post, onPlay }) {
             <Play className="w-7 h-7 text-white fill-white ml-1" />
           </div>
         </div>
+        {isOwner && (
+          <button
+            onClick={handleDelete}
+            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Info */}
@@ -241,6 +258,7 @@ export default function Videos() {
   const [search, setSearch] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => {});
@@ -318,7 +336,13 @@ export default function Videos() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((post, i) => (
-            <VideoCard key={post.id} post={post} onPlay={() => setLightboxIndex(i)} />
+            <VideoCard
+              key={post.id}
+              post={post}
+              onPlay={() => setLightboxIndex(i)}
+              currentUserId={currentUser?.id}
+              onDelete={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
+            />
           ))}
         </div>
       )}
