@@ -93,20 +93,20 @@ function VideoLightbox({ posts, startIndex, onClose }) {
 
       {/* Main content */}
       <div
-        className="flex flex-col lg:flex-row w-full h-full max-w-6xl mx-auto"
+        className="flex flex-col lg:flex-row w-full h-full max-w-6xl mx-auto overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
         {/* Video */}
-        <div className="flex-1 flex items-center justify-center bg-black min-h-0">
+        <div className="flex-1 flex items-center justify-center bg-black min-h-0 overflow-hidden">
           <video
             ref={videoRef}
             key={post.id}
             src={post.media_urls?.[0]}
             poster={post.thumbnail_url || undefined}
-            className="max-w-full max-h-full object-contain"
+            className="w-full h-full object-contain"
             controls
             autoPlay
-            style={{ maxHeight: 'calc(100vh - 0px)' }}
+            style={{ maxWidth: '100%', maxHeight: '100%' }}
           />
         </div>
 
