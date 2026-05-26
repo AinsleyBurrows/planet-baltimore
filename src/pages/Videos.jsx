@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Play, Heart, MessageCircle, Share2, Search, Users } from 'lucide-react';
+import { Play, Heart, MessageCircle, Share2, Search, Users, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -9,18 +9,36 @@ import { format } from 'date-fns';
 import CommentSection from '@/components/shared/CommentSection';
 import ShareModal from '@/components/shared/ShareModal';
 
-function VideoCard({ post }) {
-  const [playing, setPlaying] = useState(false);
+/* ── Fullscreen lightbox ─────────────────────────────────────────── */
+function VideoLightbox({ posts, startIndex, onClose }) {
+  const [index, setIndex] = useState(startIndex);
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes_count || 0);
   const videoRef = useRef(null);
 
-  const handlePlay = () => {
-    setPlaying(true);
-    videoRef.current?.play();
-  };
+  const post = posts[index];
+
+  // Reset state when index changes
+  useEffect(() => {
+    setLiked(false);
+    setLikesCount(posts[index]?.likes_count || 0);
+    setShowComments(false);
+    // Auto-play when switching
+    setTimeout(() => videoRef.current?.play(), 100);
+  }, [index, posts]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') setIndex(i => Math.max(0, i - 1));
+      if (e.key === 'ArrowRight') setIndex(i => Math.min(posts.length - 1, i + 1));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose, posts.length]);
 
   const handleLike = async () => {
     const user = await base44.auth.me().catch(() => null);
@@ -36,97 +54,121 @@ function VideoCard({ post }) {
     }
   };
 
-  const videoUrl = post.media_urls?.[0];
-  if (!videoUrl) return null;
+  if (!post) return null;
 
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all duration-200">
-      {/* Video Player */}
-      <div className="relative bg-black aspect-video">
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          poster={post.thumbnail_url || undefined}
-          className="w-full h-full object-cover"
-          controls={playing}
-          preload="metadata"
-          onPause={() => setPlaying(false)}
-          onEnded={() => setPlaying(false)}
-        />
-        {!playing && (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
-            onClick={handlePlay}
-          >
-            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40 hover:bg-white/30 transition-colors">
-              <Play className="w-8 h-8 text-white fill-white ml-1" />
-            </div>
-          </div>
-        )}
+    <div className="fixed inset-0 z-50 bg-black flex items-center justify-center" onClick={onClose}>
+      {/* Close */}
+      <button
+        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+        onClick={onClose}
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      {/* Counter */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 text-white/60 text-sm font-medium">
+        {index + 1} / {posts.length}
       </div>
 
-      {/* Info */}
-      <div className="p-3 sm:p-4">
-        <div className="flex items-center gap-3 mb-2">
-          <Link to={`/profile/${post.author_id}`}>
-            <Avatar className="w-8 h-8">
-              <AvatarImage src={post.author_avatar} />
-              <AvatarFallback className="bg-accent/10 text-accent text-xs font-semibold">
-                {post.author_name?.charAt(0) || '?'}
-              </AvatarFallback>
-            </Avatar>
-          </Link>
-          <div className="flex-1 min-w-0">
-            <Link to={`/profile/${post.author_id}`} className="text-sm font-semibold text-foreground hover:text-accent transition-colors truncate block">
-              {post.author_name || 'Anonymous'}
+      {/* Prev */}
+      {index > 0 && (
+        <button
+          className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          onClick={e => { e.stopPropagation(); setIndex(i => i - 1); }}
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+      )}
+
+      {/* Next */}
+      {index < posts.length - 1 && (
+        <button
+          className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          onClick={e => { e.stopPropagation(); setIndex(i => i + 1); }}
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+      )}
+
+      {/* Main content */}
+      <div
+        className="flex flex-col lg:flex-row w-full h-full max-w-6xl mx-auto"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Video */}
+        <div className="flex-1 flex items-center justify-center bg-black min-h-0">
+          <video
+            ref={videoRef}
+            key={post.id}
+            src={post.media_urls?.[0]}
+            poster={post.thumbnail_url || undefined}
+            className="max-w-full max-h-full object-contain"
+            controls
+            autoPlay
+            style={{ maxHeight: 'calc(100vh - 0px)' }}
+          />
+        </div>
+
+        {/* Sidebar info */}
+        <div className="lg:w-80 bg-card border-l border-border flex flex-col overflow-hidden shrink-0">
+          {/* Author */}
+          <div className="p-4 border-b border-border flex items-center gap-3">
+            <Link to={`/profile/${post.author_id}`} onClick={onClose}>
+              <Avatar className="w-9 h-9">
+                <AvatarImage src={post.author_avatar} />
+                <AvatarFallback className="bg-accent/10 text-accent text-xs font-semibold">
+                  {post.author_name?.charAt(0) || '?'}
+                </AvatarFallback>
+              </Avatar>
             </Link>
-            <p className="text-xs text-muted-foreground">
-              {post.neighborhood_name && `${post.neighborhood_name} · `}
-              {post.created_date ? format(new Date(post.created_date), 'MMM d, yyyy') : ''}
-            </p>
+            <div className="flex-1 min-w-0">
+              <Link to={`/profile/${post.author_id}`} onClick={onClose} className="text-sm font-semibold text-foreground hover:text-accent transition-colors block truncate">
+                {post.author_name || 'Anonymous'}
+              </Link>
+              <p className="text-xs text-muted-foreground">
+                {post.neighborhood_name && `${post.neighborhood_name} · `}
+                {post.created_date ? format(new Date(post.created_date), 'MMM d, yyyy') : ''}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2 flex-wrap mb-2">
-          {post.visibility === 'followers' && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-              <Users className="w-3 h-3" /> Followers only
-            </span>
+          {/* Caption */}
+          {post.content && (
+            <div className="p-4 border-b border-border">
+              <p className="text-sm text-foreground">{post.content}</p>
+            </div>
           )}
-        </div>
-        {post.content && (
-          <p className="text-sm text-foreground mb-3 line-clamp-2">{post.content}</p>
-        )}
 
-        {/* Actions */}
-        <div className="flex items-center gap-5">
-          <button
-            onClick={handleLike}
-            className={`flex items-center gap-1.5 text-sm transition-colors active:scale-90 ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
-            <span>{likesCount}</span>
-          </button>
-          <button
-            onClick={() => setShowComments(v => !v)}
-            className={`flex items-center gap-1.5 text-sm transition-colors active:scale-90 ${showComments ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>{post.comments_count || 0}</span>
-          </button>
-          <button
-            onClick={() => setShowShare(true)}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors active:scale-90"
-          >
-            <Share2 className="w-4 h-4" />
-          </button>
-        </div>
+          {/* Actions */}
+          <div className="p-4 border-b border-border flex items-center gap-5">
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-1.5 text-sm transition-colors ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
+              <span>{likesCount}</span>
+            </button>
+            <button
+              onClick={() => setShowComments(v => !v)}
+              className={`flex items-center gap-1.5 text-sm transition-colors ${showComments ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span>{post.comments_count || 0}</span>
+            </button>
+            <button
+              onClick={() => setShowShare(true)}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          </div>
 
-        {showComments && (
-          <div className="mt-3 pt-3 border-t border-border">
+          {/* Comments */}
+          <div className="flex-1 overflow-y-auto p-4">
             <CommentSection targetType="post" targetId={post.id} />
           </div>
-        )}
+        </div>
       </div>
 
       <ShareModal
@@ -139,9 +181,66 @@ function VideoCard({ post }) {
   );
 }
 
+/* ── Thumbnail card (grid) ───────────────────────────────────────── */
+function VideoCard({ post, onPlay }) {
+  const videoUrl = post.media_urls?.[0];
+  if (!videoUrl) return null;
+
+  return (
+    <div className="bg-card rounded-xl border border-border overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group" onClick={onPlay}>
+      {/* Thumbnail */}
+      <div className="relative bg-black aspect-video">
+        {post.thumbnail_url ? (
+          <img src={post.thumbnail_url} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <video
+            src={videoUrl}
+            className="w-full h-full object-cover"
+            preload="metadata"
+            muted
+          />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/40 group-hover:bg-white/30 transition-colors">
+            <Play className="w-7 h-7 text-white fill-white ml-1" />
+          </div>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="p-3 sm:p-4">
+        <div className="flex items-center gap-3 mb-2">
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={post.author_avatar} />
+            <AvatarFallback className="bg-accent/10 text-accent text-xs font-semibold">
+              {post.author_name?.charAt(0) || '?'}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground truncate">{post.author_name || 'Anonymous'}</p>
+            <p className="text-xs text-muted-foreground">
+              {post.neighborhood_name && `${post.neighborhood_name} · `}
+              {post.created_date ? format(new Date(post.created_date), 'MMM d, yyyy') : ''}
+            </p>
+          </div>
+        </div>
+        {post.visibility === 'followers' && (
+          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-secondary px-2 py-0.5 rounded-full mb-2">
+            <Users className="w-3 h-3" /> Followers only
+          </span>
+        )}
+        {post.content && (
+          <p className="text-sm text-foreground line-clamp-2">{post.content}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Videos() {
   const [search, setSearch] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
   useEffect(() => {
     base44.auth.me().then(setCurrentUser).catch(() => {});
@@ -218,10 +317,18 @@ export default function Videos() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(post => (
-            <VideoCard key={post.id} post={post} />
+          {filtered.map((post, i) => (
+            <VideoCard key={post.id} post={post} onPlay={() => setLightboxIndex(i)} />
           ))}
         </div>
+      )}
+
+      {lightboxIndex !== null && (
+        <VideoLightbox
+          posts={filtered}
+          startIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+        />
       )}
     </div>
   );
