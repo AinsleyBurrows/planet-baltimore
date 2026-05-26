@@ -23,6 +23,7 @@ import RSVPEvents from '@/components/profile/RSVPEvents';
 import StoryCard from '@/components/shared/StoryCard';
 import MyPagesTab from '@/components/profile/MyPagesTab';
 import FollowersModal from '@/components/profile/FollowersModal';
+import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -378,9 +379,10 @@ export default function Profile() {
         </div>
 
         <div className="mt-3 sm:mt-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="font-bold text-foreground text-sm sm:text-base">{user.display_name || user.full_name}</h1>
             {user.is_verified && <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />}
+            {user.is_founding_member && <FoundingMemberBadge />}
           </div>
           {user.website && (
             <a href={user.website.startsWith('http') ? user.website : `https://${user.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-accent hover:underline text-sm mt-1">

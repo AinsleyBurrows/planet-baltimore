@@ -11,6 +11,11 @@
     "author_avatar": {
       "type": "string"
     },
+    "author_is_founding_member": {
+      "type": "boolean",
+      "default": false,
+      "description": "Snapshot of author's founding member status at post creation"
+    },
     "author_type": {
       "type": "string",
       "enum": [

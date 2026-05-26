@@ -8,6 +8,7 @@ import AppImage from './AppImage';
 import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
 import EditPostModal from './EditPostModal';
+import FoundingMemberBadge from './FoundingMemberBadge.jsx';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -160,9 +161,12 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onD
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-accent transition-colors truncate">
-              {post.author_name || 'Anonymous'}
-            </p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-accent transition-colors truncate">
+                {post.author_name || 'Anonymous'}
+              </p>
+              {post.author_is_founding_member && <FoundingMemberBadge />}
+            </div>
             <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground">
               {post.neighborhood_name && <span className="truncate">{post.neighborhood_name}</span>}
               {post.neighborhood_name && <span className="flex-shrink-0">·</span>}
