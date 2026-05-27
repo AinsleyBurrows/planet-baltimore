@@ -47,12 +47,20 @@ function NeighborhoodMarker({ n, selected, onSelect }) {
   const markerRef = useRef(null);
   const isSelected = selected?.id === n.id;
 
-  // Auto-open popup when this neighborhood is selected
+  // Auto-open popup when this neighborhood is selected via click/grid
   useEffect(() => {
     if (isSelected && markerRef.current) {
       markerRef.current.openPopup();
     }
   }, [isSelected]);
+
+  // Disable Leaflet's default hover-to-open popup behavior
+  useEffect(() => {
+    const marker = markerRef.current;
+    if (marker) {
+      marker.off('mouseover');
+    }
+  }, []);
 
   return (
     <Marker
@@ -61,7 +69,7 @@ function NeighborhoodMarker({ n, selected, onSelect }) {
       icon={isSelected ? selectedIcon : (REGION_ICONS[n.region] || makeIcon('blue'))}
       eventHandlers={{ click: () => onSelect(n) }}
     >
-      <Popup>
+      <Popup autoPan={false}>
         <div className="min-w-[160px]">
           <p className="font-semibold text-sm">{n.name}</p>
           <p className="text-xs mt-0.5 font-medium" style={{ color: REGION_COLORS[n.region]?.hex || '#6b7280' }}>{n.region}</p>
