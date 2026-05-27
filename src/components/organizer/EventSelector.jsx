@@ -1,16 +1,25 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Copy, Loader2 } from 'lucide-react';
+import { Calendar, MapPin, Copy, Loader2, Trash2 } from 'lucide-react';
 import { format, isPast } from 'date-fns';
 
-export default function EventSelector({ events, selectedEvent, onSelect, onDuplicate, isLoading }) {
+export default function EventSelector({ events, selectedEvent, onSelect, onDuplicate, onDelete, isLoading }) {
   const [duplicatingId, setDuplicatingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const handleDuplicate = async (e, event) => {
     e.stopPropagation();
     setDuplicatingId(event.id);
     await onDuplicate?.(event);
     setDuplicatingId(null);
+  };
+
+  const handleDelete = async (e, event) => {
+    e.stopPropagation();
+    if (!window.confirm(`Delete "${event.title}"? This cannot be undone.`)) return;
+    setDeletingId(event.id);
+    await onDelete?.(event);
+    setDeletingId(null);
   };
   if (isLoading) {
     return <div className="text-center text-muted-foreground">Loading events...</div>;
@@ -55,6 +64,16 @@ export default function EventSelector({ events, selectedEvent, onSelect, onDupli
                     {duplicatingId === event.id
                       ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       : <Copy className="w-3.5 h-3.5" />
+                    }
+                  </button>
+                  <button
+                    onClick={(e) => handleDelete(e, event)}
+                    title="Delete event"
+                    className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive"
+                  >
+                    {deletingId === event.id
+                      ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      : <Trash2 className="w-3.5 h-3.5" />
                     }
                   </button>
                 </div>

@@ -92,6 +92,13 @@ export default function OrganizerStudio() {
     );
   }
 
+  const handleDeleteEvent = async (event) => {
+    await base44.entities.Event.delete(event.id);
+    if (selectedEvent?.id === event.id) setSelectedEvent(null);
+    queryClient.invalidateQueries({ queryKey: ['user-events', currentUser?.id] });
+    toast({ title: 'Event deleted' });
+  };
+
   const handleDuplicateEvent = async (event) => {
     const { id, created_date, updated_date, rsvp_count, ...rest } = event;
     const copy = {
@@ -165,7 +172,7 @@ export default function OrganizerStudio() {
 
         {/* ── MANAGE ──────────────────────────────────────────────── */}
         <TabsContent value="manage" className="space-y-6">
-          <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} onDuplicate={handleDuplicateEvent} isLoading={eventsLoading} />
+          <EventSelector events={events} selectedEvent={selectedEvent} onSelect={setSelectedEvent} onDuplicate={handleDuplicateEvent} onDelete={handleDeleteEvent} isLoading={eventsLoading} />
 
           {selectedEvent ? (
             <>
