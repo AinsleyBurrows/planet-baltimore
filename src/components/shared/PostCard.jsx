@@ -61,6 +61,7 @@ const getTextColor = (bg) => TEXT_COLOR_MAP[bg] || '#ffffff';
 const URL_REGEX = /(https?:\/\/[^\s]+)/g;
 
 function linkify(text) {
+  if (!text) return null;
   const parts = text.split(URL_REGEX);
   return parts.map((part, i) =>
     URL_REGEX.test(part) ? (
@@ -88,28 +89,34 @@ function TruncatedText({ text }) {
   );
 }
 
-const PostCard = React.memo(function PostCard({ post, currentUserId, onLike, onDelete, onEdit }) {
+const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser: currentUserProp, onLike, onDelete, onEdit }) {
   const [liked, setLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0);
   const [showShare, setShowShare] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(currentUserProp || null);
   const queryClient = useQueryClient();
   const isOwner = currentUserId === post.author_id;
   const postUrl = `${window.location.origin}/profile/${post.author_id}`;
   const displayPost = localPost;
 
+  // Only fetch auth if not passed as prop
   useEffect(() => {
-    base44.auth.me().then(async (u) => {
-      setCurrentUser(u);
-      if (u) {
-        const likes = await base44.entities.Like.filter({ user_id: u.id, target_type: 'post', target_id: post.id });
-        setLiked(likes.length > 0);
-      }
-    }).catch(() => {});
-  }, [post.id]);
+    if (currentUserProp) {
+      setCurrentUser(currentUserProp);
+      return;
+    }
+    base44.auth.me().then(setCurrentUser).catch(() => {});
+  }, [currentUserProp]);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    base44.entities.Like.filter({ user_id: currentUser.id, target_type: 'post', target_id: post.id })
+      .then(likes => setLiked(likes.length > 0))
+      .catch(() => {});
+  }, [currentUser?.id, post.id]);
 
   const { data: savedRecords = [] } = useQuery({
     queryKey: ['saved-post', post.id, currentUser?.id],

@@ -228,7 +228,7 @@ export default function Home() {
         ) : (
           feedItems.map((item, idx) => {
             const cardContent = (() => {
-              if (item.type === 'post') return <PostCard key={`post-${item.data.id}-${idx}`} post={item.data} currentUserId={currentUser?.id} onDelete={handleDeletePost} />;
+              if (item.type === 'post') return <PostCard key={`post-${item.data.id}-${idx}`} post={item.data} currentUserId={currentUser?.id} currentUser={currentUser} onDelete={handleDeletePost} />;
               if (item.type === 'story') return (
                 <div className="relative">
                   <div className="absolute -top-1 left-4 z-10">
