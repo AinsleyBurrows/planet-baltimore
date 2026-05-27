@@ -7,6 +7,26 @@ import { format, isToday, isYesterday } from 'date-fns';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+const URL_REGEX = /(https?:\/\/[^\s]+)/g;
+
+function linkifyMessage(text, isOwn) {
+  const parts = text.split(URL_REGEX);
+  return parts.map((part, i) =>
+    URL_REGEX.test(part) ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`underline break-all hover:opacity-80 ${isOwn ? 'text-accent-foreground/90' : 'text-accent'}`}
+        onClick={e => e.stopPropagation()}
+      >
+        {part}
+      </a>
+    ) : part
+  );
+}
+
 function MessageBubble({ msg, isOwn }) {
   const time = msg.created_date ? format(new Date(msg.created_date), 'h:mm a') : '';
 
@@ -20,13 +40,13 @@ function MessageBubble({ msg, isOwn }) {
       )}
       <div className={`max-w-[72%] group`}>
         <div
-          className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+          className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words ${
             isOwn
               ? 'bg-accent text-accent-foreground rounded-br-sm'
               : 'bg-card border border-border text-foreground rounded-bl-sm'
           }`}
         >
-          {msg.content}
+          {linkifyMessage(msg.content, isOwn)}
         </div>
         <div className={`flex items-center gap-1 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
           <span className="text-[10px] text-muted-foreground">{time}</span>
