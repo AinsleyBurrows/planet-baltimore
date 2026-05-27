@@ -28,6 +28,7 @@ import AssociationEditModal from '@/components/association/AssociationEditModal'
 import JoinAssociationModal from '@/components/association/JoinAssociationModal';
 import CSVFollowerImportModal from '@/components/association/CSVFollowerImportModal';
 import FollowButton from '@/components/shared/FollowButton';
+import PageEventsTab from '@/components/shared/PageEventsTab';
 import ShareModal from '@/components/shared/ShareModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
 import { format } from 'date-fns';
@@ -318,10 +319,17 @@ export default function CommunityAssociationDetail() {
         </TabsContent>
 
         {/* EVENTS */}
-        <TabsContent value="events" className="mt-4 space-y-3">
-          {events.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground text-sm">No upcoming events in this area.</div>
-          ) : events.map(event => <EventCard key={event.id} event={event} compact />)}
+        <TabsContent value="events" className="mt-4">
+          <PageEventsTab
+            events={events}
+            isOwner={isAdmin}
+            user={currentUser}
+            pageName={association.name}
+            pageImageUrl={association.image_url}
+            neighborhoodId={association.neighborhood_id}
+            neighborhoodName={association.neighborhood_name}
+            onCreated={() => queryClient.invalidateQueries({ queryKey: ['assoc-events', association?.neighborhood_name] })}
+          />
         </TabsContent>
 
         {/* POLLS */}

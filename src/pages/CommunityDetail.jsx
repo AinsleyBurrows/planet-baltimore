@@ -21,6 +21,7 @@ import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
 import CommunityCreatePostModal from '@/components/community/CommunityCreatePostModal';
 import CommunityCreateEventModal from '@/components/community/CommunityCreateEventModal';
+import PageEventsTab from '@/components/shared/PageEventsTab';
 import CommunityAnnouncementsTab from '@/components/community/tabs/CommunityAnnouncementsTab';
 import CommunityMembersTab from '@/components/community/tabs/CommunityMembersTab';
 import CommunityResourcesTab from '@/components/community/tabs/CommunityResourcesTab';
@@ -311,31 +312,17 @@ export default function CommunityDetail() {
           )}
         </TabsContent>
 
-        <TabsContent value="events" className="mt-4 space-y-3">
-          {isOwner && (
-            <button
-              onClick={() => setShowCreateEvent(true)}
-              className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
-            >
-              <Plus className="w-4 h-4" />Create an Event
-            </button>
-          )}
-          {events.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground text-sm">No events yet.</div>
-          ) : events.map(event => (
-            <div key={event.id} className="relative group">
-              <EventCard event={event} compact />
-              {isOwner && (
-                <button
-                  onClick={() => setEditingEvent(event)}
-                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-background/80 hover:bg-background border border-border opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                  aria-label="Edit event"
-                >
-                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
-                </button>
-              )}
-            </div>
-          ))}
+        <TabsContent value="events" className="mt-4">
+          <PageEventsTab
+            events={events}
+            isOwner={isOwner}
+            user={user}
+            pageName={community.name}
+            pageImageUrl={community.image_url}
+            neighborhoodId={community.neighborhood_id}
+            neighborhoodName={community.neighborhood_name}
+            onCreated={() => queryClient.invalidateQueries({ queryKey: ['community-events', communityId] })}
+          />
         </TabsContent>
 
         <TabsContent value="invite" className="mt-4">

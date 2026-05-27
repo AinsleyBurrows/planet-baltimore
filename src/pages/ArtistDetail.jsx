@@ -24,6 +24,7 @@ import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ArtistSeriesTab from '@/components/artist/ArtistSeriesTab';
 import ArtistStudioJournal from '@/components/artist/ArtistStudioJournal';
 import ArtistCreateEvent from '@/components/artist/ArtistCreateEvent';
+import PageEventsTab from '@/components/shared/PageEventsTab';
 import LookbookTab from '@/components/artist/fashion/LookbookTab';
 import DropsTab from '@/components/artist/fashion/DropsTab';
 import CollabCallsTab from '@/components/artist/fashion/CollabCallsTab';
@@ -379,7 +380,16 @@ export default function ArtistDetail() {
 
         {/* Events */}
         <TabsContent value="events" className="mt-4">
-          <ArtistCreateEvent artist={artist} events={events} isOwner={isOwner} user={user} />
+          <PageEventsTab
+            events={events}
+            isOwner={isOwner}
+            user={user}
+            pageName={artist.name}
+            pageImageUrl={artist.image_url}
+            neighborhoodId={artist.neighborhood_id}
+            neighborhoodName={artist.neighborhood_name}
+            onCreated={() => queryClient.invalidateQueries({ queryKey: ['artist-events', artist.owner_id] })}
+          />
         </TabsContent>
 
         {/* Community Discussion */}

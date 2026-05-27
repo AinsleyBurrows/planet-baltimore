@@ -22,6 +22,7 @@ import PageAdminBar from '@/components/shared/PageAdminBar';
 import { useNavigate } from 'react-router-dom';
 import ImageFitScaleModal from '@/components/shared/ImageFitScaleModal';
 import ExhibitionsTab from '@/components/arts/tabs/ExhibitionsTab';
+import PageEventsTab from '@/components/shared/PageEventsTab';
 import ArtistRosterTab from '@/components/arts/tabs/ArtistRosterTab';
 import MembershipTab from '@/components/arts/tabs/MembershipTab';
 import OpportunitiesTab from '@/components/arts/tabs/OpportunitiesTab';
@@ -484,18 +485,17 @@ export default function ArtsOrgDetail() {
             <AnnouncementsTab org={org} isOwner={isOwner} />
           </TabsContent>
 
-          <TabsContent value="events" className="mt-4 space-y-4">
-            {isOwner && (
-              <a
-                href={`/create-event?organizer_name=${encodeURIComponent(org.name)}&organizer_id=${org.id}`}
-                className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-accent text-muted-foreground hover:text-accent text-sm font-medium transition-colors flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4" />Create an event for {org.name}
-              </a>
-            )}
-            {events.length === 0
-              ? <p className="text-center py-10 text-sm text-muted-foreground">No upcoming events.</p>
-              : <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{events.map(e => <EventCard key={e.id} event={e} />)}</div>}
+          <TabsContent value="events" className="mt-4">
+            <PageEventsTab
+              events={events}
+              isOwner={isOwner}
+              user={currentUser}
+              pageName={org.name}
+              pageImageUrl={org.image_url}
+              neighborhoodId={org.neighborhood_id}
+              neighborhoodName={org.neighborhood_name}
+              onCreated={() => queryClient.invalidateQueries({ queryKey: ['arts-org-events', org?.name] })}
+            />
           </TabsContent>
 
           {isNonprofit && (

@@ -27,6 +27,7 @@ import BusinessPromotionsTab from '@/components/business/BusinessPromotionsTab';
 import BusinessReviewsTab from '@/components/business/BusinessReviewsTab';
 import BusinessSavedTab from '@/components/business/BusinessSavedTab';
 import BusinessEventsTab from '@/components/business/BusinessEventsTab';
+import PageEventsTab from '@/components/shared/PageEventsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ShareModal from '@/components/shared/ShareModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
@@ -315,7 +316,16 @@ export default function BusinessDetail() {
         </TabsContent>
 
         <TabsContent value="events" className="mt-4">
-          <BusinessEventsTab business={business} isOwner={isOwner} />
+          <PageEventsTab
+            events={events}
+            isOwner={isOwner}
+            user={user}
+            pageName={business.name}
+            pageImageUrl={business.image_url}
+            neighborhoodId={business.neighborhood_id}
+            neighborhoodName={business.neighborhood_name}
+            onCreated={() => queryClient.invalidateQueries({ queryKey: ['business-events', business?.owner_id] })}
+          />
         </TabsContent>
 
         <TabsContent value="promotions" className="mt-4">
