@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil, Bookmark, MessageCircle } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil, Bookmark, MessageCircle, Ticket } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,7 @@ import RSVPEvents from '@/components/profile/RSVPEvents';
 import StoryCard from '@/components/shared/StoryCard';
 import MyPagesTab from '@/components/profile/MyPagesTab';
 import FollowersModal from '@/components/profile/FollowersModal';
+import MyTicketsTab from '@/components/profile/MyTicketsTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 
 const tabs = [
@@ -32,6 +33,7 @@ const tabs = [
   { id: 'saved', label: 'Saved', icon: Bookmark },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
   { id: 'created_events', label: 'Organized', icon: Calendar },
+  { id: 'tickets', label: 'My Tickets', icon: Ticket },
   { id: 'pages', label: 'My Pages', icon: Shield },
 ];
 
@@ -440,7 +442,7 @@ export default function Profile() {
 
       {/* Tabs */}
       <div className="flex border-b border-border mt-3 overflow-x-auto gap-0.5">
-        {tabs.filter(tab => tab.id !== 'pages' || isOwnProfile).map((tab) => {
+        {tabs.filter(tab => (tab.id !== 'pages' && tab.id !== 'tickets') || isOwnProfile).map((tab) => {
           const Icon = tab.icon;
           return (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-[#d4580a] text-[#d4580a]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
@@ -525,6 +527,9 @@ export default function Profile() {
           ) : (
             <div className="text-center py-12 text-muted-foreground text-sm">No events organized yet.</div>
           )
+        )}
+        {activeTab === 'tickets' && isOwnProfile && (
+          <MyTicketsTab userId={user?.id} />
         )}
         {activeTab === 'pages' && isOwnProfile && (
           <MyPagesTab userId={user?.id} />
