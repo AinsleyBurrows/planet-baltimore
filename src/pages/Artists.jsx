@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Plus, Palette, Shield, Search } from 'lucide-react';
+import { Plus, Palette, Shield, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -21,12 +21,29 @@ export default function Artists() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [sort, setSort] = useState('-created_date');
   const [search, setSearch] = useState('');
+  const [user, setUser] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   const { data: artists = [], isLoading } = useQuery({
     queryKey: ['artists', sort],
     queryFn: () => base44.entities.ArtistPage.list(sort, 80),
     staleTime: 120000,
   });
+
+  const handleDelete = async (e, artistId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm('Delete this artist page? This cannot be undone.')) return;
+    setDeletingId(artistId);
+    await base44.entities.ArtistPage.delete(artistId);
+    queryClient.invalidateQueries({ queryKey: ['artists'] });
+    setDeletingId(null);
+  };
+
+  const isAdmin = user?.role === 'admin';
 
   const filtered = artists.filter(a => {
     const catMatch = activeCategory === 'All' || a.category === activeCategory.toLowerCase().replace(' ', '_');
@@ -91,25 +108,37 @@ export default function Artists() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {filtered.map((artist) => (
-            <Link key={artist.id} to={`/artists/${artist.id}`} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <div className="aspect-square bg-muted overflow-hidden">
-                {artist.image_url ? (
-                  <img src={artist.image_url} alt={artist.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-accent/20 to-primary/10 flex items-center justify-center">
-                    <Palette className="w-10 h-10 text-accent/30" />
-                  </div>
-                )}
-              </div>
-              <div className="p-3">
-                <div className="flex items-center gap-1">
-                  <h3 className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors truncate">{artist.name}</h3>
-                  {artist.is_verified && <Shield className="w-3.5 h-3.5 text-accent flex-shrink-0" />}
+            <div key={artist.id} className="relative group">
+              <Link to={`/artists/${artist.id}`} className="block bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <div className="aspect-square bg-muted overflow-hidden">
+                  {artist.image_url ? (
+                    <img src={artist.image_url} alt={artist.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-accent/20 to-primary/10 flex items-center justify-center">
+                      <Palette className="w-10 h-10 text-accent/30" />
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground capitalize mt-0.5">{artist.category?.replace('_', ' ')}</p>
-                {artist.neighborhood_name && <p className="text-xs text-muted-foreground mt-0.5">{artist.neighborhood_name}</p>}
-              </div>
-            </Link>
+                <div className="p-3">
+                  <div className="flex items-center gap-1">
+                    <h3 className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors truncate">{artist.name}</h3>
+                    {artist.is_verified && <Shield className="w-3.5 h-3.5 text-accent flex-shrink-0" />}
+                  </div>
+                  <p className="text-xs text-muted-foreground capitalize mt-0.5">{artist.category?.replace('_', ' ')}</p>
+                  {artist.neighborhood_name && <p className="text-xs text-muted-foreground mt-0.5">{artist.neighborhood_name}</p>}
+                </div>
+              </Link>
+              {isAdmin && (
+                <button
+                  onClick={(e) => handleDelete(e, artist.id)}
+                  disabled={deletingId === artist.id}
+                  className="absolute top-2 right-2 p-1.5 rounded-lg bg-destructive/90 hover:bg-destructive text-white opacity-0 group-hover:opacity-100 transition-opacity shadow-md disabled:opacity-50"
+                  title="Delete artist page"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           ))}
         </div>
       )}
