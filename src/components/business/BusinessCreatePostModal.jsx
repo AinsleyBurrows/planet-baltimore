@@ -18,13 +18,36 @@ export default function BusinessCreatePostModal({ business, user, onClose }) {
   const videoInputRef = useRef(null);
 
   const isTextOnly = mediaFiles.length === 0;
+  const [thumbnailFile, setThumbnailFile] = useState(null);
 
-  const addFiles = (files, type) => {
+  const generateVideoThumbnail = (videoFile) => {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.src = URL.createObjectURL(videoFile);
+      video.currentTime = 1;
+      video.onloadeddata = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 360;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        canvas.toBlob((blob) => {
+          resolve(new File([blob], 'thumbnail.jpg', { type: 'image/jpeg' }));
+        }, 'image/jpeg', 0.85);
+      };
+      video.onerror = () => resolve(null);
+    });
+  };
+
+  const addFiles = async (files, type) => {
     const newFiles = Array.from(files).map(file => ({
       file, previewUrl: URL.createObjectURL(file), type,
     }));
     setMediaFiles(prev => [...prev, ...newFiles].slice(0, 4));
     setBgColor(null);
+    if (type === 'video' && files[0]) {
+      const thumb = await generateVideoThumbnail(files[0]);
+      if (thumb) setThumbnailFile(thumb);
+    }
   };
 
   const removeFile = (idx) => setMediaFiles(prev => prev.filter((_, i) => i !== idx));
@@ -46,6 +69,12 @@ export default function BusinessCreatePostModal({ business, user, onClose }) {
       setUploading(false);
     }
 
+    let thumbnail_url;
+    if (thumbnailFile && mediaFiles[0]?.type === 'video') {
+      const thumbResult = await base44.integrations.Core.UploadFile({ file: thumbnailFile });
+      thumbnail_url = thumbResult.file_url;
+    }
+
     await base44.entities.Post.create({
       content: content.trim(),
       author_id: user.id,
@@ -57,6 +86,7 @@ export default function BusinessCreatePostModal({ business, user, onClose }) {
       visibility: 'public',
       media_urls,
       media_type,
+      thumbnail_url,
       bg_color: isTextOnly && bgColor ? bgColor : undefined,
       is_pinned: isPinned,
       neighborhood_id: business.neighborhood_id,
