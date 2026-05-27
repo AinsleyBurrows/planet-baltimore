@@ -15,6 +15,7 @@ export default function InviteFriendsModal({ onClose }) {
   const [emails, setEmails] = useState([]);
   const [rawText, setRawText] = useState('');
   const [parsed, setParsed] = useState(false);
+  const [note, setNote] = useState('');
   const [results, setResults] = useState([]); // { email, status: 'sent'|'error' }
   const [sending, setSending] = useState(false);
   const fileInputRef = useRef(null);
@@ -49,6 +50,13 @@ export default function InviteFriendsModal({ onClose }) {
     for (const email of emails) {
       try {
         await base44.users.inviteUser(email, 'user');
+        if (note.trim()) {
+          await base44.integrations.Core.SendEmail({
+            to: email,
+            subject: 'A personal note from your friend on Planet Baltimore',
+            body: `Your friend wanted to share a note with you:\n\n"${note.trim()}"\n\nSee you on Planet Baltimore!`,
+          });
+        }
         res.push({ email, status: 'sent' });
       } catch {
         res.push({ email, status: 'error' });
@@ -167,6 +175,20 @@ export default function InviteFriendsModal({ onClose }) {
                   <p className="text-sm text-destructive flex items-center gap-1.5">
                     <AlertCircle className="w-4 h-4" />No valid emails found. Try again.
                   </p>
+                )}
+
+                {parsed && emails.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Add a personal note <span className="text-muted-foreground font-normal">(optional)</span></label>
+                    <textarea
+                      className="w-full h-20 rounded-lg border border-input bg-transparent px-3 py-2 text-sm resize-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring placeholder:text-muted-foreground"
+                      placeholder="Hey! I think you'd love Planet Baltimore — come join me..."
+                      value={note}
+                      onChange={e => setNote(e.target.value)}
+                      maxLength={300}
+                    />
+                    <p className="text-xs text-muted-foreground text-right">{note.length}/300</p>
+                  </div>
                 )}
               </>
             )}
