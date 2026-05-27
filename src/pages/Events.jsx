@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import CalendarView from '@/components/events/CalendarView';
 import CreateEventModal from '@/components/events/CreateEventModal';
 
-const CATEGORIES = ['All', 'Art', 'Music', 'Education', 'Community', 'Wellness', 'Festival', 'Family', 'Other'];
+const CATEGORIES = ['All', 'Virtual', 'Art', 'Music', 'Education', 'Community', 'Wellness', 'Festival', 'Family', 'Other'];
 const ARTS_TYPES = ['All Events', 'Exhibitions', 'Workshops', 'Performances', 'Talks'];
 
 // Maps arts org subcategory labels to event tags/categories
@@ -40,6 +40,7 @@ export default function Events() {
 
   const filtered = events.filter(e => {
     if (e.is_hidden) return false;
+    if (activeCategory === 'Virtual') return !!e.is_virtual;
     const catMatch = activeCategory === 'All' || e.category === activeCategory.toLowerCase();
     const artsMatch = artsFilter === 'All Events' || (() => {
       const allowedCats = ARTS_FILTER_MAP[artsFilter] || [];

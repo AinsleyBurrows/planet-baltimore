@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Users, Clock } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, Video } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
@@ -31,8 +31,8 @@ const EventCard = React.memo(function EventCard({ event, compact = false }) {
               <h3 className="text-xs sm:text-sm font-semibold text-foreground truncate group-hover:text-accent transition-colors">{event.title}</h3>
               <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">{eventDate ? format(eventDate, 'EEE, MMM d · h:mm a') : ''}</p>
               <div className="flex items-center gap-1 mt-1 text-[10px] sm:text-xs text-muted-foreground">
-                <MapPin className="w-3 h-3 flex-shrink-0" />
-                <span className="truncate">{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
+                {event.is_virtual ? <Video className="w-3 h-3 flex-shrink-0 text-accent" /> : <MapPin className="w-3 h-3 flex-shrink-0" />}
+                <span className="truncate">{event.is_virtual ? 'Virtual Event' : (event.venue_name || event.neighborhood_name || 'Baltimore')}</span>
               </div>
             </div>
           </Link>
@@ -60,6 +60,9 @@ const EventCard = React.memo(function EventCard({ event, compact = false }) {
         {event.is_free && (
           <Badge className="absolute top-3 left-3 bg-green-500/90 text-white border-0 text-xs">Free</Badge>
         )}
+        {event.is_virtual && (
+          <Badge className="absolute bottom-3 left-3 bg-accent/90 text-white border-0 text-xs flex items-center gap-1"><Video className="w-3 h-3" />Virtual</Badge>
+        )}
         {event.category && (
           <Badge variant="secondary" className="absolute top-3 right-3 bg-black/50 text-white border-0 backdrop-blur-sm text-xs capitalize">{event.category}</Badge>
         )}
@@ -73,8 +76,8 @@ const EventCard = React.memo(function EventCard({ event, compact = false }) {
         <h3 className="font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-2 text-sm">{event.title}</h3>
         {event.description && <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">{event.description}</p>}
         <div className="flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground mt-3 sm:mt-4">
-          <MapPin className="w-3 h-3 flex-shrink-0" />
-          <span className="truncate">{event.venue_name || event.neighborhood_name || 'Baltimore'}</span>
+          {event.is_virtual ? <Video className="w-3 h-3 flex-shrink-0 text-accent" /> : <MapPin className="w-3 h-3 flex-shrink-0" />}
+          <span className="truncate">{event.is_virtual ? 'Virtual Event' : (event.venue_name || event.neighborhood_name || 'Baltimore')}</span>
         </div>
         {event.organizer_id && (
           <Link

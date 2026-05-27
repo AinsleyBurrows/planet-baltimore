@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ImageIcon, Loader2 } from 'lucide-react';
+import { X, ImageIcon, Loader2, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,7 +22,7 @@ export default function CreateEventModal({ isOpen, onClose }) {
   const [form, setForm] = useState({
     title: '', description: '', date: '', end_date: '', venue_name: '', address: '',
     category: 'community', capacity: '', ticketing_mode: 'rsvp_only',
-    neighborhood_id: '', neighborhood_name: '',
+    neighborhood_id: '', neighborhood_name: '', is_virtual: false, virtual_url: '',
   });
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function CreateEventModal({ isOpen, onClose }) {
       setForm({
         title: '', description: '', date: '', end_date: '', venue_name: '', address: '',
         category: 'community', capacity: '', ticketing_mode: 'rsvp_only',
-        neighborhood_id: '', neighborhood_name: '',
+        neighborhood_id: '', neighborhood_name: '', is_virtual: false, virtual_url: '',
       });
       setImageFile(null);
       setImagePreview('');
@@ -137,16 +137,42 @@ export default function CreateEventModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Location */}
-              <div>
-                <Label className="text-xs">Venue Name</Label>
-                <Input value={form.venue_name} onChange={(e) => updateForm('venue_name', e.target.value)} placeholder="Where is it happening?" className="mt-1.5 text-sm" />
+              {/* Virtual toggle */}
+              <div className="flex items-center justify-between p-3 bg-secondary/40 rounded-xl">
+                <div className="flex items-center gap-2">
+                  <Video className="w-4 h-4 text-accent" />
+                  <span className="text-sm font-medium">Virtual Event</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => updateForm('is_virtual', !form.is_virtual)}
+                  className={`w-10 h-6 rounded-full transition-colors relative ${form.is_virtual ? 'bg-accent' : 'bg-muted'}`}
+                >
+                  <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${form.is_virtual ? 'left-5' : 'left-1'}`} />
+                </button>
               </div>
 
-              <div>
-                <Label className="text-xs">Address</Label>
-                <Input value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Full address" className="mt-1.5 text-sm" />
-              </div>
+              {/* Virtual URL */}
+              {form.is_virtual && (
+                <div>
+                  <Label className="text-xs">Event Link (Zoom, Google Meet, etc.)</Label>
+                  <Input value={form.virtual_url} onChange={(e) => updateForm('virtual_url', e.target.value)} placeholder="https://zoom.us/j/..." className="mt-1.5 text-sm" />
+                </div>
+              )}
+
+              {/* Location */}
+              {!form.is_virtual && (
+                <>
+                  <div>
+                    <Label className="text-xs">Venue Name</Label>
+                    <Input value={form.venue_name} onChange={(e) => updateForm('venue_name', e.target.value)} placeholder="Where is it happening?" className="mt-1.5 text-sm" />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Address</Label>
+                    <Input value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Full address" className="mt-1.5 text-sm" />
+                  </div>
+                </>
+              )}
 
               {/* Neighborhood */}
               <div>

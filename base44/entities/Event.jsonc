@@ -96,6 +96,15 @@
       "type": "boolean",
       "default": true
     },
+    "is_virtual": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this event is online/virtual"
+    },
+    "virtual_url": {
+      "type": "string",
+      "description": "Link to join the virtual event (Zoom, Meet, etc.)"
+    },
     "rsvp_count": {
       "type": "number",
       "default": 0
