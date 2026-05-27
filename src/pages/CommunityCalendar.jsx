@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Calendar, List, Plus, MapPin, Filter, Building2, Users, Palette, X, Sparkles, ChevronRight } from 'lucide-react';
+import { Calendar, List, Plus, MapPin, Filter, Building2, Users, Palette, X, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import EventCard from '@/components/shared/EventCard';
@@ -85,6 +85,8 @@ function MiniCalendar({ currentMonth, events, selectedDay, onSelectDay, onPrevMo
 }
 
 function ForYouSection({ user }) {
+  const scrollRef = React.useRef(null);
+
   const { data, isLoading } = useQuery({
     queryKey: ['event-recommendations', user?.id],
     queryFn: async () => {
@@ -97,14 +99,40 @@ function ForYouSection({ user }) {
 
   const recommendations = data?.recommendations || [];
 
+  const scroll = (dir) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: dir * 280, behavior: 'smooth' });
+    }
+  };
+
   if (!isLoading && recommendations.length === 0) return null;
 
   return (
     <div className="mb-6">
-      <div className="flex items-center gap-2 mb-3">
-        <Sparkles className="w-4 h-4 text-accent" />
-        <h2 className="font-semibold text-sm text-foreground">For You</h2>
-        <Badge variant="secondary" className="text-xs">Personalized</Badge>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-accent" />
+          <h2 className="font-semibold text-sm text-foreground">For You</h2>
+          <Badge variant="secondary" className="text-xs">Personalized</Badge>
+        </div>
+        {!isLoading && recommendations.length > 1 && (
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => scroll(-1)}
+              className="p-1.5 rounded-full bg-secondary hover:bg-accent hover:text-accent-foreground transition-colors text-muted-foreground"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => scroll(1)}
+              className="p-1.5 rounded-full bg-secondary hover:bg-accent hover:text-accent-foreground transition-colors text-muted-foreground"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -114,7 +142,7 @@ function ForYouSection({ user }) {
           ))}
         </div>
       ) : (
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
           {recommendations.map(event => (
             <Link
               key={event.id}
