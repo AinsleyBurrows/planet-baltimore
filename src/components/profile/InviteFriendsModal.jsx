@@ -52,9 +52,10 @@ export default function InviteFriendsModal({ onClose }) {
         await base44.users.inviteUser(email, 'user');
         if (note.trim()) {
           await base44.integrations.Core.SendEmail({
+            from_name: 'Planet Baltimore',
             to: email,
-            subject: 'A personal note from your friend on Planet Baltimore',
-            body: `Your friend wanted to share a note with you:\n\n"${note.trim()}"\n\nSee you on Planet Baltimore!`,
+            subject: 'You have been invited to Planet Baltimore',
+            body: `You have been invited to Planet Baltimore!\n\nYour friend wanted to share a note with you:\n\n"${note.trim()}"\n\nJoin us at Planet Baltimore — your home for Baltimore arts, culture, and community.\n\nSee you there!`,
           });
         }
         res.push({ email, status: 'sent' });
@@ -106,7 +107,7 @@ export default function InviteFriendsModal({ onClose }) {
                     <Check className="w-7 h-7 text-green-600" />
                   </div>
                   <p className="font-semibold text-foreground">{sentCount} invite{sentCount !== 1 ? 's' : ''} sent!</p>
-                  <p className="text-sm text-muted-foreground mt-1">They'll receive an email: <span className="font-medium text-foreground">"You Are Invited To Join Planet Baltimore"</span></p>
+                  <p className="text-sm text-muted-foreground mt-1">They'll receive an email: <span className="font-medium text-foreground">"You have been invited to Planet Baltimore"</span></p>
                 </div>
                 {results.filter(r => r.status === 'error').length > 0 && (
                   <div className="space-y-1">
