@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Play, Heart, MessageCircle, Share2, Search, Users, X, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { Play, Heart, MessageCircle, Share2, Search, Users, X, ChevronLeft, ChevronRight, Trash2, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -182,7 +182,7 @@ function VideoLightbox({ posts, startIndex, onClose }) {
 }
 
 /* ── Thumbnail card (grid) ───────────────────────────────────────── */
-function VideoCard({ post, onPlay, currentUserId, onDelete }) {
+function VideoCard({ post, onPlay, currentUserId, isAdmin, onDelete, onToggleFeature }) {
   const videoUrl = post.media_urls?.[0];
   if (!videoUrl) return null;
 
@@ -193,6 +193,12 @@ function VideoCard({ post, onPlay, currentUserId, onDelete }) {
     if (!confirm('Delete this video?')) return;
     await base44.entities.Post.update(post.id, { is_deleted: true });
     onDelete();
+  };
+
+  const handleToggleFeature = async (e) => {
+    e.stopPropagation();
+    await base44.entities.Post.update(post.id, { is_pinned: !post.is_pinned });
+    onToggleFeature();
   };
 
   return (
@@ -214,6 +220,22 @@ function VideoCard({ post, onPlay, currentUserId, onDelete }) {
             <Play className="w-7 h-7 text-white fill-white ml-1" />
           </div>
         </div>
+        {/* Admin feature button */}
+        {isAdmin && (
+          <button
+            onClick={handleToggleFeature}
+            className={`absolute top-2 left-2 p-1.5 rounded-full transition-colors opacity-0 group-hover:opacity-100 ${post.is_pinned ? 'bg-yellow-500 text-white' : 'bg-black/60 text-white hover:bg-yellow-500'}`}
+            title={post.is_pinned ? 'Unfeature video' : 'Feature video'}
+          >
+            <Star className={`w-4 h-4 ${post.is_pinned ? 'fill-current' : ''}`} />
+          </button>
+        )}
+        {/* Featured badge — only shown to non-admins */}
+        {post.is_pinned && !isAdmin && (
+          <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500 text-white text-[11px] font-semibold">
+            <Star className="w-3 h-3 fill-current" /> Featured
+          </div>
+        )}
         {isOwner && (
           <button
             onClick={handleDelete}
@@ -262,10 +284,14 @@ export default function Videos() {
   const [category, setCategory] = useState('All');
   const [currentUser, setCurrentUser] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setCurrentUser).catch(() => {});
+    base44.auth.me().then(u => {
+      setCurrentUser(u);
+      setIsAdmin(u?.role === 'admin');
+    }).catch(() => {});
   }, []);
 
   const { data: videoPosts = [], isLoading } = useQuery({
@@ -300,12 +326,11 @@ export default function Videos() {
     return matchesSearch && matchesCategory;
   });
 
-  // Featured = top 2 most recent
-  const featured = searchFiltered.slice(0, 2);
-
-  // Remaining videos sorted by selected sort
-  const remaining = searchFiltered.slice(2);
-  const sorted = [...remaining].sort((a, b) => {
+  // Admin-featured (pinned) videos shown first
+  const featured = searchFiltered.filter(p => p.is_pinned);
+  // Non-featured sorted by sort selection
+  const nonFeatured = searchFiltered.filter(p => !p.is_pinned);
+  const sorted = [...nonFeatured].sort((a, b) => {
     if (sort === 'popular') return (b.likes_count || 0) - (a.likes_count || 0);
     return new Date(b.created_date) - new Date(a.created_date);
   });
@@ -378,19 +403,27 @@ export default function Videos() {
         </div>
       ) : (
         <>
-          {/* Featured Row — top 2 */}
+          {/* Featured Row — admin-pinned */}
           {featured.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {featured.map((post, i) => (
-                <VideoCard
-                  key={post.id}
-                  post={post}
-                  onPlay={() => setLightboxIndex(i)}
-                  currentUserId={currentUser?.id}
-                  onDelete={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
-                />
-              ))}
-            </div>
+            <>
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                <span className="text-sm font-semibold text-foreground">Featured Videos</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {featured.map((post, i) => (
+                  <VideoCard
+                    key={post.id}
+                    post={post}
+                    onPlay={() => setLightboxIndex(i)}
+                    currentUserId={currentUser?.id}
+                    isAdmin={isAdmin}
+                    onDelete={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
+                    onToggleFeature={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
+                  />
+                ))}
+              </div>
+            </>
           )}
 
           {/* Divider + Sort Controls */}
@@ -423,7 +456,9 @@ export default function Videos() {
                     post={post}
                     onPlay={() => setLightboxIndex(featured.length + i)}
                     currentUserId={currentUser?.id}
+                    isAdmin={isAdmin}
                     onDelete={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
+                    onToggleFeature={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
                   />
                 ))}
               </div>
