@@ -256,6 +256,7 @@ function VideoCard({ post, onPlay, currentUserId, onDelete }) {
 
 export default function Videos() {
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('newest');
   const [currentUser, setCurrentUser] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const queryClient = useQueryClient();
@@ -266,7 +267,7 @@ export default function Videos() {
 
   const { data: videoPosts = [], isLoading } = useQuery({
     queryKey: ['video-posts'],
-    queryFn: () => base44.entities.Post.filter({ media_type: 'video', is_deleted: false }, '-created_date', 50),
+    queryFn: () => base44.entities.Post.filter({ media_type: 'video', is_deleted: false }, '-created_date', 100),
   });
 
   const { data: myFollows = [] } = useQuery({
@@ -284,7 +285,7 @@ export default function Videos() {
     return followedUserIds.has(p.author_id);
   });
 
-  const filtered = accessibleVideos.filter(p => {
+  const searchFiltered = accessibleVideos.filter(p => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
@@ -294,6 +295,19 @@ export default function Videos() {
       p.tags?.some(t => t.toLowerCase().includes(q))
     );
   });
+
+  // Featured = top 2 most recent
+  const featured = searchFiltered.slice(0, 2);
+
+  // Remaining videos sorted by selected sort
+  const remaining = searchFiltered.slice(2);
+  const sorted = [...remaining].sort((a, b) => {
+    if (sort === 'popular') return (b.likes_count || 0) - (a.likes_count || 0);
+    return new Date(b.created_date) - new Date(a.created_date);
+  });
+
+  // All videos in lightbox order: featured first, then sorted rest
+  const allOrdered = [...featured, ...sorted];
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
@@ -322,7 +336,6 @@ export default function Videos() {
         />
       </div>
 
-      {/* Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
@@ -335,29 +348,71 @@ export default function Videos() {
             </div>
           ))}
         </div>
-      ) : filtered.length === 0 ? (
+      ) : searchFiltered.length === 0 ? (
         <div className="text-center py-20">
           <Play className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
           <p className="text-foreground font-medium">No videos yet</p>
           <p className="text-sm text-muted-foreground mt-1">Videos posted anywhere on the platform will appear here.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((post, i) => (
-            <VideoCard
-              key={post.id}
-              post={post}
-              onPlay={() => setLightboxIndex(i)}
-              currentUserId={currentUser?.id}
-              onDelete={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
-            />
-          ))}
-        </div>
+        <>
+          {/* Featured Row — top 2 */}
+          {featured.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {featured.map((post, i) => (
+                <VideoCard
+                  key={post.id}
+                  post={post}
+                  onPlay={() => setLightboxIndex(i)}
+                  currentUserId={currentUser?.id}
+                  onDelete={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Divider + Sort Controls */}
+          {sorted.length > 0 && (
+            <>
+              <div className="border-t border-border" />
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground font-medium">{sorted.length} more video{sorted.length !== 1 ? 's' : ''}</p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSort('newest')}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${sort === 'newest' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
+                  >
+                    Newest
+                  </button>
+                  <button
+                    onClick={() => setSort('popular')}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${sort === 'popular' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
+                  >
+                    Most Popular
+                  </button>
+                </div>
+              </div>
+
+              {/* 3-column grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sorted.map((post, i) => (
+                  <VideoCard
+                    key={post.id}
+                    post={post}
+                    onPlay={() => setLightboxIndex(featured.length + i)}
+                    currentUserId={currentUser?.id}
+                    onDelete={() => queryClient.invalidateQueries({ queryKey: ['video-posts'] })}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </>
       )}
 
       {lightboxIndex !== null && (
         <VideoLightbox
-          posts={filtered}
+          posts={allOrdered}
           startIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
         />
