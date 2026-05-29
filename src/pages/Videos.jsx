@@ -409,24 +409,6 @@ export default function Videos() {
         />
       </div>
 
-      {/* Category Filters */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-        {CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategory(cat)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
-              category === cat
-                ? 'text-primary-foreground border-transparent'
-                : 'border-border text-muted-foreground hover:text-foreground'
-            }`}
-            style={category === cat ? { backgroundColor: '#d4580a', borderColor: '#d4580a' } : {}}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
@@ -470,26 +452,38 @@ export default function Videos() {
             </>
           )}
 
-          {/* Divider + Sort Controls */}
+          {/* Divider + Sort & Category Controls */}
           {sorted.length > 0 && (
             <>
               <div className="border-t border-border" />
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground font-medium">{sorted.length} more video{sorted.length !== 1 ? 's' : ''}</p>
-                <div className="flex gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => setSort('newest')}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border whitespace-nowrap ${sort === 'newest' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
+                >
+                  Newest
+                </button>
+                <button
+                  onClick={() => setSort('popular')}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border whitespace-nowrap ${sort === 'popular' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
+                >
+                  Most Popular
+                </button>
+                <div className="w-px h-5 bg-border mx-1 shrink-0" />
+                {CATEGORIES.filter(c => c !== 'All').map(cat => (
                   <button
-                    onClick={() => setSort('newest')}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${sort === 'newest' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
+                    key={cat}
+                    onClick={() => setCategory(category === cat ? 'All' : cat)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
+                      category === cat
+                        ? 'text-primary-foreground border-transparent'
+                        : 'border-border text-muted-foreground hover:text-foreground'
+                    }`}
+                    style={category === cat ? { backgroundColor: '#d4580a', borderColor: '#d4580a' } : {}}
                   >
-                    Newest
+                    {cat}
                   </button>
-                  <button
-                    onClick={() => setSort('popular')}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${sort === 'popular' ? 'bg-primary text-primary-foreground border-primary' : 'border-border text-muted-foreground hover:text-foreground'}`}
-                  >
-                    Most Popular
-                  </button>
-                </div>
+                ))}
               </div>
 
               {/* 3-column grid */}
