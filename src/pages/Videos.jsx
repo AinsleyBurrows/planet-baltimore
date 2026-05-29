@@ -254,9 +254,12 @@ function VideoCard({ post, onPlay, currentUserId, onDelete }) {
   );
 }
 
+const CATEGORIES = ['All', 'Music', 'Visual Art', 'Events', 'Community', 'Dance & Performance', 'Food & Nightlife', 'News'];
+
 export default function Videos() {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('newest');
+  const [category, setCategory] = useState('All');
   const [currentUser, setCurrentUser] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const queryClient = useQueryClient();
@@ -286,14 +289,15 @@ export default function Videos() {
   });
 
   const searchFiltered = accessibleVideos.filter(p => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return (
+    const q = search.toLowerCase().trim();
+    const matchesSearch = !q || (
       p.author_name?.toLowerCase().includes(q) ||
       p.content?.toLowerCase().includes(q) ||
       p.neighborhood_name?.toLowerCase().includes(q) ||
       p.tags?.some(t => t.toLowerCase().includes(q))
     );
+    const matchesCategory = category === 'All' || p.tags?.some(t => t.toLowerCase() === category.toLowerCase());
+    return matchesSearch && matchesCategory;
   });
 
   // Featured = top 2 most recent
@@ -334,6 +338,24 @@ export default function Videos() {
           onChange={e => setSearch(e.target.value)}
           className="pl-9"
         />
+      </div>
+
+      {/* Category Filters */}
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        {CATEGORIES.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategory(cat)}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
+              category === cat
+                ? 'text-primary-foreground border-transparent'
+                : 'border-border text-muted-foreground hover:text-foreground'
+            }`}
+            style={category === cat ? { backgroundColor: '#d4580a', borderColor: '#d4580a' } : {}}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
