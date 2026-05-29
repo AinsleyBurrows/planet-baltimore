@@ -298,10 +298,12 @@ export default function Videos() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-5 sm:p-8 lg:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
-        <div className="relative z-10">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5" style={{ color: '#d4580a' }}>Planet <span className="text-black dark:text-white">Baltimore</span> <span className="text-black dark:text-white font-light">Videos</span></h1>
-          <p className="text-muted-foreground text-sm">Watch videos shared across the community</p>
+      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
+        <div className="relative z-10 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#d4580a' }}>Videos</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Watch videos shared across Planet Baltimore.</p>
+          </div>
         </div>
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
