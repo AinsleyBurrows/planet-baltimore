@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Play, Heart, MessageCircle, Share2, Search, Users, X, ChevronLeft, ChevronRight, Trash2, Star } from 'lucide-react';
+import { Play, Heart, MessageCircle, Share2, Search, Users, X, Trash2, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
@@ -9,23 +9,58 @@ import { format } from 'date-fns';
 import CommentSection from '@/components/shared/CommentSection';
 import ShareModal from '@/components/shared/ShareModal';
 
-/* ── Fullscreen lightbox ─────────────────────────────────────────── */
+/* ── Up Next sidebar row ─────────────────────────────────────────── */
+function UpNextRow({ post, onClick, isActive }) {
+  const videoUrl = post.media_urls?.[0];
+  if (!videoUrl) return null;
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex gap-3 p-2 rounded-lg text-left transition-colors ${isActive ? 'bg-white/10' : 'hover:bg-white/5'}`}
+    >
+      <div className="relative w-36 shrink-0 aspect-video rounded-md overflow-hidden bg-black">
+        {post.thumbnail_url ? (
+          <img src={post.thumbnail_url} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <video src={videoUrl} className="w-full h-full object-cover" preload="metadata" muted />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Play className="w-5 h-5 text-white fill-white opacity-80" />
+        </div>
+      </div>
+      <div className="flex-1 min-w-0 py-0.5">
+        <p className="text-sm font-medium text-white line-clamp-2 leading-snug">
+          {post.content || 'Untitled video'}
+        </p>
+        <p className="text-xs text-white/50 mt-1 truncate">{post.author_name}</p>
+        {post.neighborhood_name && (
+          <p className="text-xs text-white/40 truncate">{post.neighborhood_name}</p>
+        )}
+      </div>
+    </button>
+  );
+}
+
+/* ── Fullscreen player (YouTube-style) ──────────────────────────── */
 function VideoLightbox({ posts, startIndex, onClose }) {
   const [index, setIndex] = useState(startIndex);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const [showComments, setShowComments] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showFullDesc, setShowFullDesc] = useState(false);
   const videoRef = useRef(null);
+  const mainRef = useRef(null);
 
   const post = posts[index];
+  // Other videos for the "Up Next" sidebar
+  const otherVideos = posts.filter((_, i) => i !== index);
 
-  // Reset state when index changes
   useEffect(() => {
     setLiked(false);
     setLikesCount(posts[index]?.likes_count || 0);
-    setShowComments(false);
-    // Auto-play when switching
+    setShowFullDesc(false);
+    // Scroll main area back to top on switch
+    if (mainRef.current) mainRef.current.scrollTop = 0;
     setTimeout(() => videoRef.current?.play(), 100);
   }, [index, posts]);
 
@@ -33,12 +68,10 @@ function VideoLightbox({ posts, startIndex, onClose }) {
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') setIndex(i => Math.max(0, i - 1));
-      if (e.key === 'ArrowRight') setIndex(i => Math.min(posts.length - 1, i + 1));
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, posts.length]);
+  }, [onClose]);
 
   const handleLike = async () => {
     const user = await base44.auth.me().catch(() => null);
@@ -57,118 +90,129 @@ function VideoLightbox({ posts, startIndex, onClose }) {
   if (!post) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex items-center justify-center" onClick={onClose}>
-      {/* Close */}
-      <button
-        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-        onClick={onClose}
-      >
-        <X className="w-5 h-5" />
-      </button>
-
-      {/* Counter */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 text-white/60 text-sm font-medium">
-        {index + 1} / {posts.length}
+    <div className="fixed inset-0 z-50 bg-[#0f0f0f] flex flex-col overflow-hidden">
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <span className="text-white font-semibold text-sm">Planet Baltimore</span>
+          <span className="text-white/30 text-sm">·</span>
+          <span className="text-white/50 text-xs">{index + 1} of {posts.length}</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
-      {/* Prev */}
-      {index > 0 && (
-        <button
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-          onClick={e => { e.stopPropagation(); setIndex(i => i - 1); }}
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-      )}
+      {/* Body: main + sidebar */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
 
-      {/* Next */}
-      {index < posts.length - 1 && (
-        <button
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-          onClick={e => { e.stopPropagation(); setIndex(i => i + 1); }}
-        >
-          <ChevronRight className="w-6 h-6" />
-        </button>
-      )}
+        {/* ── Left: scrollable main column ── */}
+        <div ref={mainRef} className="flex-1 overflow-y-auto">
+          {/* Video player */}
+          <div className="w-full bg-black">
+            <video
+              ref={videoRef}
+              key={post.id}
+              src={post.media_urls?.[0]}
+              poster={post.thumbnail_url || undefined}
+              className="w-full aspect-video object-contain max-h-[70vh]"
+              controls
+              autoPlay
+            />
+          </div>
 
-      {/* Main content */}
-      <div
-        className="flex flex-col lg:flex-row w-full h-full max-w-6xl mx-auto overflow-hidden"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Video */}
-        <div className="flex-1 flex items-center justify-center bg-black min-h-0 overflow-hidden">
-          <video
-            ref={videoRef}
-            key={post.id}
-            src={post.media_urls?.[0]}
-            poster={post.thumbnail_url || undefined}
-            className="w-full h-full object-contain"
-            controls
-            autoPlay
-            style={{ maxWidth: '100%', maxHeight: '100%' }}
-          />
-        </div>
-
-        {/* Sidebar info */}
-        <div className="lg:w-80 bg-card border-l border-border flex flex-col overflow-hidden shrink-0">
-          {/* Author */}
-          <div className="p-4 border-b border-border flex items-center gap-3">
-            <Link to={`/profile/${post.author_id}`} onClick={onClose}>
-              <Avatar className="w-9 h-9">
-                <AvatarImage src={post.author_avatar} />
-                <AvatarFallback className="bg-accent/10 text-accent text-xs font-semibold">
-                  {post.author_name?.charAt(0) || '?'}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-            <div className="flex-1 min-w-0">
-              <Link to={`/profile/${post.author_id}`} onClick={onClose} className="text-sm font-semibold text-foreground hover:text-accent transition-colors block truncate">
-                {post.author_name || 'Anonymous'}
-              </Link>
-              <p className="text-xs text-muted-foreground">
-                {post.neighborhood_name && `${post.neighborhood_name} · `}
-                {post.created_date ? format(new Date(post.created_date), 'MMM d, yyyy') : ''}
+          {/* Info below player */}
+          <div className="px-4 md:px-6 py-4 max-w-4xl">
+            {/* Title / caption */}
+            <div className="mb-3">
+              <p className={`text-white font-semibold text-base leading-snug ${showFullDesc ? '' : 'line-clamp-2'}`}>
+                {post.content || 'Untitled video'}
               </p>
+              {post.content && post.content.length > 120 && (
+                <button
+                  onClick={() => setShowFullDesc(v => !v)}
+                  className="text-white/50 text-xs mt-1 hover:text-white/80 transition-colors"
+                >
+                  {showFullDesc ? 'Show less' : 'Show more'}
+                </button>
+              )}
             </div>
-          </div>
 
-          {/* Caption */}
-          {post.content && (
-            <div className="p-4 border-b border-border">
-              <p className="text-sm text-foreground">{post.content}</p>
+            {/* Author row + actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 pb-4 border-b border-white/10">
+              {/* Author */}
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <Link to={`/profile/${post.author_id}`} onClick={onClose}>
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={post.author_avatar} />
+                    <AvatarFallback className="bg-white/10 text-white text-sm font-bold">
+                      {post.author_name?.charAt(0) || '?'}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+                <div className="min-w-0">
+                  <Link to={`/profile/${post.author_id}`} onClick={onClose} className="text-white font-semibold text-sm hover:text-white/80 transition-colors block truncate">
+                    {post.author_name || 'Anonymous'}
+                  </Link>
+                  <p className="text-white/50 text-xs truncate">
+                    {[post.neighborhood_name, post.created_date ? format(new Date(post.created_date), 'MMM d, yyyy') : null].filter(Boolean).join(' · ')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={handleLike}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${liked ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                >
+                  <Heart className={`w-4 h-4 ${liked ? 'fill-black' : ''}`} />
+                  <span>{likesCount}</span>
+                </button>
+                <button
+                  onClick={() => setShowShare(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white hover:bg-white/20 text-sm font-medium transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>Share</span>
+                </button>
+              </div>
             </div>
-          )}
 
-          {/* Actions */}
-          <div className="p-4 border-b border-border flex items-center gap-5">
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-1.5 text-sm transition-colors ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
-              <span>{likesCount}</span>
-            </button>
-            <button
-              onClick={() => setShowComments(v => !v)}
-              className={`flex items-center gap-1.5 text-sm transition-colors ${showComments ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              <MessageCircle className="w-5 h-5" />
-              <span>{post.comments_count || 0}</span>
-            </button>
-            <button
-              onClick={() => setShowShare(true)}
-              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Comments */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <CommentSection targetType="post" targetId={post.id} />
+            {/* Comments */}
+            <div className="pt-4">
+              <p className="text-white font-semibold text-sm mb-4">
+                {post.comments_count || 0} Comment{post.comments_count !== 1 ? 's' : ''}
+              </p>
+              <CommentSection targetType="post" targetId={post.id} />
+            </div>
           </div>
         </div>
+
+        {/* ── Right: Up Next sidebar (desktop only) ── */}
+        {otherVideos.length > 0 && (
+          <div className="hidden lg:flex flex-col w-96 shrink-0 border-l border-white/10 overflow-y-auto">
+            <div className="p-4 pb-2">
+              <p className="text-white/70 text-xs font-semibold uppercase tracking-wider">Up Next</p>
+            </div>
+            <div className="px-2 pb-4 space-y-1">
+              {otherVideos.map((p) => {
+                const realIndex = posts.indexOf(p);
+                return (
+                  <UpNextRow
+                    key={p.id}
+                    post={p}
+                    isActive={false}
+                    onClick={() => setIndex(realIndex)}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       <ShareModal
