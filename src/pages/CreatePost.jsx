@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import TextBgPicker, { getTextColor } from '@/components/shared/TextBgPicker';
 
+const VIDEO_CATEGORIES = ['Music', 'Visual Art', 'Events', 'Community', 'Dance & Performance', 'Food & Nightlife', 'News'];
+
 const postTypes = [
   { id: 'image', label: 'Photo', icon: Image },
   { id: 'video', label: 'Video', icon: Video },
@@ -33,6 +35,7 @@ export default function CreatePost() {
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [videoVisibility, setVideoVisibility] = useState('public');
+  const [videoCategory, setVideoCategory] = useState('');
   const videoRef = useRef(null);
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
@@ -133,6 +136,11 @@ export default function CreatePost() {
         thumbnailUrl = thumbResult.file_url;
       }
 
+      const finalTags = [...tags];
+      if (activeType === 'video' && videoCategory && !finalTags.map(t => t.toLowerCase()).includes(videoCategory.toLowerCase())) {
+        finalTags.push(videoCategory);
+      }
+
       return base44.entities.Post.create({
         author_id: user.id,
         author_name: user.display_name || user.full_name,
@@ -143,7 +151,7 @@ export default function CreatePost() {
         content,
         media_urls: mediaUrls,
         media_type: mediaUrls.length > 0 ? activeType : 'text',
-        tags,
+        tags: finalTags,
         bg_color: activeType === 'text' && mediaUrls.length === 0 ? bgColor : undefined,
         thumbnail_url: thumbnailUrl,
         visibility: activeType === 'video' ? videoVisibility : 'public',
@@ -307,6 +315,31 @@ export default function CreatePost() {
               <Users className="w-4 h-4" /> Followers only
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Video Category */}
+      {activeType === 'video' && (
+        <div className="mt-4 pt-4 border-t border-border">
+          <p className="text-sm font-medium text-foreground mb-2">Category</p>
+          <div className="flex flex-wrap gap-2">
+            {VIDEO_CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setVideoCategory(videoCategory === cat ? '' : cat)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
+                  videoCategory === cat
+                    ? 'text-white border-transparent'
+                    : 'border-border text-muted-foreground hover:text-foreground'
+                }`}
+                style={videoCategory === cat ? { backgroundColor: '#d4580a', borderColor: '#d4580a' } : {}}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">Select a category so your video appears in the right filter on the Videos page.</p>
         </div>
       )}
 
