@@ -21,7 +21,7 @@ import ShareModal from '@/components/shared/ShareModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
 import { useNavigate } from 'react-router-dom';
 import ImageFitScaleModal from '@/components/shared/ImageFitScaleModal';
-import ExhibitionsTab from '@/components/arts/tabs/ExhibitionsTab';
+import ScoutFairTab from '@/components/arts/tabs/ScoutFairTab';
 import PageEventsTab from '@/components/shared/PageEventsTab';
 import ArtistRosterTab from '@/components/arts/tabs/ArtistRosterTab';
 import MembershipTab from '@/components/arts/tabs/MembershipTab';
@@ -350,8 +350,8 @@ export default function ArtsOrgDetail() {
             <TabsTrigger value="posts" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Posts{posts.length > 0 && <span className="ml-1 text-[10px] bg-accent/20 text-accent rounded-full px-1.5">{posts.length}</span>}
             </TabsTrigger>
-            <TabsTrigger value="exhibitions" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
-              Exhibitions{(org.exhibitions?.length > 0) && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-accent inline-block" />}
+            <TabsTrigger value="scout_fair" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
+              Scout Fair
             </TabsTrigger>
             <TabsTrigger value="events" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Events{events.length > 0 && <span className="ml-1 text-[10px] bg-accent/20 text-accent rounded-full px-1.5">{events.length}</span>}
@@ -461,8 +461,8 @@ export default function ArtsOrgDetail() {
             )}
           </TabsContent>
 
-          <TabsContent value="exhibitions" className="mt-4">
-            <ExhibitionsTab org={org} isOwner={isOwner} />
+          <TabsContent value="scout_fair" className="mt-4">
+            <ScoutFairTab org={org} isOwner={isOwner} />
           </TabsContent>
 
           <TabsContent value="artists" className="mt-4">
