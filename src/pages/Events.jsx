@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,7 @@ import EventCard from '@/components/shared/EventCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import CalendarView from '@/components/events/CalendarView';
 import CreateEventModal from '@/components/events/CreateEventModal';
+import MainStageArtists from '@/components/events/MainStageArtists';
 
 const CATEGORIES = ['All', 'Virtual', 'Art', 'Music', 'Education', 'Community', 'Wellness', 'Festival', 'Family', 'Other'];
 const ARTS_TYPES = ['All Events', 'Exhibitions', 'Workshops', 'Performances', 'Talks'];
@@ -25,6 +26,9 @@ export default function Events() {
   const [artsFilter, setArtsFilter] = useState('All Events');
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => { base44.auth.me().then(setCurrentUser).catch(() => {}); }, []);
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events'],
@@ -75,6 +79,9 @@ export default function Events() {
           </Button>
         </div>
       </div>
+
+      {/* Featured Artists */}
+      <MainStageArtists isAdmin={currentUser?.role === 'admin'} />
 
       {/* Arts org filter strip */}
       <div className="flex items-center gap-2 p-2.5 sm:p-3 bg-secondary/40 rounded-xl overflow-x-auto">
