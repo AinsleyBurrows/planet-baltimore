@@ -300,7 +300,13 @@ function VideoCard({ post, onPlay, currentUserId, isAdmin, onDelete, onToggleFea
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-foreground truncate">{post.author_name || 'Anonymous'}</p>
+            <Link
+              to={`/profile/${post.author_id}`}
+              onClick={e => e.stopPropagation()}
+              className="text-sm font-semibold text-foreground hover:text-accent transition-colors truncate block"
+            >
+              {post.author_name || 'Anonymous'}
+            </Link>
             <p className="text-xs text-muted-foreground">
               {post.neighborhood_name && `${post.neighborhood_name} · `}
               {post.created_date ? format(new Date(post.created_date), 'MMM d, yyyy') : ''}
