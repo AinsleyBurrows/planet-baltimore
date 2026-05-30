@@ -53,7 +53,7 @@ export default function Events() {
     <div className="space-y-5 sm:space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Events</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Main Stage</h1>
         <div className="flex items-center gap-2">
           {/* View toggle */}
           <div className="flex rounded-lg border border-border overflow-hidden">
