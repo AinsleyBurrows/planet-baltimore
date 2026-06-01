@@ -1,0 +1,69 @@
+{
+  "name": "Voting",
+  "type": "object",
+  "properties": {
+    "association_id": {
+      "type": "string",
+      "description": "Reference to CommunityAssociation"
+    },
+    "title": {
+      "type": "string",
+      "description": "Issue or question being voted on"
+    },
+    "description": {
+      "type": "string",
+      "description": "Details about the voting item"
+    },
+    "voting_type": {
+      "type": "string",
+      "enum": [
+        "yes_no",
+        "multiple_choice",
+        "rank_choice"
+      ],
+      "default": "yes_no",
+      "description": "Type of voting"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Voting options (for multiple_choice or rank_choice)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "open",
+        "closed"
+      ],
+      "default": "draft",
+      "description": "Current voting status"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting opens"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting closes"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Admin user ID who created the voting"
+    },
+    "vote_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total votes cast"
+    }
+  },
+  "required": [
+    "association_id",
+    "title",
+    "voting_type"
+  ]
+}

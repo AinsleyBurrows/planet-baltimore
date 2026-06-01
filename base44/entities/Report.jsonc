@@ -1,0 +1,69 @@
+{
+  "name": "Report",
+  "type": "object",
+  "properties": {
+    "reporter_id": {
+      "type": "string",
+      "description": "User ID of the person reporting"
+    },
+    "reporter_email": {
+      "type": "string"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "post",
+        "event",
+        "comment",
+        "user",
+        "artist",
+        "business",
+        "community",
+        "association",
+        "story"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "target_name": {
+      "type": "string",
+      "description": "Name/title of the reported item for admin context"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "spam",
+        "harassment",
+        "hate_speech",
+        "misinformation",
+        "impersonation",
+        "inappropriate_content",
+        "other"
+      ]
+    },
+    "details": {
+      "type": "string",
+      "description": "Optional additional context from the reporter"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewed",
+        "dismissed",
+        "action_taken"
+      ],
+      "default": "pending"
+    },
+    "admin_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "reporter_id",
+    "target_type",
+    "target_id",
+    "reason"
+  ]
+}

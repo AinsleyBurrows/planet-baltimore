@@ -1,0 +1,30 @@
+{
+  "name": "Vote",
+  "type": "object",
+  "properties": {
+    "voting_id": {
+      "type": "string",
+      "description": "Reference to Voting"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who voted (kept for one-vote-per-user check)"
+    },
+    "selected_option": {
+      "type": "string",
+      "description": "The option/choice selected by the voter"
+    },
+    "ranked_options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "For ranked-choice voting, array of options in order"
+    }
+  },
+  "required": [
+    "voting_id",
+    "user_id",
+    "selected_option"
+  ]
+}

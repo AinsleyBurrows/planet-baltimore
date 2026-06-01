@@ -32,6 +32,7 @@ import ArtistGallery from '@/components/artist/ArtistGallery';
 import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
 import PostCard from '@/components/shared/PostCard';
 import PageAdminBar from '@/components/shared/PageAdminBar';
+import ArtistCVTab from '@/components/artist/ArtistCVTab';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
@@ -302,6 +303,9 @@ export default function ArtistDetail() {
           {!isMusic && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
           </TabsTrigger>}
+          <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+            <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
+          </TabsTrigger>
           <TabsTrigger value="invite" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Users className="w-3.5 h-3.5" /><span className="hidden xs:inline">Invite</span>
           </TabsTrigger>
@@ -415,6 +419,11 @@ export default function ArtistDetail() {
             </p>
             <ArtistContactForm artist={artist} />
           </div>
+        </TabsContent>
+
+        {/* CV / Bio */}
+        <TabsContent value="cv" className="mt-4">
+          <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />
         </TabsContent>
 
         {/* Invite Friends */}

@@ -1,0 +1,37 @@
+{
+  "name": "EphemeralStory",
+  "type": "object",
+  "properties": {
+    "author_id": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_avatar": {
+      "type": "string"
+    },
+    "media_url": {
+      "type": "string"
+    },
+    "media_type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "video"
+      ],
+      "default": "image"
+    },
+    "caption": {
+      "type": "string"
+    },
+    "expires_at": {
+      "type": "string",
+      "description": "ISO timestamp \u2014 story disappears after this time (24h from creation)"
+    }
+  },
+  "required": [
+    "author_id",
+    "media_url"
+  ]
+}
