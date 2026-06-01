@@ -266,9 +266,7 @@ export default function ArtistDetail() {
             <TabsTrigger value="booking" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
             </TabsTrigger>
-            <TabsTrigger value="streaming" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              🔗 <span className="hidden xs:inline">Links</span>
-            </TabsTrigger>
+
           </>}
           {!isMusic && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -349,9 +347,7 @@ export default function ArtistDetail() {
           <TabsContent value="booking" className="mt-4">
             <BookingTab artist={artist} isOwner={isOwner} />
           </TabsContent>
-          <TabsContent value="streaming" className="mt-4">
-            <StreamingLinksTab artist={artist} isOwner={isOwner} />
-          </TabsContent>
+
         </>}
 
         {/* Studio Journal */}
