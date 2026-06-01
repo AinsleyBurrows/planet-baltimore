@@ -350,9 +350,6 @@ export default function ArtsOrgDetail() {
             <TabsTrigger value="posts" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Posts{posts.length > 0 && <span className="ml-1 text-[10px] bg-accent/20 text-accent rounded-full px-1.5">{posts.length}</span>}
             </TabsTrigger>
-            <TabsTrigger value="scout_fair" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
-              Scout Fair
-            </TabsTrigger>
             <TabsTrigger value="events" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Events{events.length > 0 && <span className="ml-1 text-[10px] bg-accent/20 text-accent rounded-full px-1.5">{events.length}</span>}
             </TabsTrigger>
@@ -459,10 +456,6 @@ export default function ArtsOrgDetail() {
                 ))}
               </div>
             )}
-          </TabsContent>
-
-          <TabsContent value="scout_fair" className="mt-4">
-            <ScoutFairTab org={org} isOwner={isOwner} />
           </TabsContent>
 
           <TabsContent value="artists" className="mt-4">
