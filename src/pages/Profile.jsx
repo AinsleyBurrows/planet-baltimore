@@ -25,6 +25,7 @@ import MyPagesTab from '@/components/profile/MyPagesTab';
 import FollowersModal from '@/components/profile/FollowersModal';
 import MyTicketsTab from '@/components/profile/MyTicketsTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
+import { Star } from 'lucide-react';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -355,6 +356,21 @@ export default function Profile() {
                 className="rounded-lg transition-all duration-150 active:scale-95 w-8 h-8 p-0"
               >
                 <UserPlus className="w-4 h-4" />
+              </Button>
+            )}
+            {!isOwnProfile && currentUser?.role === 'admin' && (
+              <Button
+                size="sm"
+                variant={user.is_founding_member ? "default" : "outline"}
+                onClick={async () => {
+                  const updated = await base44.entities.User.update(user.id, { is_founding_member: !user.is_founding_member });
+                  setUser(prev => ({ ...prev, is_founding_member: !prev.is_founding_member }));
+                }}
+                className={`rounded-lg transition-all duration-150 active:scale-95 gap-1.5 ${user.is_founding_member ? 'bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500' : 'border-yellow-400 text-yellow-600 hover:bg-yellow-50'}`}
+                title={user.is_founding_member ? 'Remove Founding Member badge' : 'Grant Founding Member badge'}
+              >
+                <Star className="w-4 h-4" />
+                <span className="hidden sm:inline">{user.is_founding_member ? 'Founding ✓' : 'Grant Founding'}</span>
               </Button>
             )}
             {!isOwnProfile && currentUser && (
