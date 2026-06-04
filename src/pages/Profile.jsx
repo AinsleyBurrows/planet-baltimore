@@ -60,14 +60,25 @@ export default function Profile() {
     base44.auth.me().then(setCurrentUser);
   }, []);
 
-  const { data: actualFollowersCount } = useQuery({
-    queryKey: ['followers-count', user?.id],
-    queryFn: async () => {
-      const follows = await base44.entities.Follow.filter({ target_type: 'user', target_id: user.id });
-      return follows.length;
-    },
+  const { data: followerFollows = [] } = useQuery({
+    queryKey: ['followers-list', user?.id],
+    queryFn: () => base44.entities.Follow.filter({ target_type: 'user', target_id: user.id }, '-created_date', 10),
     enabled: !!user?.id,
     staleTime: 30000,
+  });
+
+  const actualFollowersCount = followerFollows.length;
+
+  // Resolve follower names from User records (up to 3 for display)
+  const followerIdsToResolve = followerFollows.slice(0, 3).map(f => f.follower_id);
+  const { data: followerUsers = [] } = useQuery({
+    queryKey: ['follower-users', followerIdsToResolve.join(',')],
+    queryFn: async () => {
+      const results = await Promise.all(followerIdsToResolve.map(id => base44.entities.User.get(id).catch(() => null)));
+      return results.filter(Boolean);
+    },
+    enabled: followerIdsToResolve.length > 0,
+    staleTime: 60000,
   });
 
   const { data: followStatus } = useQuery({
@@ -443,7 +454,7 @@ export default function Profile() {
         </div>
 
         {/* Stats */}
-        <div className="flex gap-6 sm:gap-8 mt-4 py-3 border-b border-border">
+        <div className="flex gap-6 sm:gap-8 mt-4 pt-3 pb-2">
           <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.posts_count || posts.length}</span><span className="text-xs text-muted-foreground ml-1">Posts</span></div>
           <button onClick={() => setShowFollowModal('followers')} className="text-center hover:opacity-70 transition-opacity">
             <span className="font-bold text-foreground text-sm sm:text-base">{actualFollowersCount ?? user.followers_count ?? 0}</span>
@@ -454,6 +465,24 @@ export default function Profile() {
             <span className="text-xs text-muted-foreground ml-1">Following</span>
           </button>
         </div>
+        {/* Followed by names */}
+        {followerUsers.length > 0 && (
+          <div className="pb-3 border-b border-border">
+            <p className="text-xs text-muted-foreground">
+              <span>Followed by </span>
+              {followerUsers.map((u, i) => (
+                <span key={u.id}>
+                  <Link to={`/profile/${u.id}`} className="font-semibold text-foreground hover:text-accent transition-colors">
+                    {u.full_name?.split(' ')[0]}
+                  </Link>
+                  {i < followerUsers.length - 1 && <span>, </span>}
+                </span>
+              ))}
+              {followerFollows.length > 3 && <span> and {followerFollows.length - 3} others</span>}
+            </p>
+          </div>
+        )}
+        {followerUsers.length === 0 && <div className="border-b border-border pb-3" />}
       </div>
 
       {/* Tabs */}
