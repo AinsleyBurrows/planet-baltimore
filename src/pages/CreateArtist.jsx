@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 // NeighborhoodSelect is used for neighborhood picker
 import { useToast } from '@/components/ui/use-toast';
 
-const categories = ['visual_art', 'music', 'video', 'photography', 'performance', 'literary', 'mixed_media', 'digital', 'fashion', 'other'];
+const categories = ['visual_art', 'music', 'video', 'photography', 'performance', 'literary', 'mixed_media', 'fashion', 'podcaster', 'other'];
 
 export default function CreateArtist() {
   const navigate = useNavigate();
