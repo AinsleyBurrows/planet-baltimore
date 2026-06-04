@@ -99,9 +99,7 @@ export default function Leaderboard() {
               to={`/profile/${m.id}`}
               className="flex items-center gap-4 p-4 bg-card border border-border rounded-2xl hover:shadow-sm transition-all active:scale-[0.99]"
             >
-              <span className="w-8 text-center font-bold flex-shrink-0 text-lg">
-                {i < 3 ? MEDAL[i] : <span className="text-muted-foreground text-sm">#{i + 1}</span>}
-              </span>
+              <span className="w-8 text-center font-bold flex-shrink-0 text-sm text-muted-foreground">#{i + 1}</span>
               <Avatar className="w-11 h-11 flex-shrink-0">
                 <AvatarImage src={m.avatar} />
                 <AvatarFallback className="bg-accent/10 text-accent font-bold text-sm">{m.name?.charAt(0)}</AvatarFallback>
