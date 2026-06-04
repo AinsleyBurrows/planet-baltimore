@@ -331,9 +331,9 @@ export default function ArtistDetail() {
             <span className="hidden xs:inline">Events</span>
             {upcomingCount > 0 && <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground text-[9px] font-bold">{upcomingCount}</span>}
           </TabsTrigger>
-          <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+          {!isPodcaster && <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Talk</span>
-          </TabsTrigger>
+          </TabsTrigger>}
           {!isMusic && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
           </TabsTrigger>}
