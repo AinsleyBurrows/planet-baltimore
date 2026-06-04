@@ -18,7 +18,6 @@
         "performance",
         "literary",
         "mixed_media",
-        "digital",
         "fashion",
         "podcaster",
         "other"
@@ -341,6 +340,36 @@
         },
         "amazon_music": {
           "type": "string"
+        }
+      }
+    },
+    "podcast_guests": {
+      "type": "array",
+      "description": "Past and upcoming podcast guests",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "episode_title": {
+            "type": "string"
+          },
+          "episode_url": {
+            "type": "string"
+          }
         }
       }
     }

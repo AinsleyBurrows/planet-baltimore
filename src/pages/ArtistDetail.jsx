@@ -36,6 +36,9 @@ import ArtistCVTab from '@/components/artist/ArtistCVTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 
 import PodcastEpisodesTab from '@/components/artist/podcast/PodcastEpisodesTab';
+import PodcastGuestsTab from '@/components/artist/podcast/PodcastGuestsTab';
+import PodcastListenOnTab from '@/components/artist/podcast/PodcastListenOnTab';
+import PodcastCommunityTab from '@/components/artist/podcast/PodcastCommunityTab';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
@@ -288,6 +291,15 @@ export default function ArtistDetail() {
             <TabsTrigger value="episodes" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               🎙️ <span className="hidden xs:inline">Episodes</span>
             </TabsTrigger>
+            <TabsTrigger value="guests" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎤 <span className="hidden xs:inline">Guests</span>
+            </TabsTrigger>
+            <TabsTrigger value="listen_on" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎧 <span className="hidden xs:inline">Listen On</span>
+            </TabsTrigger>
+            <TabsTrigger value="podcast_community" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Community</span>
+            </TabsTrigger>
           </>}
           {!isMusic && !isPodcaster && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -386,12 +398,21 @@ export default function ArtistDetail() {
           <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
         </TabsContent>
 
-        {/* Podcaster tab */}
-        {isPodcaster && (
+        {/* Podcaster tabs */}
+        {isPodcaster && <>
           <TabsContent value="episodes" className="mt-4">
             <PodcastEpisodesTab artist={artist} isOwner={isOwner} />
           </TabsContent>
-        )}
+          <TabsContent value="guests" className="mt-4">
+            <PodcastGuestsTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="listen_on" className="mt-4">
+            <PodcastListenOnTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="podcast_community" className="mt-4">
+            <PodcastCommunityTab artist={artist} posts={posts} isOwner={isOwner} user={user} />
+          </TabsContent>
+        </>}
 
         {/* Fashion-only tabs */}
         {isFashion && <>
