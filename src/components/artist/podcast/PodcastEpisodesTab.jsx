@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Mic, ExternalLink, Trash2, X, Loader2 } from 'lucide-react';
+import { Plus, Mic, ExternalLink, Trash2, X, Loader2, Share2, Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -68,11 +68,51 @@ function EpisodeForm({ onSave, onCancel, saving }) {
   );
 }
 
+function EpisodeSharePopover({ episode, artistName, onClose }) {
+  const [copied, setCopied] = useState(false);
+  const episodeUrl = episode.spotify_url || episode.apple_url || episode.youtube_url || window.location.href;
+  const text = encodeURIComponent(`🎙️ Listening to "${episode.title}" by ${artistName} — check it out!`);
+  const url = encodeURIComponent(episodeUrl);
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(episodeUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const socials = [
+    { label: 'Twitter / X', emoji: '🐦', href: `https://twitter.com/intent/tweet?text=${text}&url=${url}` },
+    { label: 'Facebook', emoji: '📘', href: `https://www.facebook.com/sharer/sharer.php?u=${url}` },
+    { label: 'WhatsApp', emoji: '💬', href: `https://api.whatsapp.com/send?text=${text}%20${url}` },
+  ];
+
+  return (
+    <div className="absolute right-0 top-8 z-20 w-52 bg-card border border-border rounded-xl shadow-lg p-3 space-y-2" onClick={e => e.stopPropagation()}>
+      <p className="text-xs font-semibold text-foreground mb-1">Share this episode</p>
+      {socials.map(s => (
+        <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+          className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-secondary text-sm text-foreground transition-colors">
+          <span>{s.emoji}</span>{s.label}
+        </a>
+      ))}
+      <button onClick={copyLink}
+        className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg hover:bg-secondary text-sm text-foreground transition-colors">
+        {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+        {copied ? 'Copied!' : 'Copy link'}
+      </button>
+      <button onClick={onClose} className="absolute top-2 right-2 p-1 rounded hover:bg-secondary text-muted-foreground">
+        <X className="w-3 h-3" />
+      </button>
+    </div>
+  );
+}
+
 export default function PodcastEpisodesTab({ artist, isOwner }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingIdx, setDeletingIdx] = useState(null);
+  const [sharingIdx, setSharingIdx] = useState(null);
 
   const episodes = artist.podcast_episodes || [];
   const links = artist.podcast_links || {};
@@ -144,7 +184,7 @@ export default function PodcastEpisodesTab({ artist, isOwner }) {
         <div className="space-y-3">
           {episodes.map((ep, idx) => (
             <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-card border border-border rounded-xl p-4 flex items-start gap-3 group">
+              className="bg-card border border-border rounded-xl p-4 flex items-start gap-3 group relative">
               <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0 font-bold text-accent text-sm">
                 {ep.episode_number || <Mic className="w-4 h-4" />}
               </div>
@@ -157,12 +197,23 @@ export default function PodcastEpisodesTab({ artist, isOwner }) {
                       {ep.published_at && <span>{new Date(ep.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
                     </div>
                   </div>
-                  {isOwner && (
-                    <button onClick={() => handleDelete(idx)} disabled={deletingIdx === idx}
-                      className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">
-                      {deletingIdx === idx ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                    </button>
-                  )}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="relative">
+                      <button onClick={() => setSharingIdx(sharingIdx === idx ? null : idx)}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors">
+                        <Share2 className="w-3.5 h-3.5" />
+                      </button>
+                      {sharingIdx === idx && (
+                        <EpisodeSharePopover episode={ep} artistName={artist.name} onClose={() => setSharingIdx(null)} />
+                      )}
+                    </div>
+                    {isOwner && (
+                      <button onClick={() => handleDelete(idx)} disabled={deletingIdx === idx}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100">
+                        {deletingIdx === idx ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {ep.description && <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">{ep.description}</p>}
                 {ep.audio_url && (
