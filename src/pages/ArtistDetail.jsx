@@ -297,9 +297,7 @@ export default function ArtistDetail() {
             <TabsTrigger value="listen_on" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               🎧 <span className="hidden xs:inline">Listen On</span>
             </TabsTrigger>
-            <TabsTrigger value="podcast_community" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Community</span>
-            </TabsTrigger>
+
           </>}
           {!isMusic && !isPodcaster && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -409,9 +407,7 @@ export default function ArtistDetail() {
           <TabsContent value="listen_on" className="mt-4">
             <PodcastListenOnTab artist={artist} isOwner={isOwner} />
           </TabsContent>
-          <TabsContent value="podcast_community" className="mt-4">
-            <PodcastCommunityTab artist={artist} posts={posts} isOwner={isOwner} user={user} />
-          </TabsContent>
+
         </>}
 
         {/* Fashion-only tabs */}
