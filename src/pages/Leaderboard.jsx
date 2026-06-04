@@ -25,13 +25,13 @@ function LeaderSkeleton() {
 export default function Leaderboard() {
   const { data: posts = [], isLoading: loadingPosts } = useQuery({
     queryKey: ['leaderboard-posts'],
-    queryFn: () => base44.entities.Post.filter({ page_type: 'personal' }, '-created_date', 500),
+    queryFn: () => base44.entities.Post.filter({ page_type: 'personal' }, '-created_date', 2000),
     staleTime: 60000,
   });
 
   const { data: comments = [], isLoading: loadingComments } = useQuery({
     queryKey: ['leaderboard-comments'],
-    queryFn: () => base44.entities.Comment.list('-created_date', 500),
+    queryFn: () => base44.entities.Comment.list('-created_date', 2000),
     staleTime: 60000,
   });
 
@@ -61,7 +61,7 @@ export default function Leaderboard() {
     return Object.values(scoreMap)
       .map(m => ({ ...m, score: m.posts * 5 + m.comments * 2 + m.likes }))
       .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
+      .slice(0, 100);
   }, [posts, comments]);
 
   return (
