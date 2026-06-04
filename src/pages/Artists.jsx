@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 
-const categories = ['All', 'Visual Art', 'Music', 'Video', 'Photography', 'Performance', 'Literary', 'Digital', 'Fashion'];
+const categories = ['All', 'Visual Art', 'Music', 'Video', 'Photography', 'Performance', 'Literary', 'Digital', 'Fashion', 'Podcaster'];
 
 const SORTS = [
   { value: '-created_date', label: 'Newest' },

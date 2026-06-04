@@ -35,6 +35,8 @@ import PageAdminBar from '@/components/shared/PageAdminBar';
 import ArtistCVTab from '@/components/artist/ArtistCVTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 
+import PodcastEpisodesTab from '@/components/artist/podcast/PodcastEpisodesTab';
+
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
 import TracksTab from '@/components/artist/music/TracksTab';
@@ -46,7 +48,7 @@ import StreamingLinksTab from '@/components/artist/music/StreamingLinksTab';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
-  performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', fashion: 'Fashion', other: 'Other'
+  performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', fashion: 'Fashion', podcaster: 'Podcaster', other: 'Other'
 };
 
 const socialIcons = {
@@ -114,6 +116,7 @@ export default function ArtistDetail() {
   const isPlatformAdmin = user?.role === 'admin';
   const isMusic = artist.category === 'music';
   const isFashion = artist.category === 'fashion';
+  const isPodcaster = artist.category === 'podcaster';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -257,7 +260,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : "journal"}>
+      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -281,7 +284,12 @@ export default function ArtistDetail() {
             </TabsTrigger>
 
           </>}
-          {!isMusic && <>
+          {isPodcaster && <>
+            <TabsTrigger value="episodes" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎙️ <span className="hidden xs:inline">Episodes</span>
+            </TabsTrigger>
+          </>}
+          {!isMusic && !isPodcaster && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>}
@@ -291,7 +299,7 @@ export default function ArtistDetail() {
             {!isFashion && <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Gallery</span>
             </TabsTrigger>}
-            {isFashion && <>
+            {!isPodcaster && isFashion && <>
               <TabsTrigger value="lookbook" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
                 📸 <span className="hidden xs:inline">Lookbook</span>
               </TabsTrigger>
@@ -377,6 +385,13 @@ export default function ArtistDetail() {
         <TabsContent value="gallery" className="mt-4">
           <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
         </TabsContent>
+
+        {/* Podcaster tab */}
+        {isPodcaster && (
+          <TabsContent value="episodes" className="mt-4">
+            <PodcastEpisodesTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+        )}
 
         {/* Fashion-only tabs */}
         {isFashion && <>

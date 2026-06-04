@@ -20,6 +20,7 @@
         "mixed_media",
         "digital",
         "fashion",
+        "podcaster",
         "other"
       ]
     },
@@ -276,6 +277,69 @@
           "type": "string"
         },
         "twitter": {
+          "type": "string"
+        }
+      }
+    },
+    "podcast_episodes": {
+      "type": "array",
+      "description": "Podcast episodes for podcaster pages",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "episode_number": {
+            "type": "number"
+          },
+          "season_number": {
+            "type": "number"
+          },
+          "audio_url": {
+            "type": "string"
+          },
+          "cover_url": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "string"
+          },
+          "published_at": {
+            "type": "string"
+          },
+          "spotify_url": {
+            "type": "string"
+          },
+          "apple_url": {
+            "type": "string"
+          },
+          "youtube_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "podcast_links": {
+      "type": "object",
+      "description": "Podcast platform links",
+      "properties": {
+        "spotify": {
+          "type": "string"
+        },
+        "apple_podcasts": {
+          "type": "string"
+        },
+        "youtube": {
+          "type": "string"
+        },
+        "rss": {
+          "type": "string"
+        },
+        "amazon_music": {
           "type": "string"
         }
       }
