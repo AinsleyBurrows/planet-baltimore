@@ -466,7 +466,7 @@ export default function ArtistDetail() {
             <h2 className="font-semibold text-foreground mb-1">{isPodcaster ? 'Book Me As A Guest' : 'Book or Collaborate'}</h2>
             <p className="text-sm text-muted-foreground mb-5">
               {isPodcaster
-                ? `Interested in having ${artist.name} as a guest on your podcast? Send a booking request below.`
+                ? `I would love to be a guest on your podcast`
                 : `Reach out to ${artist.name} for commissions, collaborations, bookings, or any project inquiry.`}
             </p>
             <ArtistContactForm artist={artist} />
