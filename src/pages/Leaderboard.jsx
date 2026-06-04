@@ -65,7 +65,7 @@ export default function Leaderboard() {
   }, [posts, comments]);
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 pb-10">
+    <div className="space-y-6 pb-10">
       {/* Hero Banner */}
       <div className="relative rounded-2xl overflow-hidden p-5 sm:p-8 lg:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
@@ -79,7 +79,7 @@ export default function Leaderboard() {
       </div>
 
       {/* Points key */}
-      <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground bg-secondary/60 rounded-xl px-4 py-2.5">
+      <div className="max-w-xl mx-auto flex items-center justify-center gap-4 text-xs text-muted-foreground bg-secondary/60 rounded-xl px-4 py-2.5">
         <span className="flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> <strong className="text-foreground">5</strong> / post</span>
         <span className="text-border">·</span>
         <span className="flex items-center gap-1"><MessageCircle className="w-3.5 h-3.5" /> <strong className="text-foreground">2</strong> / comment</span>
@@ -88,11 +88,11 @@ export default function Leaderboard() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-3"><LeaderSkeleton /></div>
+        <div className="max-w-xl mx-auto space-y-3"><LeaderSkeleton /></div>
       ) : leaderboard.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground text-sm">No activity yet to rank.</div>
       ) : (
-        <div className="space-y-2">
+        <div className="max-w-xl mx-auto space-y-2">
           {leaderboard.map((m, i) => (
             <Link
               key={m.id}
