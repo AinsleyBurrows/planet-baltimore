@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
 
-const CATEGORIES = ['visual_art', 'music', 'video', 'photography', 'performance', 'literary', 'mixed_media', 'digital', 'fashion', 'podcaster', 'other'];
+const CATEGORIES = ['visual_art', 'music', 'video', 'photography', 'performance', 'literary', 'mixed_media', 'fashion', 'podcaster', 'other'];
 const SOCIAL_PLATFORMS = ['instagram', 'twitter', 'tiktok', 'youtube', 'soundcloud', 'bandcamp', 'linkedin'];
 
 export default function ArtistEditProfileModal({ artist, onClose }) {
