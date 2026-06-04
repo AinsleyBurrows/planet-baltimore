@@ -19,6 +19,7 @@ import CommunityMessageModal from '@/components/community/CommunityMessageModal'
 import ShareModal from '@/components/shared/ShareModal';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
+import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 import CommunityCreatePostModal from '@/components/community/CommunityCreatePostModal';
 import CommunityCreateEventModal from '@/components/community/CommunityCreateEventModal';
 import PageEventsTab from '@/components/shared/PageEventsTab';
@@ -174,10 +175,22 @@ export default function CommunityDetail() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h1 className="text-xl font-bold text-foreground">{community.name}</h1>
           {community.is_verified && <CheckCircle className="w-5 h-5 text-foreground" />}
           {community.is_official && <Badge className="bg-primary/10 text-primary border-0 text-xs">Official</Badge>}
+          {community.is_founding_member && <FoundingMemberBadge />}
+          {isPlatformAdmin && (
+            <button
+              onClick={async () => {
+                await base44.entities.Community.update(communityId, { is_founding_member: !community.is_founding_member });
+                queryClient.invalidateQueries({ queryKey: ['community', communityId] });
+              }}
+              className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${community.is_founding_member ? 'border-yellow-400 text-yellow-600 hover:bg-yellow-50' : 'border-muted text-muted-foreground hover:border-yellow-400 hover:text-yellow-600'}`}
+            >
+              {community.is_founding_member ? '★ Remove Founding' : '☆ Grant Founding'}
+            </button>
+          )}
         </div>
 
         {community.category && (

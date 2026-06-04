@@ -145,6 +145,11 @@
       "type": "boolean",
       "default": false
     },
+    "is_founding_member": {
+      "type": "boolean",
+      "default": false,
+      "description": "Founding member badge granted by platform admin"
+    },
     "is_muted": {
       "type": "boolean",
       "default": false,

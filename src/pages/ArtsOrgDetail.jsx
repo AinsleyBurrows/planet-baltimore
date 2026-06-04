@@ -19,6 +19,7 @@ import ArtsOrgEditModal from '@/components/arts/ArtsOrgEditModal';
 import ArtsOrgCreatePostModal from '@/components/arts/ArtsOrgCreatePostModal';
 import ShareModal from '@/components/shared/ShareModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
+import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 import { useNavigate } from 'react-router-dom';
 import ImageFitScaleModal from '@/components/shared/ImageFitScaleModal';
 import ScoutFairTab from '@/components/arts/tabs/ScoutFairTab';
@@ -278,9 +279,21 @@ export default function ArtsOrgDetail() {
 
 
         <div className="mt-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-bold text-foreground">{org.name}</h1>
             {org.is_verified && <Shield className="w-5 h-5 text-accent" />}
+            {org.is_founding_member && <FoundingMemberBadge />}
+            {isPlatformAdmin && (
+              <button
+                onClick={async () => {
+                  await base44.entities.ArtsOrganization.update(id, { is_founding_member: !org.is_founding_member });
+                  queryClient.invalidateQueries({ queryKey: ['arts-org', id] });
+                }}
+                className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${org.is_founding_member ? 'border-yellow-400 text-yellow-600 hover:bg-yellow-50' : 'border-muted text-muted-foreground hover:border-yellow-400 hover:text-yellow-600'}`}
+              >
+                {org.is_founding_member ? '★ Remove Founding' : '☆ Grant Founding'}
+              </button>
+            )}
           </div>
           <Badge className="mt-1 bg-accent/10 text-accent border-0 capitalize">{ORG_TYPE_LABELS[org.org_type] || org.org_type}</Badge>
           {org.tagline && <p className="text-sm text-muted-foreground mt-1 italic">{org.tagline}</p>}

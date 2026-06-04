@@ -31,6 +31,7 @@ import FollowButton from '@/components/shared/FollowButton';
 import PageEventsTab from '@/components/shared/PageEventsTab';
 import ShareModal from '@/components/shared/ShareModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
+import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 import { format } from 'date-fns';
 
 export default function CommunityAssociationDetail() {
@@ -270,7 +271,21 @@ export default function CommunityAssociationDetail() {
           </div>
         </div>
 
-        <h1 className="text-xl font-bold text-foreground">{association.name}</h1>
+        <div className="flex items-center gap-2 flex-wrap">
+          <h1 className="text-xl font-bold text-foreground">{association.name}</h1>
+          {association.is_founding_member && <FoundingMemberBadge />}
+          {isSiteAdmin && (
+            <button
+              onClick={async () => {
+                await base44.entities.CommunityAssociation.update(assocId, { is_founding_member: !association.is_founding_member });
+                queryClient.invalidateQueries({ queryKey: ['community-association', assocId] });
+              }}
+              className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${association.is_founding_member ? 'border-yellow-400 text-yellow-600 hover:bg-yellow-50' : 'border-muted text-muted-foreground hover:border-yellow-400 hover:text-yellow-600'}`}
+            >
+              {association.is_founding_member ? '★ Remove Founding' : '☆ Grant Founding'}
+            </button>
+          )}
+        </div>
         {association.tagline && <p className="text-sm text-accent font-medium mt-0.5">{association.tagline}</p>}
 
         {association.description && (

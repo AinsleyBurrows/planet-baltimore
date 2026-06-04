@@ -31,6 +31,7 @@ import PageEventsTab from '@/components/shared/PageEventsTab';
 import InviteFriendsModal from '@/components/profile/InviteFriendsModal';
 import ShareModal from '@/components/shared/ShareModal';
 import PageAdminBar from '@/components/shared/PageAdminBar';
+import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 
 const categoryLabels = {
   restaurant: 'Restaurant', retail: 'Retail', service: 'Service', entertainment: 'Entertainment',
@@ -183,9 +184,21 @@ export default function BusinessDetail() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h1 className="text-xl font-bold text-foreground">{business.name}</h1>
           {business.is_verified && <CheckCircle className="w-5 h-5 text-accent fill-accent/20" />}
+          {business.is_founding_member && <FoundingMemberBadge />}
+          {isPlatformAdmin && (
+            <button
+              onClick={async () => {
+                await base44.entities.BusinessPage.update(businessId, { is_founding_member: !business.is_founding_member });
+                queryClient.invalidateQueries({ queryKey: ['business', businessId] });
+              }}
+              className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${business.is_founding_member ? 'border-yellow-400 text-yellow-600 hover:bg-yellow-50' : 'border-muted text-muted-foreground hover:border-yellow-400 hover:text-yellow-600'}`}
+            >
+              {business.is_founding_member ? '★ Remove Founding' : '☆ Grant Founding'}
+            </button>
+          )}
         </div>
 
         {business.category && (

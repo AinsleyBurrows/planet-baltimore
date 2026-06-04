@@ -33,6 +33,7 @@ import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
 import PostCard from '@/components/shared/PostCard';
 import PageAdminBar from '@/components/shared/PageAdminBar';
 import ArtistCVTab from '@/components/artist/ArtistCVTab';
+import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
@@ -197,9 +198,21 @@ export default function ArtistDetail() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mb-1">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h1 className="text-xl font-bold text-foreground">{artist.name}</h1>
           {artist.is_verified && <CheckCircle className="w-5 h-5 text-accent fill-accent/20" />}
+          {artist.is_founding_member && <FoundingMemberBadge />}
+          {isPlatformAdmin && (
+            <button
+              onClick={async () => {
+                await base44.entities.ArtistPage.update(artistId, { is_founding_member: !artist.is_founding_member });
+                queryClient.invalidateQueries({ queryKey: ['artist', artistId] });
+              }}
+              className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${artist.is_founding_member ? 'border-yellow-400 text-yellow-600 hover:bg-yellow-50' : 'border-muted text-muted-foreground hover:border-yellow-400 hover:text-yellow-600'}`}
+            >
+              {artist.is_founding_member ? '★ Remove Founding' : '☆ Grant Founding'}
+            </button>
+          )}
         </div>
 
         {artist.bio && <p className="text-sm text-muted-foreground leading-relaxed mt-1.5 line-clamp-3">{artist.bio}</p>}
