@@ -12,22 +12,22 @@ export default function FollowersModal({ userId, mode, onClose }) {
     queryKey: ['follows-modal', userId, mode],
     queryFn: async () => {
       if (mode === 'followers') {
-        const records = await base44.entities.Follow.filter({ target_type: 'user', target_id: userId }, '-created_date', 100);
-        // Enrich with real user names by fetching each follower's User record
-        const enriched = await Promise.all(
-          records.map(async (f) => {
-            try {
-              const u = await base44.entities.User.get(f.follower_id);
-              return { ...f, follower_name: u?.full_name || u?.display_name || f.follower_name, follower_avatar: u?.avatar_url || f.follower_avatar };
-            } catch {
-              return f;
-            }
-          })
+        const records = await base44.entities.Follow.filter({ target_type: 'user', target_id: userId }, '-created_date', 500);
+        // Batch-fetch all follower User records in parallel
+        const userResults = await Promise.all(
+          records.map(f => base44.entities.User.get(f.follower_id).catch(() => null))
         );
-        return enriched;
+        return records.map((f, i) => {
+          const u = userResults[i];
+          return {
+            ...f,
+            follower_name: u?.full_name || u?.display_name || f.follower_name || f.follower_id,
+            follower_avatar: u?.avatar_url || f.follower_avatar,
+          };
+        });
       } else {
         // People/things this user follows
-        return base44.entities.Follow.filter({ follower_id: userId }, '-created_date', 100);
+        return base44.entities.Follow.filter({ follower_id: userId }, '-created_date', 500);
       }
     },
     enabled: !!userId,

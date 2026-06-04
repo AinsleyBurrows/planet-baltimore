@@ -62,7 +62,7 @@ export default function Profile() {
 
   const { data: followerFollows = [] } = useQuery({
     queryKey: ['followers-list', user?.id],
-    queryFn: () => base44.entities.Follow.filter({ target_type: 'user', target_id: user.id }, '-created_date', 10),
+    queryFn: () => base44.entities.Follow.filter({ target_type: 'user', target_id: user.id }, '-created_date', 500),
     enabled: !!user?.id,
     staleTime: 30000,
   });
