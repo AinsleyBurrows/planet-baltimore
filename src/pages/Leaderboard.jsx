@@ -64,9 +64,6 @@ export default function Leaderboard() {
       .slice(0, 10);
   }, [posts, comments]);
 
-  const topThree = leaderboard.slice(0, 3);
-  const rest = leaderboard.slice(3);
-
   return (
     <div className="max-w-xl mx-auto space-y-6 pb-10">
       {/* Header */}
@@ -92,67 +89,35 @@ export default function Leaderboard() {
       ) : leaderboard.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground text-sm">No activity yet to rank.</div>
       ) : (
-        <>
-          {/* Top 3 podium */}
-          <div className="grid grid-cols-3 gap-3">
-            {[topThree[1], topThree[0], topThree[2]].map((m, podiumIdx) => {
-              if (!m) return <div key={podiumIdx} />;
-              const originalRank = topThree.indexOf(m);
-              const heights = ['h-28', 'h-36', 'h-24'];
-              return (
-                <Link
-                  key={m.id}
-                  to={`/profile/${m.id}`}
-                  className="flex flex-col items-center gap-1.5 group"
-                >
-                  <Avatar className="w-12 h-12 border-2 border-background shadow-md group-hover:scale-105 transition-transform">
-                    <AvatarImage src={m.avatar} />
-                    <AvatarFallback className="bg-accent/10 text-accent font-bold text-sm">{m.name?.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-xs font-semibold text-foreground text-center truncate w-full text-center leading-tight">{m.name?.split(' ')[0]}</span>
-                  <div
-                    className={`w-full ${heights[podiumIdx]} rounded-t-xl flex flex-col items-center justify-center gap-1`}
-                    style={{ backgroundColor: originalRank === 0 ? '#d4580a' : originalRank === 1 ? '#b8b8b8' : '#c97a3a' }}
-                  >
-                    <span className="text-2xl leading-none">{MEDAL[originalRank]}</span>
-                    <span className="text-white font-bold text-sm">{m.score} pts</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Ranks 4–10 */}
-          {rest.length > 0 && (
-            <div className="space-y-2">
-              {rest.map((m, i) => (
-                <Link
-                  key={m.id}
-                  to={`/profile/${m.id}`}
-                  className="flex items-center gap-3 p-3.5 bg-card border border-border rounded-2xl hover:shadow-sm transition-all active:scale-[0.99]"
-                >
-                  <span className="w-7 text-center text-sm font-bold text-muted-foreground flex-shrink-0">#{i + 4}</span>
-                  <Avatar className="w-10 h-10 flex-shrink-0">
-                    <AvatarImage src={m.avatar} />
-                    <AvatarFallback className="bg-accent/10 text-accent font-bold text-sm">{m.name?.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-foreground truncate">{m.name}</p>
-                    <div className="flex gap-3 text-xs text-muted-foreground mt-0.5">
-                      <span className="flex items-center gap-0.5"><FileText className="w-3 h-3" />{m.posts}</span>
-                      <span className="flex items-center gap-0.5"><MessageCircle className="w-3 h-3" />{m.comments}</span>
-                      <span className="flex items-center gap-0.5"><Heart className="w-3 h-3" />{m.likes}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <Trophy className="w-3.5 h-3.5 text-accent" />
-                    <span className="font-bold text-sm text-accent">{m.score}</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </>
+        <div className="space-y-2">
+          {leaderboard.map((m, i) => (
+            <Link
+              key={m.id}
+              to={`/profile/${m.id}`}
+              className="flex items-center gap-4 p-4 bg-card border border-border rounded-2xl hover:shadow-sm transition-all active:scale-[0.99]"
+            >
+              <span className="w-8 text-center font-bold flex-shrink-0 text-lg">
+                {i < 3 ? MEDAL[i] : <span className="text-muted-foreground text-sm">#{i + 1}</span>}
+              </span>
+              <Avatar className="w-11 h-11 flex-shrink-0">
+                <AvatarImage src={m.avatar} />
+                <AvatarFallback className="bg-accent/10 text-accent font-bold text-sm">{m.name?.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm text-foreground truncate">{m.name}</p>
+                <div className="flex gap-3 text-xs text-muted-foreground mt-0.5">
+                  <span className="flex items-center gap-0.5"><FileText className="w-3 h-3" />{m.posts}</span>
+                  <span className="flex items-center gap-0.5"><MessageCircle className="w-3 h-3" />{m.comments}</span>
+                  <span className="flex items-center gap-0.5"><Heart className="w-3 h-3" />{m.likes}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <Trophy className="w-3.5 h-3.5 text-accent" />
+                <span className="font-bold text-sm text-accent">{m.score} pts</span>
+              </div>
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );
