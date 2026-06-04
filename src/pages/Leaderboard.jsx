@@ -82,7 +82,7 @@ export default function Leaderboard() {
       <div className="relative rounded-2xl overflow-hidden p-5 sm:p-8 lg:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5" style={{ color: '#d4580a' }}>Baltimore <span className="text-black dark:text-white">100</span></h1>
-          <p className="text-muted-foreground text-sm">Top 100 active Planet Baltimore members</p>
+          <p className="text-muted-foreground text-sm">Top 100 people who keep Planet Baltimore moving.</p>
         </div>
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
