@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Mic, ExternalLink, Trash2, X, Loader2, Share2, Check, Copy, Pin } from 'lucide-react';
+import { Plus, Mic, ExternalLink, Trash2, X, Loader2, Share2, Check, Copy, Pin, Upload } from 'lucide-react';
 import FeaturedEpisode from './FeaturedEpisode';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,6 +12,18 @@ function EpisodeForm({ onSave, onCancel, saving }) {
     audio_url: '', cover_url: '', duration: '', published_at: '',
     spotify_url: '', apple_url: '', youtube_url: '',
   });
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState('');
+  const audioInputRef = useRef(null);
+
+  const handleAudioUpload = async (file) => {
+    if (!file) return;
+    setUploading(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setForm(p => ({ ...p, audio_url: file_url }));
+    setUploadedFileName(file.name);
+    setUploading(false);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,9 +58,18 @@ function EpisodeForm({ onSave, onCancel, saving }) {
           <label className="text-xs text-muted-foreground mb-1 block">Published Date</label>
           <input type="date" className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.published_at} onChange={e => setForm(p => ({ ...p, published_at: e.target.value }))} />
         </div>
-        <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Audio URL</label>
-          <input className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.audio_url} onChange={e => setForm(p => ({ ...p, audio_url: e.target.value }))} placeholder="https://…" />
+        <div className="col-span-2">
+          <label className="text-xs text-muted-foreground mb-1 block">Audio File</label>
+          <div className="flex gap-2 items-center">
+            <input className="flex-1 px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring" value={uploadedFileName || form.audio_url} onChange={e => { setForm(p => ({ ...p, audio_url: e.target.value })); setUploadedFileName(''); }} placeholder="Paste URL or upload file…" />
+            <button type="button" onClick={() => audioInputRef.current?.click()} disabled={uploading}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-input bg-secondary text-sm font-medium hover:bg-secondary/80 transition-colors flex-shrink-0 disabled:opacity-50">
+              {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+              {uploading ? 'Uploading…' : 'Upload'}
+            </button>
+            <input ref={audioInputRef} type="file" accept="audio/*" className="hidden" onChange={e => e.target.files[0] && handleAudioUpload(e.target.files[0])} />
+          </div>
+          {uploadedFileName && <p className="text-xs text-green-600 mt-1">✓ Uploaded: {uploadedFileName}</p>}
         </div>
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Spotify URL</label>
