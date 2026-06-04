@@ -71,7 +71,7 @@ export default function Leaderboard() {
         <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-3" style={{ backgroundColor: '#d4580a' }}>
           <Trophy className="w-7 h-7 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-foreground">Community Leaderboard</h1>
+        <h1 className="text-2xl font-bold text-foreground">Baltimore 100</h1>
         <p className="text-sm text-muted-foreground mt-1">Top 10 most active Planet Baltimore members</p>
       </div>
 
