@@ -129,6 +129,47 @@ function EpisodeSharePopover({ episode, artistName, onClose }) {
   );
 }
 
+function PodcastShareBanner({ artist }) {
+  const [copied, setCopied] = useState(false);
+  const url = window.location.href;
+  const text = encodeURIComponent(`🎙️ Check out ${artist.name} on Planet Baltimore!`);
+  const enc = encodeURIComponent(url);
+
+  const socials = [
+    { label: 'Twitter / X', emoji: '🐦', href: `https://twitter.com/intent/tweet?text=${text}&url=${enc}` },
+    { label: 'Facebook', emoji: '📘', href: `https://www.facebook.com/sharer/sharer.php?u=${enc}` },
+    { label: 'WhatsApp', emoji: '💬', href: `https://api.whatsapp.com/send?text=${text}%20${enc}` },
+    { label: 'Instagram', emoji: '📸', href: `https://www.instagram.com/` },
+  ];
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="bg-card border border-border rounded-xl p-4">
+      <p className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+        <Share2 className="w-4 h-4 text-accent" /> Share this podcast
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {socials.map(s => (
+          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-secondary text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors">
+            <span>{s.emoji}</span>{s.label}
+          </a>
+        ))}
+        <button onClick={copyLink}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-secondary text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors">
+          {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? 'Copied!' : 'Copy link'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function PodcastEpisodesTab({ artist, isOwner }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
@@ -172,6 +213,9 @@ export default function PodcastEpisodesTab({ artist, isOwner }) {
 
   return (
     <div className="space-y-4">
+      {/* Share banner */}
+      <PodcastShareBanner artist={artist} />
+
       {/* Featured Episode */}
       <FeaturedEpisode artist={artist} isOwner={isOwner} />
 
