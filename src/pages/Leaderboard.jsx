@@ -66,13 +66,16 @@ export default function Leaderboard() {
 
   return (
     <div className="max-w-xl mx-auto space-y-6 pb-10">
-      {/* Header */}
-      <div className="text-center pt-2">
-        <div className="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-3" style={{ backgroundColor: '#d4580a' }}>
-          <Trophy className="w-7 h-7 text-white" />
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden p-5 sm:p-8 lg:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
+        <div className="relative z-10">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5" style={{ color: '#d4580a' }}>Baltimore <span className="text-black dark:text-white">100</span></h1>
+          <p className="text-muted-foreground text-sm">Top 10 most active Planet Baltimore members</p>
         </div>
-        <h1 className="text-2xl font-bold text-foreground">Baltimore 100</h1>
-        <p className="text-sm text-muted-foreground mt-1">Top 10 most active Planet Baltimore members</p>
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+        </div>
       </div>
 
       {/* Points key */}
