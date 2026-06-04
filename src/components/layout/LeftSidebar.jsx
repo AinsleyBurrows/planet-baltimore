@@ -22,7 +22,7 @@ const navItems = [
   { icon: Search, label: 'Search', path: '/search' },
   { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: Video, label: 'Videos', path: '/videos' },
-  { icon: Trophy, label: 'Leaderboard', path: '/leaderboard' },
+  { icon: Trophy, label: 'Baltimore 100', path: '/leaderboard' },
 ];
 
 export default function LeftSidebar() {
