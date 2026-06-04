@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
-  Camera, Pencil, MessageSquare, Plus, Zap
+  Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +39,7 @@ import PodcastEpisodesTab from '@/components/artist/podcast/PodcastEpisodesTab';
 import PodcastGuestsTab from '@/components/artist/podcast/PodcastGuestsTab';
 import PodcastListenOnTab from '@/components/artist/podcast/PodcastListenOnTab';
 import PodcastCommunityTab from '@/components/artist/podcast/PodcastCommunityTab';
+import PodcastDashboardTab from '@/components/artist/podcast/PodcastDashboardTab';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
@@ -297,7 +298,11 @@ export default function ArtistDetail() {
             <TabsTrigger value="listen_on" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               🎧 <span className="hidden xs:inline">Listen On</span>
             </TabsTrigger>
-
+            {isOwner && (
+              <TabsTrigger value="podcast_dashboard" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+                <TrendingUp className="w-3.5 h-3.5" /><span className="hidden xs:inline">Dashboard</span>
+              </TabsTrigger>
+            )}
           </>}
           {!isMusic && !isPodcaster && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -407,7 +412,11 @@ export default function ArtistDetail() {
           <TabsContent value="listen_on" className="mt-4">
             <PodcastListenOnTab artist={artist} isOwner={isOwner} />
           </TabsContent>
-
+          {isOwner && (
+            <TabsContent value="podcast_dashboard" className="mt-4">
+              <PodcastDashboardTab artist={artist} posts={posts} followersCount={artist.followers_count} />
+            </TabsContent>
+          )}
         </>}
 
         {/* Fashion-only tabs */}
