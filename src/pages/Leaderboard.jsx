@@ -111,10 +111,7 @@ export default function Leaderboard() {
                   <span className="flex items-center gap-0.5"><Heart className="w-3 h-3" />{m.likes}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <Trophy className="w-3.5 h-3.5 text-accent" />
-                <span className="font-bold text-sm text-accent">{m.score} pts</span>
-              </div>
+              <span className="font-bold text-sm text-accent flex-shrink-0">{m.score} pts</span>
             </Link>
           ))}
         </div>
