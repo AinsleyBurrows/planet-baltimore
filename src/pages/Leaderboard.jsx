@@ -23,14 +23,22 @@ function LeaderSkeleton() {
 }
 
 export default function Leaderboard() {
+  const { data: settings = [] } = useQuery({
+    queryKey: ['leaderboard-reset'],
+    queryFn: () => base44.entities.PlatformSettings.list(),
+    staleTime: 60000,
+  });
+
+  const resetAt = settings.find(s => s.key === 'leaderboard_reset_at')?.value || null;
+
   const { data: posts = [], isLoading: loadingPosts } = useQuery({
-    queryKey: ['leaderboard-posts'],
+    queryKey: ['leaderboard-posts', resetAt],
     queryFn: () => base44.entities.Post.filter({ page_type: 'personal' }, '-created_date', 2000),
     staleTime: 60000,
   });
 
   const { data: comments = [], isLoading: loadingComments } = useQuery({
-    queryKey: ['leaderboard-comments'],
+    queryKey: ['leaderboard-comments', resetAt],
     queryFn: () => base44.entities.Comment.list('-created_date', 2000),
     staleTime: 60000,
   });
@@ -39,8 +47,12 @@ export default function Leaderboard() {
 
   const leaderboard = useMemo(() => {
     const scoreMap = {};
+    const since = resetAt ? new Date(resetAt) : null;
 
-    posts.forEach(p => {
+    const filteredPosts = since ? posts.filter(p => new Date(p.created_date) >= since) : posts;
+    const filteredComments = since ? comments.filter(c => new Date(c.created_date) >= since) : comments;
+
+    filteredPosts.forEach(p => {
       const id = p.author_id;
       if (!id) return;
       if (!scoreMap[id]) scoreMap[id] = { id, name: p.author_name || 'Unknown', avatar: p.author_avatar, posts: 0, comments: 0, likes: 0 };
@@ -50,7 +62,7 @@ export default function Leaderboard() {
       if (p.author_avatar) scoreMap[id].avatar = p.author_avatar;
     });
 
-    comments.forEach(c => {
+    filteredComments.forEach(c => {
       const id = c.author_id;
       if (!id) return;
       if (!scoreMap[id]) scoreMap[id] = { id, name: c.author_name || 'Unknown', avatar: c.author_avatar, posts: 0, comments: 0, likes: 0 };
