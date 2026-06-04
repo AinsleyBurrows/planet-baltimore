@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Mic, ExternalLink, Trash2, X, Loader2, Share2, Check, Copy } from 'lucide-react';
+import { Plus, Mic, ExternalLink, Trash2, X, Loader2, Share2, Check, Copy, Pin } from 'lucide-react';
+import FeaturedEpisode from './FeaturedEpisode';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -134,6 +135,12 @@ export default function PodcastEpisodesTab({ artist, isOwner }) {
     setDeletingIdx(null);
   };
 
+  const handlePin = async (idx) => {
+    const updated = episodes.map((ep, i) => ({ ...ep, is_featured: i === idx }));
+    await base44.entities.ArtistPage.update(artist.id, { podcast_episodes: updated });
+    queryClient.invalidateQueries({ queryKey: ['artist', artist.id] });
+  };
+
   const platforms = [
     { key: 'spotify', label: 'Spotify', emoji: '🎧' },
     { key: 'apple_podcasts', label: 'Apple Podcasts', emoji: '🎙️' },
@@ -144,6 +151,9 @@ export default function PodcastEpisodesTab({ artist, isOwner }) {
 
   return (
     <div className="space-y-4">
+      {/* Featured Episode */}
+      <FeaturedEpisode artist={artist} isOwner={isOwner} />
+
       {/* Platform links */}
       {platforms.length > 0 && (
         <div className="flex flex-wrap gap-2">
@@ -208,10 +218,16 @@ export default function PodcastEpisodesTab({ artist, isOwner }) {
                       )}
                     </div>
                     {isOwner && (
-                      <button onClick={() => handleDelete(idx)} disabled={deletingIdx === idx}
-                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100">
-                        {deletingIdx === idx ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                      </button>
+                      <>
+                        <button onClick={() => handlePin(idx)} title={ep.is_featured ? 'Pinned as featured' : 'Pin as featured episode'}
+                          className={`p-1.5 rounded-lg transition-colors ${ep.is_featured ? 'text-accent' : 'text-muted-foreground hover:text-accent hover:bg-accent/10 opacity-0 group-hover:opacity-100'}`}>
+                          <Pin className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => handleDelete(idx)} disabled={deletingIdx === idx}
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors opacity-0 group-hover:opacity-100">
+                          {deletingIdx === idx ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
