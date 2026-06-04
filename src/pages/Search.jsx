@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Search as SearchIcon, User, Users, Palette, Building2, Landmark, BookOpen, Shield, X, Calendar } from 'lucide-react';
+import { Search as SearchIcon, User, Users, Palette, Building2, Landmark, BookOpen, Shield, X, Calendar, FileText } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 const SECTIONS = [
   { key: 'all', label: 'All' },
   { key: 'people', label: 'People' },
+  { key: 'posts', label: 'Posts' },
   { key: 'stories', label: 'Stories' },
+  { key: 'events', label: 'Events' },
   { key: 'communities', label: 'Groups/Communities' },
   { key: 'artists', label: 'Artists' },
   { key: 'businesses', label: 'Businesses' },
   { key: 'arts_orgs', label: 'Arts Orgs' },
   { key: 'associations', label: 'Community Associations' },
-  { key: 'events', label: 'Events' },
 ];
 
 function useDebounce(value, delay = 350) {
@@ -42,28 +43,30 @@ export default function Search() {
     setLoading(true);
 
     const searches = [
-      base44.entities.User.list('-created_date', 200),
-      base44.entities.Story.filter({ status: 'published' }, '-created_date', 200),
-      base44.entities.Community.list('-created_date', 200),
-      base44.entities.ArtistPage.list('-created_date', 200),
-      base44.entities.BusinessPage.list('-created_date', 200),
-      base44.entities.ArtsOrganization.list('-created_date', 200),
-      base44.entities.CommunityAssociation.list('-created_date', 200),
-      base44.entities.Event.list('-date', 200),
+      base44.entities.User.list('-created_date', 500),
+      base44.entities.Story.filter({ status: 'published' }, '-created_date', 500),
+      base44.entities.Community.list('-created_date', 500),
+      base44.entities.ArtistPage.list('-created_date', 500),
+      base44.entities.BusinessPage.list('-created_date', 500),
+      base44.entities.ArtsOrganization.list('-created_date', 500),
+      base44.entities.CommunityAssociation.list('-created_date', 500),
+      base44.entities.Event.list('-date', 500),
+      base44.entities.Post.filter({ is_deleted: false }, '-created_date', 500),
     ];
 
-    Promise.all(searches).then(([users, stories, communities, artists, businesses, artsOrgs, associations, events]) => {
+    Promise.all(searches).then(([users, stories, communities, artists, businesses, artsOrgs, associations, events, posts]) => {
       const match = (str) => str?.toLowerCase().includes(q);
 
       setResults({
         people: users.filter(u => match(u.full_name) || match(u.email) || match(u.bio)),
-        stories: stories.filter(s => match(s.title) || match(s.subtitle) || match(s.author_name) || s.tags?.some(t => match(t))),
-        communities: communities.filter(c => match(c.name) || match(c.description) || match(c.neighborhood_name)),
-        artists: artists.filter(a => match(a.name) || match(a.bio) || match(a.neighborhood_name)),
-        businesses: businesses.filter(b => match(b.name) || match(b.description) || match(b.neighborhood_name)),
-        arts_orgs: artsOrgs.filter(o => match(o.name) || match(o.description) || match(o.neighborhood_name)),
-        associations: associations.filter(a => match(a.name) || match(a.description) || match(a.neighborhood_name)),
-        events: events.filter(e => match(e.title) || match(e.description) || match(e.venue_name) || match(e.neighborhood_name) || match(e.organizer_name)),
+        posts: posts.filter(p => match(p.content) || match(p.author_name) || p.tags?.some(t => match(t)) || match(p.neighborhood_name)),
+        stories: stories.filter(s => match(s.title) || match(s.subtitle) || match(s.author_name) || match(s.content) || s.tags?.some(t => match(t))),
+        communities: communities.filter(c => match(c.name) || match(c.description) || match(c.neighborhood_name) || c.tags?.some(t => match(t))),
+        artists: artists.filter(a => match(a.name) || match(a.bio) || match(a.neighborhood_name) || a.tags?.some(t => match(t))),
+        businesses: businesses.filter(b => match(b.name) || match(b.description) || match(b.neighborhood_name) || match(b.category) || b.tags?.some(t => match(t))),
+        arts_orgs: artsOrgs.filter(o => match(o.name) || match(o.description) || match(o.tagline) || match(o.neighborhood_name) || o.tags?.some(t => match(t))),
+        associations: associations.filter(a => match(a.name) || match(a.description) || match(a.tagline) || match(a.neighborhood_name)),
+        events: events.filter(e => match(e.title) || match(e.description) || match(e.venue_name) || match(e.neighborhood_name) || match(e.organizer_name) || e.tags?.some(t => match(t))),
       });
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -151,6 +154,28 @@ export default function Search() {
                     {u.bio && <p className="text-xs text-muted-foreground truncate">{u.bio}</p>}
                   </div>
                 </Link>
+              ))}
+            </ResultSection>
+          )}
+
+          {/* Posts */}
+          {visible('posts') && results.posts?.length > 0 && (
+            <ResultSection title="Posts" icon={FileText} count={results.posts.length}>
+              {results.posts.slice(0, 20).map(p => (
+                <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary transition-colors">
+                  <Avatar className="w-9 h-9 flex-shrink-0 mt-0.5">
+                    <AvatarImage src={p.author_avatar} />
+                    <AvatarFallback className="bg-accent/10 text-accent text-xs">{p.author_name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-foreground">{p.author_name}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{p.content}</p>
+                    {p.neighborhood_name && <p className="text-[10px] text-muted-foreground mt-0.5">{p.neighborhood_name}</p>}
+                  </div>
+                  {p.media_urls?.length > 0 && (
+                    <img src={p.media_urls[0]} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
+                  )}
+                </div>
               ))}
             </ResultSection>
           )}
