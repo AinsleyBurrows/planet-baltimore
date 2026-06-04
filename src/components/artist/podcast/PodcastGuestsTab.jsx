@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, ExternalLink, Mic2 } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, Mic2, Send, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function PodcastGuestsTab({ artist, isOwner }) {
   const queryClient = useQueryClient();
@@ -99,6 +100,71 @@ export default function PodcastGuestsTab({ artist, isOwner }) {
           ))}
         </div>
       )}
+
+      {/* Guest Request Form — visible to non-owners */}
+      {!isOwner && <GuestRequestForm artistPageId={artist.id} podcastName={artist.name} />}
+    </div>
+  );
+}
+
+function GuestRequestForm({ artistPageId, podcastName }) {
+  const [form, setForm] = useState({ name: '', type: 'local_artist', email: '', pitch: '', social_or_website: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    await base44.entities.PodcastGuestRequest.create({ ...form, artist_page_id: artistPageId, podcast_name: podcastName });
+    setSubmitted(true);
+    setSaving(false);
+  };
+
+  if (submitted) {
+    return (
+      <div className="border border-border rounded-xl p-6 text-center bg-card mt-6">
+        <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-3" />
+        <p className="font-semibold text-foreground">Request sent!</p>
+        <p className="text-sm text-muted-foreground mt-1">The host will be in touch if it's a fit.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border border-border rounded-xl p-5 bg-card mt-6 space-y-4">
+      <div>
+        <h3 className="font-semibold text-foreground flex items-center gap-2">
+          <Mic2 className="w-4 h-4 text-accent" /> Want to be a guest?
+        </h3>
+        <p className="text-xs text-muted-foreground mt-0.5">Local artists and business owners can pitch themselves here.</p>
+      </div>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Input required placeholder="Your name *" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+          <Input required type="email" placeholder="Email address *" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+        </div>
+        <select
+          value={form.type}
+          onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
+          className="w-full px-3 py-2 rounded-lg border border-input bg-transparent text-sm focus:outline-none focus:ring-1 focus:ring-ring text-foreground"
+        >
+          <option value="local_artist">Local Artist</option>
+          <option value="business_owner">Business Owner</option>
+          <option value="other">Other</option>
+        </select>
+        <Input placeholder="Website or social link (optional)" value={form.social_or_website} onChange={e => setForm(f => ({ ...f, social_or_website: e.target.value }))} />
+        <Textarea
+          required
+          placeholder="Why would you make a great guest? What's your story? *"
+          value={form.pitch}
+          onChange={e => setForm(f => ({ ...f, pitch: e.target.value }))}
+          className="min-h-[90px] resize-none"
+        />
+        <Button type="submit" disabled={saving} className="w-full gap-2">
+          <Send className="w-4 h-4" />
+          {saving ? 'Sending…' : 'Send Guest Request'}
+        </Button>
+      </form>
     </div>
   );
 }

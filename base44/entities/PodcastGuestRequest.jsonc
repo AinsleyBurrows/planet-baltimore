@@ -1,0 +1,49 @@
+{
+  "name": "PodcastGuestRequest",
+  "type": "object",
+  "properties": {
+    "artist_page_id": {
+      "type": "string"
+    },
+    "podcast_name": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "local_artist",
+        "business_owner",
+        "other"
+      ],
+      "description": "Who is requesting to be a guest"
+    },
+    "email": {
+      "type": "string"
+    },
+    "pitch": {
+      "type": "string",
+      "description": "Why they'd be a great guest"
+    },
+    "social_or_website": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "artist_page_id",
+    "name",
+    "email",
+    "pitch"
+  ]
+}
