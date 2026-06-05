@@ -33,7 +33,7 @@ export default function Leaderboard() {
 
   const { data: posts = [], isLoading: loadingPosts } = useQuery({
     queryKey: ['leaderboard-posts', resetAt],
-    queryFn: () => base44.entities.Post.filter({ page_type: 'personal' }, '-created_date', 2000),
+    queryFn: () => base44.entities.Post.list('-created_date', 2000),
     staleTime: 60000,
   });
 
