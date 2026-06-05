@@ -96,9 +96,18 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const [showShare, setShowShare] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
+  const [deleted, setDeleted] = useState(false);
   const [currentUser, setCurrentUser] = useState(currentUserProp || null);
   const queryClient = useQueryClient();
   const isOwner = currentUserId === post.author_id;
+
+  const handleDelete = async () => {
+    if (!window.confirm('Delete this post?')) return;
+    await base44.entities.Post.delete(post.id);
+    setDeleted(true);
+    onDelete?.(post.id);
+    queryClient.invalidateQueries({ queryKey: ['home-posts'] });
+  };
   const postUrl = `${window.location.origin}/profile/${post.author_id}`;
   const displayPost = localPost;
 
@@ -156,6 +165,8 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
     onLike?.(post.id, newLiked);
   };
 
+  if (deleted) return null;
+
   return (
     <article className="bg-card rounded-xl border border-border overflow-hidden transition-all duration-200 hover:shadow-md">
       {/* Header */}
@@ -191,7 +202,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
                 <DropdownMenuItem onClick={() => setShowEdit(true)}>
                   <Pencil className="w-4 h-4 mr-2" />Edit Post
                 </DropdownMenuItem>
-                <DropdownMenuItem className="text-destructive" onClick={() => onDelete?.(post.id)}>
+                <DropdownMenuItem className="text-destructive" onClick={handleDelete}>
                   <Trash2 className="w-4 h-4 mr-2" />Delete Post
                 </DropdownMenuItem>
               </>
