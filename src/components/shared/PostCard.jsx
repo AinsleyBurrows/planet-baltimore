@@ -29,7 +29,7 @@ function FeedVideo({ src, thumbnail }) {
   };
 
   return (
-    <div className="relative bg-black aspect-video">
+    <div className="relative bg-black w-full" style={{ aspectRatio: '16/9' }}>
       <video
         ref={videoRef}
         src={src}
@@ -40,6 +40,8 @@ function FeedVideo({ src, thumbnail }) {
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
         onPlay={handlePlay}
+        playsInline
+        style={{ objectFit: 'contain' }}
       />
       {!playing && (
         <div
