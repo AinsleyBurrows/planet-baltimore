@@ -18,6 +18,12 @@ function FeedVideo({ src, thumbnail }) {
   const videoRef = useRef(null);
 
   const handlePlay = () => {
+    // Pause all other videos first
+    document.querySelectorAll('video').forEach(v => {
+      if (v !== videoRef.current) {
+        v.pause();
+      }
+    });
     setPlaying(true);
     videoRef.current?.play();
   };
@@ -33,6 +39,7 @@ function FeedVideo({ src, thumbnail }) {
         preload="metadata"
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
+        onPlay={handlePlay}
       />
       {!playing && (
         <div
