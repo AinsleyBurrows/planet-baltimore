@@ -293,6 +293,9 @@ export default function Profile() {
       <div className="px-0 sm:px-4">
         <div className="relative sm:h-56 rounded-none sm:rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
           {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-white/20 font-bold text-lg sm:text-2xl select-none">145px mobile · 224px desktop</span>
+          </div>
           {isOwnProfile && (
             <button
               onClick={() => setEditingImage('banner')}
