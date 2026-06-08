@@ -18,18 +18,12 @@ function FeedVideo({ src, thumbnail }) {
   const videoRef = useRef(null);
 
   const handlePlay = () => {
-    // Pause all other videos first
-    document.querySelectorAll('video').forEach(v => {
-      if (v !== videoRef.current) {
-        v.pause();
-      }
-    });
     setPlaying(true);
     videoRef.current?.play();
   };
 
   return (
-    <div className="relative bg-black w-full" style={{ aspectRatio: '16/9' }}>
+    <div className="relative bg-black aspect-video">
       <video
         ref={videoRef}
         src={src}
@@ -39,9 +33,6 @@ function FeedVideo({ src, thumbnail }) {
         preload="metadata"
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
-        onPlay={handlePlay}
-        playsInline
-        style={{ objectFit: 'contain' }}
       />
       {!playing && (
         <div
