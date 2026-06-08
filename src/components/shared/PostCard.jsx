@@ -280,16 +280,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
           );
         }
 
-        // Text only
-        if (hasText) {
-          return (
-            <div className="px-4 pb-3">
-              <TruncatedText text={displayPost.content} />
-            </div>
-          );
-        }
-
-        // Video
+        // Video (must come before text-only check)
         if (isVideo) {
           return (
             <div>
@@ -299,6 +290,15 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
                   <TruncatedText text={displayPost.content} />
                 </div>
               )}
+            </div>
+          );
+        }
+
+        // Text only
+        if (hasText) {
+          return (
+            <div className="px-4 pb-3">
+              <TruncatedText text={displayPost.content} />
             </div>
           );
         }
