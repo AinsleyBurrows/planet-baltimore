@@ -18,6 +18,12 @@ function FeedVideo({ src, thumbnail }) {
   const videoRef = useRef(null);
 
   const handlePlay = () => {
+    // Pause all other videos on the page
+    document.querySelectorAll('video').forEach(v => {
+      if (v !== videoRef.current) {
+        v.pause();
+      }
+    });
     setPlaying(true);
     videoRef.current?.play();
   };
