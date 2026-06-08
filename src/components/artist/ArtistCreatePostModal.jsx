@@ -20,6 +20,8 @@ export default function ArtistCreatePostModal({ artist, user, onClose }) {
   const isTextOnly = mediaFiles.length === 0;
   const [thumbnailFile, setThumbnailFile] = useState(null);
 
+  if (!user) return null;
+
   const generateVideoThumbnail = (videoFile) => {
     return new Promise((resolve) => {
       const video = document.createElement('video');

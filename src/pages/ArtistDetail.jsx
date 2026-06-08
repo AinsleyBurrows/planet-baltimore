@@ -491,7 +491,7 @@ export default function ArtistDetail() {
       {showEditProfile && <ArtistEditProfileModal artist={artist} onClose={() => setShowEditProfile(false)} />}
       {showMessage && <ArtistMessageModal artist={artist} onClose={() => setShowMessage(false)} />}
       {showInvite && <InviteFriendsModal onClose={() => setShowInvite(false)} />}
-      {showCreatePost && user && <ArtistCreatePostModal artist={artist} user={user} onClose={() => setShowCreatePost(false)} />}
+      {showCreatePost && <ArtistCreatePostModal artist={artist} user={user} onClose={() => setShowCreatePost(false)} />}
     </div>
   );
 }
