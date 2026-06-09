@@ -15,28 +15,32 @@ import { base44 } from '@/api/base44Client';
 
 function FeedVideo({ src, thumbnail }) {
   const [playing, setPlaying] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
   const videoRef = useRef(null);
 
   const handlePlay = () => {
-    // Pause all other videos on the page
     document.querySelectorAll('video').forEach(v => {
-      if (v !== videoRef.current) {
-        v.pause();
-      }
+      if (v !== videoRef.current) v.pause();
     });
     setPlaying(true);
     videoRef.current?.play();
   };
 
+  const handleMetadata = () => {
+    const v = videoRef.current;
+    if (v) setIsPortrait(v.videoHeight > v.videoWidth);
+  };
+
   return (
-    <div className="relative bg-black aspect-video">
+    <div className={`relative bg-black w-full ${isPortrait ? 'aspect-[9/16] max-h-[600px]' : 'aspect-video'}`}>
       <video
         ref={videoRef}
         src={src}
         poster={thumbnail || undefined}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-contain"
         controls={playing}
         preload="metadata"
+        onLoadedMetadata={handleMetadata}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
       />
