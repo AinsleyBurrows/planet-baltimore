@@ -37,7 +37,7 @@ function FeedVideo({ src, thumbnail }) {
         ref={videoRef}
         src={src}
         poster={thumbnail || undefined}
-        className="w-full h-full object-contain"
+        className={`w-full h-full ${isPortrait ? 'object-cover' : 'object-contain'}`}
         controls={playing}
         preload="metadata"
         onLoadedMetadata={handleMetadata}
