@@ -74,7 +74,7 @@ function linkify(text) {
   if (!text) return null;
   const parts = text.split(URL_REGEX);
   return parts.map((part, i) =>
-    URL_REGEX.test(part) ? (
+    part && /^https?:\/\/[^\s]+$/.test(part) ? (
       <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all hover:opacity-80" onClick={e => e.stopPropagation()}>
         {part}
       </a>
