@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import AppImage from './AppImage';
 import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
+import ReportModal from './ReportModal';
 import EditPostModal from './EditPostModal';
 import FoundingMemberBadge from './FoundingMemberBadge.jsx';
 import { format } from 'date-fns';
@@ -104,6 +105,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const [showComments, setShowComments] = useState(false);
   const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0);
   const [showShare, setShowShare] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [deleted, setDeleted] = useState(false);
@@ -219,7 +221,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
             )}
             <DropdownMenuItem onClick={() => setShowShare(true)}><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
             {!isOwner && (
-              <DropdownMenuItem className="text-destructive" onClick={() => alert('Thank you for reporting. Our team will review this post.')}>
+              <DropdownMenuItem className="text-destructive" onClick={() => setShowReport(true)}>
                 <Flag className="w-4 h-4 mr-2" />Report
               </DropdownMenuItem>
             )}
@@ -400,6 +402,14 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
         url={postUrl}
         title={displayPost.content ? displayPost.content.slice(0, 100) : `Post by ${displayPost.author_name}`}
         description={displayPost.content}
+      />
+
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        targetType="post"
+        targetId={post.id}
+        targetName={post.content?.slice(0, 80)}
       />
 
       {showEdit && (

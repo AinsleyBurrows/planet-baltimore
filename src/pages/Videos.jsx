@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Play, Heart, MessageCircle, Share2, Search, Users, X, Trash2, Star } from 'lucide-react';
+import { Play, Heart, MessageCircle, Share2, Search, Users, X, Trash2, Star, Flag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
 import CommentSection from '@/components/shared/CommentSection';
 import ShareModal from '@/components/shared/ShareModal';
+import ReportModal from '@/components/shared/ReportModal';
 
 /* ── Up Next sidebar row ─────────────────────────────────────────── */
 function UpNextRow({ post, onClick, isActive }) {
@@ -47,6 +48,7 @@ function VideoLightbox({ posts, startIndex, onClose }) {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [showShare, setShowShare] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const videoRef = useRef(null);
   const mainRef = useRef(null);
@@ -179,6 +181,13 @@ function VideoLightbox({ posts, startIndex, onClose }) {
                   <Share2 className="w-4 h-4" />
                   <span>Share</span>
                 </button>
+                <button
+                  onClick={() => setShowReport(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white hover:bg-white/20 text-sm font-medium transition-colors"
+                >
+                  <Flag className="w-4 h-4" />
+                  <span>Report</span>
+                </button>
               </div>
             </div>
 
@@ -221,16 +230,23 @@ function VideoLightbox({ posts, startIndex, onClose }) {
         url={`${window.location.origin}/profile/${post.author_id}`}
         title={post.content?.slice(0, 100) || `Video by ${post.author_name}`}
       />
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        targetType="post"
+        targetId={post.id}
+        targetName={post.content?.slice(0, 80) || `Video by ${post.author_name}`}
+      />
     </div>
   );
 }
 
 /* ── Thumbnail card (grid) ───────────────────────────────────────── */
 function VideoCard({ post, onPlay, currentUserId, isAdmin, onDelete, onToggleFeature }) {
+  const [showReport, setShowReport] = useState(false);
   const videoUrl = post.media_urls?.[0];
-  if (!videoUrl) return null;
-
   const isOwner = currentUserId && post.author_id === currentUserId;
+  if (!videoUrl) return null;
 
   const handleDelete = async (e) => {
     e.stopPropagation();
@@ -321,7 +337,22 @@ function VideoCard({ post, onPlay, currentUserId, isAdmin, onDelete, onToggleFea
         {post.content && (
           <p className="text-sm text-foreground line-clamp-2">{post.content}</p>
         )}
+        {!isOwner && (
+          <button
+            onClick={e => { e.stopPropagation(); setShowReport(true); }}
+            className="mt-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+          >
+            <Flag className="w-3 h-3" /> Report
+          </button>
+        )}
       </div>
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        targetType="post"
+        targetId={post.id}
+        targetName={post.content?.slice(0, 80) || `Video by ${post.author_name}`}
+      />
     </div>
   );
 }
