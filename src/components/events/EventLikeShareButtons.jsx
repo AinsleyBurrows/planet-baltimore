@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Share2, Link, Check } from 'lucide-react';
+import { Heart, Share2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import ShareModal from '@/components/shared/ShareModal';
 
 export default function EventLikeShareButtons({ event, className = '' }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(event?.likes_count || 0);
-  const [copied, setCopied] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -35,18 +36,10 @@ export default function EventLikeShareButtons({ event, className = '' }) {
     }
   };
 
-  const handleShare = async (e) => {
+  const handleShare = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const url = `${window.location.origin}/events/${event.id}/tickets`;
-    const shareData = { title: event.title, text: `Check out ${event.title}!`, url };
-    if (navigator.share) {
-      try { await navigator.share(shareData); } catch {}
-    } else {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    setShowShare(true);
   };
 
   return (
@@ -66,9 +59,16 @@ export default function EventLikeShareButtons({ event, className = '' }) {
         className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
         title="Share event"
       >
-        {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Share2 className="w-3.5 h-3.5" />}
-        {copied ? <span className="text-green-600">Copied!</span> : <span>Share</span>}
+        <Share2 className="w-3.5 h-3.5" />
+        <span>Share</span>
       </button>
+      <ShareModal
+        isOpen={showShare}
+        onClose={() => setShowShare(false)}
+        url={`${window.location.origin}/events/${event.id}`}
+        title={event.title}
+        description={event.description}
+      />
     </div>
   );
 }
