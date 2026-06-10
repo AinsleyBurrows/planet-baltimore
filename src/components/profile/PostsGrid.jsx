@@ -16,7 +16,7 @@ export default function PostsGrid({ posts, onSelect, onDelete, onTogglePin }) {
     <>
       {pinnedPosts.length > 0 && (
         <p className="text-xs text-muted-foreground flex items-center gap-1 px-1">
-          <Pin className="w-3 h-3" /> {pinnedPosts.length}/3 posts pinned
+          <Pin className="w-3 h-3" /> {pinnedPosts.length}/9 posts pinned
         </p>
       )}
       <div className="px-3 sm:px-4">
