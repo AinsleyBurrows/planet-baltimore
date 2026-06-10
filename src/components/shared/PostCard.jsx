@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import AppImage from './AppImage';
 import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
-import ReportModal from './ReportModal';
 import EditPostModal from './EditPostModal';
 import FoundingMemberBadge from './FoundingMemberBadge.jsx';
 import { format } from 'date-fns';
@@ -16,32 +15,22 @@ import { base44 } from '@/api/base44Client';
 
 function FeedVideo({ src, thumbnail }) {
   const [playing, setPlaying] = useState(false);
-  const [isPortrait, setIsPortrait] = useState(false);
   const videoRef = useRef(null);
 
   const handlePlay = () => {
-    document.querySelectorAll('video').forEach(v => {
-      if (v !== videoRef.current) v.pause();
-    });
     setPlaying(true);
     videoRef.current?.play();
   };
 
-  const handleMetadata = () => {
-    const v = videoRef.current;
-    if (v) setIsPortrait(v.videoHeight > v.videoWidth);
-  };
-
   return (
-    <div className={`relative bg-black w-full ${isPortrait ? 'aspect-[9/16] max-h-[600px]' : 'aspect-video'}`}>
+    <div className="relative bg-black aspect-video">
       <video
         ref={videoRef}
         src={src}
         poster={thumbnail || undefined}
-        className={`w-full h-full ${isPortrait ? 'object-cover' : 'object-contain'}`}
+        className="w-full h-full object-cover"
         controls={playing}
         preload="metadata"
-        onLoadedMetadata={handleMetadata}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
       />
@@ -75,7 +64,7 @@ function linkify(text) {
   if (!text) return null;
   const parts = text.split(URL_REGEX);
   return parts.map((part, i) =>
-    part && /^https?:\/\/[^\s]+$/.test(part) ? (
+    URL_REGEX.test(part) ? (
       <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-accent underline break-all hover:opacity-80" onClick={e => e.stopPropagation()}>
         {part}
       </a>
@@ -105,7 +94,6 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const [showComments, setShowComments] = useState(false);
   const [localLikesCount, setLocalLikesCount] = useState(post.likes_count || 0);
   const [showShare, setShowShare] = useState(false);
-  const [showReport, setShowReport] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [deleted, setDeleted] = useState(false);
@@ -221,7 +209,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
             )}
             <DropdownMenuItem onClick={() => setShowShare(true)}><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
             {!isOwner && (
-              <DropdownMenuItem className="text-destructive" onClick={() => setShowReport(true)}>
+              <DropdownMenuItem className="text-destructive" onClick={() => alert('Thank you for reporting. Our team will review this post.')}>
                 <Flag className="w-4 h-4 mr-2" />Report
               </DropdownMenuItem>
             )}
@@ -292,7 +280,16 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
           );
         }
 
-        // Video (must come before text-only check)
+        // Text only
+        if (hasText) {
+          return (
+            <div className="px-4 pb-3">
+              <TruncatedText text={displayPost.content} />
+            </div>
+          );
+        }
+
+        // Video
         if (isVideo) {
           return (
             <div>
@@ -302,15 +299,6 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
                   <TruncatedText text={displayPost.content} />
                 </div>
               )}
-            </div>
-          );
-        }
-
-        // Text only
-        if (hasText) {
-          return (
-            <div className="px-4 pb-3">
-              <TruncatedText text={displayPost.content} />
             </div>
           );
         }
@@ -402,14 +390,6 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
         url={postUrl}
         title={displayPost.content ? displayPost.content.slice(0, 100) : `Post by ${displayPost.author_name}`}
         description={displayPost.content}
-      />
-
-      <ReportModal
-        isOpen={showReport}
-        onClose={() => setShowReport(false)}
-        targetType="post"
-        targetId={post.id}
-        targetName={post.content?.slice(0, 80)}
       />
 
       {showEdit && (

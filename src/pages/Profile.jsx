@@ -120,8 +120,8 @@ export default function Profile() {
 
   const handleTogglePin = async (post) => {
     const pinnedPosts = posts.filter(p => p.is_pinned && !p.is_deleted);
-    if (!post.is_pinned && pinnedPosts.length >= 9) {
-      alert('You can only pin up to 9 posts. Unpin one first.');
+    if (!post.is_pinned && pinnedPosts.length >= 3) {
+      alert('You can only pin up to 3 posts. Unpin one first.');
       return;
     }
     await base44.entities.Post.update(post.id, { is_pinned: !post.is_pinned });
@@ -293,9 +293,6 @@ export default function Profile() {
       <div className="px-0 sm:px-4">
         <div className="relative sm:h-56 rounded-none sm:rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
           {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span className="text-white/20 font-bold text-lg sm:text-2xl select-none">145px mobile · 224px desktop</span>
-          </div>
           {isOwnProfile && (
             <button
               onClick={() => setEditingImage('banner')}
