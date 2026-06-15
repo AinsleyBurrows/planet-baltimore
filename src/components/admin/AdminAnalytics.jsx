@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, FileText, Calendar, TrendingUp, AlertCircle, BookOpen } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ icon: Icon, title, value, subtitle, trend }) => (
@@ -23,6 +24,8 @@ const StatCard = ({ icon: Icon, title, value, subtitle, trend }) => (
 );
 
 export default function AdminAnalytics({ data, isLoading }) {
+  const [timePeriod, setTimePeriod] = useState('monthly');
+
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -45,6 +48,34 @@ export default function AdminAnalytics({ data, isLoading }) {
 
   return (
     <div className="space-y-8">
+      {/* Time Period Filter */}
+      <div className="flex gap-2">
+        <Button
+          variant={timePeriod === 'today' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setTimePeriod('today')}
+          className="text-xs"
+        >
+          Today
+        </Button>
+        <Button
+          variant={timePeriod === 'weekly' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setTimePeriod('weekly')}
+          className="text-xs"
+        >
+          Weekly
+        </Button>
+        <Button
+          variant={timePeriod === 'monthly' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setTimePeriod('monthly')}
+          className="text-xs"
+        >
+          Monthly
+        </Button>
+      </div>
+
       {/* Key Metrics Grid */}
       <div>
         <h2 className="text-lg font-semibold text-foreground mb-4">Key Metrics</h2>
