@@ -4,11 +4,21 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Trash2, Ban, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Trash2, Ban, CheckCircle2, Flag } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function AdminModeration() {
   const [selectedReport, setSelectedReport] = useState(null);
+  const [banDialog, setBanDialog] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: reports = [], isLoading } = useQuery({
@@ -56,6 +66,47 @@ export default function AdminModeration() {
       for (const report of userReports) {
         await base44.asServiceRole.entities.Report.update(report.id, { status: 'resolved' });
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-reports'] });
+      setSelectedReport(null);
+    },
+  });
+
+  const banUserMutation = useMutation({
+    mutationFn: async (userId) => {
+      // Mark all user's content as deleted/muted
+      const userPosts = await base44.asServiceRole.entities.Post.filter({ created_by_id: userId }, '-created_date', 1000);
+      for (const post of userPosts) {
+        await base44.asServiceRole.entities.Post.update(post.id, { is_deleted: true });
+      }
+      
+      const userStories = await base44.asServiceRole.entities.Story.filter({ created_by_id: userId }, '-created_date', 1000);
+      for (const story of userStories) {
+        await base44.asServiceRole.entities.Story.delete(story.id);
+      }
+
+      // Ban the user
+      await base44.asServiceRole.entities.User.update(userId, { is_muted: true, role: 'banned' });
+
+      // Resolve all reports about this user
+      const userTargetReports = reports.filter(r => r.target_id === userId);
+      for (const report of userTargetReports) {
+        await base44.asServiceRole.entities.Report.update(report.id, { status: 'resolved' });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-reports'] });
+      setBanDialog(null);
+      setSelectedReport(null);
+    },
+  });
+
+  const flagPostMutation = useMutation({
+    mutationFn: async (report) => {
+      // Mark post as flagged (soft delete)
+      await base44.asServiceRole.entities.Post.update(report.target_id, { is_deleted: true });
+      await base44.asServiceRole.entities.Report.update(report.id, { status: 'resolved' });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-reports'] });
@@ -133,36 +184,45 @@ export default function AdminModeration() {
                   </div>
 
                   <div className="border-t border-border pt-4 space-y-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full justify-start gap-2"
-                      onClick={() => dismissMutation.mutate(selectedReport.id)}
-                      disabled={dismissMutation.isPending}
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      Dismiss Report
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="w-full justify-start gap-2"
-                      onClick={() => deleteContentMutation.mutate(selectedReport)}
-                      disabled={deleteContentMutation.isPending}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete Content
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full justify-start gap-2"
-                      onClick={() => muteUserMutation.mutate(selectedReport.reporter_id)}
-                      disabled={muteUserMutation.isPending}
-                    >
-                      <Ban className="w-4 h-4" />
-                      Mute User
-                    </Button>
+                   <Button
+                     variant="outline"
+                     size="sm"
+                     className="w-full justify-start gap-2"
+                     onClick={() => dismissMutation.mutate(selectedReport.id)}
+                     disabled={dismissMutation.isPending}
+                   >
+                     <CheckCircle2 className="w-4 h-4" />
+                     Dismiss Report
+                   </Button>
+                   <Button
+                     variant="destructive"
+                     size="sm"
+                     className="w-full justify-start gap-2"
+                     onClick={() => flagPostMutation.mutate(selectedReport)}
+                     disabled={flagPostMutation.isPending}
+                   >
+                     <Flag className="w-4 h-4" />
+                     Flag & Hide Post
+                   </Button>
+                   <Button
+                     variant="destructive"
+                     size="sm"
+                     className="w-full justify-start gap-2"
+                     onClick={() => deleteContentMutation.mutate(selectedReport)}
+                     disabled={deleteContentMutation.isPending}
+                   >
+                     <Trash2 className="w-4 h-4" />
+                     Delete Content
+                   </Button>
+                   <Button
+                     size="sm"
+                     className="w-full justify-start gap-2 bg-red-600 hover:bg-red-700"
+                     onClick={() => setBanDialog(selectedReport)}
+                     disabled={banUserMutation.isPending}
+                   >
+                     <Ban className="w-4 h-4" />
+                     Ban Account
+                   </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -170,6 +230,25 @@ export default function AdminModeration() {
           </div>
         </>
       )}
+
+      {/* Ban Confirmation Dialog */}
+      <AlertDialog open={!!banDialog} onOpenChange={() => setBanDialog(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ban Account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently ban the account, hide all their content, and resolve all reports against them. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-red-600 hover:bg-red-700"
+            onClick={() => banUserMutation.mutate(banDialog.target_id)}
+          >
+            Confirm Ban
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
