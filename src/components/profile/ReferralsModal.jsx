@@ -95,8 +95,8 @@ export default function ReferralsModal({ userId, isOpen, onOpenChange, referralC
         <div className="space-y-6">
           {/* Tier Info */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
-            <p className="font-semibold text-blue-900 mb-2">How it works</p>
-            <div className="space-y-1 text-blue-800 text-xs">
+            <p className="font-semibold text-black mb-2">How it works</p>
+            <div className="space-y-1 text-black text-xs">
               <p>🎯 Tier 1: You get <strong>5 points</strong> per active referral</p>
               <p>🎯 Tier 2: Your invitees earn <strong>3 points</strong> per their referral</p>
               <p>🎯 Tier 3: Their invitees earn <strong>1 point</strong> (chain ends)</p>
