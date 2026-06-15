@@ -44,8 +44,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tabs */}
-         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+         <TabsList className="grid grid-cols-5 w-full max-w-4xl">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Analytics</span>
