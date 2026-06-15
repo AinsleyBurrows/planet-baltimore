@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, Search, Star, Briefcase, Users } from 'lucide-react';
+import { CheckCircle2, Search, Star, Briefcase, Users, Palette, Building2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -28,6 +28,16 @@ export default function AdminVerification() {
   const { data: orgs = [] } = useQuery({
     queryKey: ['admin-verify-orgs'],
     queryFn: () => base44.asServiceRole.entities.ArtsOrganization.list('-created_date', 200),
+  });
+
+  const { data: artsOrgs = [] } = useQuery({
+    queryKey: ['admin-verify-arts-orgs'],
+    queryFn: () => base44.asServiceRole.entities.ArtsOrganization.list('-created_date', 200),
+  });
+
+  const { data: associations = [] } = useQuery({
+    queryKey: ['admin-verify-associations'],
+    queryFn: () => base44.asServiceRole.entities.CommunityAssociation.list('-created_date', 200),
   });
 
   const verifyUserMutation = useMutation({
@@ -84,6 +94,42 @@ export default function AdminVerification() {
     },
   });
 
+  const verifyArtsOrgMutation = useMutation({
+    mutationFn: async (artsOrgId) => {
+      await base44.asServiceRole.entities.ArtsOrganization.update(artsOrgId, { is_verified: true });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-verify-arts-orgs'] });
+    },
+  });
+
+  const unverifyArtsOrgMutation = useMutation({
+    mutationFn: async (artsOrgId) => {
+      await base44.asServiceRole.entities.ArtsOrganization.update(artsOrgId, { is_verified: false });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-verify-arts-orgs'] });
+    },
+  });
+
+  const verifyAssociationMutation = useMutation({
+    mutationFn: async (assocId) => {
+      await base44.asServiceRole.entities.CommunityAssociation.update(assocId, { is_verified: true });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-verify-associations'] });
+    },
+  });
+
+  const unverifyAssociationMutation = useMutation({
+    mutationFn: async (assocId) => {
+      await base44.asServiceRole.entities.CommunityAssociation.update(assocId, { is_verified: false });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-verify-associations'] });
+    },
+  });
+
   // Filter functions
   const filterItems = (items, query) => {
     if (!query) return items;
@@ -98,6 +144,8 @@ export default function AdminVerification() {
   const filteredUsers = filterItems(users, searchQuery);
   const filteredBusinesses = filterItems(businesses, searchQuery);
   const filteredOrgs = filterItems(orgs, searchQuery);
+  const filteredArtsOrgs = filterItems(artsOrgs, searchQuery);
+  const filteredAssociations = filterItems(associations, searchQuery);
 
   const VerificationCard = ({ item, onVerify, onUnverify, isPending, type = 'user' }) => {
     const name = item.full_name || item.name || 'Unknown';
@@ -164,7 +212,7 @@ export default function AdminVerification() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full max-w-lg">
+        <TabsList className="grid w-full max-w-4xl grid-cols-5">
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             <span className="hidden sm:inline">Members</span>
@@ -184,6 +232,20 @@ export default function AdminVerification() {
             <span className="hidden sm:inline">Organizations</span>
             <Badge variant="secondary" className="text-xs">
               {orgs.filter(o => o.is_verified).length}
+            </Badge>
+          </TabsTrigger>
+          <TabsTrigger value="arts-orgs" className="flex items-center gap-2">
+            <Palette className="w-4 h-4" />
+            <span className="hidden sm:inline">Arts Orgs</span>
+            <Badge variant="secondary" className="text-xs">
+              {artsOrgs.filter(a => a.is_verified).length}
+            </Badge>
+          </TabsTrigger>
+          <TabsTrigger value="associations" className="flex items-center gap-2">
+            <Building2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Associations</span>
+            <Badge variant="secondary" className="text-xs">
+              {associations.filter(a => a.is_verified).length}
             </Badge>
           </TabsTrigger>
         </TabsList>
@@ -253,21 +315,73 @@ export default function AdminVerification() {
             )}
           </div>
         </TabsContent>
-      </Tabs>
+
+        {/* Arts Organizations Tab */}
+        <TabsContent value="arts-orgs" className="mt-6">
+          <div className="space-y-3">
+            {filteredArtsOrgs.length === 0 ? (
+              <Alert>
+                <AlertDescription>No arts organizations found.</AlertDescription>
+              </Alert>
+            ) : (
+              filteredArtsOrgs.map(artsOrg => (
+                <VerificationCard
+                  key={artsOrg.id}
+                  item={artsOrg}
+                  onVerify={verifyArtsOrgMutation.mutate}
+                  onUnverify={unverifyArtsOrgMutation.mutate}
+                  isPending={verifyArtsOrgMutation.isPending || unverifyArtsOrgMutation.isPending}
+                  type="org"
+                />
+              ))
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Associations Tab */}
+        <TabsContent value="associations" className="mt-6">
+          <div className="space-y-3">
+            {filteredAssociations.length === 0 ? (
+              <Alert>
+                <AlertDescription>No community associations found.</AlertDescription>
+              </Alert>
+            ) : (
+              filteredAssociations.map(assoc => (
+                <VerificationCard
+                  key={assoc.id}
+                  item={assoc}
+                  onVerify={verifyAssociationMutation.mutate}
+                  onUnverify={unverifyAssociationMutation.mutate}
+                  isPending={verifyAssociationMutation.isPending || unverifyAssociationMutation.isPending}
+                  type="org"
+                />
+              ))
+            )}
+          </div>
+        </TabsContent>
+        </Tabs>
 
       {/* Stats Footer */}
-      <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+      <div className="grid grid-cols-5 gap-4 pt-4 border-t">
         <div className="text-center">
           <p className="text-2xl font-bold text-foreground">{users.filter(u => u.is_verified).length}</p>
-          <p className="text-xs text-muted-foreground">Verified Members</p>
+          <p className="text-xs text-muted-foreground">Members</p>
         </div>
         <div className="text-center">
           <p className="text-2xl font-bold text-foreground">{businesses.filter(b => b.is_verified).length}</p>
-          <p className="text-xs text-muted-foreground">Verified Businesses</p>
+          <p className="text-xs text-muted-foreground">Businesses</p>
         </div>
         <div className="text-center">
           <p className="text-2xl font-bold text-foreground">{orgs.filter(o => o.is_verified).length}</p>
-          <p className="text-xs text-muted-foreground">Verified Organizations</p>
+          <p className="text-xs text-muted-foreground">Organizations</p>
+        </div>
+        <div className="text-center">
+          <p className="text-2xl font-bold text-foreground">{artsOrgs.filter(a => a.is_verified).length}</p>
+          <p className="text-xs text-muted-foreground">Arts Orgs</p>
+        </div>
+        <div className="text-center">
+          <p className="text-2xl font-bold text-foreground">{associations.filter(a => a.is_verified).length}</p>
+          <p className="text-xs text-muted-foreground">Associations</p>
         </div>
       </div>
     </div>
