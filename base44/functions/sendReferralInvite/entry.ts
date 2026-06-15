@@ -15,6 +15,16 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Email is required' }, { status: 400 });
     }
 
+    // Check if user is already at tier 3 (can't invite anymore)
+    const userReferrals = await base44.entities.Referral.filter({ referrer_id: user.id });
+    const userTier = userReferrals.length > 0 ? userReferrals[0].tier : 1;
+
+    if (userTier >= 3) {
+      return Response.json({ 
+        error: 'You\'ve reached the maximum referral depth. Your referral link can no longer be shared.' 
+      }, { status: 400 });
+    }
+
     // Generate referral code
     const referralCode = user.id.substring(0, 8).toUpperCase();
     const referralLink = `${Deno.env.get('BASE44_APP_URL') || 'http://localhost:5173'}?ref=${referralCode}`;
@@ -39,6 +49,9 @@ Welcome to Planet Baltimore 🎨
       from_name: 'Planet Baltimore'
     });
 
+    // Calculate tier based on referrer's tier
+    const nextTier = userTier + 1;
+
     // Create pending referral record for email
     const referral = await base44.entities.Referral.create({
       referrer_id: user.id,
@@ -47,13 +60,16 @@ Welcome to Planet Baltimore 🎨
       referral_code: referralCode,
       referral_type: 'email',
       email_invited: email,
-      status: 'pending'
+      status: 'pending',
+      tier: nextTier
     });
 
     return Response.json({ 
       success: true, 
       referral,
-      referralLink 
+      referralLink,
+      tier: nextTier,
+      canInviteMore: nextTier < 3
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

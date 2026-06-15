@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Check, Mail, Link2 } from 'lucide-react';
+import { Copy, Check, Mail, Link2, Gift } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import ReferralInviteForm from './ReferralInviteForm';
@@ -20,16 +20,22 @@ const ReferralNode = ({ referral, level = 0 }) => {
     pending: 'bg-yellow-100 text-yellow-700',
   };
 
+  const tierPoints = { 1: 5, 2: 3, 3: 1 };
+  const points = tierPoints[referral.tier] || 0;
+
   return (
-    <div className={`ml-${level * 4}`}>
+    <div style={{ marginLeft: `${level * 16}px` }}>
       <div className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-secondary/50 transition-colors">
         <Avatar className="h-8 w-8">
           <AvatarImage src={referral.referred_avatar} />
           <AvatarFallback>{referral.referred_name?.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground">{referral.referred_name || 'Unknown'}</p>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium text-foreground">{referral.referred_name || 'Unknown'}</p>
+            <span className="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded">Tier {referral.tier}</span>
+          </div>
+          <div className="flex items-center gap-3 mt-1">
             {referral.referral_type === 'email' ? (
               <Mail className="w-3 h-3 text-muted-foreground" />
             ) : (
@@ -38,6 +44,12 @@ const ReferralNode = ({ referral, level = 0 }) => {
             <span className="text-xs text-muted-foreground">
               {referral.joined_at ? new Date(referral.joined_at).toLocaleDateString() : 'Invited'}
             </span>
+            {referral.status === 'active' && (
+              <div className="flex items-center gap-1">
+                <Gift className="w-3 h-3 text-gold" />
+                <span className="text-xs font-semibold text-gold">+{points} pts</span>
+              </div>
+            )}
           </div>
         </div>
         <Badge className={statusColors[referral.status]}>
@@ -45,8 +57,8 @@ const ReferralNode = ({ referral, level = 0 }) => {
         </Badge>
       </div>
 
-      {childReferrals.length > 0 && (
-        <div className="ml-4 border-l border-border pl-0">
+      {childReferrals.length > 0 && level < 2 && (
+        <div className="border-l border-border/50">
           {childReferrals.map((child) => (
             <ReferralNode key={child.id} referral={child} level={level + 1} />
           ))}
@@ -81,6 +93,16 @@ export default function ReferralsModal({ userId, isOpen, onOpenChange, referralC
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Tier Info */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+            <p className="font-semibold text-blue-900 mb-2">How it works</p>
+            <div className="space-y-1 text-blue-800 text-xs">
+              <p>🎯 Tier 1: You get <strong>5 points</strong> per active referral</p>
+              <p>🎯 Tier 2: Your invitees earn <strong>3 points</strong> per their referral</p>
+              <p>🎯 Tier 3: Their invitees earn <strong>1 point</strong> (chain ends)</p>
+            </div>
+          </div>
+
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <div className="p-3 bg-secondary rounded-lg">
@@ -93,10 +115,10 @@ export default function ReferralsModal({ userId, isOpen, onOpenChange, referralC
                 {referrals.filter(r => r.status === 'active').length}
               </p>
             </div>
-            <div className="p-3 bg-secondary rounded-lg">
-              <p className="text-xs text-muted-foreground">Pending</p>
-              <p className="text-2xl font-bold text-foreground">
-                {referrals.filter(r => r.status === 'pending').length}
+            <div className="p-3 bg-gold/10 rounded-lg">
+              <p className="text-xs text-muted-foreground">Points Earned</p>
+              <p className="text-2xl font-bold text-gold">
+                {referrals.reduce((sum, r) => sum + (r.points_awarded || 0), 0)}
               </p>
             </div>
           </div>
