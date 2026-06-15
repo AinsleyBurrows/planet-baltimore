@@ -203,8 +203,8 @@ export default function Profile() {
     queryKey: ['rsvped-events', rsvpEventIds.join(',')],
     queryFn: async () => {
       if (!rsvpEventIds.length) return [];
-      const all = await base44.entities.Event.list('date', 200);
-      return all.filter(e => rsvpEventIds.includes(e.id));
+      const results = await Promise.all(rsvpEventIds.map(id => base44.entities.Event.get(id).catch(() => null)));
+      return results.filter(Boolean);
     },
     enabled: rsvpEventIds.length > 0,
     staleTime: 30000,
@@ -230,8 +230,8 @@ export default function Profile() {
     queryKey: ['saved-stories-data', savedStoryIds.join(',')],
     queryFn: async () => {
       if (!savedStoryIds.length) return [];
-      const all = await base44.entities.Story.list('-created_date', 200);
-      return all.filter(s => savedStoryIds.includes(s.id));
+      const results = await Promise.all(savedStoryIds.map(id => base44.entities.Story.get(id).catch(() => null)));
+      return results.filter(Boolean);
     },
     enabled: savedStoryIds.length > 0,
     staleTime: 30000,
@@ -250,8 +250,8 @@ export default function Profile() {
     queryKey: ['saved-posts-data', savedPostIds.join(',')],
     queryFn: async () => {
       if (!savedPostIds.length) return [];
-      const all = await base44.entities.Post.list('-created_date', 200);
-      return all.filter(p => savedPostIds.includes(p.id) && !p.is_deleted);
+      const results = await Promise.all(savedPostIds.map(id => base44.entities.Post.get(id).catch(() => null)));
+      return results.filter(r => r && !r.is_deleted);
     },
     enabled: savedPostIds.length > 0,
     staleTime: 30000,
