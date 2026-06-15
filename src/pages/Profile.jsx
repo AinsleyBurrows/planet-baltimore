@@ -468,7 +468,7 @@ export default function Profile() {
             <span className="font-bold text-foreground text-sm sm:text-base">{user.following_count || 0}</span>
             <span className="text-xs text-muted-foreground ml-1">Following</span>
           </button>
-          {isOwnProfile && <div onClick={() => {}} className="cursor-pointer"><ReferralsCard userId={user.id} /></div>}
+          {isOwnProfile && <ReferralsCard userId={user.id} />}
         </div>
         {/* Followed by names */}
         {followerUsers.length > 0 && (
