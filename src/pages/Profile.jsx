@@ -115,16 +115,6 @@ export default function Profile() {
 
 
 
-  const handleTogglePin = async (post) => {
-    const pinnedPosts = posts.filter(p => p.is_pinned && !p.is_deleted);
-    if (!post.is_pinned && pinnedPosts.length >= 3) {
-      alert('You can only pin up to 3 posts. Unpin one first.');
-      return;
-    }
-    await base44.entities.Post.update(post.id, { is_pinned: !post.is_pinned });
-    queryClient.invalidateQueries({ queryKey: ['my-posts', user?.id] });
-  };
-
   const handleToggleFollow = async () => {
     if (!currentUser || currentUser.id === user.id) return;
     if (isFollowing) {
@@ -262,6 +252,16 @@ export default function Profile() {
     enabled: savedPostIds.length > 0,
     staleTime: 30000,
   });
+
+  const handleTogglePin = async (post) => {
+    const pinnedPosts = posts.filter(p => p.is_pinned && !p.is_deleted);
+    if (!post.is_pinned && pinnedPosts.length >= 3) {
+      alert('You can only pin up to 3 posts. Unpin one first.');
+      return;
+    }
+    await base44.entities.Post.update(post.id, { is_pinned: !post.is_pinned });
+    queryClient.invalidateQueries({ queryKey: ['my-posts', user?.id] });
+  };
 
   const handleDeleteStory = async (storyId) => {
     await base44.entities.Story.delete(storyId);
