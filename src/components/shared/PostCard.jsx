@@ -155,15 +155,16 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const handleLike = async () => {
     if (!currentUser) return;
     const newLiked = !liked;
+    const countBefore = localLikesCount;
     setLiked(newLiked);
     setLocalLikesCount(c => newLiked ? c + 1 : Math.max(0, c - 1));
     if (newLiked) {
       await base44.entities.Like.create({ user_id: currentUser.id, target_type: 'post', target_id: post.id });
-      await base44.entities.Post.update(post.id, { likes_count: localLikesCount + 1 });
+      await base44.entities.Post.update(post.id, { likes_count: countBefore + 1 });
     } else {
       const likes = await base44.entities.Like.filter({ user_id: currentUser.id, target_type: 'post', target_id: post.id });
       if (likes.length > 0) await base44.entities.Like.delete(likes[0].id);
-      await base44.entities.Post.update(post.id, { likes_count: Math.max(0, localLikesCount - 1) });
+      await base44.entities.Post.update(post.id, { likes_count: Math.max(0, countBefore - 1) });
     }
     onLike?.(post.id, newLiked);
   };
