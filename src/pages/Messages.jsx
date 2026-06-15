@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Plus, Users } from 'lucide-react';
@@ -7,6 +7,7 @@ import ConversationSidebar from '@/components/messages/ConversationSidebar';
 import ChatWindow from '@/components/messages/ChatWindow';
 import NewConversationModal from '@/components/messages/NewConversationModal';
 import BroadcastModal from '@/components/messages/BroadcastModal';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 // Build a stable conversation_id from two user IDs
 function makeConvoId(a, b) {
@@ -14,16 +15,12 @@ function makeConvoId(a, b) {
 }
 
 export default function Messages() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user: currentUser, isLoading: isLoadingUser } = useCurrentUser();
   const [activeConvo, setActiveConvo] = useState(null);
   const [search, setSearch] = useState('');
   const [showNew, setShowNew] = useState(false);
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [showChat, setShowChat] = useState(false); // mobile toggle
-
-  useEffect(() => {
-    base44.auth.me().then(setCurrentUser);
-  }, []);
 
   const { data: allMessages = [] } = useQuery({
     queryKey: ['messages'],
@@ -98,7 +95,7 @@ export default function Messages() {
     setShowNew(false);
   };
 
-  if (!currentUser) {
+  if (isLoadingUser || !currentUser) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
