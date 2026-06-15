@@ -25,8 +25,9 @@ import StoryCard from '@/components/shared/StoryCard';
 import MyPagesTab from '@/components/profile/MyPagesTab';
 import FollowersModal from '@/components/profile/FollowersModal';
 import MyTicketsTab from '@/components/profile/MyTicketsTab';
+import MyDashboardTab from '@/components/profile/MyDashboardTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
-import { Star } from 'lucide-react';
+import { Star, BarChart3 } from 'lucide-react';
 
 const tabs = [
   { id: 'posts', label: 'Posts', icon: Grid3X3 },
@@ -37,6 +38,7 @@ const tabs = [
   { id: 'created_events', label: 'Organized', icon: Calendar },
   { id: 'tickets', label: 'My Tickets', icon: Ticket },
   { id: 'pages', label: 'My Pages', icon: Shield },
+  { id: 'dashboard', label: 'My Dashboard', icon: BarChart3 },
 ];
 
 export default function Profile() {
@@ -488,7 +490,7 @@ export default function Profile() {
 
       {/* Tabs */}
       <div className="flex border-b border-border mt-3 overflow-x-auto gap-0.5">
-        {tabs.filter(tab => (tab.id !== 'pages' && tab.id !== 'tickets') || isOwnProfile).map((tab) => {
+        {tabs.filter(tab => (tab.id !== 'pages' && tab.id !== 'tickets' && tab.id !== 'dashboard') || isOwnProfile).map((tab) => {
           const Icon = tab.icon;
           return (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-[#d4580a] text-[#d4580a]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
@@ -579,6 +581,9 @@ export default function Profile() {
         )}
         {activeTab === 'pages' && isOwnProfile && (
           <MyPagesTab userId={user?.id} />
+        )}
+        {activeTab === 'dashboard' && isOwnProfile && (
+          <MyDashboardTab userId={user?.id} isAdmin={currentUser?.role === 'admin'} />
         )}
 
 
