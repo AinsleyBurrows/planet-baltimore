@@ -1,0 +1,61 @@
+{
+  "name": "Referral",
+  "type": "object",
+  "properties": {
+    "referrer_id": {
+      "type": "string",
+      "description": "User ID who did the inviting"
+    },
+    "referrer_name": {
+      "type": "string"
+    },
+    "referrer_avatar": {
+      "type": "string"
+    },
+    "referred_user_id": {
+      "type": "string",
+      "description": "User ID who was invited"
+    },
+    "referred_name": {
+      "type": "string"
+    },
+    "referred_avatar": {
+      "type": "string"
+    },
+    "referral_code": {
+      "type": "string",
+      "description": "Unique code used for referral link"
+    },
+    "referral_type": {
+      "type": "string",
+      "enum": [
+        "link",
+        "email"
+      ],
+      "description": "How they were invited"
+    },
+    "email_invited": {
+      "type": "string",
+      "description": "Email address invited (if type is email)"
+    },
+    "joined_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the referred user joined"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "inactive"
+      ],
+      "default": "pending",
+      "description": "Status of the referred user"
+    }
+  },
+  "required": [
+    "referrer_id",
+    "referral_code"
+  ]
+}

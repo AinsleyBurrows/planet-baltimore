@@ -27,6 +27,7 @@ import FollowersModal from '@/components/profile/FollowersModal';
 import MyTicketsTab from '@/components/profile/MyTicketsTab';
 import MyDashboardTab from '@/components/profile/MyDashboardTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
+import ReferralsCard from '@/components/profile/ReferralsCard';
 import { Star, BarChart3 } from 'lucide-react';
 
 const tabs = [
@@ -457,7 +458,7 @@ export default function Profile() {
         </div>
 
         {/* Stats */}
-        <div className="flex gap-6 sm:gap-8 mt-4 pt-3 pb-2">
+        <div className="grid grid-cols-4 gap-3 sm:gap-6 sm:gap-8 mt-4 pt-3 pb-2">
           <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.posts_count || posts.length}</span><span className="text-xs text-muted-foreground ml-1">Posts</span></div>
           <button onClick={() => setShowFollowModal('followers')} className="text-center hover:opacity-70 transition-opacity">
             <span className="font-bold text-foreground text-sm sm:text-base">{actualFollowersCount ?? user.followers_count ?? 0}</span>
@@ -467,6 +468,7 @@ export default function Profile() {
             <span className="font-bold text-foreground text-sm sm:text-base">{user.following_count || 0}</span>
             <span className="text-xs text-muted-foreground ml-1">Following</span>
           </button>
+          {isOwnProfile && <div onClick={() => {}} className="cursor-pointer"><ReferralsCard userId={user.id} /></div>}
         </div>
         {/* Followed by names */}
         {followerUsers.length > 0 && (
