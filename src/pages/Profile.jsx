@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -43,7 +44,7 @@ export default function Profile() {
   const isOwnProfile = !profileId || profileId === 'profile';
   
   const [user, setUser] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user: currentUser } = useCurrentUser();
   const [activeTab, setActiveTab] = useState('posts');
   const [selectedPostIndex, setSelectedPostIndex] = useState(null);
   const [editingImage, setEditingImage] = useState(null); // 'avatar' | 'banner' | null
@@ -55,10 +56,6 @@ export default function Profile() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(null); // 'followers' | 'following' | null
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    base44.auth.me().then(setCurrentUser);
-  }, []);
 
   const { data: followerFollows = [] } = useQuery({
     queryKey: ['followers-list', user?.id],
