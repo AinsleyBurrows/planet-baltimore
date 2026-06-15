@@ -98,6 +98,43 @@ export default function AdminAnalytics({ data, isLoading }) {
         <div>
           <h2 className="text-lg font-semibold text-foreground mb-4">30-Day Growth Trends</h2>
           <div className="grid gap-6 lg:grid-cols-2">
+            {/* Platform Expansion Trends */}
+            <Card className="col-span-1 lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="text-base">Platform Expansion</CardTitle>
+                <CardDescription>User signups and post growth combined</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={data.chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="users"
+                      stroke="hsl(var(--accent))"
+                      name="New Users"
+                      strokeWidth={2}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="posts"
+                      stroke="hsl(var(--primary))"
+                      name="New Posts"
+                      strokeWidth={2}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
             {/* Daily Active Users */}
             <Card className="col-span-1 lg:col-span-2">
               <CardHeader>
