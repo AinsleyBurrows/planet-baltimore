@@ -4,6 +4,7 @@ import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, M
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { base44 } from '@/api/base44Client';
+import { useUnreadCounts } from '@/hooks/useUnreadCounts';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -29,6 +30,7 @@ export default function LeftSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [user, setUser] = useState(null);
   const location = useLocation();
+  const { unreadNotifications, unreadMessages } = useUnreadCounts();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
@@ -76,12 +78,19 @@ export default function LeftSidebar() {
             const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
             const Icon = item.icon;
 
+            const badge = item.path === '/notifications' ? unreadNotifications : item.path === '/messages' ? unreadMessages : 0;
+
             if (collapsed) {
               return (
                 <Tooltip key={item.path}>
                   <TooltipTrigger asChild>
-                    <Link to={item.path} className={`flex items-center justify-center w-full py-2 rounded-lg transition-all ${isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
+                    <Link to={item.path} className={`relative flex items-center justify-center w-full py-2 rounded-lg transition-all ${isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
                       <Icon className="w-5 h-5" />
+                      {badge > 0 && (
+                        <span className="absolute top-0.5 right-1 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: '#d4580a' }}>
+                          {badge > 99 ? '99+' : badge}
+                        </span>
+                      )}
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent side="right">{item.label}</TooltipContent>
@@ -96,7 +105,12 @@ export default function LeftSidebar() {
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] ${isActive ? 'bg-muted text-foreground font-semibold' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
               >
                 <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-150 ${isActive ? 'scale-110 text-foreground' : ''}`} />
-                <span className="truncate">{item.label}</span>
+                <span className="truncate flex-1">{item.label}</span>
+                {badge > 0 && (
+                  <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#d4580a' }}>
+                    {badge > 99 ? '99+' : badge}
+                  </span>
+                )}
               </Link>
             );
           })}

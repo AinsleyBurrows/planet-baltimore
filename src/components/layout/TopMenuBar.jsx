@@ -6,6 +6,7 @@ import {
   Bell, User, Menu, Plus, Search, Ticket
 } from 'lucide-react';
 import ThemeToggle from '@/components/shared/ThemeToggle';
+import { useUnreadCounts } from '@/hooks/useUnreadCounts';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,6 +37,7 @@ const utilItems = [
 export default function TopMenuBar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { unreadNotifications, unreadMessages } = useUnreadCounts();
 
   return (
     <header
@@ -55,11 +57,21 @@ export default function TopMenuBar() {
            <Link to="/search" aria-label="Search" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/search' ? 'text-accent' : 'text-muted-foreground'}`}>
              <Search className="w-5 h-5" />
            </Link>
-           <Link to="/notifications" aria-label="Notifications" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground'}`}>
+           <Link to="/notifications" aria-label="Notifications" className={`relative min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground'}`}>
              <Bell className="w-5 h-5" />
+             {unreadNotifications > 0 && (
+               <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: '#d4580a' }}>
+                 {unreadNotifications > 99 ? '99+' : unreadNotifications}
+               </span>
+             )}
            </Link>
-           <Link to="/messages" aria-label="Messages" className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground'}`}>
+           <Link to="/messages" aria-label="Messages" className={`relative min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground'}`}>
              <MessageCircle className="w-5 h-5" />
+             {unreadMessages > 0 && (
+               <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: '#d4580a' }}>
+                 {unreadMessages > 99 ? '99+' : unreadMessages}
+               </span>
+             )}
            </Link>
            <ThemeToggle />
            {/* Hamburger menu */}
