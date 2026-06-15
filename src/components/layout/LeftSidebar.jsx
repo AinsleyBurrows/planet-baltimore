@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn, Flag, Video, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 import { base44 } from '@/api/base44Client';
 import { useUnreadCounts } from '@/hooks/useUnreadCounts';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useSidebar } from './AppLayout';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -28,7 +29,7 @@ const navItems = [
 ];
 
 export default function LeftSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, setCollapsed } = useSidebar();
   const location = useLocation();
   const { unreadNotifications, unreadMessages } = useUnreadCounts();
   const { user } = useCurrentUser();
