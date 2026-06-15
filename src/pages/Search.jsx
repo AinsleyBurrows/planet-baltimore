@@ -162,7 +162,7 @@ export default function Search() {
           {visible('posts') && results.posts?.length > 0 && (
             <ResultSection title="Posts" icon={FileText} count={results.posts.length}>
               {results.posts.slice(0, 20).map(p => (
-                <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary transition-colors">
+                <Link key={p.id} to={`/profile/${p.author_id}`} className="flex items-start gap-3 p-3 rounded-xl hover:bg-secondary transition-colors">
                   <Avatar className="w-9 h-9 flex-shrink-0 mt-0.5">
                     <AvatarImage src={p.author_avatar} />
                     <AvatarFallback className="bg-accent/10 text-accent text-xs">{p.author_name?.charAt(0)}</AvatarFallback>
@@ -175,7 +175,7 @@ export default function Search() {
                   {p.media_urls?.length > 0 && (
                     <img src={p.media_urls[0]} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                   )}
-                </div>
+                </Link>
               ))}
             </ResultSection>
           )}
