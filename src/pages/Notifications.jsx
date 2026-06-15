@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const iconMap = {
   follow: Users,
@@ -22,15 +23,17 @@ const iconMap = {
 export default function Notifications() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { user } = useCurrentUser();
 
   const { data: notifications = [], isLoading } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: () => base44.entities.Notification.list('-created_date', 50),
+    queryKey: ['notifications', user?.id],
+    queryFn: () => base44.entities.Notification.filter({ recipient_id: user.id }, '-created_date', 50),
+    enabled: !!user?.id,
   });
 
   const markReadMutation = useMutation({
     mutationFn: (id) => base44.entities.Notification.update(id, { is_read: true }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] }),
   });
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
