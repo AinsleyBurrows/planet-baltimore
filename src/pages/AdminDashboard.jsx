@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, BarChart3, Shield, Settings } from 'lucide-react';
+import { AlertCircle, BarChart3, Shield, Settings, Inbox } from 'lucide-react';
 import AdminAnalytics from '@/components/admin/AdminAnalytics';
 import AdminModeration from '@/components/admin/AdminModeration';
+import AdminFlaggedQueue from '@/components/admin/AdminFlaggedQueue';
 import AdminSettings from '@/components/admin/AdminSettings';
 
 export default function AdminDashboard() {
@@ -42,11 +43,15 @@ export default function AdminDashboard() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md">
+         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full max-w-lg">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="queue" className="flex items-center gap-2">
+              <Inbox className="w-4 h-4" />
+              <span className="hidden sm:inline">Queue</span>
             </TabsTrigger>
             <TabsTrigger value="moderation" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
@@ -60,6 +65,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="analytics" className="mt-8">
             <AdminAnalytics data={analyticsData} isLoading={isLoading} />
+          </TabsContent>
+
+          <TabsContent value="queue" className="mt-8">
+            <AdminFlaggedQueue />
           </TabsContent>
 
           <TabsContent value="moderation" className="mt-8">
