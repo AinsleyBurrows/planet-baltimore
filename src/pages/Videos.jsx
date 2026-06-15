@@ -218,7 +218,7 @@ function VideoLightbox({ posts, startIndex, onClose }) {
       <ShareModal
         isOpen={showShare}
         onClose={() => setShowShare(false)}
-        url={`${window.location.origin}/profile/${post.author_id}`}
+        url={`${window.location.origin}/videos?post=${post.id}`}
         title={post.content?.slice(0, 100) || `Video by ${post.author_name}`}
       />
     </div>
