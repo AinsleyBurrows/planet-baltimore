@@ -181,7 +181,7 @@ export default function Podcasts() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 lg:pb-0">
       {/* Hero Banner */}
       <div className="relative rounded-2xl overflow-hidden p-8 sm:p-10 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
