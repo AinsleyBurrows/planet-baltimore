@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Trash2, Send, MessageCircle, Reply, Edit2, Check, X, ImagePlus, Loader2, Play } from 'lucide-react';
@@ -219,11 +220,9 @@ function CommentItem({ comment, user, replies, allReplies, onDelete, onEdit, onR
 }
 
 export default function CommentSection({ targetType, targetId }) {
-  const [user, setUser] = useState(null);
+  const { user } = useCurrentUser();
   const queryClient = useQueryClient();
   const qKey = ['comments', targetType, targetId];
-
-  useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);
 
   const { data: comments = [] } = useQuery({
     queryKey: qKey,

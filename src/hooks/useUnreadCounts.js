@@ -2,10 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
 export function useUnreadCounts() {
+  // Re-uses the same cached result as useCurrentUser — no extra network call
   const { data: user } = useQuery({
-    queryKey: ['current-user-unread'],
+    queryKey: ['current-user'],
     queryFn: () => base44.auth.me(),
-    staleTime: 60000,
+    staleTime: 5 * 60 * 1000,
     retry: false,
   });
 

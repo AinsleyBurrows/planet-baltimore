@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn, Flag, Video, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { base44 } from '@/api/base44Client';
 import { useUnreadCounts } from '@/hooks/useUnreadCounts';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -28,13 +29,9 @@ const navItems = [
 
 export default function LeftSidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [user, setUser] = useState(null);
   const location = useLocation();
   const { unreadNotifications, unreadMessages } = useUnreadCounts();
-
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => setUser(null));
-  }, []);
+  const { user } = useCurrentUser();
 
   return (
     <TooltipProvider delayDuration={0}>

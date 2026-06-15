@@ -12,6 +12,7 @@ import FoundingMemberBadge from './FoundingMemberBadge.jsx';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 function FeedVideo({ src, thumbnail }) {
   const [playing, setPlaying] = useState(false);
@@ -97,9 +98,12 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [deleted, setDeleted] = useState(false);
-  const [currentUser, setCurrentUser] = useState(currentUserProp || null);
   const queryClient = useQueryClient();
-  const isOwner = currentUserId === post.author_id;
+
+  // Use shared hook — falls back to prop if provided (avoids extra query)
+  const { user: hookUser } = useCurrentUser();
+  const currentUser = currentUserProp || hookUser;
+  const isOwner = (currentUserId || currentUser?.id) === post.author_id;
 
   const handleDelete = async () => {
     if (!window.confirm('Delete this post?')) return;
@@ -111,21 +115,18 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const postUrl = `${window.location.origin}/profile/${post.author_id}`;
   const displayPost = localPost;
 
-  // Only fetch auth if not passed as prop
-  useEffect(() => {
-    if (currentUserProp) {
-      setCurrentUser(currentUserProp);
-      return;
-    }
-    base44.auth.me().then(setCurrentUser).catch(() => {});
-  }, [currentUserProp]);
+  const { data: likeRecords = [] } = useQuery({
+    queryKey: ['post-liked', post.id, currentUser?.id],
+    queryFn: () => base44.entities.Like.filter({ user_id: currentUser.id, target_type: 'post', target_id: post.id }),
+    enabled: !!currentUser?.id,
+    onSuccess: (data) => setLiked(data.length > 0),
+    staleTime: 60000,
+  });
 
-  useEffect(() => {
-    if (!currentUser) return;
-    base44.entities.Like.filter({ user_id: currentUser.id, target_type: 'post', target_id: post.id })
-      .then(likes => setLiked(likes.length > 0))
-      .catch(() => {});
-  }, [currentUser?.id, post.id]);
+  // Sync liked state when query result arrives
+  React.useEffect(() => {
+    setLiked(likeRecords.length > 0);
+  }, [likeRecords.length]);
 
   const { data: savedRecords = [] } = useQuery({
     queryKey: ['saved-post', post.id, currentUser?.id],
