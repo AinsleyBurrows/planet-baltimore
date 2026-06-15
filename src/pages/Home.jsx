@@ -6,7 +6,7 @@ import StoryCard from '@/components/shared/StoryCard';
 import EventCard from '@/components/shared/EventCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from 'react-router-dom';
-import { Users, Sparkles, Compass } from 'lucide-react';
+import { Users, Sparkles, Compass, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DiscoverCard from '@/components/discovery/DiscoverCard';
 import StoryBar from '@/components/stories/StoryBar.jsx';
@@ -194,6 +194,33 @@ export default function Home() {
       <div className="-mx-3 sm:-mx-4 px-3 sm:px-4 border-b border-border pb-3 sm:pb-4">
         <StoryBar currentUser={currentUser} />
       </div>
+
+      {/* My Neighborhood quick filter */}
+      {currentUser && (
+        currentUser.neighborhood_names?.[0] ? (
+          <button
+            onClick={() => { setActiveFilter('Nearby'); setFilterLoading(true); setTimeout(() => setFilterLoading(false), 400); }}
+            className={`w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-medium text-left ${
+              activeFilter === 'Nearby'
+                ? 'bg-[#d4580a] text-white border-[#d4580a]'
+                : 'bg-secondary/60 text-foreground border-border hover:border-[#d4580a] hover:text-[#d4580a]'
+            }`}
+          >
+            <MapPin className="w-4 h-4 flex-shrink-0" />
+            <span>My Neighborhood: <span className="font-semibold">{currentUser.neighborhood_names[0]}</span></span>
+            {activeFilter !== 'Nearby' && <span className="ml-auto text-xs text-muted-foreground">See local feed →</span>}
+          </button>
+        ) : (
+          <Link
+            to="/profile"
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-border bg-secondary/40 text-sm text-muted-foreground hover:border-[#d4580a] hover:text-[#d4580a] transition-all"
+          >
+            <MapPin className="w-4 h-4 flex-shrink-0" />
+            <span>Add your neighborhood to see local content</span>
+            <span className="ml-auto text-xs">Set up →</span>
+          </Link>
+        )
+      )}
 
       {/* Onboarding card — only for users with no follows yet */}
       {!loadingFollows && follows.length === 0 && <OnboardingCard />}
