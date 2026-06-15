@@ -146,6 +146,7 @@ export default function LeftSidebar() {
                 onClick={() => base44.auth.logout()}
                 className="flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] w-full"
               >
+                <LogOut className="w-5 h-5 flex-shrink-0" />
                 <span className="truncate">Logout</span>
               </button>
             )
