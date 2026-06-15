@@ -8,6 +8,7 @@ import AppImage from './AppImage';
 import CommentSection from './CommentSection';
 import ShareModal from './ShareModal';
 import EditPostModal from './EditPostModal';
+import ReportModal from './ReportModal';
 import FoundingMemberBadge from './FoundingMemberBadge.jsx';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -98,6 +99,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const [showEdit, setShowEdit] = useState(false);
   const [localPost, setLocalPost] = useState(post);
   const [deleted, setDeleted] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const queryClient = useQueryClient();
 
   // Use shared hook — falls back to prop if provided (avoids extra query)
@@ -210,7 +212,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
             )}
             <DropdownMenuItem onClick={() => setShowShare(true)}><Share2 className="w-4 h-4 mr-2" />Share</DropdownMenuItem>
             {!isOwner && (
-              <DropdownMenuItem className="text-destructive" onClick={() => alert('Thank you for reporting. Our team will review this post.')}>
+              <DropdownMenuItem className="text-destructive" onClick={() => setShowReport(true)}>
                 <Flag className="w-4 h-4 mr-2" />Report
               </DropdownMenuItem>
             )}
@@ -400,6 +402,14 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
           onSaved={(updated) => setLocalPost(updated)}
         />
       )}
+
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        targetType="post"
+        targetId={post.id}
+        targetName={displayPost.content?.slice(0, 80) || `Post by ${displayPost.author_name}`}
+      />
     </article>
   );
 });
