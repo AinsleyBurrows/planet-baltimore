@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -56,6 +56,10 @@ export default function Profile() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(null); // 'followers' | 'following' | null
   const queryClient = useQueryClient();
+
+  // Stable cache-busted URLs — only recompute when the URL itself changes
+  const avatarSrc = useMemo(() => user?.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined, [user?.avatar_url]);
+  const bannerSrc = useMemo(() => user?.banner_url ? `${user.banner_url}?t=${Date.now()}` : undefined, [user?.banner_url]);
 
   const { data: followerFollows = [] } = useQuery({
     queryKey: ['followers-list', user?.id],
@@ -289,7 +293,7 @@ export default function Profile() {
       {/* Banner */}
       <div className="px-0 sm:px-4">
         <div className="relative sm:h-56 rounded-none sm:rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
-          {user.banner_url && <img src={`${user.banner_url}?t=${Date.now()}`} alt="Banner" className="w-full h-full object-cover" />}
+          {bannerSrc && <img src={bannerSrc} alt="Banner" className="w-full h-full object-cover" />}
           {isOwnProfile && (
             <button
               onClick={() => setEditingImage('banner')}
@@ -306,8 +310,8 @@ export default function Profile() {
       <div className="relative px-3 sm:px-4" style={{marginTop: '2rem'}}>
         <div className="flex items-end justify-between">
            <div className={isOwnProfile ? "relative cursor-pointer" : "relative"} onClick={() => isOwnProfile && setEditingImage('avatar')}>
-             <Avatar key={user.avatar_url} className="border-4 border-background aspect-square w-[98px] h-[98px]">
-               <AvatarImage src={user.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined} />
+             <Avatar className="border-4 border-background aspect-square w-[98px] h-[98px]">
+               <AvatarImage src={avatarSrc} />
                <AvatarFallback className="text-xl sm:text-2xl font-bold bg-accent/10 text-accent">
                  {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
                </AvatarFallback>
