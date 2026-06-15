@@ -26,7 +26,7 @@ function SuggestionSection({ title, icon: Icon, children, seeAllLink }) {
 export default function RightSidebar() {
   const { data: stories = [] } = useQuery({
     queryKey: ['sidebar-stories'],
-    queryFn: () => base44.entities.Story.filter({ status: 'published', visibility: 'public' }, '-views_count', 5),
+    queryFn: () => base44.entities.Story.filter({ status: 'published' }, '-views_count', 5),
     staleTime: 300000,
   });
 
