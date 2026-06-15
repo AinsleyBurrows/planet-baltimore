@@ -70,7 +70,7 @@ export default function PageAdminBar({ isOwner, isPlatformAdmin, isMuted, muteRe
               variant="outline"
               disabled={loading}
               onClick={() => setShowMuteDialog(true)}
-              className="gap-1.5 text-orange-600 border-orange-300 hover:bg-orange-50 text-xs h-8"
+              className="gap-1.5 text-yellow-600 border-yellow-400/50 hover:bg-yellow-500/10 text-xs h-8"
             >
               <VolumeX className="w-3.5 h-3.5" />
               Mute Page
@@ -81,11 +81,11 @@ export default function PageAdminBar({ isOwner, isPlatformAdmin, isMuted, muteRe
 
       {/* Muted banner visible to everyone */}
       {isMuted && (
-        <div className="mt-3 flex items-start gap-2 px-3 py-2.5 rounded-lg bg-orange-50 border border-orange-200 text-orange-800 text-sm">
+        <div className="mt-3 flex items-start gap-2 px-3 py-2.5 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-700 dark:text-yellow-400 text-sm">
           <VolumeX className="w-4 h-4 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold">This page has been muted by a platform admin.</p>
-            {muteReason && <p className="text-xs mt-0.5 text-orange-700">{muteReason}</p>}
+            {muteReason && <p className="text-xs mt-0.5 opacity-80">{muteReason}</p>}
           </div>
         </div>
       )}
@@ -108,7 +108,7 @@ export default function PageAdminBar({ isOwner, isPlatformAdmin, isMuted, muteRe
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-orange-500" />
+                <AlertTriangle className="w-5 h-5 text-yellow-500" />
                 <h3 className="font-semibold text-foreground">Mute this page</h3>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -127,7 +127,7 @@ export default function PageAdminBar({ isOwner, isPlatformAdmin, isMuted, muteRe
                 <Button
                   onClick={handleMute}
                   disabled={loading}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                  className="flex-1 bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                 >
                   {loading ? 'Muting…' : 'Confirm Mute'}
                 </Button>
