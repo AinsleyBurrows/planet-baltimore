@@ -135,12 +135,17 @@ export default function Home() {
 
     } else if (activeFilter === 'Nearby') {
       const neighborhood = currentUser?.neighborhood_names?.[0];
-      const np = neighborhood ? filteredPosts.filter(p => p.neighborhood_name === neighborhood) : filteredPosts.slice(0, 20);
-      const ne = neighborhood ? events.filter(e => e.neighborhood_name === neighborhood) : events.slice(0, 10);
-      items = [
-        ...np.map(p => ({ type: 'post', date: p.created_date, data: p })),
-        ...ne.map(e => ({ type: 'event', date: e.created_date, data: e })),
-      ];
+      if (!neighborhood) {
+        // No neighborhood set — return empty so the CTA is shown
+        items = [];
+      } else {
+        const np = filteredPosts.filter(p => p.neighborhood_name === neighborhood);
+        const ne = events.filter(e => e.neighborhood_name === neighborhood);
+        items = [
+          ...np.map(p => ({ type: 'post', date: p.created_date, data: p })),
+          ...ne.map(e => ({ type: 'event', date: e.created_date, data: e })),
+        ];
+      }
 
     } else if (activeFilter === 'Discover') {
       // Pure serendipity: shuffle everything, surface things user hasn't seen yet
@@ -240,13 +245,13 @@ export default function Home() {
         ) : isEmpty ? (
           <div className="text-center py-12 sm:py-16">
             <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4 sm:mb-6">
-              {activeFilter === 'Following' ? <Users className="w-7 h-7 sm:w-9 sm:h-9 text-accent" /> : <span className="text-3xl sm:text-4xl">🏙️</span>}
+              {activeFilter === 'Following' ? <Users className="w-7 h-7 sm:w-9 sm:h-9 text-accent" /> : activeFilter === 'Nearby' ? <MapPin className="w-7 h-7 sm:w-9 sm:h-9 text-accent" /> : <span className="text-3xl sm:text-4xl">🏙️</span>}
             </div>
             <h3 className="font-semibold text-foreground mb-2 text-base sm:text-lg">
-              {activeFilter === 'Following' ? 'No activity from people you follow' : 'Your feed is quiet'}
+              {activeFilter === 'Following' ? 'No activity from people you follow' : activeFilter === 'Nearby' && !currentUser?.neighborhood_names?.[0] ? 'Set your neighborhood to see local content' : activeFilter === 'Nearby' ? 'No local content yet' : 'Your feed is quiet'}
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground mb-6">
-              {activeFilter === 'Following' ? 'Follow artists, businesses, and organizations to see their updates here.' : 'Explore Baltimore communities to fill your feed.'}
+              {activeFilter === 'Following' ? 'Follow artists, businesses, and organizations to see their updates here.' : activeFilter === 'Nearby' && !currentUser?.neighborhood_names?.[0] ? 'Add your neighborhood to your profile and we\'ll show you posts and events from your area.' : activeFilter === 'Nearby' ? 'Be the first to post something in your neighborhood!' : 'Explore Baltimore communities to fill your feed.'}
             </p>
             {activeFilter === 'Following' && (
               <div className="flex gap-2 sm:gap-3 justify-center flex-wrap">
@@ -254,6 +259,11 @@ export default function Home() {
                 <Link to="/arts-organizations"><Button variant="outline" size="sm" className="rounded-lg text-xs sm:text-sm">Browse Orgs</Button></Link>
                 <Link to="/businesses"><Button variant="outline" size="sm" className="rounded-lg text-xs sm:text-sm">Browse Businesses</Button></Link>
               </div>
+            )}
+            {activeFilter === 'Nearby' && !currentUser?.neighborhood_names?.[0] && (
+              <Link to="/profile">
+                <Button size="sm" className="rounded-lg text-xs sm:text-sm" style={{ backgroundColor: '#d4580a' }}>Set My Neighborhood</Button>
+              </Link>
             )}
           </div>
         ) : (

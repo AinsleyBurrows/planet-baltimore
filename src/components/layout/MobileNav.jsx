@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, Video, Trophy } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useUnreadCounts } from '@/hooks/useUnreadCounts';
 
 const primaryItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -30,6 +31,7 @@ const moreItems = [
 export default function MobileNav() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { unreadNotifications } = useUnreadCounts();
 
   return (
     <nav
@@ -55,14 +57,20 @@ export default function MobileNav() {
             );
           }
 
+          const badge = item.path === '/notifications' ? unreadNotifications : 0;
           return (
             <Link
               key={item.path}
               to={item.path}
               aria-label={item.label}
-              className={`flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-1 py-1 transition-all duration-150 active:scale-95 focus-visible:outline-none rounded-xl ${isActive ? 'text-accent' : 'text-muted-foreground'}`}
+              className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] px-1 py-1 transition-all duration-150 active:scale-95 focus-visible:outline-none rounded-xl ${isActive ? 'text-accent' : 'text-muted-foreground'}`}
             >
               <Icon className={`w-[22px] h-[22px] transition-transform duration-150 ${isActive ? 'scale-110' : ''}`} />
+              {badge > 0 && (
+                <span className="absolute top-0.5 right-0.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: '#d4580a' }}>
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              )}
               <span className="text-[10px] font-medium leading-none">{item.label}</span>
             </Link>
           );
