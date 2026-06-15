@@ -33,14 +33,14 @@ export default function Discover() {
   return (
     <div className="space-y-8">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 bg-transparent border-2 border-accent/40">
+      <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-accent">Discover Baltimore</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#d4580a' }}>Discover Baltimore</h1>
           <p className="text-muted-foreground text-sm sm:text-base">Find events, artists, communities, and stories across the city.</p>
         </div>
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2 bg-accent" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2 bg-accent" />
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
         </div>
       </div>
 
@@ -53,7 +53,7 @@ export default function Discover() {
       {/* Categories */}
       <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
         {categories.map((cat) => (
-          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeCategory === cat ? 'bg-accent text-accent-foreground shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'}`}>
+          <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${activeCategory === cat ? 'bg-[#d4580a] text-white shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'}`}>
             {cat}
           </button>
         ))}
@@ -64,7 +64,7 @@ export default function Discover() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold flex items-center gap-2"><TrendingUp className="w-5 h-5 text-accent" />Trending Events</h2>
-            <Link to="/ticketing" className="text-sm font-medium text-accent">See all</Link>
+            <Link to="/ticketing" className="text-sm font-medium" style={{ color: '#d4580a' }}>See all</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {filteredEvents.slice(0, 4).map((event) => <EventCard key={event.id} event={event} />)}
@@ -99,7 +99,7 @@ export default function Discover() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold flex items-center gap-2"><Users className="w-5 h-5 text-accent" />Communities</h2>
-            <Link to="/communities" className="text-sm font-medium text-accent">See all</Link>
+            <Link to="/communities" className="text-sm font-medium" style={{ color: '#d4580a' }}>See all</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {filteredCommunities.slice(0, 6).map((c) => (
@@ -124,7 +124,7 @@ export default function Discover() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold flex items-center gap-2"><Building2 className="w-5 h-5 text-accent" />Businesses</h2>
-            <Link to="/businesses" className="text-sm font-medium text-accent">See all</Link>
+            <Link to="/businesses" className="text-sm font-medium" style={{ color: '#d4580a' }}>See all</Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {filteredBusinesses.slice(0, 6).map((b) => (
@@ -159,7 +159,7 @@ export default function Discover() {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold flex items-center gap-2"><Globe className="w-5 h-5 text-accent" />Neighborhoods</h2>
-            <Link to="/neighborhoods" className="text-sm font-medium text-accent">See all</Link>
+            <Link to="/neighborhoods" className="text-sm font-medium" style={{ color: '#d4580a' }}>See all</Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {filteredNeighborhoods.slice(0, 9).map((n) => (

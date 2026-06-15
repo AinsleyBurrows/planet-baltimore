@@ -350,7 +350,7 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
             aria-label={liked ? 'Unlike post' : 'Like post'}
             className={`flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm transition-all duration-150 active:scale-90 ${liked ? 'text-accent' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-accent text-accent' : ''}`} />
+            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110 ${liked ? 'fill-[#d4580a] text-[#d4580a]' : ''}`} />
             <span>{localLikesCount}</span>
           </button>
           <button

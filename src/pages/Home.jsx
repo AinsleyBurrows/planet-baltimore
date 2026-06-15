@@ -169,14 +169,14 @@ export default function Home() {
   return (
     <div className="space-y-5 sm:space-y-7 overflow-x-hidden">
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden p-5 sm:p-8 lg:p-12 bg-transparent border-2 border-accent/40">
+      <div className="relative rounded-2xl overflow-hidden p-5 sm:p-8 lg:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
         <div className="relative z-10">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5 text-accent">Planet <span className="text-foreground">Baltimore</span></h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1.5" style={{ color: '#d4580a' }}>Planet <span className="text-black dark:text-white">Baltimore</span></h1>
           <p className="text-muted-foreground text-sm">Your city. Your community. Your feed.</p>
         </div>
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2 bg-accent" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2 bg-accent" />
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
+          <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/2 -translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
         </div>
       </div>
 
@@ -186,7 +186,7 @@ export default function Home() {
             key={filter}
             onClick={() => { setActiveFilter(filter); setFilterLoading(true); setTimeout(() => setFilterLoading(false), 400); }}
             className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-              activeFilter === filter ? 'bg-accent text-accent-foreground shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
+              activeFilter === filter ? 'bg-[#d4580a] text-white shadow-sm' : 'bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
             }`}
           >
             {filter === 'Discover' && <Compass className="w-4 h-4 sm:w-5 sm:h-5" />}
@@ -207,8 +207,8 @@ export default function Home() {
             onClick={() => { setActiveFilter('Nearby'); setFilterLoading(true); setTimeout(() => setFilterLoading(false), 400); }}
             className={`w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all text-sm font-medium text-left ${
               activeFilter === 'Nearby'
-                ? 'bg-accent text-accent-foreground border-accent'
-                : 'bg-secondary/60 text-foreground border-border hover:border-accent hover:text-accent'
+                ? 'bg-[#d4580a] text-white border-[#d4580a]'
+                : 'bg-secondary/60 text-foreground border-border hover:border-[#d4580a] hover:text-[#d4580a]'
             }`}
           >
             <MapPin className="w-4 h-4 flex-shrink-0" />
@@ -218,7 +218,7 @@ export default function Home() {
         ) : (
           <Link
             to="/profile"
-            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-border bg-secondary/40 text-sm text-muted-foreground hover:border-accent hover:text-accent transition-all"
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-border bg-secondary/40 text-sm text-muted-foreground hover:border-[#d4580a] hover:text-[#d4580a] transition-all"
           >
             <MapPin className="w-4 h-4 flex-shrink-0" />
             <span>Add your neighborhood to see local content</span>
@@ -262,7 +262,7 @@ export default function Home() {
             )}
             {activeFilter === 'Nearby' && !currentUser?.neighborhood_names?.[0] && (
               <Link to="/profile">
-                <Button size="sm" className="rounded-lg text-xs sm:text-sm bg-accent text-accent-foreground hover:bg-accent/90">Set My Neighborhood</Button>
+                <Button size="sm" className="rounded-lg text-xs sm:text-sm" style={{ backgroundColor: '#d4580a' }}>Set My Neighborhood</Button>
               </Link>
             )}
           </div>

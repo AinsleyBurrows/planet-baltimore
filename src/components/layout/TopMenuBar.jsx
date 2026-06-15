@@ -47,9 +47,9 @@ export default function TopMenuBar() {
       <div className="flex items-center justify-between px-4 py-3 min-h-[52px]">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-1.5">
-          <span className="text-lg font-bold text-accent">Planet</span>
+          <span className="text-lg font-bold" style={{ color: '#d4580a' }}>Planet</span>
           <span className="text-lg font-light text-foreground">Baltimore</span>
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent tracking-wide leading-none">BETA</span>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#d4580a]/15 text-[#d4580a] tracking-wide leading-none">BETA</span>
         </Link>
 
         <div className="flex items-center gap-1">
@@ -60,7 +60,7 @@ export default function TopMenuBar() {
            <Link to="/notifications" aria-label="Notifications" className={`relative min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/notifications' ? 'text-accent' : 'text-muted-foreground'}`}>
              <Bell className="w-5 h-5" />
              {unreadNotifications > 0 && (
-               <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-accent-foreground bg-accent flex items-center justify-center">
+               <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: '#d4580a' }}>
                  {unreadNotifications > 99 ? '99+' : unreadNotifications}
                </span>
              )}
@@ -68,7 +68,7 @@ export default function TopMenuBar() {
            <Link to="/messages" aria-label="Messages" className={`relative min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl transition-colors active:bg-secondary ${location.pathname === '/messages' ? 'text-accent' : 'text-muted-foreground'}`}>
              <MessageCircle className="w-5 h-5" />
              {unreadMessages > 0 && (
-               <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-accent-foreground bg-accent flex items-center justify-center">
+               <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: '#d4580a' }}>
                  {unreadMessages > 99 ? '99+' : unreadMessages}
                </span>
              )}

@@ -491,7 +491,7 @@ export default function Profile() {
         {tabs.filter(tab => (tab.id !== 'pages' && tab.id !== 'tickets') || isOwnProfile).map((tab) => {
           const Icon = tab.icon;
           return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-accent text-accent' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-[#d4580a] text-[#d4580a]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
               <Icon className="w-4 h-4 sm:w-5 sm:h-5" /><span className="hidden sm:inline">{tab.label}</span>
             </button>
           );
