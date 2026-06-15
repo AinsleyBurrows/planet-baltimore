@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,12 +22,22 @@ export default function Messages() {
   const [showBroadcast, setShowBroadcast] = useState(false);
   const [showChat, setShowChat] = useState(false); // mobile toggle
 
+  const queryClient = useQueryClient();
+
   const { data: allMessages = [] } = useQuery({
     queryKey: ['messages'],
     queryFn: () => base44.entities.Message.list('-created_date', 200),
-    refetchInterval: 5000,
     enabled: !!currentUser,
   });
+
+  // Real-time message updates via subscription — no polling needed
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    const unsub = base44.entities.Message.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    });
+    return unsub;
+  }, [currentUser?.id]);
 
   // Derive conversations from messages where current user is sender or recipient
   const conversations = useMemo(() => {
