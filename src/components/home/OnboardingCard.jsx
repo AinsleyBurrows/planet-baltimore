@@ -50,7 +50,7 @@ export default function OnboardingCard() {
   };
 
   return (
-    <div className="relative bg-card border-2 rounded-2xl p-5 sm:p-6" style={{ borderColor: '#d4580a' }}>
+    <div className="relative bg-card border border-border rounded-2xl p-5 sm:p-6">
       {/* Dismiss button */}
       <button
         onClick={handleDismiss}
@@ -78,7 +78,7 @@ export default function OnboardingCard() {
               <Icon className="w-4.5 h-4.5" style={{ color }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground group-hover:text-[#d4580a] transition-colors">{title}</p>
+              <p className="text-sm font-semibold text-foreground group-hover:text-accent transition-colors">{title}</p>
               <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{description}</p>
               <span className="text-xs font-medium mt-1.5 inline-block" style={{ color }}>{cta} →</span>
             </div>

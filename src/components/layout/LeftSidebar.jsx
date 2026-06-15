@@ -40,12 +40,12 @@ export default function LeftSidebar() {
         {/* Logo */}
         <div className={`flex items-center h-16 border-b border-border px-4 sm:px-5 ${collapsed ? 'justify-center' : ''}`}>
           {collapsed ? (
-            <span className="text-xl font-bold" style={{ color: '#d4580a' }}>P</span>
+            <span className="text-xl font-bold text-accent">P</span>
           ) : (
             <Link to="/" className="flex items-center gap-2">
-              <span className="text-xl font-bold" style={{ color: '#d4580a' }}>Planet</span>
-              <span className="text-xl font-light text-foreground">Baltimore</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#d4580a]/15 text-[#d4580a] tracking-wide leading-none">BETA</span>
+            <span className="text-xl font-bold text-accent">Planet</span>
+            <span className="text-xl font-light text-foreground">Baltimore</span>
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent tracking-wide leading-none">BETA</span>
             </Link>
           )}
         </div>
@@ -56,14 +56,14 @@ export default function LeftSidebar() {
             {collapsed ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon" variant="outline" className="rounded-full aspect-square" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+                  <Button size="icon" variant="outline" className="rounded-full aspect-square border-accent text-accent hover:bg-accent/10">
                     <Plus className="w-5 h-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">Create Post</TooltipContent>
               </Tooltip>
             ) : (
-              <Button variant="outline" className="w-full rounded-lg py-2.5 hover:bg-secondary/80" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+              <Button variant="outline" className="w-full rounded-lg py-2.5 border-accent text-accent hover:bg-accent/10 hover:text-accent">
                 Create Post
               </Button>
             )}
@@ -85,7 +85,7 @@ export default function LeftSidebar() {
                     <Link to={item.path} className={`relative flex items-center justify-center w-full py-2 rounded-lg transition-all ${isActive ? 'bg-muted text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
                       <Icon className="w-5 h-5" />
                       {badge > 0 && (
-                        <span className="absolute top-0.5 right-1 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center" style={{ backgroundColor: '#d4580a' }}>
+                        <span className="absolute top-0.5 right-1 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold text-accent-foreground bg-accent flex items-center justify-center">
                           {badge > 99 ? '99+' : badge}
                         </span>
                       )}
@@ -105,7 +105,7 @@ export default function LeftSidebar() {
                 <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-150 ${isActive ? 'scale-110 text-foreground' : ''}`} />
                 <span className="truncate flex-1">{item.label}</span>
                 {badge > 0 && (
-                  <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#d4580a' }}>
+                  <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-accent-foreground bg-accent flex items-center justify-center flex-shrink-0">
                     {badge > 99 ? '99+' : badge}
                   </span>
                 )}

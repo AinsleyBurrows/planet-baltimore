@@ -7,8 +7,8 @@ export const ThemeProvider = ({ children }) => {
     // Check localStorage for saved preference
     const saved = localStorage.getItem('theme');
     if (saved) return saved;
-    // Check system preference
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    // Default to dark (Graphite Glow design)
+    return 'dark';
   });
 
   useEffect(() => {
