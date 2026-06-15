@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, FileText, Calendar, TrendingUp, AlertCircle, BookOpen } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ icon: Icon, title, value, subtitle, trend }) => (
   <Card className="bg-card border-border hover:shadow-md transition-shadow">
@@ -91,6 +92,78 @@ export default function AdminAnalytics({ data, isLoading }) {
           />
         </div>
       </div>
+
+      {/* Growth Charts */}
+      {data?.chartData && data.chartData.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-foreground mb-4">30-Day Growth Trends</h2>
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Daily Active Users */}
+            <Card className="col-span-1 lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="text-base">Daily Active Users</CardTitle>
+                <CardDescription>New user signups per day</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={data.chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+                    <Line
+                      type="monotone"
+                      dataKey="users"
+                      stroke="hsl(var(--accent))"
+                      strokeWidth={2}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Post Volume */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Post Volume</CardTitle>
+                <CardDescription>Posts created per day</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={data.chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+                    <Bar dataKey="posts" fill="hsl(var(--primary))" isAnimationActive={false} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Event Signups */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Event Signups</CardTitle>
+                <CardDescription>Events created per day</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={data.chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+                    <Bar dataKey="signups" fill="hsl(var(--chart-4))" isAnimationActive={false} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* Recent Reports */}
       {data?.recentReports?.length > 0 && (

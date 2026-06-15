@@ -37,6 +37,42 @@ Deno.serve(async (req) => {
     const totalRevenue = (ticketSales || []).reduce((sum, t) => sum + (t.amount || 0), 0) +
                         (marketplaceOrders || []).filter(m => m.payment_status === 'completed').reduce((sum, m) => sum + (m.amount || 0), 0);
 
+    // Generate time-series data for the last 30 days
+    const last30Days = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateStr = date.toISOString().split('T')[0];
+      last30Days.push({ date: dateStr });
+    }
+
+    // Calculate daily metrics
+    const dailyData = last30Days.map(day => {
+      const dayStart = new Date(day.date + 'T00:00:00Z');
+      const dayEnd = new Date(day.date + 'T23:59:59Z');
+
+      const dailyUsers = users.filter(u => {
+        const uDate = new Date(u.created_date);
+        return uDate >= dayStart && uDate <= dayEnd;
+      }).length;
+
+      const dailyPosts = posts.filter(p => {
+        const pDate = new Date(p.created_date);
+        return pDate >= dayStart && pDate <= dayEnd;
+      }).length;
+
+      const dailySignups = events.filter(e => {
+        const eDate = new Date(e.date);
+        return eDate >= dayStart && eDate <= dayEnd;
+      }).length;
+
+      return {
+        date: day.date.slice(5), // Format as MM-DD
+        users: dailyUsers,
+        posts: dailyPosts,
+        signups: dailySignups,
+      };
+    });
+
     return Response.json({
       metrics: {
         totalUsers: users.length,
@@ -49,6 +85,7 @@ Deno.serve(async (req) => {
         openReports,
         totalRevenue,
       },
+      chartData: dailyData,
       recentReports: reports.slice(0, 10),
       recentUsers: users.slice(0, 10),
     });
