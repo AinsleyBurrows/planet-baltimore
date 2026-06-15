@@ -10,6 +10,7 @@ import { Users, Sparkles, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DiscoverCard from '@/components/discovery/DiscoverCard';
 import StoryBar from '@/components/stories/StoryBar.jsx';
+import OnboardingCard from '@/components/home/OnboardingCard';
 
 const FILTERS = ['For You', 'Following', 'Nearby', 'Discover'];
 
@@ -193,6 +194,9 @@ export default function Home() {
       <div className="-mx-3 sm:-mx-4 px-3 sm:px-4 border-b border-border pb-3 sm:pb-4">
         <StoryBar currentUser={currentUser} />
       </div>
+
+      {/* Onboarding card — only for users with no follows yet */}
+      {!loadingFollows && follows.length === 0 && <OnboardingCard />}
 
       {activeFilter === 'Discover' && (
         <div className="flex items-center gap-2 p-3 sm:p-4 bg-accent/5 border border-accent/20 rounded-xl text-xs sm:text-sm text-muted-foreground">
