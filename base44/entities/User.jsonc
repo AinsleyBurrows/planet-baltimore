@@ -10,11 +10,73 @@
       ],
       "default": "user"
     },
+    "display_name": {
+      "type": "string",
+      "description": "Public display name chosen during onboarding"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "account_type": {
+      "type": "string",
+      "enum": [
+        "artist",
+        "attendee"
+      ],
+      "description": "Role chosen during onboarding"
+    },
+    "onboarding_complete": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once the user has finished the onboarding flow"
+    },
+    "stripe_skipped": {
+      "type": "boolean",
+      "default": false,
+      "description": "Artist skipped Stripe setup during onboarding"
+    },
+    "neighborhoods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of neighborhood IDs the user is associated with"
+    },
+    "neighborhood_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "following_count": {
+      "type": "number",
+      "default": 0
+    },
+    "posts_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
     "is_founding_member": {
       "type": "boolean",
       "default": false,
-      "description": "First 200 members \u2014 displays a gold Founding Member badge"
+      "description": "Granted by admin"
     }
-  },
-  "required": []
+  }
 }

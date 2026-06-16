@@ -7,12 +7,12 @@ import { base44 } from '@/api/base44Client';
  * staleTime: 5 min so navigating around never re-fetches unnecessarily.
  */
 export function useCurrentUser() {
-  const { data: user = null, isLoading } = useQuery({
+  const { data: user = null, isLoading, refetch } = useQuery({
     queryKey: ['current-user'],
     queryFn: () => base44.auth.me(),
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
 
-  return { user, isLoading };
+  return { user, isLoading, refetch };
 }
