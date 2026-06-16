@@ -140,7 +140,7 @@ export default function CreateEvent() {
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">Stripe account required for paid tickets</p>
-              <p className="text-xs mt-0.5">You need to connect your Stripe account on your Artist Page before tickets can be sold. <Link to="/artists" className="underline font-medium">Go to your Artist Page → Edit → Stripe Setup</Link></p>
+              <p className="text-xs mt-0.5">You need to connect your Stripe account before tickets can be sold. <Link to="/settings" className="underline font-medium">Go to Settings → Stripe Payments</Link></p>
             </div>
           </div>
         )}

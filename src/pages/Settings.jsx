@@ -18,6 +18,7 @@ import SettingsNotifications from '@/components/settings/SettingsNotifications';
 import SettingsAccount from '@/components/settings/SettingsAccount';
 import SettingsAppearance from '@/components/settings/SettingsAppearance';
 import SettingsPrivacy from '@/components/settings/SettingsPrivacy';
+import SettingsStripe from '@/components/settings/SettingsStripe';
 
 const sections = [
   { id: 'profile', label: 'Profile', icon: User, description: 'Display name, bio, links' },
@@ -25,6 +26,7 @@ const sections = [
   { id: 'appearance', label: 'Appearance', icon: Moon, description: 'Dark mode & theme' },
   { id: 'notifications', label: 'Notifications', icon: Bell, description: 'In-app & email preferences' },
   { id: 'privacy', label: 'Privacy & Safety', icon: Lock, description: 'Visibility and data' },
+  { id: 'stripe', label: 'Stripe Payments', icon: CreditCard, description: 'Connect Stripe to sell tickets' },
 ];
 
 export default function Settings() {
@@ -78,6 +80,7 @@ export default function Settings() {
           {activeSection === 'appearance' && <SettingsAppearance />}
           {activeSection === 'notifications' && <SettingsNotifications userId={user?.id} />}
           {activeSection === 'privacy' && <SettingsPrivacy user={user} />}
+          {activeSection === 'stripe' && <SettingsStripe userId={user?.id} />}
         </div>
       </div>
     </div>
