@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,9 +57,18 @@ function StepRole({ onNext }) {
   );
 }
 
+const AINSLEY_USER_ID = '69ea6b08dd7ab098a7066585';
+
 // ── Step 2: Location verification ───────────────────────────────
-function StepLocation({ onNext, onBlock }) {
-  const [status, setStatus] = useState('idle'); // idle | checking | denied | outside | ok
+function StepLocation({ onNext, onBlock, isAinsley }) {
+  const [status, setStatus] = useState(isAinsley ? 'ok' : 'idle'); // idle | checking | denied | outside | ok
+
+  // Auto-advance for Ainsley
+  React.useEffect(() => {
+    if (isAinsley) {
+      setTimeout(onNext, 800);
+    }
+  }, [isAinsley]);
 
   const checkLocation = () => {
     setStatus('checking');
@@ -279,6 +288,7 @@ export default function OnboardingFlow({ currentUser, onComplete }) {
   const [step, setStep] = useState('role'); // role | location | profile | stripe | done
   const [role, setRole] = useState(null);
   const [blocked, setBlocked] = useState(false);
+  const isAinsley = currentUser?.id === AINSLEY_USER_ID;
 
   const handleRoleNext = (selectedRole) => {
     setRole(selectedRole);
@@ -293,32 +303,33 @@ export default function OnboardingFlow({ currentUser, onComplete }) {
       setStep('stripe');
     } else {
       // Attendee — mark complete, no Stripe needed
-      await base44.auth.updateMe({
+      const updates = {
         account_type: 'attendee',
         onboarding_complete: true,
         stripe_skipped: false,
-      });
+      };
+      // Always stamp Ainsley as Baltimore
+      if (isAinsley) {
+        updates.neighborhood_names = ['Baltimore'];
+      }
+      await base44.auth.updateMe(updates);
       setStep('done');
       setTimeout(onComplete, 1800);
     }
   };
 
   const handleStripeNext = async ({ stripe_connect_id }) => {
-    await base44.auth.updateMe({
-      account_type: 'artist',
-      onboarding_complete: true,
-      stripe_skipped: false,
-    });
+    const updates = { account_type: 'artist', onboarding_complete: true, stripe_skipped: false };
+    if (isAinsley) updates.neighborhood_names = ['Baltimore'];
+    await base44.auth.updateMe(updates);
     setStep('done');
     setTimeout(onComplete, 1800);
   };
 
   const handleStripeSkip = async () => {
-    await base44.auth.updateMe({
-      account_type: 'artist',
-      onboarding_complete: true,
-      stripe_skipped: true,
-    });
+    const updates = { account_type: 'artist', onboarding_complete: true, stripe_skipped: true };
+    if (isAinsley) updates.neighborhood_names = ['Baltimore'];
+    await base44.auth.updateMe(updates);
     setStep('done');
     setTimeout(onComplete, 1800);
   };
@@ -350,7 +361,7 @@ export default function OnboardingFlow({ currentUser, onComplete }) {
       )}
 
       {step === 'role' && <StepRole onNext={handleRoleNext} />}
-      {step === 'location' && <StepLocation onNext={handleLocationNext} onBlock={() => setBlocked(true)} />}
+      {step === 'location' && <StepLocation onNext={handleLocationNext} onBlock={() => setBlocked(true)} isAinsley={isAinsley} />}
       {step === 'profile' && <StepProfile currentUser={currentUser} onNext={handleProfileNext} />}
       {step === 'stripe' && <StepStripe onNext={handleStripeNext} onSkip={handleStripeSkip} />}
       {step === 'done' && <StepDone role={role} />}
