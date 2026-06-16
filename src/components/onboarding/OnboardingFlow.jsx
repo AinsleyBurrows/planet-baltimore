@@ -58,6 +58,7 @@ function StepRole({ onNext }) {
 }
 
 const AINSLEY_USER_ID = '69ea6b08dd7ab098a7066585';
+const TERELL_ADMIN_ID = '6a0cd35a564ce5a8b5e68af2';
 
 // ── Step 2: Location verification ───────────────────────────────
 function StepLocation({ onNext, onBack, onBlock, isAinsley }) {
