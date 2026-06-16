@@ -55,15 +55,15 @@ export default function StripeSetupPanel({ artist, onSaved }) {
       </a>
 
       <div>
-        <Label className="text-xs">Stripe Account ID</Label>
+        <Label className="text-xs">Stripe Secret Key</Label>
         <p className="text-xs text-muted-foreground mb-1.5">
-          Find this at stripe.com → Settings → Account details. It starts with <code className="bg-secondary px-1 rounded">acct_</code>
+          Find this at stripe.com → Developers → API keys. It starts with <code className="bg-secondary px-1 rounded">sk_</code>
         </p>
         <div className="flex gap-2">
           <Input
             value={connectId}
             onChange={e => setConnectId(e.target.value)}
-            placeholder="acct_xxxxxxxxxxxxxxxxxx"
+            placeholder="sk_live_xxxxxxxxxxxxxxxxxx"
             className="font-mono text-xs"
           />
           <Button
@@ -89,10 +89,10 @@ export default function StripeSetupPanel({ artist, onSaved }) {
 
       <div className="bg-secondary/50 rounded-lg p-3 text-xs text-muted-foreground space-y-1">
         <p className="font-medium text-foreground">Fee breakdown (per ticket):</p>
-        <p>• Ticket price → Your Stripe account</p>
-        <p>• $0.65 service fee → Planet Baltimore</p>
-        <p>• 6% Baltimore tax → Planet Baltimore</p>
-        <p className="text-muted-foreground italic mt-1">These fees are included in the total shown to buyers.</p>
+        <p>• Artists receive their full ticket revenue</p>
+        <p>• $0.65 service fee added at checkout</p>
+        <p>• 6% Baltimore tax added at checkout</p>
+        <p className="text-muted-foreground italic mt-1">These fees are shown transparently to buyers at checkout.</p>
       </div>
     </div>
   );

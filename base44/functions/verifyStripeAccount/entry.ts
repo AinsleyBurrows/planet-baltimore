@@ -14,13 +14,13 @@ Deno.serve(async (req) => {
     const { connectId, artistPageId } = await req.json();
 
     if (!connectId) {
-      return Response.json({ valid: false, error: 'Stripe Account ID is required' });
+      return Response.json({ valid: false, error: 'Stripe Secret Key is required' });
     }
 
-    if (!connectId.startsWith('acct_')) {
+    if (!connectId.startsWith('sk_')) {
       return Response.json({ 
         valid: false, 
-        error: 'Invalid format. Your Stripe Account ID should start with "acct_". Find it at stripe.com → Settings → Account details.' 
+        error: 'Invalid format. Your Stripe Secret Key should start with "sk_". Find it at stripe.com → Developers → API keys.' 
       });
     }
 
@@ -30,15 +30,14 @@ Deno.serve(async (req) => {
     let accountInfo = null;
 
     try {
-      const account = await stripe.accounts.retrieve(connectId);
+      const testStripe = new Stripe(connectId);
+      const account = await testStripe.account.retrieve();
       verified = true;
       accountInfo = {
         name: account.business_profile?.name || account.email || 'Stripe Account',
         type: account.type,
       };
     } catch (stripeError) {
-      // Account ID may be valid but not connected to this platform yet
-      // We'll store it but mark as unverified
       verified = false;
     }
 
