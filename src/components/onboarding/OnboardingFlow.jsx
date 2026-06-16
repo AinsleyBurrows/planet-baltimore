@@ -295,7 +295,7 @@ export default function OnboardingFlow({ currentUser, onComplete }) {
   const [step, setStep] = useState('role'); // role | location | profile | stripe | done
   const [role, setRole] = useState(null);
   const [blocked, setBlocked] = useState(false);
-  const isAinsley = currentUser?.id === AINSLEY_USER_ID;
+  const isAinsley = currentUser?.id === AINSLEY_USER_ID || currentUser?.id === TERELL_ADMIN_ID;
 
   const handleRoleNext = (selectedRole) => {
     setRole(selectedRole);
