@@ -115,6 +115,7 @@ export default function ArtistCreateEvent({ artist, events = [], isOwner, user }
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ['artist-events', artist.id] });
+    queryClient.invalidateQueries({ queryKey: ['my-created-events'] });
     setShowForm(false);
   };
 
