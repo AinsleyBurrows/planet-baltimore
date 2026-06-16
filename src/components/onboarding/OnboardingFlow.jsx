@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MapPin, Loader2, User, Music, CheckCircle, AlertTriangle, CreditCard, ArrowRight, X } from 'lucide-react';
+import { MapPin, Loader2, User, Music, CheckCircle, AlertTriangle, CreditCard, ArrowRight, X, ArrowLeft } from 'lucide-react';
 
 const BALTIMORE_LAT = 39.2904;
 const BALTIMORE_LNG = -76.6122;
@@ -60,7 +60,7 @@ function StepRole({ onNext }) {
 const AINSLEY_USER_ID = '69ea6b08dd7ab098a7066585';
 
 // ── Step 2: Location verification ───────────────────────────────
-function StepLocation({ onNext, onBlock, isAinsley }) {
+function StepLocation({ onNext, onBack, onBlock, isAinsley }) {
   const [status, setStatus] = useState(isAinsley ? 'ok' : 'idle'); // idle | checking | denied | outside | ok
 
   // Auto-advance for Ainsley
@@ -132,6 +132,9 @@ function StepLocation({ onNext, onBlock, isAinsley }) {
             </div>
           </div>
           <Button variant="outline" className="w-full" onClick={() => setStatus('idle')}>Try Again</Button>
+          <Button variant="ghost" className="w-full flex items-center gap-1.5 text-muted-foreground hover:text-foreground" onClick={onBack}>
+            <ArrowLeft className="w-4 h-4" /> Back — join as Attendee instead
+          </Button>
           <button onClick={onBlock} className="text-xs text-muted-foreground hover:text-foreground underline">
             This is wrong — I'm in Baltimore
           </button>
@@ -149,6 +152,9 @@ function StepLocation({ onNext, onBlock, isAinsley }) {
           </div>
           <Button onClick={checkLocation} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl">
             Try Again
+          </Button>
+          <Button variant="ghost" className="w-full flex items-center gap-1.5 text-muted-foreground hover:text-foreground" onClick={onBack}>
+            <ArrowLeft className="w-4 h-4" /> Back — choose a different role
           </Button>
         </div>
       )}
@@ -361,7 +367,7 @@ export default function OnboardingFlow({ currentUser, onComplete }) {
       )}
 
       {step === 'role' && <StepRole onNext={handleRoleNext} />}
-      {step === 'location' && <StepLocation onNext={handleLocationNext} onBlock={() => setBlocked(true)} isAinsley={isAinsley} />}
+      {step === 'location' && <StepLocation onNext={handleLocationNext} onBack={() => setStep('role')} onBlock={() => setBlocked(true)} isAinsley={isAinsley} />}
       {step === 'profile' && <StepProfile currentUser={currentUser} onNext={handleProfileNext} />}
       {step === 'stripe' && <StepStripe onNext={handleStripeNext} onSkip={handleStripeSkip} />}
       {step === 'done' && <StepDone role={role} />}
