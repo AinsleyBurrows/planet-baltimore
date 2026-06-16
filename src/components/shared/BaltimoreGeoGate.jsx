@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const BYPASS_USER_IDS = ['69ea6b08dd7ab098a7066585', '6a0cd35a564ce5a8b5e68af2'];
+
 // Baltimore city center coordinates
 const BALTIMORE_LAT = 39.2904;
 const BALTIMORE_LNG = -76.6122;
@@ -69,8 +71,11 @@ export function useBaltimoreGeo() {
 }
 
 // Block component — renders block UI when outside Baltimore
-export default function BaltimoreGeoGate({ children, action = 'sign up as an artist' }) {
+export default function BaltimoreGeoGate({ children, action = 'sign up as an artist', userId = null }) {
+  const bypass = userId && BYPASS_USER_IDS.includes(userId);
   const { status, error, check } = useBaltimoreGeo();
+
+  if (bypass) return children;
 
   if (status === 'idle' || status === 'checking') {
     return (

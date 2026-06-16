@@ -3,7 +3,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil, Bookmark, MessageCircle, Ticket } from 'lucide-react';
+import { Share2, MapPin, LinkIcon, Shield, Plus, Grid3X3, Rss, Calendar, Camera, CalendarCheck, Trash2, Pin, PinOff, UserPlus, Music, BookOpen, UserCheck, ChevronDown, Pencil, Bookmark, MessageCircle, Ticket, Mic2, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -452,8 +452,22 @@ export default function Profile() {
             )
           )}
           {user.bio && <p className="text-sm text-muted-foreground mt-2">{user.bio}</p>}
-          {user.account_type && (
-            <div className="mt-2"><Badge variant="secondary" className="capitalize text-xs">{user.account_type.replace('_', ' ')}</Badge></div>
+          {(user.account_type || isOwnProfile) && (
+            <div className="mt-2">
+              {user.account_type === 'artist' && (
+                <Badge className="gap-1.5 bg-accent/10 text-accent border border-accent/20 text-xs font-medium">
+                  <Mic2 className="w-3 h-3" /> Artist
+                </Badge>
+              )}
+              {user.account_type === 'attendee' && (
+                <Badge className="gap-1.5 bg-secondary text-secondary-foreground border border-border text-xs font-medium">
+                  <Users className="w-3 h-3" /> Attendee
+                </Badge>
+              )}
+              {!user.account_type && isOwnProfile && (
+                <Badge variant="outline" className="text-xs text-muted-foreground">No account type set</Badge>
+              )}
+            </div>
           )}
         </div>
 

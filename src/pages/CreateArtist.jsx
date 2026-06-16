@@ -44,7 +44,7 @@ export default function CreateArtist() {
   });
 
   return (
-    <BaltimoreGeoGate action="create an artist page">
+    <BaltimoreGeoGate action="create an artist page" userId={user?.id}>
       <div className="max-w-lg mx-auto">
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
