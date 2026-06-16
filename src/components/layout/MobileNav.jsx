@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, Video, Trophy } from 'lucide-react';
+import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, Video, Trophy, Settings } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useUnreadCounts } from '@/hooks/useUnreadCounts';
 
@@ -26,6 +26,7 @@ const moreItems = [
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: Video, label: 'Videos', path: '/videos' },
   { icon: Trophy, label: 'Baltimore 100', path: '/leaderboard' },
+  { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 export default function MobileNav() {

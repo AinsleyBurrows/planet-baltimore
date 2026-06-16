@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn, Flag, Video, Trophy } from 'lucide-react';
+import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn, Flag, Video, Trophy, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { base44 } from '@/api/base44Client';
@@ -26,6 +26,7 @@ const navItems = [
   { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: Video, label: 'Videos', path: '/videos' },
   { icon: Trophy, label: 'Baltimore 100', path: '/leaderboard' },
+  { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 export default function LeftSidebar() {

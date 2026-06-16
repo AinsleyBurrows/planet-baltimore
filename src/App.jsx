@@ -53,6 +53,7 @@ const Videos                      = lazy(() => import('@/pages/Videos'));
 const Leaderboard                 = lazy(() => import('@/pages/Leaderboard'));
 const Podcasts                    = lazy(() => import('@/pages/Podcasts'));
 const AdminReports                = lazy(() => import('@/pages/AdminReports'));
+const Settings                    = lazy(() => import('@/pages/Settings'));
 const AdminDashboard              = lazy(() => import('@/pages/AdminDashboard'));
 
 // Minimal fallback shown while a lazy page chunk is downloading
@@ -137,6 +138,7 @@ const AuthenticatedApp = () => {
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>
