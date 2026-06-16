@@ -21,10 +21,11 @@ export default function CreateEvent() {
   const [user, setUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  const [startImmediately, setStartImmediately] = useState(false);
   const [form, setForm] = useState({
     title: '', description: '', date: '', end_date: '', venue_name: '', address: '',
     category: 'community', capacity: '',
-    ticketing_mode: 'rsvp_only', allow_donations: false,
+    ticketing_mode: 'rsvp_only', is_free: true, allow_donations: false,
     neighborhood_id: '', neighborhood_name: '',
   });
 
@@ -79,7 +80,7 @@ export default function CreateEvent() {
       <div className="flex items-center justify-between mb-6">
         <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary"><ArrowLeft className="w-5 h-5" /></button>
         <h1 className="text-lg font-semibold">Create Event</h1>
-        <Button onClick={() => createMutation.mutate()} disabled={!form.title || !form.date || createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg px-5">
+        <Button onClick={() => createMutation.mutate()} disabled={!form.title || (!form.date && !startImmediately) || createMutation.isPending} className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg px-5">
           {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}
         </Button>
       </div>
@@ -101,7 +102,30 @@ export default function CreateEvent() {
         <div><Label>Description</Label><Textarea value={form.description} onChange={(e) => updateForm('description', e.target.value)} placeholder="Tell people about your event..." className="mt-1.5 min-h-[80px]" /></div>
         
         <div className="grid grid-cols-2 gap-4">
-          <div><Label>Start Date & Time</Label><Input type="datetime-local" value={form.date} onChange={(e) => updateForm('date', e.target.value)} className="mt-1.5" /></div>
+          <div>
+            <Label>Start Date & Time</Label>
+            <div className="mt-1.5 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setStartImmediately(false); }}
+                  className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-colors ${!startImmediately ? 'bg-accent text-accent-foreground border-accent' : 'bg-card border-border text-muted-foreground hover:bg-secondary'}`}
+                >
+                  Set Date
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setStartImmediately(true); updateForm('date', new Date().toISOString().slice(0, 16)); }}
+                  className={`flex-1 py-1.5 text-xs rounded-lg border font-medium transition-colors ${startImmediately ? 'bg-accent text-accent-foreground border-accent' : 'bg-card border-border text-muted-foreground hover:bg-secondary'}`}
+                >
+                  Immediately
+                </button>
+              </div>
+              {!startImmediately && (
+                <Input type="datetime-local" value={form.date} onChange={(e) => updateForm('date', e.target.value)} />
+              )}
+            </div>
+          </div>
           <div><Label>End Date & Time</Label><Input type="datetime-local" value={form.end_date} onChange={(e) => updateForm('end_date', e.target.value)} className="mt-1.5" /></div>
         </div>
 
@@ -135,7 +159,29 @@ export default function CreateEvent() {
           </Select>
         </div>
 
-        {form.ticketing_mode === 'platform' && showStripeWarning && (
+        {form.ticketing_mode === 'platform' && (
+          <div>
+            <Label>Ticket Pricing</Label>
+            <div className="flex gap-2 mt-1.5">
+              <button
+                type="button"
+                onClick={() => updateForm('is_free', true)}
+                className={`flex-1 py-2 text-sm rounded-lg border font-medium transition-colors ${form.is_free ? 'bg-accent text-accent-foreground border-accent' : 'bg-card border-border text-muted-foreground hover:bg-secondary'}`}
+              >
+                Free
+              </button>
+              <button
+                type="button"
+                onClick={() => updateForm('is_free', false)}
+                className={`flex-1 py-2 text-sm rounded-lg border font-medium transition-colors ${!form.is_free ? 'bg-accent text-accent-foreground border-accent' : 'bg-card border-border text-muted-foreground hover:bg-secondary'}`}
+              >
+                Paid
+              </button>
+            </div>
+          </div>
+        )}
+
+        {form.ticketing_mode === 'platform' && !form.is_free && showStripeWarning && (
           <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
             <div>
