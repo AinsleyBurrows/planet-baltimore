@@ -282,7 +282,8 @@ export default function OnboardingFlow({ currentUser, onComplete }) {
 
   const handleRoleNext = (selectedRole) => {
     setRole(selectedRole);
-    setStep('location');
+    // Only artists need Baltimore location verification
+    setStep(selectedRole === 'artist' ? 'location' : 'profile');
   };
 
   const handleLocationNext = () => setStep('profile');
@@ -339,7 +340,7 @@ export default function OnboardingFlow({ currentUser, onComplete }) {
       {/* Progress dots */}
       {step !== 'done' && (
         <div className="flex justify-center gap-2 mb-8">
-          {['role', 'location', 'profile', ...(role === 'artist' ? ['stripe'] : [])].map((s, i) => (
+          {['role', ...(role === 'artist' ? ['location'] : []), 'profile', ...(role === 'artist' ? ['stripe'] : [])].map((s, i) => (
             <div
               key={s}
               className={`w-2 h-2 rounded-full transition-all ${step === s ? 'bg-accent w-6' : ['role', 'location', 'profile', 'stripe'].indexOf(step) > i ? 'bg-accent/50' : 'bg-border'}`}
