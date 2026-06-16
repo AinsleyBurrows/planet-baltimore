@@ -28,7 +28,7 @@ export default function Events() {
 
   const { data: events = [], isLoading } = useQuery({
     queryKey: ['events'],
-    queryFn: () => base44.entities.Event.list('date', 100),
+    queryFn: () => base44.entities.Event.list('-date', 200),
   });
 
   const { data: artsOrgs = [] } = useQuery({
@@ -38,8 +38,13 @@ export default function Events() {
 
   const artsOrgIds = new Set(artsOrgs.map(o => o.owner_id));
 
+  const now = new Date();
+
   const filtered = events.filter(e => {
     if (e.is_hidden) return false;
+    // Hide only if the event has fully ended
+    const endTime = e.end_date ? new Date(e.end_date) : new Date(e.date);
+    if (endTime < now) return false;
     if (activeCategory === 'Virtual') return !!e.is_virtual;
     const catMatch = activeCategory === 'All' || e.category === activeCategory.toLowerCase();
     const artsMatch = artsFilter === 'All Events' || (() => {
