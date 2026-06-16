@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -60,9 +60,8 @@ export default function Profile() {
   const [showFollowModal, setShowFollowModal] = useState(null); // 'followers' | 'following' | null
   const queryClient = useQueryClient();
 
-  // Stable cache-busted URLs — only recompute when the URL itself changes
-  const avatarSrc = useMemo(() => user?.avatar_url ? `${user.avatar_url}?t=${Date.now()}` : undefined, [user?.avatar_url]);
-  const bannerSrc = useMemo(() => user?.banner_url ? `${user.banner_url}?t=${Date.now()}` : undefined, [user?.banner_url]);
+  const avatarSrc = user?.avatar_url || undefined;
+  const bannerSrc = user?.banner_url || undefined;
 
   const { data: followerFollows = [] } = useQuery({
     queryKey: ['followers-list', user?.id],
@@ -642,14 +641,12 @@ export default function Profile() {
       <ImageUploadModal
         type={editingImage}
         onSave={async (fileUrl) => {
-          // Optimistically update the displayed image immediately
           const field = editingImage === 'banner' ? 'banner_url' : 'avatar_url';
+          // Optimistically update local state immediately
           setUser(prev => ({ ...prev, [field]: fileUrl }));
           setEditingImage(null);
-          // Re-fetch after a short delay to allow backend to propagate
-          await new Promise(res => setTimeout(res, 600));
-          const updated = await base44.auth.me();
-          setUser(updated);
+          // Invalidate the shared currentUser cache so it re-fetches fresh data
+          queryClient.invalidateQueries({ queryKey: ['current-user'] });
         }}
         onClose={() => setEditingImage(null)}
       />
