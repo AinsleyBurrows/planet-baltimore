@@ -3,6 +3,10 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
+// Planet Baltimore fee structure
+const SERVICE_FEE_PER_TICKET = 0.65; // flat service fee per ticket (Planet Baltimore)
+const BALTIMORE_TAX_RATE = 0.06;     // 6% Baltimore tax on ticket price (Planet Baltimore)
+
 Deno.serve(async (req) => {
   try {
     if (req.method !== 'POST') {
@@ -39,11 +43,25 @@ Deno.serve(async (req) => {
       return Response.json({ error: `Max ${ticketType.max_per_buyer} per buyer` }, { status: 400 });
     }
 
-    // Calculate pricing
-    let unitPrice = ticketType.price || 0;
-    let discountAmount = 0;
+    const baseUnitPrice = ticketType.price || 0;
 
-    // Apply promo code if provided
+    // Look up artist's Stripe Connect Account ID if this is a paid ticket
+    let stripeConnectId = null;
+    if (baseUnitPrice > 0) {
+      const artistPages = await base44.asServiceRole.entities.ArtistPage.filter({ owner_id: event.organizer_id });
+      const artistPage = artistPages[0];
+      stripeConnectId = artistPage?.stripe_connect_id || null;
+
+      if (!stripeConnectId) {
+        return Response.json({
+          error: 'This event organizer has not connected their Stripe account. Ticket sales are unavailable until the organizer sets up payment in their Artist Profile → Stripe Setup.',
+          code: 'STRIPE_NOT_CONFIGURED'
+        }, { status: 400 });
+      }
+    }
+
+    // Apply promo code discount to base price only
+    let discountAmount = 0;
     if (promoCodeId) {
       const promoResults = await base44.asServiceRole.entities.PromoCode.filter({ id: promoCodeId, is_active: true });
       const promo = promoResults[0];
@@ -52,13 +70,12 @@ Deno.serve(async (req) => {
         if ((!promo.valid_from || new Date(promo.valid_from) <= now) &&
             (!promo.valid_until || new Date(promo.valid_until) >= now) &&
             (!promo.usage_limit || (promo.usage_count || 0) < promo.usage_limit)) {
-          const subtotalForDiscount = unitPrice * quantity;
+          const subtotalForDiscount = baseUnitPrice * quantity;
           if (promo.discount_type === 'percentage') {
             discountAmount = subtotalForDiscount * (promo.discount_value / 100);
           } else {
             discountAmount = Math.min(promo.discount_value, subtotalForDiscount);
           }
-          // Increment usage count
           await base44.asServiceRole.entities.PromoCode.update(promo.id, {
             usage_count: (promo.usage_count || 0) + 1,
           });
@@ -66,11 +83,18 @@ Deno.serve(async (req) => {
       }
     }
 
-    const subtotal = unitPrice * quantity;
-    const discountedSubtotal = Math.max(0, subtotal - discountAmount);
-    const platformFee = discountedSubtotal * 0.05;
-    const totalAmount = discountedSubtotal + platformFee;
+    // Discounted ticket price (what artist receives per ticket)
+    const discountedSubtotal = Math.max(0, baseUnitPrice * quantity - discountAmount);
+    const discountedUnitPrice = discountedSubtotal / quantity;
+
+    // Platform fees per ticket
+    const taxPerTicket = discountedUnitPrice * BALTIMORE_TAX_RATE;
+    const totalPerTicket = discountedUnitPrice + SERVICE_FEE_PER_TICKET + taxPerTicket;
+    const totalAmount = totalPerTicket * quantity;
     const totalCents = Math.round(totalAmount * 100);
+
+    // Platform keeps: service fee + tax (embedded in total, not shown separately to user)
+    const platformFeeCents = Math.round((SERVICE_FEE_PER_TICKET + taxPerTicket) * quantity * 100);
 
     // Free ticket — skip Stripe
     if (totalCents === 0) {
@@ -112,7 +136,7 @@ Deno.serve(async (req) => {
       return Response.json({ success: true, free: true, orderId: order.id });
     }
 
-    // Paid ticket — create Stripe session
+    // Paid ticket — create Stripe Checkout session
     const origin = req.headers.get('origin') || 'https://planetbaltimore.base44.app';
     const lineItems = [
       {
@@ -123,13 +147,13 @@ Deno.serve(async (req) => {
             description: ticketType.description || event.description || '',
             images: event.image_url ? [event.image_url] : [],
           },
-          unit_amount: Math.round(((discountedSubtotal / quantity) + platformFee / quantity) * 100),
+          unit_amount: Math.round(totalPerTicket * 100),
         },
         quantity,
       },
     ];
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       payment_method_types: ['card'],
       mode: 'payment',
       line_items: lineItems,
@@ -145,7 +169,19 @@ Deno.serve(async (req) => {
         promoCodeId: promoCodeId || '',
       },
       billing_address_collection: 'required',
-    });
+    };
+
+    // Route artist's portion to their Stripe account via Connect
+    if (stripeConnectId) {
+      sessionParams.payment_intent_data = {
+        application_fee_amount: platformFeeCents,
+        transfer_data: {
+          destination: stripeConnectId,
+        },
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return Response.json({ sessionId: session.id, url: session.url });
   } catch (error) {

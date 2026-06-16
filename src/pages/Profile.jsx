@@ -295,7 +295,7 @@ export default function Profile() {
     <div className="space-y-0">
       {/* Banner */}
       <div className="px-0 sm:px-4">
-        <div className="relative sm:h-56 rounded-none sm:rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20" style={{height: '145px'}}>
+        <div className="relative h-36 sm:h-52 lg:h-56 rounded-none sm:rounded-xl overflow-hidden bg-gradient-to-r from-primary/20 to-accent/20">
           {bannerSrc && <img src={bannerSrc} alt="Banner" className="w-full h-full object-cover" />}
           {isOwnProfile && (
             <button
@@ -310,10 +310,10 @@ export default function Profile() {
       </div>
 
       {/* Profile Info */}
-      <div className="relative px-3 sm:px-4" style={{marginTop: '2rem'}}>
+      <div className="relative px-3 sm:px-4 mt-8 sm:mt-10">
         <div className="flex items-end justify-between">
            <div className={isOwnProfile ? "relative cursor-pointer" : "relative"} onClick={() => isOwnProfile && setEditingImage('avatar')}>
-             <Avatar className="border-4 border-background aspect-square w-[98px] h-[98px]">
+             <Avatar className="border-4 border-background aspect-square w-20 h-20 sm:w-24 sm:h-24">
                <AvatarImage src={avatarSrc} />
                <AvatarFallback className="text-xl sm:text-2xl font-bold bg-accent/10 text-accent">
                  {user.full_name?.charAt(0) || user.email?.charAt(0) || '?'}
@@ -326,7 +326,7 @@ export default function Profile() {
                </span>
              )}
            </div>
-          <div className="flex gap-1 mb-1 justify-end">
+          <div className="flex flex-wrap gap-1 mb-1 justify-end max-w-[60%] sm:max-w-none">
             {isOwnProfile && (
               <Link to="/create-story">
                 <Button size="sm" className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg w-8 h-8 p-0" title="Write a story">
@@ -458,15 +458,18 @@ export default function Profile() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-3 sm:gap-6 sm:gap-8 mt-4 pt-3 pb-2">
-          <div className="text-center"><span className="font-bold text-foreground text-sm sm:text-base">{user.posts_count || posts.length}</span><span className="text-xs text-muted-foreground ml-1">Posts</span></div>
-          <button onClick={() => setShowFollowModal('followers')} className="text-center hover:opacity-70 transition-opacity">
-            <span className="font-bold text-foreground text-sm sm:text-base">{actualFollowersCount ?? user.followers_count ?? 0}</span>
-            <span className="text-xs text-muted-foreground ml-1">Followers</span>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 mt-4 pt-3 pb-2">
+          <div className="text-center min-w-[48px]">
+            <div className="font-bold text-foreground text-sm sm:text-base">{user.posts_count || posts.length}</div>
+            <div className="text-xs text-muted-foreground">Posts</div>
+          </div>
+          <button onClick={() => setShowFollowModal('followers')} className="text-center hover:opacity-70 transition-opacity min-w-[64px]">
+            <div className="font-bold text-foreground text-sm sm:text-base">{actualFollowersCount ?? user.followers_count ?? 0}</div>
+            <div className="text-xs text-muted-foreground">Followers</div>
           </button>
-          <button onClick={() => setShowFollowModal('following')} className="text-center hover:opacity-70 transition-opacity">
-            <span className="font-bold text-foreground text-sm sm:text-base">{user.following_count || 0}</span>
-            <span className="text-xs text-muted-foreground ml-1">Following</span>
+          <button onClick={() => setShowFollowModal('following')} className="text-center hover:opacity-70 transition-opacity min-w-[64px]">
+            <div className="font-bold text-foreground text-sm sm:text-base">{user.following_count || 0}</div>
+            <div className="text-xs text-muted-foreground">Following</div>
           </button>
           {isOwnProfile && <ReferralsCard userId={user.id} />}
         </div>
@@ -491,12 +494,13 @@ export default function Profile() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-border mt-3 overflow-x-auto gap-0.5">
+      <div className="flex border-b border-border mt-3 overflow-x-auto gap-0 scrollbar-hide -mx-3 sm:-mx-4 px-3 sm:px-4">
         {tabs.filter(tab => (tab.id !== 'pages' && tab.id !== 'tickets' && tab.id !== 'dashboard') || isOwnProfile).map((tab) => {
           const Icon = tab.icon;
           return (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-1.5 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-[#d4580a] text-[#d4580a]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-              <Icon className="w-4 h-4 sm:w-5 sm:h-5" /><span className="hidden sm:inline">{tab.label}</span>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex flex-col xs:flex-row items-center gap-0.5 xs:gap-1.5 px-2 sm:px-3 py-2 sm:py-3 text-[10px] xs:text-xs sm:text-sm font-medium border-b-2 transition-all duration-150 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95 ${activeTab === tab.id ? 'border-[#d4580a] text-[#d4580a]' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
+              <Icon className="w-4 h-4" />
+              <span className="hidden xs:inline">{tab.label}</span>
             </button>
           );
         })}

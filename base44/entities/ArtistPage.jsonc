@@ -72,14 +72,22 @@
       "description": "Muted by platform admin \u2014 hidden from public listings"
     },
     "mute_reason": {
-      "type": "string",
-      "description": "Reason provided by admin for muting"
+      "type": "string"
     },
     "tags": {
       "type": "array",
       "items": {
         "type": "string"
       }
+    },
+    "stripe_connect_id": {
+      "type": "string",
+      "description": "Artist's Stripe Connect Account ID (acct_xxx) for routing ticket payments"
+    },
+    "stripe_key_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the Stripe account has been verified"
     },
     "discography": {
       "type": "array",

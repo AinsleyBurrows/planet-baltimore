@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
+import StripeSetupPanel from '@/components/artist/StripeSetupPanel';
 
 const CATEGORIES = ['visual_art', 'music', 'video', 'photography', 'performance', 'literary', 'mixed_media', 'fashion', 'podcaster', 'other'];
 const SOCIAL_PLATFORMS = ['instagram', 'twitter', 'tiktok', 'youtube', 'soundcloud', 'bandcamp', 'linkedin'];
@@ -114,6 +115,15 @@ export default function ArtistEditProfileModal({ artist, onClose }) {
               ))}
             </div>
           </div>
+        </div>
+
+        <div className="pt-2 border-t border-border">
+          <StripeSetupPanel
+            artist={artist}
+            onSaved={(data) => {
+              queryClient.invalidateQueries({ queryKey: ['artist', artist.id] });
+            }}
+          />
         </div>
 
         <Button onClick={handleSave} disabled={!form.name || saving} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl gap-2">

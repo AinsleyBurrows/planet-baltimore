@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import NeighborhoodSelect from '@/components/shared/NeighborhoodSelect';
-import { ArrowLeft, Loader2, Image as ImageIcon, MapPin, Plus } from 'lucide-react';
+import { ArrowLeft, Loader2, Image as ImageIcon, MapPin, Plus, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,6 +29,15 @@ export default function CreateEvent() {
   });
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
+
+  const { data: artistPages = [] } = useQuery({
+    queryKey: ['my-artist-pages', user?.id],
+    queryFn: () => base44.entities.ArtistPage.filter({ owner_id: user.id }),
+    enabled: !!user?.id,
+  });
+
+  const hasStripeSetup = artistPages.some(p => p.stripe_connect_id);
+  const showStripeWarning = form.ticketing_mode === 'platform' && !hasStripeSetup;
 
   const updateForm = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
@@ -124,6 +133,16 @@ export default function CreateEvent() {
             </SelectContent>
           </Select>
         </div>
+
+        {form.ticketing_mode === 'platform' && showStripeWarning && (
+          <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium">Stripe account required for paid tickets</p>
+              <p className="text-xs mt-0.5">You need to connect your Stripe account on your Artist Page before tickets can be sold. <Link to="/artists" className="underline font-medium">Go to your Artist Page → Edit → Stripe Setup</Link></p>
+            </div>
+          </div>
+        )}
 
         {form.ticketing_mode === 'platform' && (
           <div className="flex items-center justify-between p-3 bg-secondary/40 rounded-lg">
