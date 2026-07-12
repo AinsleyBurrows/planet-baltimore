@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import {
   User, Bell, Moon, Sun, Shield, Trash2, LogOut, ChevronRight,
   Lock, Eye, EyeOff, CreditCard, MapPin, Check, Loader2, AlertTriangle,
+  UserCog,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,7 @@ import SettingsAccount from '@/components/settings/SettingsAccount';
 import SettingsAppearance from '@/components/settings/SettingsAppearance';
 import SettingsPrivacy from '@/components/settings/SettingsPrivacy';
 import SettingsStripe from '@/components/settings/SettingsStripe';
+import SettingsOnboarding from '@/components/settings/SettingsOnboarding';
 
 const sections = [
   { id: 'profile', label: 'Profile', icon: User, description: 'Display name, bio, links' },
@@ -33,6 +35,12 @@ export default function Settings() {
   const [activeSection, setActiveSection] = useState('profile');
   const { user, refetch } = useCurrentUser();
 
+  const isTerelleAccount = user?.email === 'terellebony@gmail.com';
+
+  const visibleSections = isTerelleAccount
+    ? [...sections, { id: 'onboarding', label: 'Onboarding', icon: UserCog, description: 'Redo onboarding & account type' }]
+    : sections;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -45,7 +53,7 @@ export default function Settings() {
         {/* Sidebar Nav */}
         <aside className="lg:w-56 flex-shrink-0">
           <nav className="bg-card border border-border rounded-xl overflow-hidden divide-y divide-border">
-            {sections.map(({ id, label, icon: Icon, description }) => (
+            {visibleSections.map(({ id, label, icon: Icon, description }) => (
               <button
                 key={id}
                 onClick={() => setActiveSection(id)}
@@ -81,6 +89,7 @@ export default function Settings() {
           {activeSection === 'notifications' && <SettingsNotifications userId={user?.id} />}
           {activeSection === 'privacy' && <SettingsPrivacy user={user} />}
           {activeSection === 'stripe' && <SettingsStripe userId={user?.id} />}
+          {activeSection === 'onboarding' && <SettingsOnboarding user={user} onSaved={refetch} />}
         </div>
       </div>
     </div>
