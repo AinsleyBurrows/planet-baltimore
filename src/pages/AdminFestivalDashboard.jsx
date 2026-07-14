@@ -4,10 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Ticket, DollarSign, Store, TrendingUp, RefreshCw, Calendar, MapPin, ArrowLeft, Users } from 'lucide-react';
+import { Ticket, DollarSign, Store, TrendingUp, RefreshCw, Calendar, MapPin, ArrowLeft, Users, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
+import FestivalBoothManager from '@/components/festivals/FestivalBoothManager';
 
 const SHADOW_URL = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
 const MARKER_BASE = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-';
@@ -118,6 +119,12 @@ export default function AdminFestivalDashboard() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === 'vendors' ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
           >
             <MapPin className="w-4 h-4 inline mr-1.5" /> Vendor Locations
+          </button>
+          <button
+            onClick={() => setView('booths')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === 'booths' ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
+          >
+            <ClipboardList className="w-4 h-4 inline mr-1.5" /> Booth Management
           </button>
         </div>
 
@@ -294,6 +301,19 @@ export default function AdminFestivalDashboard() {
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-red-500" /> Festival sites</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-orange-500" /> Vendors</span>
             </div>
+          </div>
+        )}
+
+        {/* Booth management view */}
+        {view === 'booths' && (
+          <div>
+            <div className="mb-4">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <ClipboardList className="w-5 h-5 text-accent" /> Booth Management
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">Add, track, and assign booth locations for all festival vendors in one place.</p>
+            </div>
+            <FestivalBoothManager festivals={festivals} />
           </div>
         )}
       </div>
