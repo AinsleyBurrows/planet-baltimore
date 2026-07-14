@@ -3,12 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, BarChart3, Shield, Settings, Inbox, Award } from 'lucide-react';
+import { AlertCircle, BarChart3, Shield, Settings, Inbox, Award, Calendar } from 'lucide-react';
 import AdminAnalytics from '@/components/admin/AdminAnalytics';
 import AdminModeration from '@/components/admin/AdminModeration';
 import AdminFlaggedQueue from '@/components/admin/AdminFlaggedQueue';
 import AdminVerification from '@/components/admin/AdminVerification';
 import AdminSettings from '@/components/admin/AdminSettings';
+import { Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('analytics');
@@ -42,6 +43,20 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-foreground mb-2">Admin Dashboard</h1>
           <p className="text-muted-foreground">Platform overview, moderation, and settings</p>
         </div>
+
+        {/* Festival Monitor shortcut */}
+        <Link to="/admin/festivals" className="block mb-6 bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20 rounded-2xl p-4 hover:border-accent/40 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-full bg-accent/15 flex items-center justify-center flex-shrink-0">
+              <Calendar className="w-5 h-5 text-accent" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-foreground">Festival Monitor</p>
+              <p className="text-sm text-muted-foreground">Real-time ticket sales & vendor locations</p>
+            </div>
+            <span className="text-sm text-accent font-medium hidden sm:inline">Open →</span>
+          </div>
+        </Link>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
