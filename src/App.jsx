@@ -49,6 +49,7 @@ const StoryDetail                 = lazy(() => import('@/pages/StoryDetail'));
 const CreateStory                 = lazy(() => import('@/pages/CreateStory'));
 const EventDetail                 = lazy(() => import('@/pages/EventDetail'));
 const BannerPreview               = lazy(() => import('@/pages/BannerPreview'));
+const Festivals                   = lazy(() => import('@/pages/Festivals'));
 const Videos                      = lazy(() => import('@/pages/Videos'));
 const Leaderboard                 = lazy(() => import('@/pages/Leaderboard'));
 const Podcasts                    = lazy(() => import('@/pages/Podcasts'));
@@ -133,6 +134,7 @@ const AuthenticatedApp = () => {
           <Route path="/create-story" element={<CreateStory />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/banner-preview" element={<BannerPreview />} />
+          <Route path="/festivals" element={<Festivals />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/podcasts" element={<Podcasts />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
