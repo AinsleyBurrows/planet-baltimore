@@ -11,6 +11,7 @@ import FestivalVendorMap from '@/components/festivals/FestivalVendorMap';
 import FestivalTickets from '@/components/festivals/FestivalTickets';
 import FestivalSponsors from '@/components/festivals/FestivalSponsors';
 import FestivalFAQ from '@/components/festivals/FestivalFAQ';
+import FestivalMainStage from '@/components/festivals/FestivalMainStage';
 
 export default function Festivals() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -96,6 +97,7 @@ export default function Festivals() {
         <div className="overflow-x-auto scrollbar-hide -mx-4 sm:mx-0 px-4 sm:px-0">
           <TabsList className="inline-flex w-auto min-w-full sm:w-full justify-start sm:justify-center h-auto py-1 gap-1">
             <TabsTrigger value="overview" className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="mainstage" className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm">Main Stage</TabsTrigger>
             <TabsTrigger value="schedule" className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm">Schedule</TabsTrigger>
             <TabsTrigger value="artists" className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm">Artists</TabsTrigger>
             <TabsTrigger value="vendors" className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm">Vendor Map</TabsTrigger>
@@ -107,6 +109,9 @@ export default function Festivals() {
 
         <TabsContent value="overview" className="mt-6">
           <FestivalOverview festivals={upcoming} isLoading={isLoading} />
+        </TabsContent>
+        <TabsContent value="mainstage" className="mt-6">
+          <FestivalMainStage />
         </TabsContent>
         <TabsContent value="schedule" className="mt-6">
           <FestivalSchedule festivals={upcoming} isLoading={isLoading} />
