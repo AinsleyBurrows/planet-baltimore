@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Search, Store, MapPin, Pencil, Trash2, Navigation, X } from 'lucide-react';
+import { Plus, Search, Store, MapPin, Pencil, Trash2, Navigation, X, CircleDot, Loader2, CheckCircle2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
@@ -12,7 +12,15 @@ const CATEGORY_COLORS = {
   music: '#22c55e', kids: '#ec4899', info: '#64748b', bar: '#f59e0b', other: '#0ea5e9',
 };
 
-const empty = { event_id: '', booth_number: '', vendor_name: '', category: 'other', description: '', latitude: '', longitude: '', image_url: '' };
+const STATUSES = ['pending', 'in_progress', 'complete'];
+const NEXT_STATUS = { pending: 'in_progress', in_progress: 'complete', complete: 'pending' };
+const STATUS_META = {
+  pending: { label: 'Pending', icon: CircleDot, color: '#64748b', bg: '#64748b20' },
+  in_progress: { label: 'In Progress', icon: Loader2, color: '#f59e0b', bg: '#f59e0b20' },
+  complete: { label: 'Complete', icon: CheckCircle2, color: '#22c55e', bg: '#22c55e20' },
+};
+
+const empty = { event_id: '', booth_number: '', vendor_name: '', category: 'other', description: '', latitude: '', longitude: '', image_url: '', setup_status: 'pending', setup_notes: '' };
 
 export default function FestivalBoothManager({ festivals }) {
   const { toast } = useToast();
@@ -24,6 +32,7 @@ export default function FestivalBoothManager({ festivals }) {
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const { data: booths = [], isLoading } = useQuery({
     queryKey: ['festival-booths'],
@@ -36,13 +45,14 @@ export default function FestivalBoothManager({ festivals }) {
     return booths.filter(b => {
       const matchFest = festivalFilter === 'all' || b.event_id === festivalFilter;
       const matchCat = categoryFilter === 'all' || b.category === categoryFilter;
+      const matchStatus = statusFilter === 'all' || (b.setup_status || 'pending') === statusFilter;
       const matchSearch = !search ||
         b.vendor_name?.toLowerCase().includes(search.toLowerCase()) ||
         b.booth_number?.toLowerCase().includes(search.toLowerCase()) ||
         b.description?.toLowerCase().includes(search.toLowerCase());
-      return matchFest && matchCat && matchSearch;
+      return matchFest && matchCat && matchStatus && matchSearch;
     });
-  }, [booths, festivalFilter, categoryFilter, search]);
+  }, [booths, festivalFilter, categoryFilter, statusFilter, search]);
 
   const festivalName = (id) => festivalsWithId.find(f => f.id === id)?.title || 'Unknown festival';
 
@@ -57,6 +67,8 @@ export default function FestivalBoothManager({ festivals }) {
       latitude: booth.latitude ?? '',
       longitude: booth.longitude ?? '',
       image_url: booth.image_url || '',
+      setup_status: booth.setup_status || 'pending',
+      setup_notes: booth.setup_notes || '',
     });
     setEditing(booth.id);
   };
@@ -90,6 +102,8 @@ export default function FestivalBoothManager({ festivals }) {
         latitude: form.latitude === '' ? null : Number(form.latitude),
         longitude: form.longitude === '' ? null : Number(form.longitude),
         image_url: form.image_url?.trim() || undefined,
+        setup_status: form.setup_status,
+        setup_notes: form.setup_notes?.trim() || undefined,
       };
       if (editing === 'new') {
         await base44.entities.FestivalBooth.create(payload);
@@ -116,6 +130,21 @@ export default function FestivalBoothManager({ festivals }) {
       toast({ title: 'Error', description: e.message || 'Could not delete booth.', variant: 'destructive' });
     } finally {
       setConfirmDelete(null);
+    }
+  };
+
+  const cycleStatus = async (booth) => {
+    const current = booth.setup_status || 'pending';
+    const next = NEXT_STATUS[current];
+    try {
+      await base44.entities.FestivalBooth.update(booth.id, {
+        setup_status: next,
+        setup_completed_at: next === 'complete' ? new Date().toISOString() : null,
+      });
+      qc.invalidateQueries({ queryKey: ['festival-booths'] });
+      toast({ title: `${booth.booth_number} marked ${STATUS_META[next].label}`, description: booth.vendor_name });
+    } catch (e) {
+      toast({ title: 'Error', description: e.message || 'Could not update status.', variant: 'destructive' });
     }
   };
 
@@ -148,6 +177,14 @@ export default function FestivalBoothManager({ festivals }) {
           <option value="all">All categories</option>
           {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="h-10 px-3 rounded-lg border border-input bg-card text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring capitalize"
+        >
+          <option value="all">All statuses</option>
+          {STATUSES.map(s => <option key={s} value={s}>{STATUS_META[s].label}</option>)}
+        </select>
         <button
           onClick={openAdd}
           className="h-10 px-4 rounded-lg bg-accent text-accent-foreground text-sm font-medium hover:bg-accent/90 inline-flex items-center justify-center gap-1.5 flex-shrink-0"
@@ -155,6 +192,42 @@ export default function FestivalBoothManager({ festivals }) {
           <Plus className="w-4 h-4" /> Add Booth
         </button>
       </div>
+
+      {/* Setup progress summary */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-sm font-medium text-foreground flex items-center gap-2">
+            <Store className="w-4 h-4 text-accent" /> Setup Progress
+          </p>
+          <span className="text-xs text-muted-foreground">
+            {booths.filter(b => (b.setup_status || 'pending') === 'complete').length}/{booths.length} complete
+          </span>
+        </div>
+        <div className="h-2 bg-secondary rounded-full overflow-hidden mb-3">
+          <div
+            className="h-full bg-green-500 rounded-full transition-all"
+            style={{ width: `${booths.length ? (booths.filter(b => (b.setup_status || 'pending') === 'complete').length / booths.length) * 100 : 0}%` }}
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {STATUSES.map(s => {
+            const count = booths.filter(b => (b.setup_status || 'pending') === s).length;
+            const meta = STATUS_META[s];
+            const Icon = meta.icon;
+            return (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(statusFilter === s ? 'all' : s)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${statusFilter === s ? 'ring-1 ring-border' : 'hover:bg-secondary'}`}
+                style={{ background: meta.bg, color: meta.color }}
+              >
+                <Icon className={`w-3.5 h-3.5 ${s === 'in_progress' ? 'animate-spin' : ''}`} />
+                {meta.label} <span className="opacity-70">· {count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </Card>
 
       {/* Count */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground px-1">
@@ -179,6 +252,7 @@ export default function FestivalBoothManager({ festivals }) {
                 <th className="py-2 px-3 font-medium">Vendor</th>
                 <th className="py-2 px-3 font-medium hidden sm:table-cell">Festival</th>
                 <th className="py-2 px-3 font-medium">Category</th>
+                <th className="py-2 px-3 font-medium">Setup</th>
                 <th className="py-2 px-3 font-medium hidden md:table-cell">Location</th>
                 <th className="py-2 pl-3 font-medium text-right">Actions</th>
               </tr>
@@ -202,6 +276,21 @@ export default function FestivalBoothManager({ festivals }) {
                     <span className="text-xs capitalize px-2 py-0.5 rounded-full" style={{ background: `${CATEGORY_COLORS[booth.category] || CATEGORY_COLORS.other}20`, color: CATEGORY_COLORS[booth.category] || CATEGORY_COLORS.other }}>
                       {booth.category}
                     </span>
+                  </td>
+                  <td className="py-3 px-3">
+                    <button
+                      onClick={() => cycleStatus(booth)}
+                      className="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium transition-all hover:opacity-80"
+                      style={{ background: STATUS_META[booth.setup_status || 'pending'].bg, color: STATUS_META[booth.setup_status || 'pending'].color }}
+                      title="Click to advance status"
+                    >
+                      {(() => {
+                        const meta = STATUS_META[booth.setup_status || 'pending'];
+                        const Icon = meta.icon;
+                        return <Icon className={`w-3.5 h-3.5 ${(booth.setup_status || 'pending') === 'in_progress' ? 'animate-spin' : ''}`} />;
+                      })()}
+                      {STATUS_META[booth.setup_status || 'pending'].label}
+                    </button>
                   </td>
                   <td className="py-3 px-3 hidden md:table-cell">
                     {booth.latitude != null && booth.longitude != null ? (
@@ -266,6 +355,18 @@ export default function FestivalBoothManager({ festivals }) {
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Description</label>
                 <textarea value={form.description} onChange={(e) => setField('description', e.target.value)} placeholder="What this booth offers…" rows={2} className="mt-1 w-full px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Setup Status</label>
+                  <select value={form.setup_status} onChange={(e) => setField('setup_status', e.target.value)} className="mt-1 w-full h-10 px-3 rounded-lg border border-input bg-card text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                    {STATUSES.map(s => <option key={s} value={s}>{STATUS_META[s].label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Setup Notes</label>
+                  <input value={form.setup_notes} onChange={(e) => setField('setup_notes', e.target.value)} placeholder="Optional notes…" className="mt-1 w-full h-10 px-3 rounded-lg border border-input bg-card text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+                </div>
               </div>
               <div>
                 <div className="flex items-center justify-between">

@@ -50,6 +50,25 @@
       "type": "string",
       "description": "Optional booth/vendor logo image"
     },
+    "setup_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "complete"
+      ],
+      "default": "pending",
+      "description": "On-site setup status tracked by admin/organizers"
+    },
+    "setup_notes": {
+      "type": "string",
+      "description": "Optional notes about setup progress or issues"
+    },
+    "setup_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when setup was marked complete"
+    },
     "created_by_id": {
       "type": "string",
       "description": "User who created the booth assignment"
