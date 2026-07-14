@@ -1,0 +1,63 @@
+{
+  "name": "FestivalBooth",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Reference to the festival Event"
+    },
+    "booth_number": {
+      "type": "string",
+      "description": "Booth identifier shown to attendees, e.g. B12, F-05"
+    },
+    "vendor_name": {
+      "type": "string",
+      "description": "Display name of the vendor at this booth"
+    },
+    "business_id": {
+      "type": "string",
+      "description": "Optional reference to BusinessPage if vendor has a page"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "food",
+        "art",
+        "craft",
+        "merchandise",
+        "music",
+        "kids",
+        "info",
+        "bar",
+        "other"
+      ],
+      "default": "other",
+      "description": "Booth category for filtering and legend coloring"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of what the booth offers"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Booth latitude on the festival grounds map"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Booth longitude on the festival grounds map"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Optional booth/vendor logo image"
+    },
+    "created_by_id": {
+      "type": "string",
+      "description": "User who created the booth assignment"
+    }
+  },
+  "required": [
+    "event_id",
+    "booth_number",
+    "vendor_name"
+  ]
+}
