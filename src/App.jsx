@@ -49,14 +49,12 @@ const StoryDetail                 = lazy(() => import('@/pages/StoryDetail'));
 const CreateStory                 = lazy(() => import('@/pages/CreateStory'));
 const EventDetail                 = lazy(() => import('@/pages/EventDetail'));
 const BannerPreview               = lazy(() => import('@/pages/BannerPreview'));
-const Festivals                   = lazy(() => import('@/pages/Festivals'));
 const Videos                      = lazy(() => import('@/pages/Videos'));
 const Leaderboard                 = lazy(() => import('@/pages/Leaderboard'));
 const Podcasts                    = lazy(() => import('@/pages/Podcasts'));
 const AdminReports                = lazy(() => import('@/pages/AdminReports'));
 const Settings                    = lazy(() => import('@/pages/Settings'));
 const AdminDashboard              = lazy(() => import('@/pages/AdminDashboard'));
-const AdminFestivalDashboard      = lazy(() => import('@/pages/AdminFestivalDashboard'));
 
 // Minimal fallback shown while a lazy page chunk is downloading
 function PageLoader() {
@@ -135,12 +133,10 @@ const AuthenticatedApp = () => {
           <Route path="/create-story" element={<CreateStory />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/banner-preview" element={<BannerPreview />} />
-          <Route path="/festivals" element={<Festivals />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/podcasts" element={<Podcasts />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/festivals" element={<AdminFestivalDashboard />} />
           <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
