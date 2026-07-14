@@ -4,11 +4,12 @@ import { base44 } from '@/api/base44Client';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Ticket, DollarSign, Store, TrendingUp, RefreshCw, Calendar, MapPin, ArrowLeft, Users, ClipboardList } from 'lucide-react';
+import { Ticket, DollarSign, Store, TrendingUp, RefreshCw, Calendar, MapPin, ArrowLeft, Users, ClipboardList, BarChart3, Eye, Bookmark, MousePointerClick } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import FestivalBoothManager from '@/components/festivals/FestivalBoothManager';
+import EngagementView from '@/components/festivals/EngagementView';
 
 const SHADOW_URL = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png';
 const MARKER_BASE = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-';
@@ -125,6 +126,12 @@ export default function AdminFestivalDashboard() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === 'booths' ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
           >
             <ClipboardList className="w-4 h-4 inline mr-1.5" /> Booth Management
+          </button>
+          <button
+            onClick={() => setView('engagement')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === 'engagement' ? 'bg-accent text-accent-foreground' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}
+          >
+            <BarChart3 className="w-4 h-4 inline mr-1.5" /> Engagement
           </button>
         </div>
 
@@ -316,6 +323,9 @@ export default function AdminFestivalDashboard() {
             <FestivalBoothManager festivals={festivals} />
           </div>
         )}
+
+        {/* Engagement view */}
+        {view === 'engagement' && <EngagementView festivals={festivals} />}
       </div>
     </div>
   );

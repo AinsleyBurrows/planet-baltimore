@@ -4,8 +4,17 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { base44 } from '@/api/base44Client';
-import { Store, Search, MapPin, Navigation } from 'lucide-react';
+import { Store, Search, MapPin, Navigation, Bookmark, BookmarkCheck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Track a booth view (click). Fire-and-forget; failures don't block UX.
+const trackBoothView = (boothId) => {
+  if (!boothId) return;
+  base44.entities.FestivalBooth.update(boothId, {
+    $inc: { view_count: 1 },
+    last_viewed_at: new Date().toISOString(),
+  }).catch(() => {});
+};
 
 const CATEGORY_COLORS = {
   food: '#ef4444',
@@ -52,6 +61,19 @@ export default function FestivalVendorMap() {
   const [category, setCategory] = useState('all');
   const [selectedFestivalId, setSelectedFestivalId] = useState(null);
   const [mapCenter, setMapCenter] = useState(null);
+  const [savedBooths, setSavedBooths] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('saved-booths') || '[]'); } catch { return []; }
+  });
+
+  const toggleSave = async (booth) => {
+    const isSaved = savedBooths.includes(booth.id);
+    const next = isSaved ? savedBooths.filter(id => id !== booth.id) : [...savedBooths, booth.id];
+    setSavedBooths(next);
+    localStorage.setItem('saved-booths', JSON.stringify(next));
+    try {
+      await base44.entities.FestivalBooth.update(booth.id, { $inc: { save_count: isSaved ? -1 : 1 } });
+    } catch { /* non-blocking */ }
+  };
 
   const { data: festivals = [], isLoading: loadingFestivals } = useQuery({
     queryKey: ['festival-map-events'],
@@ -141,7 +163,12 @@ export default function FestivalVendorMap() {
                 </Marker>
               )}
               {filteredBooths.map(booth => (
-                <Marker key={booth.id} position={[booth.latitude, booth.longitude]} icon={boothIcon(booth.booth_number, booth.category)}>
+                <Marker
+                  key={booth.id}
+                  position={[booth.latitude, booth.longitude]}
+                  icon={boothIcon(booth.booth_number, booth.category)}
+                  eventHandlers={{ popupopen: () => trackBoothView(booth.id) }}
+                >
                   <Popup>
                     <div className="min-w-[180px]">
                       <div className="flex items-center gap-2 mb-1">
@@ -210,7 +237,10 @@ export default function FestivalVendorMap() {
               {filteredBooths.map(booth => (
                 <button
                   key={booth.id}
-                  onClick={() => setMapCenter([booth.latitude, booth.longitude])}
+                  onClick={() => {
+                    setMapCenter([booth.latitude, booth.longitude]);
+                    trackBoothView(booth.id);
+                  }}
                   className="w-full flex items-center gap-3 bg-card border border-border rounded-xl p-3 hover:border-accent/30 transition-colors text-left"
                 >
                   <div
@@ -226,6 +256,18 @@ export default function FestivalVendorMap() {
                       <span className="text-xs text-muted-foreground flex items-center gap-0.5"><MapPin className="w-3 h-3" />{booth.booth_number}</span>
                     </div>
                   </div>
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => { e.stopPropagation(); toggleSave(booth); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); toggleSave(booth); } }}
+                    className="flex-shrink-0 p-1.5 rounded-lg hover:bg-secondary transition-colors"
+                    title={savedBooths.includes(booth.id) ? 'Saved — click to remove' : 'Save this booth'}
+                  >
+                    {savedBooths.includes(booth.id)
+                      ? <BookmarkCheck className="w-4 h-4 text-accent" />
+                      : <Bookmark className="w-4 h-4 text-muted-foreground" />}
+                  </span>
                 </button>
               ))}
             </div>

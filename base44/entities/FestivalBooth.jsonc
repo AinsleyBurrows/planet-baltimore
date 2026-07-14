@@ -69,6 +69,21 @@
       "format": "date-time",
       "description": "Timestamp when setup was marked complete"
     },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many attendees clicked/opened this booth's info"
+    },
+    "save_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many attendees saved this booth to their list"
+    },
+    "last_viewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the most recent booth view"
+    },
     "created_by_id": {
       "type": "string",
       "description": "User who created the booth assignment"
