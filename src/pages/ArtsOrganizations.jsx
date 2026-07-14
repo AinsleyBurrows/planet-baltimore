@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import ArtsOrgMap from '@/components/arts/ArtsOrgMap';
+import FestivalsTab from '@/components/arts/FestivalsTab';
 import PlatformMessageModal from '@/components/admin/PlatformMessageModal';
 
 const ORG_TYPES = [
@@ -33,6 +34,7 @@ export default function ArtsOrganizations() {
   const [search, setSearch] = useState('');
   const [showMap, setShowMap] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
+  const [view, setView] = useState('orgs');
 
   const { data: currentUser } = useQuery({
     queryKey: ['me'],
@@ -99,6 +101,26 @@ export default function ArtsOrganizations() {
         </div>
       </div>
 
+      {/* Top-level view tabs */}
+      <div className="flex gap-1 p-1 bg-secondary/60 rounded-xl w-fit">
+        <button
+          onClick={() => setView('orgs')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === 'orgs' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Organizations
+        </button>
+        <button
+          onClick={() => setView('festivals')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === 'festivals' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Festivals
+        </button>
+      </div>
+
+      {view === 'festivals' ? (
+        <FestivalsTab />
+      ) : (
+      <>
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -165,6 +187,8 @@ export default function ArtsOrganizations() {
           </div>
         )}
       </div>
+      </>
+      )}
       <PlatformMessageModal open={showMessageModal} onClose={() => setShowMessageModal(false)} />
     </div>
   );
