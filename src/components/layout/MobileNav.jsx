@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, Video, Trophy, Settings } from 'lucide-react';
+import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, Video, Trophy, Settings, Sparkles } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useUnreadCounts } from '@/hooks/useUnreadCounts';
 
@@ -22,6 +22,7 @@ const moreItems = [
   { icon: Shield, label: 'Associations', path: '/community-associations' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
+  { icon: Sparkles, label: 'Festivals', path: '/festivals' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: Video, label: 'Videos', path: '/videos' },
