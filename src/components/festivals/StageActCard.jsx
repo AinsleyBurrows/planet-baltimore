@@ -1,12 +1,12 @@
 import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Ticket, Check, Image as ImageIcon } from 'lucide-react';
+import { Ticket, Check, Image as ImageIcon, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const ACCENT = '#d4580a';
 
-export default function StageActCard({ act, userId }) {
+export default function StageActCard({ act, userId, canEdit, onEdit }) {
   const queryClient = useQueryClient();
   const rsvped = userId && (act.rsvped_user_ids || []).includes(userId);
   const count = act.rsvp_count || 0;
@@ -34,9 +34,16 @@ export default function StageActCard({ act, userId }) {
       <div className="p-3 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2">
           <h4 className="font-bold text-foreground text-sm">{act.name}</h4>
-          {act.performance_time && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-muted-foreground whitespace-nowrap">{act.performance_time}</span>
-          )}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {act.performance_time && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-muted-foreground whitespace-nowrap">{act.performance_time}</span>
+            )}
+            {canEdit && (
+              <button onClick={onEdit} className="h-6 w-6 flex items-center justify-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+                <Pencil className="w-3 h-3" />
+              </button>
+            )}
+          </div>
         </div>
         {act.act_type && <span className="text-xs font-medium mt-0.5" style={{ color: ACCENT }}>{act.act_type}</span>}
         {act.description && <p className="text-xs text-muted-foreground mt-1.5 line-clamp-3">{act.description}</p>}

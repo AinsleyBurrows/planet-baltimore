@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Music2, Trash2, Sparkles } from 'lucide-react';
+import { Plus, Music2, Trash2, Pencil, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +19,11 @@ export default function OtherStagesTab() {
   const { user } = useCurrentUser();
   const queryClient = useQueryClient();
   const [showAddStage, setShowAddStage] = useState(false);
+  const [editStage, setEditStage] = useState(null);
   const [addActForStage, setAddActForStage] = useState(null);
+  const [editAct, setEditAct] = useState(null);
+
+  const canEdit = (item) => user && (user.role === 'admin' || user.id === item.created_by_id);
 
   const { data: stages = [], isLoading: stagesLoading } = useQuery({
     queryKey: ['other-stages'],
@@ -85,6 +89,11 @@ export default function OtherStagesTab() {
                     <Button variant="outline" size="sm" onClick={() => setAddActForStage(stage.id)} className="gap-1.5 rounded-lg" style={{ borderColor: ACCENT, color: ACCENT }}>
                       <Plus className="w-4 h-4" /> Add Act
                     </Button>
+                    {canEdit(stage) && (
+                      <Button variant="ghost" size="icon" onClick={() => setEditStage(stage)} className="text-muted-foreground hover:text-foreground h-9 w-9">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                    )}
                     <Button variant="ghost" size="icon" onClick={() => deleteStageMutation.mutate(stage)} className="text-muted-foreground hover:text-destructive h-9 w-9">
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -97,7 +106,13 @@ export default function OtherStagesTab() {
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {actsByStage(stage.id).map(act => (
-                      <StageActCard key={act.id} act={act} userId={user?.id} />
+                      <StageActCard
+                        key={act.id}
+                        act={act}
+                        userId={user?.id}
+                        canEdit={canEdit(act)}
+                        onEdit={() => setEditAct(act)}
+                      />
                     ))}
                   </div>
                 )}
@@ -108,6 +123,9 @@ export default function OtherStagesTab() {
       )}
 
       {showAddStage && <AddStageModal open={showAddStage} onOpenChange={setShowAddStage} />}
+      {editStage && (
+        <AddStageModal stage={editStage} open={!!editStage} onOpenChange={(o) => !o && setEditStage(null)} />
+      )}
       {addActForStage && (
         <AddStageActModal
           stageId={addActForStage}
@@ -115,31 +133,43 @@ export default function OtherStagesTab() {
           onOpenChange={(o) => !o && setAddActForStage(null)}
         />
       )}
+      {editAct && (
+        <AddStageActModal
+          act={editAct}
+          stageId={editAct.stage_id}
+          open={!!editAct}
+          onOpenChange={(o) => !o && setEditAct(null)}
+        />
+      )}
     </div>
   );
 }
 
-function AddStageModal({ open, onOpenChange }) {
+function AddStageModal({ stage, open, onOpenChange }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState(stage?.name || '');
+  const [description, setDescription] = useState(stage?.description || '');
 
-  const createMutation = useMutation({
-    mutationFn: () => base44.entities.OtherStage.create({ name: name.trim(), description: description.trim() }),
+  const saveMutation = useMutation({
+    mutationFn: () => {
+      const payload = { name: name.trim(), description: description.trim() };
+      if (stage) return base44.entities.OtherStage.update(stage.id, payload);
+      return base44.entities.OtherStage.create(payload);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['other-stages'] });
-      toast({ title: 'Stage added', description: `${name} is ready for acts.` });
+      toast({ title: stage ? 'Stage updated' : 'Stage added', description: stage ? `${name} has been updated.` : `${name} is ready for acts.` });
       onOpenChange(false);
     },
-    onError: (err) => toast({ variant: 'destructive', title: 'Failed to add stage', description: err.message }),
+    onError: (err) => toast({ variant: 'destructive', title: 'Failed to save stage', description: err.message }),
   });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add a Stage</DialogTitle>
+          <DialogTitle>{stage ? 'Edit Stage' : 'Add a Stage'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -153,8 +183,8 @@ function AddStageModal({ open, onOpenChange }) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={() => createMutation.mutate()} disabled={!name.trim() || createMutation.isPending} style={{ backgroundColor: ACCENT }}>
-            Add Stage
+          <Button onClick={() => saveMutation.mutate()} disabled={!name.trim() || saveMutation.isPending} style={{ backgroundColor: ACCENT }}>
+            {stage ? 'Save Changes' : 'Add Stage'}
           </Button>
         </DialogFooter>
       </DialogContent>

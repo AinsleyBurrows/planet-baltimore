@@ -11,15 +11,15 @@ import { useToast } from '@/components/ui/use-toast';
 
 const ACCENT = '#d4580a';
 
-export default function AddStageActModal({ stageId, open, onOpenChange }) {
+export default function AddStageActModal({ stageId, act, open, onOpenChange }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [name, setName] = useState('');
-  const [actType, setActType] = useState('');
-  const [description, setDescription] = useState('');
-  const [performanceTime, setPerformanceTime] = useState('');
+  const [name, setName] = useState(act?.name || '');
+  const [actType, setActType] = useState(act?.act_type || '');
+  const [description, setDescription] = useState(act?.description || '');
+  const [performanceTime, setPerformanceTime] = useState(act?.performance_time || '');
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
+  const [imagePreview, setImagePreview] = useState(act?.image_url || '');
 
   const handleImage = (e) => {
     const file = e.target.files[0];
@@ -29,37 +29,36 @@ export default function AddStageActModal({ stageId, open, onOpenChange }) {
     }
   };
 
-  const createMutation = useMutation({
+  const saveMutation = useMutation({
     mutationFn: async () => {
-      let imageUrl = '';
+      let imageUrl = act?.image_url || '';
       if (imageFile) {
         const result = await base44.integrations.Core.UploadFile({ file: imageFile });
         imageUrl = result.file_url;
       }
-      return base44.entities.OtherStageAct.create({
-        stage_id: stageId,
+      const payload = {
         name: name.trim(),
         act_type: actType.trim(),
         description: description.trim(),
         performance_time: performanceTime.trim(),
         image_url: imageUrl,
-        rsvp_count: 0,
-        rsvped_user_ids: [],
-      });
+      };
+      if (act) return base44.entities.OtherStageAct.update(act.id, payload);
+      return base44.entities.OtherStageAct.create({ ...payload, stage_id: stageId, rsvp_count: 0, rsvped_user_ids: [] });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['other-stage-acts'] });
-      toast({ title: 'Act added', description: `${name} added to this stage.` });
+      toast({ title: act ? 'Act updated' : 'Act added', description: act ? `${name} has been updated.` : `${name} added to this stage.` });
       onOpenChange(false);
     },
-    onError: (err) => toast({ variant: 'destructive', title: 'Failed to add act', description: err.message }),
+    onError: (err) => toast({ variant: 'destructive', title: 'Failed to save act', description: err.message }),
   });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add an Act to this Stage</DialogTitle>
+          <DialogTitle>{act ? 'Edit Act' : 'Add an Act to this Stage'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -100,9 +99,9 @@ export default function AddStageActModal({ stageId, open, onOpenChange }) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={() => createMutation.mutate()} disabled={!name.trim() || createMutation.isPending} className="gap-2" style={{ backgroundColor: ACCENT }}>
-            {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-            Add Act
+          <Button onClick={() => saveMutation.mutate()} disabled={!name.trim() || saveMutation.isPending} className="gap-2" style={{ backgroundColor: ACCENT }}>
+            {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            {act ? 'Save Changes' : 'Add Act'}
           </Button>
         </DialogFooter>
       </DialogContent>

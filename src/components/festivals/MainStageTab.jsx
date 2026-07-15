@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Plus, Upload, Image as ImageIcon, Sparkles, Ticket, Check } from 'lucide-react';
+import { Loader2, Plus, Upload, Pencil, Image as ImageIcon, Sparkles, Ticket, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,9 @@ export default function MainStageTab() {
   const { user } = useCurrentUser();
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
+  const [editAct, setEditAct] = useState(null);
+
+  const canEdit = (item) => user && (user.role === 'admin' || user.id === item.created_by_id);
 
   const { data: acts = [], isLoading } = useQuery({
     queryKey: ['main-stage-acts'],
@@ -74,6 +77,8 @@ export default function MainStageTab() {
               key={act.id}
               act={act}
               userId={user?.id}
+              canEdit={canEdit(act)}
+              onEdit={() => setEditAct(act)}
               onRsvp={(rsvped) => rsvpMutation.mutate({ act, rsvped })}
               pending={rsvpMutation.isPending}
             />
@@ -84,11 +89,14 @@ export default function MainStageTab() {
       {showAdd && (
         <AddActModal open={showAdd} onOpenChange={setShowAdd} />
       )}
+      {editAct && (
+        <AddActModal act={editAct} open={!!editAct} onOpenChange={(o) => !o && setEditAct(null)} />
+      )}
     </div>
   );
 }
 
-function ActCard({ act, userId, onRsvp, pending }) {
+function ActCard({ act, userId, onRsvp, pending, canEdit, onEdit }) {
   const rsvped = userId && (act.rsvped_user_ids || []).includes(userId);
   const count = act.rsvp_count || 0;
 
@@ -106,9 +114,16 @@ function ActCard({ act, userId, onRsvp, pending }) {
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-bold text-foreground">{act.name}</h3>
-          {act.performance_time && (
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground whitespace-nowrap">{act.performance_time}</span>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {act.performance_time && (
+              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground whitespace-nowrap">{act.performance_time}</span>
+            )}
+            {canEdit && (
+              <button onClick={onEdit} className="h-7 w-7 flex items-center justify-center rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
         {act.act_type && (
           <span className="text-xs font-medium text-accent mt-0.5">{act.act_type}</span>
@@ -139,15 +154,15 @@ function ActCard({ act, userId, onRsvp, pending }) {
   );
 }
 
-function AddActModal({ open, onOpenChange }) {
+function AddActModal({ act, open, onOpenChange }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [name, setName] = useState('');
-  const [actType, setActType] = useState('');
-  const [description, setDescription] = useState('');
-  const [performanceTime, setPerformanceTime] = useState('');
+  const [name, setName] = useState(act?.name || '');
+  const [actType, setActType] = useState(act?.act_type || '');
+  const [description, setDescription] = useState(act?.description || '');
+  const [performanceTime, setPerformanceTime] = useState(act?.performance_time || '');
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
+  const [imagePreview, setImagePreview] = useState(act?.image_url || '');
 
   const handleImage = (e) => {
     const file = e.target.files[0];
@@ -157,36 +172,36 @@ function AddActModal({ open, onOpenChange }) {
     }
   };
 
-  const createMutation = useMutation({
+  const saveMutation = useMutation({
     mutationFn: async () => {
-      let imageUrl = '';
+      let imageUrl = act?.image_url || '';
       if (imageFile) {
         const result = await base44.integrations.Core.UploadFile({ file: imageFile });
         imageUrl = result.file_url;
       }
-      return base44.entities.MainStageAct.create({
+      const payload = {
         name: name.trim(),
         act_type: actType.trim(),
         description: description.trim(),
         performance_time: performanceTime.trim(),
         image_url: imageUrl,
-        rsvp_count: 0,
-        rsvped_user_ids: [],
-      });
+      };
+      if (act) return base44.entities.MainStageAct.update(act.id, payload);
+      return base44.entities.MainStageAct.create({ ...payload, rsvp_count: 0, rsvped_user_ids: [] });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['main-stage-acts'] });
-      toast({ title: 'Act added', description: `${name} is now on the Main Stage line-up.` });
+      toast({ title: act ? 'Act updated' : 'Act added', description: act ? `${name} has been updated.` : `${name} is now on the Main Stage line-up.` });
       onOpenChange(false);
     },
-    onError: (err) => toast({ variant: 'destructive', title: 'Failed to add act', description: err.message }),
+    onError: (err) => toast({ variant: 'destructive', title: 'Failed to save act', description: err.message }),
   });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add a Main Stage Act</DialogTitle>
+          <DialogTitle>{act ? 'Edit Main Stage Act' : 'Add a Main Stage Act'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -227,9 +242,9 @@ function AddActModal({ open, onOpenChange }) {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={() => createMutation.mutate()} disabled={!name.trim() || createMutation.isPending} className="gap-2" style={{ backgroundColor: ACCENT }}>
-            {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-            Add Act
+          <Button onClick={() => saveMutation.mutate()} disabled={!name.trim() || saveMutation.isPending} className="gap-2" style={{ backgroundColor: ACCENT }}>
+            {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            {act ? 'Save Changes' : 'Add Act'}
           </Button>
         </DialogFooter>
       </DialogContent>
