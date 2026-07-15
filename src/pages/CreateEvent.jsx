@@ -14,20 +14,6 @@ import { useToast } from '@/components/ui/use-toast';
 
 const eventCategories = ['music', 'art', 'community', 'nightlife', 'food', 'wellness', 'education', 'activism', 'family', 'sports', 'networking', 'festival', 'other'];
 
-const festivalPrograms = [
-  { tag: 'flavor_lab', label: 'The Flavor Lab' },
-  { tag: 'artisan_market', label: 'Artisan Market' },
-  { tag: 'sondheim', label: 'Sondheim Prize' },
-  { tag: 'conversation', label: 'In Conversation Series' },
-  { tag: 'beyond_reel', label: 'Beyond the Reel' },
-  { tag: 'kidscape', label: 'Kidscape' },
-  { tag: 'after_dark', label: 'Artscape After Dark' },
-  { tag: 'main_stage', label: 'Main Stage' },
-  { tag: 'echo_stage_1', label: 'Echo Stage 1' },
-  { tag: 'echo_stage_2', label: 'Echo Stage 2' },
-  { tag: 'scout', label: 'Scout Art Fair' },
-];
-
 export default function CreateEvent() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -42,9 +28,6 @@ export default function CreateEvent() {
     ticketing_mode: 'rsvp_only', is_free: true, allow_donations: false,
     neighborhood_id: '', neighborhood_name: '',
   });
-  const [festivalSelections, setFestivalSelections] = useState([]);
-
-  const toggleFestival = (tag) => setFestivalSelections(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
 
   useEffect(() => { base44.auth.me().then(setUser); }, []);
 
@@ -81,7 +64,6 @@ export default function CreateEvent() {
         organizer_name: user.display_name || user.full_name,
         organizer_avatar: user.avatar_url,
         capacity: form.capacity ? parseInt(form.capacity) : undefined,
-        tags: festivalSelections,
         status: 'upcoming',
       });
     },
@@ -217,28 +199,6 @@ export default function CreateEvent() {
         )}
 
         <div><Label>Capacity</Label><Input type="number" value={form.capacity} onChange={(e) => updateForm('capacity', e.target.value)} placeholder="Leave blank for unlimited" className="mt-1.5" /></div>
-
-        {form.category === 'festival' && (
-          <div>
-            <Label>Festival Program</Label>
-            <p className="text-xs text-muted-foreground mt-1 mb-2">Select which festival sections this event belongs to. It will appear under those sub-tabs.</p>
-            <div className="flex flex-wrap gap-2">
-              {festivalPrograms.map(p => {
-                const active = festivalSelections.includes(p.tag);
-                return (
-                  <button
-                    key={p.tag}
-                    type="button"
-                    onClick={() => toggleFestival(p.tag)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${active ? 'bg-accent text-accent-foreground border-accent' : 'bg-card border-border text-muted-foreground hover:bg-secondary'}`}
-                  >
-                    {p.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

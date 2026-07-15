@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import ArtsOrgMap from '@/components/arts/ArtsOrgMap';
-import FestivalsTab from '@/components/arts/FestivalsTab';
 import PlatformMessageModal from '@/components/admin/PlatformMessageModal';
 
 const ORG_TYPES = [
@@ -29,27 +28,11 @@ const ORG_TYPES = [
 
 const ORG_TYPE_LABELS = Object.fromEntries(ORG_TYPES.map(t => [t.value, t.label]));
 
-const FESTIVAL_TABS = [
-  { key: 'festivals', label: 'Festivals' },
-  { key: 'scout', label: 'Scout Art Fair' },
-  { key: 'flavor_lab', label: 'The Flavor Lab' },
-  { key: 'artisan_market', label: 'Artisan Market' },
-  { key: 'sondheim', label: 'Sondheim Prize' },
-  { key: 'conversation', label: 'In Conversation' },
-  { key: 'beyond_reel', label: 'Beyond the Reel' },
-  { key: 'kidscape', label: 'Kidscape' },
-  { key: 'after_dark', label: 'After Dark' },
-  { key: 'main_stage', label: 'Main Stage' },
-  { key: 'echo_stages', label: 'Echo Stages' },
-];
-
 export default function ArtsOrganizations() {
   const [activeType, setActiveType] = useState('all');
   const [search, setSearch] = useState('');
   const [showMap, setShowMap] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
-  const [view, setView] = useState('orgs');
-  const [activeFestival, setActiveFestival] = useState('festivals');
 
   const { data: currentUser } = useQuery({
     queryKey: ['me'],
@@ -116,29 +99,6 @@ export default function ArtsOrganizations() {
         </div>
       </div>
 
-      {/* Top-level view tabs */}
-      <div className="flex gap-1 p-1 bg-secondary/60 rounded-xl w-fit overflow-x-auto scrollbar-hide">
-        <button
-          onClick={() => setView('orgs')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${view === 'orgs' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-        >
-          Organizations
-        </button>
-        {FESTIVAL_TABS.map(t => (
-          <button
-            key={t.key}
-            onClick={() => { setView('festivals'); setActiveFestival(t.key); }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${view === 'festivals' && activeFestival === t.key ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {view === 'festivals' ? (
-        <FestivalsTab initialSection={activeFestival} onSectionChange={setActiveFestival} />
-      ) : (
-      <>
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -205,8 +165,6 @@ export default function ArtsOrganizations() {
           </div>
         )}
       </div>
-      </>
-      )}
       <PlatformMessageModal open={showMessageModal} onClose={() => setShowMessageModal(false)} />
     </div>
   );
