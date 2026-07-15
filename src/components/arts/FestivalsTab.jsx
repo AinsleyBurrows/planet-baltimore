@@ -10,6 +10,59 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
+const SUB_TABS = [
+  { key: 'festivals', label: 'Festivals' },
+  { key: 'scout', label: 'Scout Art Fair' },
+  { key: 'flavor_lab', label: 'The Flavor Lab', tag: 'flavor_lab', description: 'A culinary experience celebrating Baltimore\'s food scene — tastings, chef demos, and local flavor.' },
+  { key: 'artisan_market', label: 'Artisan Market', tag: 'artisan_market', description: 'Handmade goods from regional makers, craftspeople, and small-batch producers.' },
+  { key: 'sondheim', label: 'Sondheim Prize', tag: 'sondheim', description: 'The Janet & Walter Sondheim Artscape Prize — recognizing the region\'s top visual artists.' },
+  { key: 'conversation', label: 'In Conversation Series', tag: 'conversation', description: 'Talks and dialogues with artists, curators, and cultural leaders shaping the conversation.' },
+  { key: 'beyond_reel', label: 'Beyond the Reel', tag: 'beyond_reel', description: 'Film screenings, premieres, and filmmaker Q&As spotlighting independent cinema.' },
+  { key: 'kidscape', label: 'Kidscape', tag: 'kidscape', description: 'Family-friendly art-making, performances, and activities for young creatives.' },
+  { key: 'after_dark', label: 'Artscape After Dark', tag: 'after_dark', description: 'Late-night programming — music, performances, and nightlife across the festival.' },
+];
+
+function FestivalProgram({ tab, events, isLoading }) {
+  if (!tab) return null;
+  const now = new Date();
+  const matched = (events || []).filter(e => {
+    const ended = (e.end_date ? new Date(e.end_date) : new Date(e.date)) < now;
+    return !ended && (e.tags || []).some(t => t.toLowerCase() === tab.tag);
+  });
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-xl border border-border p-5 bg-card">
+        <h2 className="text-xl font-bold text-foreground mb-1">{tab.label}</h2>
+        {tab.description && <p className="text-sm text-muted-foreground max-w-2xl">{tab.description}</p>}
+      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-48 rounded-xl" />)}
+        </div>
+      ) : matched.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
+            <Sparkles className="w-7 h-7 text-accent" />
+          </div>
+          <h3 className="font-semibold text-foreground mb-1">No {tab.label} events yet</h3>
+          <p className="text-sm text-muted-foreground">Tag a festival event with "{tab.tag}" to feature it here.</p>
+          <Link to="/create-event" className="inline-block mt-4">
+            <Button variant="outline" className="gap-2 rounded-lg" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+              <Plus className="w-4 h-4" /> Create Event
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {matched.map(event => <EventCard key={event.id} event={event} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function FestivalsTab() {
   const [section, setSection] = useState('festivals');
   const [search, setSearch] = useState('');
@@ -29,24 +82,21 @@ export default function FestivalsTab() {
   return (
     <div className="space-y-5">
       {/* Sub-tabs */}
-      <div className="flex gap-1 p-1 bg-secondary/60 rounded-xl w-fit">
-        <button
-          onClick={() => setSection('festivals')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${section === 'festivals' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-        >
-          Festivals
-        </button>
-        <button
-          onClick={() => setSection('scout')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${section === 'scout' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-        >
-          Scout Art Fair
-        </button>
+      <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+        {SUB_TABS.map(t => (
+          <button
+            key={t.key}
+            onClick={() => setSection(t.key)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${section === t.key ? 'bg-card text-foreground shadow-sm border border-border' : 'text-muted-foreground hover:text-foreground bg-secondary/40'}`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {section === 'scout' ? (
         <ScoutArtFair />
-      ) : (
+      ) : section === 'festivals' ? (
         <>
           {/* Search */}
           <div className="relative">
@@ -82,6 +132,8 @@ export default function FestivalsTab() {
             </div>
           )}
         </>
+      ) : (
+        <FestivalProgram tab={SUB_TABS.find(t => t.key === section)} events={events} isLoading={isLoading} />
       )}
     </div>
   );
