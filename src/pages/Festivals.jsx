@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Sparkles, Search, Plus, Calendar } from 'lucide-react';
 import EventCard from '@/components/shared/EventCard';
 import MainStageTab from '@/components/festivals/MainStageTab';
+import OtherStagesTab from '@/components/festivals/OtherStagesTab';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -67,10 +68,18 @@ export default function Festivals() {
         >
           Main Stage
         </button>
+        <button
+          onClick={() => setTab('other_stages')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'other_stages' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Other Stages
+        </button>
       </div>
 
       {tab === 'main_stage' ? (
         <MainStageTab />
+      ) : tab === 'other_stages' ? (
+        <OtherStagesTab />
       ) : (
       <>
       {/* Search */}
