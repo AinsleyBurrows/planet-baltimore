@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Calendar, Plus, Sparkles, Palette, Landmark, Shield, MapPin } from 'lucide-react';
+import { Calendar, Plus, Sparkles, Palette, Landmark, Shield, MapPin, Search } from 'lucide-react';
 import EventCard from '@/components/shared/EventCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
@@ -89,6 +89,7 @@ export default function FestivalsTab() {
 
 function ScoutArtFair() {
   const [picker, setPicker] = useState('artists');
+  const [search, setSearch] = useState('');
 
   const { data: artists = [], isLoading: loadingArtists } = useQuery({
     queryKey: ['scout-artists'],
@@ -105,24 +106,44 @@ function ScoutArtFair() {
   });
 
   const isLoading = picker === 'artists' ? loadingArtists : loadingGalleries;
-  const items = picker === 'artists' ? artists : galleries;
+  const allItems = picker === 'artists' ? artists : galleries;
+  const items = allItems.filter(i => {
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (i.name?.toLowerCase().includes(q) ||
+      i.bio?.toLowerCase().includes(q) ||
+      i.description?.toLowerCase().includes(q) ||
+      (i.tags || []).some(t => t.toLowerCase().includes(q)) ||
+      i.neighborhood_name?.toLowerCase().includes(q));
+  });
 
   return (
     <div className="space-y-5">
       {/* Picker */}
-      <div className="flex gap-1 p-1 bg-secondary/60 rounded-xl w-fit">
-        <button
-          onClick={() => setPicker('artists')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${picker === 'artists' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-        >
-          <Palette className="w-4 h-4" /> Artists
-        </button>
-        <button
-          onClick={() => setPicker('galleries')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${picker === 'galleries' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-        >
-          <Landmark className="w-4 h-4" /> Galleries
-        </button>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex gap-1 p-1 bg-secondary/60 rounded-xl w-fit">
+          <button
+            onClick={() => { setPicker('artists'); setSearch(''); }}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${picker === 'artists' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Palette className="w-4 h-4" /> Artists
+          </button>
+          <button
+            onClick={() => { setPicker('galleries'); setSearch(''); }}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${picker === 'galleries' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Landmark className="w-4 h-4" /> Galleries
+          </button>
+        </div>
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder={`Search ${picker}...`}
+            className="pl-9 rounded-xl bg-secondary/50 border-0"
+          />
+        </div>
       </div>
 
       {isLoading ? (
