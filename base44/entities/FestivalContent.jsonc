@@ -1,0 +1,42 @@
+{
+  "name": "FestivalContent",
+  "type": "object",
+  "properties": {
+    "program_key": {
+      "type": "string",
+      "description": "Sub-tab identifier this content belongs to (e.g. flavor_lab, artisan_market, sondheim, conversation, beyond_reel, kidscape, after_dark, main_stage, echo_stages, festivals, scout)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display title for the sub-tab header"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Short tagline shown under the title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short paragraph summary"
+    },
+    "banner_url": {
+      "type": "string",
+      "description": "Banner/hero image URL for the sub-tab"
+    },
+    "body_html": {
+      "type": "string",
+      "description": "Rich text HTML content for the sub-tab"
+    },
+    "updated_by": {
+      "type": "string",
+      "description": "User ID of the admin who last edited"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the content is visible to the public"
+    }
+  },
+  "required": [
+    "program_key"
+  ]
+}

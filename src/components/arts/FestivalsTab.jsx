@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import FestivalContentEditor from '@/components/arts/FestivalContentEditor';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const SUB_TABS = [
   { key: 'festivals', label: 'Festivals' },
@@ -25,6 +27,18 @@ const SUB_TABS = [
 ];
 
 function FestivalProgram({ tab, events, isLoading }) {
+  const { user } = useCurrentUser();
+  const isAdmin = user?.role === 'admin';
+  const [editing, setEditing] = useState(false);
+
+  const { data: contentRecords = [] } = useQuery({
+    queryKey: ['festival-content', tab.key],
+    queryFn: () => base44.entities.FestivalContent.filter({ program_key: tab.key }, '-updated_date', 1),
+    staleTime: 60000,
+  });
+  const content = contentRecords[0];
+  const showContent = content && content.is_published !== false;
+
   if (!tab) return null;
   const now = new Date();
   const matched = (events || []).filter(e => {
@@ -32,12 +46,59 @@ function FestivalProgram({ tab, events, isLoading }) {
     return !ended && (e.tags || []).some(t => t.toLowerCase() === tab.tag);
   });
 
+  const displayTitle = showContent && content.title ? content.title : tab.label;
+  const displaySubtitle = showContent ? content.subtitle : '';
+  const displayDescription = showContent && content.description ? content.description : (tab.description || '');
+  const banner = showContent ? content.banner_url : null;
+  const bodyHtml = showContent ? content.body_html : null;
+
   return (
     <div className="space-y-5">
-      <div className="rounded-xl border border-border p-5 bg-card">
-        <h2 className="text-xl font-bold text-foreground mb-1">{tab.label}</h2>
-        {tab.description && <p className="text-sm text-muted-foreground max-w-2xl">{tab.description}</p>}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        {banner ? (
+          <div className="h-40 sm:h-56 w-full overflow-hidden">
+            <img src={banner} alt={displayTitle} className="w-full h-full object-cover" />
+          </div>
+        ) : null}
+        <div className="p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-xl font-bold text-foreground mb-1">{displayTitle}</h2>
+              {displaySubtitle && <p className="text-sm font-medium text-accent mb-1">{displaySubtitle}</p>}
+              {displayDescription && <p className="text-sm text-muted-foreground max-w-2xl">{displayDescription}</p>}
+              {isAdmin && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  {content ? 'Last updated ' + new Date(content.updated_date).toLocaleDateString() : 'No content added yet — click Edit to populate.'}
+                </p>
+              )}
+            </div>
+            {isAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEditing(true)}
+                className="gap-1.5 rounded-lg flex-shrink-0"
+                style={{ borderColor: '#d4580a', color: '#d4580a' }}
+              >
+                <Plus className="w-4 h-4" /> {content ? 'Edit' : 'Add'} Content
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
+
+      {bodyHtml ? (
+        <div className="rounded-xl border border-border bg-card p-5 prose prose-sm max-w-none
+                        [&_h1]:text-xl [&_h1]:font-bold [&_h1]:mb-2
+                        [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mb-2
+                        [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mb-1
+                        [&_p]:mb-3 [&_p]:text-foreground
+                        [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-3
+                        [&_a]:text-accent [&_a]:underline
+                        [&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-3 [&_blockquote]:text-muted-foreground">
+          <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+        </div>
+      ) : null}
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -60,6 +121,16 @@ function FestivalProgram({ tab, events, isLoading }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {matched.map(event => <EventCard key={event.id} event={event} />)}
         </div>
+      )}
+
+      {isAdmin && (
+        <FestivalContentEditor
+          programKey={tab.key}
+          defaultTitle={tab.label}
+          defaultDescription={tab.description}
+          open={editing}
+          onOpenChange={setEditing}
+        />
       )}
     </div>
   );
