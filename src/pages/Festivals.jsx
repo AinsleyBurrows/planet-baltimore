@@ -7,6 +7,7 @@ import EventCard from '@/components/shared/EventCard';
 import MainStageTab from '@/components/festivals/MainStageTab';
 import OtherStagesTab from '@/components/festivals/OtherStagesTab';
 import ArtFairTab from '@/components/festivals/ArtFairTab';
+import FoodTab from '@/components/festivals/FoodTab';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -81,6 +82,12 @@ export default function Festivals() {
         >
           Art Fair
         </button>
+        <button
+          onClick={() => setTab('food')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'food' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Food
+        </button>
       </div>
 
       {tab === 'main_stage' ? (
@@ -89,6 +96,8 @@ export default function Festivals() {
         <OtherStagesTab />
       ) : tab === 'art_fair' ? (
         <ArtFairTab />
+      ) : tab === 'food' ? (
+        <FoodTab />
       ) : (
       <>
       {/* Search */}
