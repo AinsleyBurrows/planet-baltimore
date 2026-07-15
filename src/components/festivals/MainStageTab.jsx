@@ -95,11 +95,11 @@ function ActCard({ act, userId, onRsvp, pending }) {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
       {act.image_url ? (
-        <div className="h-44 w-full overflow-hidden bg-muted">
+        <div className="aspect-square w-full overflow-hidden bg-muted">
           <img src={act.image_url} alt={act.name} className="w-full h-full object-cover" />
         </div>
       ) : (
-        <div className="h-44 w-full bg-secondary flex items-center justify-center">
+        <div className="aspect-square w-full bg-secondary flex items-center justify-center">
           <ImageIcon className="w-10 h-10 text-muted-foreground" />
         </div>
       )}
@@ -192,11 +192,11 @@ function AddActModal({ open, onOpenChange }) {
           <div>
             <Label className="mb-1.5 block">Act Image</Label>
             {imagePreview ? (
-              <div className="relative rounded-xl overflow-hidden border border-border h-36 mb-2">
+              <div className="relative rounded-xl overflow-hidden border border-border aspect-square w-36 mb-2">
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-border h-36 flex items-center justify-center text-muted-foreground mb-2">
+              <div className="rounded-xl border border-dashed border-border aspect-square w-36 flex items-center justify-center text-muted-foreground mb-2">
                 <ImageIcon className="w-8 h-8" />
               </div>
             )}
