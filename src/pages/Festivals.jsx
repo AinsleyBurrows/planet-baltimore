@@ -9,6 +9,7 @@ import OtherStagesTab from '@/components/festivals/OtherStagesTab';
 import ArtFairTab from '@/components/festivals/ArtFairTab';
 import FoodTab from '@/components/festivals/FoodTab';
 import ArtisanMarketTab from '@/components/festivals/ArtisanMarketTab';
+import ConversationsTab from '@/components/festivals/ConversationsTab';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -95,6 +96,12 @@ export default function Festivals() {
         >
           Artisan Market
         </button>
+        <button
+          onClick={() => setTab('conversations')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'conversations' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Conversations
+        </button>
       </div>
 
       {tab === 'main_stage' ? (
@@ -107,6 +114,8 @@ export default function Festivals() {
         <FoodTab />
       ) : tab === 'artisan_market' ? (
         <ArtisanMarketTab />
+      ) : tab === 'conversations' ? (
+        <ConversationsTab />
       ) : (
       <>
       {/* Search */}

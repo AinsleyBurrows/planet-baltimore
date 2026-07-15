@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Upload, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Upload, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,19 +11,12 @@ import { useToast } from '@/components/ui/use-toast';
 
 const ACCENT = '#d4580a';
 
-const TYPES = [
-  ['artist', 'Artist'],
-  ['curator', 'Curator'],
-  ['art_organization', 'Art Org'],
-];
-
-export default function AddParticipantModal({ fairId, open, onOpenChange }) {
+export default function AddParticipantModal({ open, onOpenChange, conversationId }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
-  const [participantType, setParticipantType] = useState('artist');
   const [role, setRole] = useState('');
-  const [description, setDescription] = useState('');
+  const [bio, setBio] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
 
@@ -42,18 +35,17 @@ export default function AddParticipantModal({ fairId, open, onOpenChange }) {
         const result = await base44.integrations.Core.UploadFile({ file: imageFile });
         imageUrl = result.file_url;
       }
-      return base44.entities.ArtFairParticipant.create({
-        art_fair_id: fairId,
+      return base44.entities.ConversationParticipant.create({
+        conversation_id: conversationId,
         name: name.trim(),
-        participant_type: participantType,
         role: role.trim(),
-        description: description.trim(),
+        bio: bio.trim(),
         image_url: imageUrl,
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['art-fair-participants'] });
-      toast({ title: 'Participant added', description: `${name} added to this art fair.` });
+      queryClient.invalidateQueries({ queryKey: ['conversation-participants', conversationId] });
+      toast({ title: 'Participant added', description: name });
       onOpenChange(false);
     },
     onError: (err) => toast({ variant: 'destructive', title: 'Failed to add participant', description: err.message }),
@@ -61,20 +53,20 @@ export default function AddParticipantModal({ fairId, open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add a Participant</DialogTitle>
+          <DialogTitle>Add Participant</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
             <Label className="mb-1.5 block">Image</Label>
             {imagePreview ? (
-              <div className="relative rounded-xl overflow-hidden border border-border aspect-square w-36 mb-2">
+              <div className="relative rounded-full overflow-hidden border border-border w-20 h-20 mb-2">
                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
               </div>
             ) : (
-              <div className="rounded-xl border border-dashed border-border aspect-square w-36 flex items-center justify-center text-muted-foreground mb-2">
-                <ImageIcon className="w-8 h-8" />
+              <div className="rounded-full border border-dashed border-border w-20 h-20 flex items-center justify-center text-muted-foreground mb-2">
+                <User className="w-8 h-8" />
               </div>
             )}
             <label className="inline-flex items-center gap-1.5 text-sm cursor-pointer" style={{ color: ACCENT }}>
@@ -85,30 +77,15 @@ export default function AddParticipantModal({ fairId, open, onOpenChange }) {
           </div>
           <div>
             <Label className="mb-1.5 block">Name</Label>
-            <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Jane Doe / Bmore Arts Org" />
-          </div>
-          <div>
-            <Label className="mb-1.5 block">Type</Label>
-            <div className="flex gap-1 p-1 bg-secondary/60 rounded-lg w-fit">
-              {TYPES.map(([val, label]) => (
-                <button
-                  key={val}
-                  type="button"
-                  onClick={() => setParticipantType(val)}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${participantType === val ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Ainsley Burrows" />
           </div>
           <div>
             <Label className="mb-1.5 block">Role / Title (optional)</Label>
-            <Input value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. Featured Painter, Curator-in-Residence" />
+            <Input value={role} onChange={e => setRole(e.target.value)} placeholder="e.g. Moderator" />
           </div>
           <div>
-            <Label className="mb-1.5 block">About (optional)</Label>
-            <Textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} placeholder="Tell people about this participant..." />
+            <Label className="mb-1.5 block">Bio (optional)</Label>
+            <Textarea value={bio} onChange={e => setBio(e.target.value)} rows={3} placeholder="Short bio" />
           </div>
         </div>
         <DialogFooter>
