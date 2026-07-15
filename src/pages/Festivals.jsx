@@ -6,6 +6,7 @@ import { Sparkles, Search, Plus, Calendar } from 'lucide-react';
 import EventCard from '@/components/shared/EventCard';
 import MainStageTab from '@/components/festivals/MainStageTab';
 import OtherStagesTab from '@/components/festivals/OtherStagesTab';
+import ArtFairTab from '@/components/festivals/ArtFairTab';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -74,12 +75,20 @@ export default function Festivals() {
         >
           Other Stages
         </button>
+        <button
+          onClick={() => setTab('art_fair')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'art_fair' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Art Fair
+        </button>
       </div>
 
       {tab === 'main_stage' ? (
         <MainStageTab />
       ) : tab === 'other_stages' ? (
         <OtherStagesTab />
+      ) : tab === 'art_fair' ? (
+        <ArtFairTab />
       ) : (
       <>
       {/* Search */}
