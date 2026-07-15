@@ -4,11 +4,13 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { Sparkles, Search, Plus, Calendar } from 'lucide-react';
 import EventCard from '@/components/shared/EventCard';
+import MainStageTab from '@/components/festivals/MainStageTab';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 export default function Festivals() {
+  const [tab, setTab] = useState('festivals');
   const [search, setSearch] = useState('');
 
   const { data: events = [], isLoading } = useQuery({
@@ -51,6 +53,26 @@ export default function Festivals() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-1 p-1 bg-secondary/60 rounded-xl w-fit">
+        <button
+          onClick={() => setTab('festivals')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'festivals' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Festivals
+        </button>
+        <button
+          onClick={() => setTab('main_stage')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'main_stage' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Main Stage
+        </button>
+      </div>
+
+      {tab === 'main_stage' ? (
+        <MainStageTab />
+      ) : (
+      <>
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -84,6 +106,8 @@ export default function Festivals() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filtered.map(event => <EventCard key={event.id} event={event} />)}
         </div>
+      )}
+      </>
       )}
     </div>
   );
