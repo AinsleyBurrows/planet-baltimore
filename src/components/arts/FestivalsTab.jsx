@@ -20,6 +20,8 @@ const SUB_TABS = [
   { key: 'beyond_reel', label: 'Beyond the Reel', tag: 'beyond_reel', description: 'Film screenings, premieres, and filmmaker Q&As spotlighting independent cinema.' },
   { key: 'kidscape', label: 'Kidscape', tag: 'kidscape', description: 'Family-friendly art-making, performances, and activities for young creatives.' },
   { key: 'after_dark', label: 'Artscape After Dark', tag: 'after_dark', description: 'Late-night programming — music, performances, and nightlife across the festival.' },
+  { key: 'main_stage', label: 'Main Stage', tag: 'main_stage', description: 'The festival\'s headline stage — marquee performances and main attractions.' },
+  { key: 'echo_stages', label: 'Echo Stages', tag: 'echo_stages', description: 'Secondary stages spotlighting emerging and local talent. Admins can assign events to Echo Stage 1 or Echo Stage 2.' },
 ];
 
 function FestivalProgram({ tab, events, isLoading }) {
@@ -132,8 +134,67 @@ export default function FestivalsTab() {
             </div>
           )}
         </>
+      ) : section === 'echo_stages' ? (
+        <EchoStages events={events} isLoading={isLoading} />
       ) : (
         <FestivalProgram tab={SUB_TABS.find(t => t.key === section)} events={events} isLoading={isLoading} />
+      )}
+    </div>
+  );
+}
+
+function EchoStages({ events, isLoading }) {
+  const [stage, setStage] = useState('echo_stage_1');
+  const now = new Date();
+  const matched = (events || []).filter(e => {
+    const ended = (e.end_date ? new Date(e.end_date) : new Date(e.date)) < now;
+    return !ended && (e.tags || []).some(t => t.toLowerCase() === stage);
+  });
+
+  return (
+    <div className="space-y-5">
+      <div className="rounded-xl border border-border p-5 bg-card">
+        <h2 className="text-xl font-bold text-foreground mb-1">Echo Stages</h2>
+        <p className="text-sm text-muted-foreground max-w-2xl">Secondary stages spotlighting emerging and local talent. Use the picker to view each stage.</p>
+      </div>
+
+      {/* Stage picker */}
+      <div className="flex gap-1 p-1 bg-secondary/60 rounded-xl w-fit">
+        <button
+          onClick={() => setStage('echo_stage_1')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${stage === 'echo_stage_1' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Echo Stage 1
+        </button>
+        <button
+          onClick={() => setStage('echo_stage_2')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${stage === 'echo_stage_2' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Echo Stage 2
+        </button>
+      </div>
+
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-48 rounded-xl" />)}
+        </div>
+      ) : matched.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
+            <Sparkles className="w-7 h-7 text-accent" />
+          </div>
+          <h3 className="font-semibold text-foreground mb-1">No events on {stage === 'echo_stage_1' ? 'Echo Stage 1' : 'Echo Stage 2'} yet</h3>
+          <p className="text-sm text-muted-foreground">Tag a festival event with "{stage}" to assign it to this stage.</p>
+          <Link to="/create-event" className="inline-block mt-4">
+            <Button variant="outline" className="gap-2 rounded-lg" style={{ borderColor: '#d4580a', color: '#d4580a' }}>
+              <Plus className="w-4 h-4" /> Create Event
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {matched.map(event => <EventCard key={event.id} event={event} />)}
+        </div>
       )}
     </div>
   );
