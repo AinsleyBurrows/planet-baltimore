@@ -65,8 +65,13 @@ function FestivalProgram({ tab, events, isLoading }) {
   );
 }
 
-export default function FestivalsTab() {
-  const [section, setSection] = useState('festivals');
+export default function FestivalsTab({ initialSection, onSectionChange }) {
+  const [internalSection, setInternalSection] = useState(initialSection || 'festivals');
+  const section = onSectionChange ? initialSection : internalSection;
+  const setSection = (s) => {
+    if (onSectionChange) onSectionChange(s);
+    else setInternalSection(s);
+  };
   const [search, setSearch] = useState('');
 
   const { data: events = [], isLoading } = useQuery({
@@ -83,7 +88,8 @@ export default function FestivalsTab() {
 
   return (
     <div className="space-y-5">
-      {/* Sub-tabs */}
+      {/* Sub-tabs — hidden when controlled by parent page */}
+      {!onSectionChange && (
       <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
         {SUB_TABS.map(t => (
           <button
@@ -95,6 +101,7 @@ export default function FestivalsTab() {
           </button>
         ))}
       </div>
+      )}
 
       {section === 'scout' ? (
         <ScoutArtFair />
