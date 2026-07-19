@@ -5,7 +5,7 @@ import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
   Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
-  Film, Play, Video, Trophy
+  Film, Play, Video, Trophy, ShoppingBag, Heart
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -364,6 +364,12 @@ export default function ArtistDetail() {
             <TabsTrigger value="awards" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Trophy className="w-3.5 h-3.5" /><span className="hidden xs:inline">Awards</span>
             </TabsTrigger>
+            <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
+            </TabsTrigger>
+            <TabsTrigger value="membership" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Heart className="w-3.5 h-3.5" /><span className="hidden xs:inline">Support</span>
+            </TabsTrigger>
           </>}
           {isLiterary && <>
             <TabsTrigger value="books" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -563,6 +569,12 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="awards" className="mt-4">
             <AwardsPressTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="shop" className="mt-4">
+            <ShopTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="membership" className="mt-4">
+            <MembershipTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
         </>}
 
