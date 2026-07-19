@@ -454,6 +454,90 @@
           }
         }
       }
+    },
+    "visit_info": {
+      "type": "object",
+      "description": "Plan-your-visit details (museums / cultural institutions)",
+      "properties": {
+        "admission": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "price": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "free_admission": {
+          "type": "boolean",
+          "default": false
+        },
+        "parking_notes": {
+          "type": "string"
+        },
+        "accessibility_info": {
+          "type": "string"
+        },
+        "directions_url": {
+          "type": "string"
+        }
+      }
+    },
+    "collection_highlights": {
+      "type": "array",
+      "description": "Featured works from the permanent collection",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string"
+          },
+          "medium": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "programs": {
+      "type": "array",
+      "description": "Tours, workshops, lectures, and education programs",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "audience": {
+            "type": "string"
+          },
+          "registration_url": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [

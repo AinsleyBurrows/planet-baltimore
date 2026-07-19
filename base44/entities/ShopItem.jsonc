@@ -4,7 +4,11 @@
   "properties": {
     "artist_id": {
       "type": "string",
-      "description": "Reference to ArtistPage"
+      "description": "Reference to ArtistPage (optional for org shops)"
+    },
+    "org_id": {
+      "type": "string",
+      "description": "Reference to ArtsOrganization (for museum / org shops)"
     },
     "title": {
       "type": "string",
@@ -55,7 +59,6 @@
     }
   },
   "required": [
-    "artist_id",
     "title"
   ]
 }

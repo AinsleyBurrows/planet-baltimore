@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus, Grid2X2, List, Pin, Trash2 } from 'lucide-react';
+import { MapPin, Globe, Phone, Mail, Clock, Shield, Users, Calendar, Pencil, Heart, Share2, ExternalLink, Send, Camera, ChevronDown, Plus, Grid2X2, List, Pin, Trash2, Images, Palette, GraduationCap, ShoppingBag } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +34,11 @@ import VolunteersTab from '@/components/arts/nonprofit/VolunteersTab';
 import ImpactTab from '@/components/arts/nonprofit/ImpactTab';
 import SponsorsTab from '@/components/arts/nonprofit/SponsorsTab';
 import NewsletterTab from '@/components/arts/nonprofit/NewsletterTab';
+import ExhibitionsTab from '@/components/arts/tabs/ExhibitionsTab';
+import VisitTab from '@/components/arts/tabs/VisitTab';
+import CollectionHighlightsTab from '@/components/arts/tabs/CollectionHighlightsTab';
+import ProgramsTab from '@/components/arts/tabs/ProgramsTab';
+import MuseumShopTab from '@/components/arts/tabs/MuseumShopTab';
 
 const ORG_TYPE_LABELS = {
   museum: 'Museum', gallery: 'Gallery', studio_space: 'Artist Studio Space',
@@ -78,6 +83,7 @@ export default function ArtsOrgDetail() {
   const isOwner = currentUser?.id === org?.owner_id;
   const isPlatformAdmin = currentUser?.role === 'admin';
   const isNonprofit = (org?.org_type === 'nonprofit') || (org?.secondary_types || []).includes('nonprofit');
+  const isMuseum = (org?.org_type === 'museum') || (org?.secondary_types || []).includes('museum');
 
   const handleDelete = async () => {
     await base44.entities.ArtsOrganization.delete(id);
@@ -386,6 +392,11 @@ export default function ArtsOrgDetail() {
             {isNonprofit && <TabsTrigger value="impact" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Impact</TabsTrigger>}
             {isNonprofit && <TabsTrigger value="sponsors" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Sponsors</TabsTrigger>}
             {isNonprofit && <TabsTrigger value="newsletter" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Newsletter</TabsTrigger>}
+            {isMuseum && <TabsTrigger value="exhibitions" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><Images className="w-3 h-3" />Exhibitions</TabsTrigger>}
+            {isMuseum && <TabsTrigger value="visit" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><MapPin className="w-3 h-3" />Visit</TabsTrigger>}
+            {isMuseum && <TabsTrigger value="collection" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><Palette className="w-3 h-3" />Collection</TabsTrigger>}
+            {isMuseum && <TabsTrigger value="programs" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><GraduationCap className="w-3 h-3" />Programs</TabsTrigger>}
+            {isMuseum && <TabsTrigger value="shop" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><ShoppingBag className="w-3 h-3" />Shop</TabsTrigger>}
             <TabsTrigger value="invite" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Invite</TabsTrigger>
             <TabsTrigger value="about" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">About</TabsTrigger>
             <TabsTrigger value="comments" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Comments</TabsTrigger>
@@ -527,6 +538,32 @@ export default function ArtsOrgDetail() {
           {isNonprofit && (
             <TabsContent value="newsletter" className="mt-4">
               <NewsletterTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+
+          {isMuseum && (
+            <TabsContent value="exhibitions" className="mt-4">
+              <ExhibitionsTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isMuseum && (
+            <TabsContent value="visit" className="mt-4">
+              <VisitTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isMuseum && (
+            <TabsContent value="collection" className="mt-4">
+              <CollectionHighlightsTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isMuseum && (
+            <TabsContent value="programs" className="mt-4">
+              <ProgramsTab org={org} isOwner={isOwner} />
+            </TabsContent>
+          )}
+          {isMuseum && (
+            <TabsContent value="shop" className="mt-4">
+              <MuseumShopTab org={org} isOwner={isOwner} />
             </TabsContent>
           )}
 
