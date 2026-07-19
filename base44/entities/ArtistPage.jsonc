@@ -380,6 +380,174 @@
           }
         }
       }
+    },
+    "podcast_media_kit": {
+      "type": "object",
+      "description": "Sponsorship media kit stats for podcasters",
+      "properties": {
+        "monthly_downloads": {
+          "type": "string"
+        },
+        "total_downloads": {
+          "type": "string"
+        },
+        "audience_description": {
+          "type": "string"
+        },
+        "primary_age_range": {
+          "type": "string"
+        },
+        "top_geos": {
+          "type": "string"
+        },
+        "rate_card": {
+          "type": "string"
+        },
+        "sponsor_email": {
+          "type": "string"
+        }
+      }
+    },
+    "podcast_sponsors": {
+      "type": "array",
+      "description": "Sponsors for the podcast",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "logo_url": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "sponsor_since": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "podcast_clips": {
+      "type": "array",
+      "description": "Shareable clips and shorts pulled from episodes",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "embed_url": {
+            "type": "string"
+          },
+          "thumbnail_url": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "duration_label": {
+            "type": "string"
+          },
+          "source_episode": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "podcast_questions": {
+      "type": "array",
+      "description": "Listener-submitted questions for the mailbag",
+      "items": {
+        "type": "object",
+        "properties": {
+          "listener_name": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "submitted_at": {
+            "type": "string"
+          },
+          "answered": {
+            "type": "boolean"
+          },
+          "episode_title": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "podcast_bonus_episodes": {
+      "type": "array",
+      "description": "Members-only bonus episodes and extended cuts",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "audio_url": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "string"
+          },
+          "published_at": {
+            "type": "string"
+          },
+          "cover_url": {
+            "type": "string"
+          },
+          "tier_name": {
+            "type": "string"
+          },
+          "is_locked": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "podcast_reviews": {
+      "type": "array",
+      "description": "Ratings and listener reviews of the podcast",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string"
+          },
+          "link": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [

@@ -5,7 +5,8 @@ import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
   Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
-  Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award
+  Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award,
+  BadgeDollarSign, Scissors, HelpCircle, Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +42,11 @@ import PodcastGuestsTab from '@/components/artist/podcast/PodcastGuestsTab';
 import PodcastListenOnTab from '@/components/artist/podcast/PodcastListenOnTab';
 import PodcastCommunityTab from '@/components/artist/podcast/PodcastCommunityTab';
 import PodcastDashboardTab from '@/components/artist/podcast/PodcastDashboardTab';
+import SponsorshipsTab from '@/components/artist/podcast/SponsorshipsTab';
+import ClipsTab from '@/components/artist/podcast/ClipsTab';
+import ListenerQATab from '@/components/artist/podcast/ListenerQATab';
+import BonusTab from '@/components/artist/podcast/BonusTab';
+import PodcastReviewsTab from '@/components/artist/podcast/PodcastReviewsTab';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
@@ -336,6 +342,21 @@ export default function ArtistDetail() {
                 <TrendingUp className="w-3.5 h-3.5" /><span className="hidden xs:inline">Dashboard</span>
               </TabsTrigger>
             )}
+            <TabsTrigger value="sponsors" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <BadgeDollarSign className="w-3.5 h-3.5" /><span className="hidden xs:inline">Sponsors</span>
+            </TabsTrigger>
+            <TabsTrigger value="clips" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Scissors className="w-3.5 h-3.5" /><span className="hidden xs:inline">Clips</span>
+            </TabsTrigger>
+            <TabsTrigger value="qna" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <HelpCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Q&A</span>
+            </TabsTrigger>
+            <TabsTrigger value="bonus" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Lock className="w-3.5 h-3.5" /><span className="hidden xs:inline">Bonus</span>
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reviews</span>
+            </TabsTrigger>
           </>}
           {isPerformance && <>
             <TabsTrigger value="repertoire" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -530,6 +551,21 @@ export default function ArtistDetail() {
               <PodcastDashboardTab artist={artist} posts={posts} followersCount={artist.followers_count} />
             </TabsContent>
           )}
+          <TabsContent value="sponsors" className="mt-4">
+            <SponsorshipsTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="clips" className="mt-4">
+            <ClipsTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="qna" className="mt-4">
+            <ListenerQATab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="bonus" className="mt-4">
+            <BonusTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="reviews" className="mt-4">
+            <PodcastReviewsTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
         </>}
 
         {/* Performance-specific tabs */}
