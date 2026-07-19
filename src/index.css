@@ -136,6 +136,12 @@
     @apply flex items-center gap-3 px-3 h-11 rounded-lg transition-all duration-150 text-sm font-medium
            hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
   }
+
+  /* Black & white icons — applied to the artist page */
+  .artist-bw svg,
+  .artist-bw .bw-emoji {
+    filter: grayscale(1) contrast(1.05);
+  }
 }
 
 /* Ensure all <button> have cursor-pointer */
