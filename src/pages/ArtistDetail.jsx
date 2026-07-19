@@ -39,7 +39,6 @@ import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 
 import PodcastEpisodesTab from '@/components/artist/podcast/PodcastEpisodesTab';
 import PodcastGuestsTab from '@/components/artist/podcast/PodcastGuestsTab';
-import PodcastListenOnTab from '@/components/artist/podcast/PodcastListenOnTab';
 import PodcastCommunityTab from '@/components/artist/podcast/PodcastCommunityTab';
 import PodcastDashboardTab from '@/components/artist/podcast/PodcastDashboardTab';
 import SponsorshipsTab from '@/components/artist/podcast/SponsorshipsTab';
@@ -334,9 +333,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="guests" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               🎤 <span className="hidden xs:inline">Guests</span>
             </TabsTrigger>
-            <TabsTrigger value="listen_on" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              🎧 <span className="hidden xs:inline">Listen On</span>
-            </TabsTrigger>
             {isOwner && (
               <TabsTrigger value="podcast_dashboard" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
                 <TrendingUp className="w-3.5 h-3.5" /><span className="hidden xs:inline">Dashboard</span>
@@ -542,9 +538,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="guests" className="mt-4">
             <PodcastGuestsTab artist={artist} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="listen_on" className="mt-4">
-            <PodcastListenOnTab artist={artist} isOwner={isOwner} />
           </TabsContent>
           {isOwner && (
             <TabsContent value="podcast_dashboard" className="mt-4">
