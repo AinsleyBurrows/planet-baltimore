@@ -4,7 +4,8 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
-  Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard
+  Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
+  Film, Play, Video, Trophy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -65,6 +66,13 @@ import WritingExcerptsTab from '@/components/artist/literary/WritingExcerptsTab'
 import NewsletterTab from '@/components/artist/literary/NewsletterTab';
 import AppearancesTab from '@/components/artist/literary/AppearancesTab';
 import PressReviewsTab from '@/components/artist/literary/PressReviewsTab';
+
+// Video-specific tabs
+import FilmographyTab from '@/components/artist/video/FilmographyTab';
+import ReelTab from '@/components/artist/video/ReelTab';
+import ScreeningsTab from '@/components/artist/video/ScreeningsTab';
+import WatchTab from '@/components/artist/video/WatchTab';
+import AwardsPressTab from '@/components/artist/video/AwardsPressTab';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
@@ -139,6 +147,7 @@ export default function ArtistDetail() {
   const isPodcaster = artist.category === 'podcaster';
   const isPerformance = artist.category === 'performance';
   const isLiterary = artist.category === 'literary';
+  const isVideo = artist.category === 'video';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -282,7 +291,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : "journal"}>
+      <Tabs defaultValue={isVideo ? "filmography" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -339,6 +348,23 @@ export default function ArtistDetail() {
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
             </TabsTrigger>
           </>}
+          {isVideo && <>
+            <TabsTrigger value="filmography" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Film className="w-3.5 h-3.5" /><span className="hidden xs:inline">Filmography</span>
+            </TabsTrigger>
+            <TabsTrigger value="reel" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Play className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reel</span>
+            </TabsTrigger>
+            <TabsTrigger value="watch" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Video className="w-3.5 h-3.5" /><span className="hidden xs:inline">Watch</span>
+            </TabsTrigger>
+            <TabsTrigger value="screenings" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Screenings</span>
+            </TabsTrigger>
+            <TabsTrigger value="awards" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Trophy className="w-3.5 h-3.5" /><span className="hidden xs:inline">Awards</span>
+            </TabsTrigger>
+          </>}
           {isLiterary && <>
             <TabsTrigger value="books" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               📚 <span className="hidden xs:inline">Books</span>
@@ -362,7 +388,7 @@ export default function ArtistDetail() {
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
           </>}
-          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && <>
+          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>}
@@ -384,11 +410,11 @@ export default function ArtistDetail() {
               </TabsTrigger>
             </>}
           </>}
-          <TabsTrigger value="events" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+          {!isVideo && <TabsTrigger value="events" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Calendar className="w-3.5 h-3.5" />
             <span className="hidden xs:inline">Events</span>
             {upcomingCount > 0 && <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground text-[9px] font-bold">{upcomingCount}</span>}
-          </TabsTrigger>
+          </TabsTrigger>}
           {!isPodcaster && <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Talk</span>
           </TabsTrigger>}
@@ -518,6 +544,25 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="press" className="mt-4">
             <PressReviewsTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+        </>}
+
+        {/* Video-specific tabs */}
+        {isVideo && <>
+          <TabsContent value="filmography" className="mt-4">
+            <FilmographyTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="reel" className="mt-4">
+            <ReelTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="watch" className="mt-4">
+            <WatchTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="screenings" className="mt-4">
+            <ScreeningsTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="awards" className="mt-4">
+            <AwardsPressTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
         </>}
 

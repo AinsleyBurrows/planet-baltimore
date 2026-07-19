@@ -1,0 +1,52 @@
+{
+  "name": "VideoAward",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string",
+      "description": "Reference to ArtistPage"
+    },
+    "title": {
+      "type": "string",
+      "description": "Name of the award / laurel / selection"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "award",
+        "official_selection",
+        "laurel",
+        "press_review",
+        "media_mention",
+        "interview"
+      ],
+      "default": "award",
+      "description": "Kind of recognition"
+    },
+    "source": {
+      "type": "string",
+      "description": "Festival / publication / outlet / award body"
+    },
+    "quote": {
+      "type": "string",
+      "description": "Press quote / blurb (for reviews)"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the award / review / selection"
+    },
+    "link": {
+      "type": "string",
+      "description": "Optional link to the full review / award page"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "artist_id",
+    "title"
+  ]
+}
