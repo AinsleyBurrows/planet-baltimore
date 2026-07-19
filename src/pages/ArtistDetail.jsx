@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
-  Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp
+  Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,6 +49,13 @@ import MusicVideosTab from '@/components/artist/music/MusicVideosTab';
 import EPKTab from '@/components/artist/music/EPKTab';
 import BookingTab from '@/components/artist/music/BookingTab';
 import StreamingLinksTab from '@/components/artist/music/StreamingLinksTab';
+
+// Performance-specific tabs
+import RepertoireTab from '@/components/artist/performance/RepertoireTab';
+import ShowreelTab from '@/components/artist/performance/ShowreelTab';
+import PerformancesTab from '@/components/artist/performance/PerformancesTab';
+import ReviewsTab from '@/components/artist/performance/ReviewsTab';
+import PerformanceBookingTab from '@/components/artist/performance/PerformanceBookingTab';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
@@ -121,6 +128,7 @@ export default function ArtistDetail() {
   const isMusic = artist.category === 'music';
   const isFashion = artist.category === 'fashion';
   const isPodcaster = artist.category === 'podcaster';
+  const isPerformance = artist.category === 'performance';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -264,7 +272,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : "journal"}>
+      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -304,7 +312,24 @@ export default function ArtistDetail() {
               </TabsTrigger>
             )}
           </>}
-          {!isMusic && !isPodcaster && <>
+          {isPerformance && <>
+            <TabsTrigger value="repertoire" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎭 <span className="hidden xs:inline">Repertoire</span>
+            </TabsTrigger>
+            <TabsTrigger value="showreel" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎬 <span className="hidden xs:inline">Reel</span>
+            </TabsTrigger>
+            <TabsTrigger value="performances" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shows</span>
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reviews</span>
+            </TabsTrigger>
+            <TabsTrigger value="booking" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
+            </TabsTrigger>
+          </>}
+          {!isMusic && !isPodcaster && !isPerformance && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>}
@@ -417,6 +442,25 @@ export default function ArtistDetail() {
               <PodcastDashboardTab artist={artist} posts={posts} followersCount={artist.followers_count} />
             </TabsContent>
           )}
+        </>}
+
+        {/* Performance-specific tabs */}
+        {isPerformance && <>
+          <TabsContent value="repertoire" className="mt-4">
+            <RepertoireTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="showreel" className="mt-4">
+            <ShowreelTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="performances" className="mt-4">
+            <PerformancesTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="reviews" className="mt-4">
+            <ReviewsTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="booking" className="mt-4">
+            <PerformanceBookingTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
         </>}
 
         {/* Fashion-only tabs */}

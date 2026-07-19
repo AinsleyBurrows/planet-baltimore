@@ -1,0 +1,65 @@
+{
+  "name": "PerformanceBooking",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string",
+      "description": "Reference to ArtistPage"
+    },
+    "manager_name": {
+      "type": "string",
+      "description": "Manager or booking contact name"
+    },
+    "manager_email": {
+      "type": "string",
+      "description": "Manager or booking contact email"
+    },
+    "booking_email": {
+      "type": "string",
+      "description": "Dedicated booking email"
+    },
+    "booking_phone": {
+      "type": "string",
+      "description": "Booking phone number"
+    },
+    "fee_range": {
+      "type": "string",
+      "description": "Typical fee range (e.g. '$500\u2013$2000')"
+    },
+    "availability": {
+      "type": "string",
+      "description": "General availability notes (e.g. 'Available year-round, 2025 tour booked')"
+    },
+    "regions_toured": {
+      "type": "string",
+      "description": "Regions toured / willing to travel"
+    },
+    "stage_dimensions": {
+      "type": "string",
+      "description": "Minimum stage dimensions required"
+    },
+    "lighting_needs": {
+      "type": "string",
+      "description": "Lighting requirements"
+    },
+    "sound_needs": {
+      "type": "string",
+      "description": "Sound / PA requirements"
+    },
+    "crew_requirements": {
+      "type": "string",
+      "description": "Crew / staffing requirements"
+    },
+    "setup_time": {
+      "type": "string",
+      "description": "Setup / soundcheck time needed"
+    },
+    "rider_url": {
+      "type": "string",
+      "description": "Downloadable technical rider document URL"
+    }
+  },
+  "required": [
+    "artist_id"
+  ]
+}

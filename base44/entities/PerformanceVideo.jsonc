@@ -1,0 +1,44 @@
+{
+  "name": "PerformanceVideo",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string",
+      "description": "Reference to ArtistPage"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the video clip"
+    },
+    "venue": {
+      "type": "string",
+      "description": "Venue where it was recorded"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the performance"
+    },
+    "embed_url": {
+      "type": "string",
+      "description": "YouTube / Vimeo embed URL"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Optional thumbnail image"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "artist_id",
+    "title",
+    "embed_url"
+  ]
+}
