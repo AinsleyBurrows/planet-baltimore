@@ -1,0 +1,61 @@
+{
+  "name": "ShopItem",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string",
+      "description": "Reference to ArtistPage"
+    },
+    "title": {
+      "type": "string",
+      "description": "Name of the item"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description / details"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Image of the item"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in USD (0 = free / pay what you want)"
+    },
+    "item_type": {
+      "type": "string",
+      "enum": [
+        "print",
+        "original",
+        "digital_download",
+        "merch",
+        "vinyl",
+        "book",
+        "other"
+      ],
+      "default": "other",
+      "description": "Kind of shop item"
+    },
+    "buy_url": {
+      "type": "string",
+      "description": "External checkout / purchase link"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "sold_out",
+        "preorder"
+      ],
+      "default": "available"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "artist_id",
+    "title"
+  ]
+}

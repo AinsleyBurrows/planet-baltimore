@@ -57,6 +57,15 @@ import PerformancesTab from '@/components/artist/performance/PerformancesTab';
 import ReviewsTab from '@/components/artist/performance/ReviewsTab';
 import PerformanceBookingTab from '@/components/artist/performance/PerformanceBookingTab';
 
+// Literary-specific tabs
+import ShopTab from '@/components/artist/literary/ShopTab';
+import MembershipTab from '@/components/artist/literary/MembershipTab';
+import BooksTab from '@/components/artist/literary/BooksTab';
+import WritingExcerptsTab from '@/components/artist/literary/WritingExcerptsTab';
+import NewsletterTab from '@/components/artist/literary/NewsletterTab';
+import AppearancesTab from '@/components/artist/literary/AppearancesTab';
+import PressReviewsTab from '@/components/artist/literary/PressReviewsTab';
+
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
   performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', fashion: 'Fashion', podcaster: 'Podcaster', other: 'Other'
@@ -129,6 +138,7 @@ export default function ArtistDetail() {
   const isFashion = artist.category === 'fashion';
   const isPodcaster = artist.category === 'podcaster';
   const isPerformance = artist.category === 'performance';
+  const isLiterary = artist.category === 'literary';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -272,7 +282,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : "journal"}>
+      <Tabs defaultValue={isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -329,7 +339,30 @@ export default function ArtistDetail() {
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
             </TabsTrigger>
           </>}
-          {!isMusic && !isPodcaster && !isPerformance && <>
+          {isLiterary && <>
+            <TabsTrigger value="books" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              📚 <span className="hidden xs:inline">Books</span>
+            </TabsTrigger>
+            <TabsTrigger value="writing" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              ✍️ <span className="hidden xs:inline">Writing</span>
+            </TabsTrigger>
+            <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🛍️ <span className="hidden xs:inline">Shop</span>
+            </TabsTrigger>
+            <TabsTrigger value="membership" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              💛 <span className="hidden xs:inline">Support</span>
+            </TabsTrigger>
+            <TabsTrigger value="appearances" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Appearances</span>
+            </TabsTrigger>
+            <TabsTrigger value="newsletter" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              ✉️ <span className="hidden xs:inline">Newsletter</span>
+            </TabsTrigger>
+            <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
+            </TabsTrigger>
+          </>}
+          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>}
@@ -460,6 +493,31 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="booking" className="mt-4">
             <PerformanceBookingTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+        </>}
+
+        {/* Literary-specific tabs */}
+        {isLiterary && <>
+          <TabsContent value="books" className="mt-4">
+            <BooksTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="writing" className="mt-4">
+            <WritingExcerptsTab artistId={artistId} ownerId={artist.owner_id} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="shop" className="mt-4">
+            <ShopTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="membership" className="mt-4">
+            <MembershipTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="appearances" className="mt-4">
+            <AppearancesTab artistId={artistId} isOwner={isOwner} currentUserId={user?.id} />
+          </TabsContent>
+          <TabsContent value="newsletter" className="mt-4">
+            <NewsletterTab artistId={artistId} ownerId={artist.owner_id} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="press" className="mt-4">
+            <PressReviewsTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
         </>}
 

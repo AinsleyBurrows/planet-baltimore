@@ -1,0 +1,51 @@
+{
+  "name": "LiteraryReview",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string",
+      "description": "Reference to ArtistPage"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source / outlet / publication / award body / interviewer"
+    },
+    "quote": {
+      "type": "string",
+      "description": "The review quote, blurb, or testimonial"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Optional star rating (1-5)"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the review / award / interview"
+    },
+    "link": {
+      "type": "string",
+      "description": "Optional link to the full review / interview"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "review",
+        "blurb",
+        "award",
+        "interview",
+        "media_mention"
+      ],
+      "default": "review"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "artist_id",
+    "source",
+    "quote"
+  ]
+}
