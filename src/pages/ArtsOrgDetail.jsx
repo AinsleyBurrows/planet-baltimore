@@ -52,7 +52,7 @@ export default function ArtsOrgDetail() {
   const id = window.location.pathname.split('/').pop();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('posts');
+  const [activeTab, setActiveTab] = useState('posts'); // eslint-disable-line
   const [postView, setPostView] = useState('feed'); // 'feed' | 'grid'
   const [showInvite, setShowInvite] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
@@ -385,9 +385,9 @@ export default function ArtsOrgDetail() {
             <TabsTrigger value="press" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Press{(org.press_kit?.press_contact || org.press_kit?.bio_text || org.press_kit?.press_images?.length) && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-accent inline-block" />}
             </TabsTrigger>
-            <TabsTrigger value="announcements" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
+            {!isMuseum && <TabsTrigger value="announcements" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Updates{(org.announcements?.length > 0) && <span className="ml-1 text-[10px] bg-accent/20 text-accent rounded-full px-1.5">{org.announcements.length}</span>}
-            </TabsTrigger>
+            </TabsTrigger>}
             {isNonprofit && <TabsTrigger value="grants" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Grants</TabsTrigger>}
             {isNonprofit && <TabsTrigger value="volunteers" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Volunteers</TabsTrigger>}
             {isNonprofit && <TabsTrigger value="impact" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Impact</TabsTrigger>}
