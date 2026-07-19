@@ -5,7 +5,7 @@ import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
   Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
-  Film, Play, Video, Trophy, ShoppingBag, Heart
+  Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -73,6 +73,11 @@ import ReelTab from '@/components/artist/video/ReelTab';
 import ScreeningsTab from '@/components/artist/video/ScreeningsTab';
 import WatchTab from '@/components/artist/video/WatchTab';
 import AwardsPressTab from '@/components/artist/video/AwardsPressTab';
+
+// Photography-specific tabs
+import PortfolioCollectionsTab from '@/components/artist/photo/PortfolioCollectionsTab';
+import BookingsSessionsTab from '@/components/artist/photo/BookingsSessionsTab';
+import ExhibitionsPublicationsTab from '@/components/artist/photo/ExhibitionsPublicationsTab';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
@@ -148,6 +153,7 @@ export default function ArtistDetail() {
   const isPerformance = artist.category === 'performance';
   const isLiterary = artist.category === 'literary';
   const isVideo = artist.category === 'video';
+  const isPhoto = artist.category === 'photography';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -291,7 +297,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isVideo ? "filmography" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : "journal"}>
+      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "filmography" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -348,6 +354,23 @@ export default function ArtistDetail() {
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
             </TabsTrigger>
           </>}
+          {isPhoto && <>
+            <TabsTrigger value="portfolio" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Images className="w-3.5 h-3.5" /><span className="hidden xs:inline">Portfolio</span>
+            </TabsTrigger>
+            <TabsTrigger value="printshop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Print Shop</span>
+            </TabsTrigger>
+            <TabsTrigger value="bookings" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <CameraIcon className="w-3.5 h-3.5" /><span className="hidden xs:inline">Bookings</span>
+            </TabsTrigger>
+            <TabsTrigger value="recognition" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Award className="w-3.5 h-3.5" /><span className="hidden xs:inline">Recognition</span>
+            </TabsTrigger>
+            <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <CameraIcon className="w-3.5 h-3.5" /><span className="hidden xs:inline">Field Notes</span>
+            </TabsTrigger>
+          </>}
           {isVideo && <>
             <TabsTrigger value="filmography" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Film className="w-3.5 h-3.5" /><span className="hidden xs:inline">Filmography</span>
@@ -394,7 +417,7 @@ export default function ArtistDetail() {
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
           </>}
-          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && <>
+          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && !isPhoto && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>}
@@ -550,6 +573,22 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="press" className="mt-4">
             <PressReviewsTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+        </>}
+
+        {/* Photography-specific tabs */}
+        {isPhoto && <>
+          <TabsContent value="portfolio" className="mt-4">
+            <PortfolioCollectionsTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="printshop" className="mt-4">
+            <ShopTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="bookings" className="mt-4">
+            <BookingsSessionsTab artistId={artistId} artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="recognition" className="mt-4">
+            <ExhibitionsPublicationsTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
         </>}
 
