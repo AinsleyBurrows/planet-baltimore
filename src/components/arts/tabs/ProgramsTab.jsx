@@ -66,7 +66,7 @@ export default function ProgramsTab({ org, isOwner }) {
   const saveEdit = async (form) => { setSaving(true); await save(programs.map((a, i) => i === editIdx ? { ...a, ...form } : a)); setEditIdx(null); setSaving(false); };
   const remove = async (idx) => { if (!window.confirm('Remove this program?')) return; await save(programs.filter((_, i) => i !== idx)); };
 
-  const today = new Date(new Date().getFullYear(), new Date.getMonth(), new Date().getDate());
+  const today = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
   const sorted = [...programs].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
   const upcoming = sorted.filter(p => !p.date || (p.date && new Date(p.date) >= today));
   const past = sorted.filter(p => p.date && new Date(p.date) < today);
