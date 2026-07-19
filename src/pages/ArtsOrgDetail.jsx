@@ -369,6 +369,7 @@ export default function ArtsOrgDetail() {
             <TabsTrigger value="posts" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Posts{posts.length > 0 && <span className="ml-1 text-[10px] bg-accent/20 text-accent rounded-full px-1.5">{posts.length}</span>}
             </TabsTrigger>
+            {isMuseum && <TabsTrigger value="exhibitions" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><Images className="w-3 h-3" />Exhibitions</TabsTrigger>}
             <TabsTrigger value="events" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">
               Events{events.length > 0 && <span className="ml-1 text-[10px] bg-accent/20 text-accent rounded-full px-1.5">{events.length}</span>}
             </TabsTrigger>
@@ -392,7 +393,6 @@ export default function ArtsOrgDetail() {
             {isNonprofit && <TabsTrigger value="impact" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Impact</TabsTrigger>}
             {isNonprofit && <TabsTrigger value="sponsors" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Sponsors</TabsTrigger>}
             {isNonprofit && <TabsTrigger value="newsletter" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0">Newsletter</TabsTrigger>}
-            {isMuseum && <TabsTrigger value="exhibitions" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><Images className="w-3 h-3" />Exhibitions</TabsTrigger>}
             {isMuseum && <TabsTrigger value="visit" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><MapPin className="w-3 h-3" />Visit</TabsTrigger>}
             {isMuseum && <TabsTrigger value="collection" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><Palette className="w-3 h-3" />Collection</TabsTrigger>}
             {isMuseum && <TabsTrigger value="programs" className="rounded-lg text-xs py-1.5 px-3 whitespace-nowrap flex-shrink-0 flex items-center gap-1"><GraduationCap className="w-3 h-3" />Programs</TabsTrigger>}
