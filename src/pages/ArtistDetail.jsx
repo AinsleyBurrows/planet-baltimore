@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
-  Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star
+  Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -324,10 +324,10 @@ export default function ArtistDetail() {
           </>}
           {isPerformance && <>
             <TabsTrigger value="repertoire" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              🎭 <span className="hidden xs:inline">Repertoire</span>
+              <Theater className="w-3.5 h-3.5" /><span className="hidden xs:inline">Repertoire</span>
             </TabsTrigger>
             <TabsTrigger value="showreel" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              🎬 <span className="hidden xs:inline">Reel</span>
+              <Clapperboard className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reel</span>
             </TabsTrigger>
             <TabsTrigger value="performances" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shows</span>
