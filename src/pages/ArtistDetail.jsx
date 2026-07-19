@@ -158,7 +158,7 @@ export default function ArtistDetail() {
   const upcomingCount = events.filter(e => e.date && new Date(e.date) > new Date()).length;
 
   return (
-    <div className="artist-bw">
+    <div>
       <div className="flex items-center justify-between mb-2">
         <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-secondary transition-colors">
           <ArrowLeft className="w-5 h-5" />
@@ -258,7 +258,7 @@ export default function ArtistDetail() {
             {Object.entries(artist.social_links).map(([platform, url]) => url && (
               <a key={platform} href={url} target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors capitalize">
-                <span className="bw-emoji">{socialIcons[platform] || '🔗'}</span> {platform}
+                {socialIcons[platform] || '🔗'} {platform}
               </a>
             ))}
           </div>
@@ -289,10 +289,10 @@ export default function ArtistDetail() {
           </TabsTrigger>
           {isMusic && <>
             <TabsTrigger value="discography" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">🎵</span> <span className="hidden xs:inline">Album</span>
+              🎵 <span className="hidden xs:inline">Album</span>
             </TabsTrigger>
             <TabsTrigger value="tracks" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">▶️</span> <span className="hidden xs:inline">Singles</span>
+              ▶️ <span className="hidden xs:inline">Singles</span>
             </TabsTrigger>
             <TabsTrigger value="tour" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shows</span>
@@ -308,13 +308,13 @@ export default function ArtistDetail() {
           </>}
           {isPodcaster && <>
             <TabsTrigger value="episodes" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">🎙️</span> <span className="hidden xs:inline">Episodes</span>
+              🎙️ <span className="hidden xs:inline">Episodes</span>
             </TabsTrigger>
             <TabsTrigger value="guests" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">🎤</span> <span className="hidden xs:inline">Guests</span>
+              🎤 <span className="hidden xs:inline">Guests</span>
             </TabsTrigger>
             <TabsTrigger value="listen_on" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">🎧</span> <span className="hidden xs:inline">Listen On</span>
+              🎧 <span className="hidden xs:inline">Listen On</span>
             </TabsTrigger>
             {isOwner && (
               <TabsTrigger value="podcast_dashboard" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -324,10 +324,10 @@ export default function ArtistDetail() {
           </>}
           {isPerformance && <>
             <TabsTrigger value="repertoire" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">🎭</span> <span className="hidden xs:inline">Repertoire</span>
+              🎭 <span className="hidden xs:inline">Repertoire</span>
             </TabsTrigger>
             <TabsTrigger value="showreel" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">🎬</span> <span className="hidden xs:inline">Reel</span>
+              🎬 <span className="hidden xs:inline">Reel</span>
             </TabsTrigger>
             <TabsTrigger value="performances" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shows</span>
@@ -341,22 +341,22 @@ export default function ArtistDetail() {
           </>}
           {isLiterary && <>
             <TabsTrigger value="books" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">📚</span> <span className="hidden xs:inline">Books</span>
+              📚 <span className="hidden xs:inline">Books</span>
             </TabsTrigger>
             <TabsTrigger value="writing" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">✍️</span> <span className="hidden xs:inline">Writing</span>
+              ✍️ <span className="hidden xs:inline">Writing</span>
             </TabsTrigger>
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">🛍️</span> <span className="hidden xs:inline">Shop</span>
+              🛍️ <span className="hidden xs:inline">Shop</span>
             </TabsTrigger>
             <TabsTrigger value="membership" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">💛</span> <span className="hidden xs:inline">Support</span>
+              💛 <span className="hidden xs:inline">Support</span>
             </TabsTrigger>
             <TabsTrigger value="appearances" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Appearances</span>
             </TabsTrigger>
             <TabsTrigger value="newsletter" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <span className="bw-emoji">✉️</span> <span className="hidden xs:inline">Newsletter</span>
+              ✉️ <span className="hidden xs:inline">Newsletter</span>
             </TabsTrigger>
             <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
