@@ -548,6 +548,47 @@
           }
         }
       }
+    },
+    "materials_techniques": {
+      "type": "array",
+      "description": "Materials & techniques the mixed-media artist works with",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Material or technique name (e.g. Collage, Assemblage, Resin, Found Objects)"
+          },
+          "description": {
+            "type": "string",
+            "description": "How the artist uses this material or technique"
+          }
+        }
+      }
+    },
+    "installations": {
+      "type": "array",
+      "description": "Large-scale / spatial mixed-media installations",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [

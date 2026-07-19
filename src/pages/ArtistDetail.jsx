@@ -6,7 +6,7 @@ import {
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
   Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
   Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award,
-  BadgeDollarSign, Scissors, HelpCircle, Lock, Headphones
+  BadgeDollarSign, Scissors, HelpCircle, Lock, Headphones, Palette, Frame, Handshake
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -78,6 +78,11 @@ import ReelTab from '@/components/artist/video/ReelTab';
 import ScreeningsTab from '@/components/artist/video/ScreeningsTab';
 import WatchTab from '@/components/artist/video/WatchTab';
 import AwardsPressTab from '@/components/artist/video/AwardsPressTab';
+
+// Mixed-media-specific tabs
+import MixedMediaMaterialsTab from '@/components/artist/mixedmedia/MixedMediaMaterialsTab';
+import MixedMediaInstallationsTab from '@/components/artist/mixedmedia/MixedMediaInstallationsTab';
+import MixedMediaCommissionsTab from '@/components/artist/mixedmedia/MixedMediaCommissionsTab';
 
 // Photography-specific tabs
 import PortfolioCollectionsTab from '@/components/artist/photo/PortfolioCollectionsTab';
@@ -159,6 +164,7 @@ export default function ArtistDetail() {
   const isLiterary = artist.category === 'literary';
   const isVideo = artist.category === 'video';
   const isPhoto = artist.category === 'photography';
+  const isMixedMedia = artist.category === 'mixed_media';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -302,7 +308,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "filmography" : isMusic ? "listen" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : "journal"}>
+      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "filmography" : isMusic ? "listen" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : isMixedMedia ? "materials" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -443,7 +449,24 @@ export default function ArtistDetail() {
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
           </>}
-          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && !isPhoto && <>
+          {isMixedMedia && <>
+            <TabsTrigger value="materials" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Palette className="w-3.5 h-3.5" /><span className="hidden xs:inline">Materials</span>
+            </TabsTrigger>
+            <TabsTrigger value="installations" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Installations</span>
+            </TabsTrigger>
+            <TabsTrigger value="commissions" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Handshake className="w-3.5 h-3.5" /><span className="hidden xs:inline">Commissions</span>
+            </TabsTrigger>
+            <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
+            </TabsTrigger>
+            <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
+            </TabsTrigger>
+          </>}
+          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && !isPhoto && !isMixedMedia && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>}
@@ -595,6 +618,25 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="booking" className="mt-4">
             <PerformanceBookingTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+        </>}
+
+        {/* Mixed-media-specific tabs */}
+        {isMixedMedia && <>
+          <TabsContent value="materials" className="mt-4">
+            <MixedMediaMaterialsTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="installations" className="mt-4">
+            <MixedMediaInstallationsTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="commissions" className="mt-4">
+            <MixedMediaCommissionsTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="shop" className="mt-4">
+            <ShopTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="press" className="mt-4">
+            <PressReviewsTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
         </>}
 
