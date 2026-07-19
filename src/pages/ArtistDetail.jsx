@@ -225,7 +225,7 @@ export default function ArtistDetail() {
 
         <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h1 className="text-xl font-bold text-foreground">{artist.name}</h1>
-          {artist.is_verified && <CheckCircle className="w-5 h-5 text-accent fill-accent/20" />}
+          {artist.is_verified && <CheckCircle className="w-5 h-5 text-foreground fill-foreground/20" />}
           {artist.is_founding_member && <FoundingMemberBadge />}
           {isPlatformAdmin && (
             <button
@@ -243,11 +243,11 @@ export default function ArtistDetail() {
         {artist.bio && <p className="text-sm text-muted-foreground leading-relaxed mt-1.5 line-clamp-3">{artist.bio}</p>}
 
         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
-          <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />{(artist.followers_count || 0).toLocaleString()} followers</span>
-          {artist.neighborhood_name && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{artist.neighborhood_name}</span>}
+          <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-foreground" />{(artist.followers_count || 0).toLocaleString()} followers</span>
+          {artist.neighborhood_name && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-foreground" />{artist.neighborhood_name}</span>}
           {artist.website && (
             <a href={artist.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-accent hover:underline">
-              <Globe className="w-3.5 h-3.5" />Website
+              <Globe className="w-3.5 h-3.5 text-foreground" />Website
             </a>
           )}
         </div>
@@ -552,7 +552,7 @@ export default function ArtistDetail() {
         <TabsContent value="discussion" className="mt-4">
           <div className="space-y-3">
             <div className="flex items-start gap-3 p-4 bg-secondary/30 rounded-xl">
-              <MessageCircle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+              <MessageCircle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-foreground">Community Discussion</p>
                 <p className="text-xs text-muted-foreground mt-0.5">Ask questions, share thoughts, or start a conversation with {artist.name} and their followers.</p>
