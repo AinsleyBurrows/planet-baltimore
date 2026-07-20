@@ -28,6 +28,66 @@
         }
       }
     },
+    "design_experience": {
+      "type": "array",
+      "description": "Professional design roles and work history (fashion designers)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "collections": {
+      "type": "array",
+      "description": "Collections and runway shows (fashion designers)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "collaborations": {
+      "type": "array",
+      "description": "Brand collaborations and capsule projects (fashion designers)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "partner": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "solo_exhibitions": {
       "type": "array",
       "items": {
@@ -131,6 +191,24 @@
             "type": "string"
           },
           "publication": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stockists": {
+      "type": "array",
+      "description": "Retailers and boutiques carrying the line (fashion designers)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "location": {
             "type": "string"
           },
           "url": {

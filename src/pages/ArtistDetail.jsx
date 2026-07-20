@@ -28,6 +28,7 @@ import ArtistStudioJournal from '@/components/artist/ArtistStudioJournal';
 import ArtistCreateEvent from '@/components/artist/ArtistCreateEvent';
 import PageEventsTab from '@/components/shared/PageEventsTab';
 import LookbookTab from '@/components/artist/fashion/LookbookTab';
+import FashionCVTab from '@/components/artist/fashion/FashionCVTab';
 import DropsTab from '@/components/artist/fashion/DropsTab';
 import CollabCallsTab from '@/components/artist/fashion/CollabCallsTab';
 import ArtistGallery from '@/components/artist/ArtistGallery';
@@ -780,7 +781,9 @@ export default function ArtistDetail() {
 
         {/* CV / Bio */}
         <TabsContent value="cv" className="mt-4">
-          <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />
+          {isFashion
+            ? <FashionCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+            : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
 
         {/* Invite Friends */}
