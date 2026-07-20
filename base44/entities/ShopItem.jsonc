@@ -40,6 +40,14 @@
       "default": "other",
       "description": "Kind of shop item"
     },
+    "medium": {
+      "type": "string",
+      "description": "Art medium / materials (e.g. 'Oil on canvas', 'Archival pigment print')"
+    },
+    "dimensions": {
+      "type": "string",
+      "description": "Artwork dimensions (e.g. '24 \u00d7 36 in')"
+    },
     "buy_url": {
       "type": "string",
       "description": "External checkout / purchase link"
@@ -49,6 +57,7 @@
       "enum": [
         "available",
         "sold_out",
+        "on_hold",
         "preorder"
       ],
       "default": "available"

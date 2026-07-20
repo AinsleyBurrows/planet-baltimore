@@ -79,6 +79,9 @@ import ScreeningsTab from '@/components/artist/video/ScreeningsTab';
 import WatchTab from '@/components/artist/video/WatchTab';
 import AwardsPressTab from '@/components/artist/video/AwardsPressTab';
 
+// Visual-art-specific tabs
+import VisualArtShopTab from '@/components/artist/visualart/VisualArtShopTab';
+
 // Mixed-media-specific tabs
 import MixedMediaMaterialsTab from '@/components/artist/mixedmedia/MixedMediaMaterialsTab';
 import MixedMediaInstallationsTab from '@/components/artist/mixedmedia/MixedMediaInstallationsTab';
@@ -165,6 +168,7 @@ export default function ArtistDetail() {
   const isVideo = artist.category === 'video';
   const isPhoto = artist.category === 'photography';
   const isMixedMedia = artist.category === 'mixed_media';
+  const isVisualArt = artist.category === 'visual_art';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -466,6 +470,11 @@ export default function ArtistDetail() {
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
           </>}
+          {isVisualArt && (
+            <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Available Works</span>
+            </TabsTrigger>
+          )}
           {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && !isPhoto && !isMixedMedia && <>
             {!isFashion && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
@@ -620,6 +629,13 @@ export default function ArtistDetail() {
             <PerformanceBookingTab artist={artist} isOwner={isOwner} />
           </TabsContent>
         </>}
+
+        {/* Visual-art shop */}
+        {isVisualArt && (
+          <TabsContent value="shop" className="mt-4">
+            <VisualArtShopTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+        )}
 
         {/* Mixed-media-specific tabs */}
         {isMixedMedia && <>
