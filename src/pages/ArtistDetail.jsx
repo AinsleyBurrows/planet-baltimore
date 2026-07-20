@@ -47,6 +47,7 @@ import ClipsTab from '@/components/artist/podcast/ClipsTab';
 import ListenerQATab from '@/components/artist/podcast/ListenerQATab';
 import BonusTab from '@/components/artist/podcast/BonusTab';
 import PodcastReviewsTab from '@/components/artist/podcast/PodcastReviewsTab';
+import PodcastCVTab from '@/components/artist/podcast/PodcastCVTab';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
@@ -795,6 +796,8 @@ export default function ArtistDetail() {
             ? <PhotoCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isLiterary
             ? <WriterCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+            : isPodcaster
+            ? <PodcastCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
 
