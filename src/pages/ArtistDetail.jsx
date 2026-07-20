@@ -482,7 +482,7 @@ export default function ArtistDetail() {
             <TabsTrigger value="series" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Layers className="w-3.5 h-3.5" /><span className="hidden xs:inline">{isFashion ? 'Fashion Line' : 'Series'}</span>
             </TabsTrigger>
-            {!isFashion && <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+            {!isFashion && !isVisualArt && <TabsTrigger value="gallery" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Gallery</span>
             </TabsTrigger>}
             {!isPodcaster && isFashion && <>
@@ -577,9 +577,11 @@ export default function ArtistDetail() {
         </TabsContent>
 
         {/* Gallery */}
-        <TabsContent value="gallery" className="mt-4">
-          <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
-        </TabsContent>
+        {!isVisualArt && (
+          <TabsContent value="gallery" className="mt-4">
+            <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
+          </TabsContent>
+        )}
 
         {/* Podcaster tabs */}
         {isPodcaster && <>
