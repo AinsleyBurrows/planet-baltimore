@@ -50,6 +50,7 @@ import PodcastReviewsTab from '@/components/artist/podcast/PodcastReviewsTab';
 
 // Music-specific tabs
 import DiscographyTab from '@/components/artist/music/DiscographyTab';
+import MusicianCVTab from '@/components/artist/music/MusicianCVTab';
 import TracksTab from '@/components/artist/music/TracksTab';
 import TourDatesTab from '@/components/artist/music/TourDatesTab';
 import MusicVideosTab from '@/components/artist/music/MusicVideosTab';
@@ -783,6 +784,8 @@ export default function ArtistDetail() {
         <TabsContent value="cv" className="mt-4">
           {isFashion
             ? <FashionCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+            : isMusic
+            ? <MusicianCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
 

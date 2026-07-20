@@ -28,6 +28,66 @@
         }
       }
     },
+    "ensembles": {
+      "type": "array",
+      "description": "Bands, ensembles, and orchestras (musicians)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "ensemble": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "touring": {
+      "type": "array",
+      "description": "Notable live performances, tours, and festival appearances (musicians)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "venue": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recording_credits": {
+      "type": "array",
+      "description": "Album, session, and production credits (musicians)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "year": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "design_experience": {
       "type": "array",
       "description": "Professional design roles and work history (fashion designers)",
@@ -72,7 +132,7 @@
     },
     "collaborations": {
       "type": "array",
-      "description": "Brand collaborations and capsule projects (fashion designers)",
+      "description": "Collaborations and features (fashion & music)",
       "items": {
         "type": "object",
         "properties": {
