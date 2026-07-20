@@ -76,6 +76,7 @@ import PressReviewsTab from '@/components/artist/literary/PressReviewsTab';
 
 // Video-specific tabs
 import FilmographyTab from '@/components/artist/video/FilmographyTab';
+import VideoCVTab from '@/components/artist/video/VideoCVTab';
 import ReelTab from '@/components/artist/video/ReelTab';
 import ScreeningsTab from '@/components/artist/video/ScreeningsTab';
 import WatchTab from '@/components/artist/video/WatchTab';
@@ -786,6 +787,8 @@ export default function ArtistDetail() {
             ? <FashionCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isMusic
             ? <MusicianCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+            : isVideo
+            ? <VideoCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
 
