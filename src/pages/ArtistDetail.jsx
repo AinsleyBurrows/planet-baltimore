@@ -5,7 +5,7 @@ import {
   ArrowLeft, Globe, MapPin, CheckCircle, Share2, Users,
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
   Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
-  Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award,
+  Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award, BookOpen, PenLine,
   BadgeDollarSign, Scissors, HelpCircle, Lock, Headphones, Palette, Frame, Handshake
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -439,22 +439,22 @@ export default function ArtistDetail() {
           </>}
           {isLiterary && <>
             <TabsTrigger value="books" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              📚 <span className="hidden xs:inline">Books</span>
+              <BookOpen className="w-3.5 h-3.5" /><span className="hidden xs:inline">Books</span>
             </TabsTrigger>
             <TabsTrigger value="writing" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              ✍️ <span className="hidden xs:inline">Writing</span>
+              <PenLine className="w-3.5 h-3.5" /><span className="hidden xs:inline">Writing</span>
             </TabsTrigger>
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              🛍️ <span className="hidden xs:inline">Shop</span>
+              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
             </TabsTrigger>
             <TabsTrigger value="membership" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              💛 <span className="hidden xs:inline">Support</span>
+              <Heart className="w-3.5 h-3.5" /><span className="hidden xs:inline">Support</span>
             </TabsTrigger>
             <TabsTrigger value="appearances" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Appearances</span>
             </TabsTrigger>
             <TabsTrigger value="newsletter" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              ✉️ <span className="hidden xs:inline">Newsletter</span>
+              <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Newsletter</span>
             </TabsTrigger>
             <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
