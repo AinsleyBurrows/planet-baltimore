@@ -92,6 +92,7 @@ import MixedMediaCommissionsTab from '@/components/artist/mixedmedia/MixedMediaC
 
 // Photography-specific tabs
 import PortfolioCollectionsTab from '@/components/artist/photo/PortfolioCollectionsTab';
+import PhotoCVTab from '@/components/artist/photo/PhotoCVTab';
 import BookingsSessionsTab from '@/components/artist/photo/BookingsSessionsTab';
 import ExhibitionsPublicationsTab from '@/components/artist/photo/ExhibitionsPublicationsTab';
 
@@ -789,6 +790,8 @@ export default function ArtistDetail() {
             ? <MusicianCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isVideo
             ? <VideoCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+            : isPhoto
+            ? <PhotoCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
 
