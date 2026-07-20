@@ -65,6 +65,7 @@ import ShowreelTab from '@/components/artist/performance/ShowreelTab';
 import PerformancesTab from '@/components/artist/performance/PerformancesTab';
 import ReviewsTab from '@/components/artist/performance/ReviewsTab';
 import PerformanceBookingTab from '@/components/artist/performance/PerformanceBookingTab';
+import PerformanceCVTab from '@/components/artist/performance/PerformanceCVTab';
 
 // Literary-specific tabs
 import ShopTab from '@/components/artist/literary/ShopTab';
@@ -798,6 +799,8 @@ export default function ArtistDetail() {
             ? <WriterCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isPodcaster
             ? <PodcastCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+            : isPerformance
+            ? <PerformanceCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
 
