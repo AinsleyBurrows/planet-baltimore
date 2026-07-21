@@ -36,9 +36,9 @@ function fmtRange(f) {
   return `${s} – ${new Date(f.endDate).toLocaleDateString('en-US', opts)}`;
 }
 
-function ActionBtn({ icon: Icon, label, active, onClick, primary }) {
+function ActionBtn({ icon: Icon, label, active, onClick, primary, className = '' }) {
   return (
-    <button onClick={onClick} className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors ${primary ? 'text-white' : active ? 'border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10' : 'border border-border text-foreground hover:bg-secondary'}`} style={primary ? { backgroundColor: '#d4580a' } : {}}>
+    <button onClick={onClick} className={`flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors ${primary ? 'text-white' : active ? 'border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10' : 'border border-border text-foreground hover:bg-secondary'} ${className}`} style={primary ? { backgroundColor: '#d4580a' } : {}}>
       <Icon className="w-4 h-4" />{label}
     </button>
   );
@@ -172,18 +172,18 @@ export default function FestivalDetail() {
       )}
 
       {/* Hero */}
-      <div className="relative rounded-2xl overflow-hidden bg-muted">
-        <div className="h-56 sm:h-72 lg:h-80">
+      <div className="relative rounded-2xl overflow-hidden bg-muted min-h-[260px] sm:min-h-[320px] lg:min-h-[360px] flex flex-col justify-end">
+        <div className="absolute inset-0">
           {festival.image ? <img src={festival.image} alt={festival.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center bg-accent/10 text-accent font-bold text-5xl">{festival.name?.charAt(0)}</div>}
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+        <div className="relative z-10 p-4 sm:p-6 text-white">
           <div className="flex flex-wrap gap-1.5 mb-2">
             {(festival.statusBadges || []).map(b => <span key={b} className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm">{b}</span>)}
             <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${festival.admission.type === 'free' ? 'bg-green-500 text-white' : 'bg-white/20'}`}>{festival.admission.type === 'free' ? 'Free' : festival.admission.price}</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold">{festival.name}</h1>
-          <div className="flex items-center gap-3 mt-2 text-sm flex-wrap">
+          <h1 className="text-2xl sm:text-4xl font-bold break-words">{festival.name}</h1>
+          <div className="flex items-center gap-x-3 gap-y-1 mt-2 text-sm flex-wrap">
             <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />{fmtRange(festival)}</span>
             <span className="flex items-center gap-1"><Clock className="w-4 h-4" />{festival.hours}</span>
             <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{festival.neighborhood}</span>
@@ -207,10 +207,10 @@ export default function FestivalDetail() {
           <ActionBtn icon={Navigation} label="Directions" onClick={() => {}} />
         </a>
         {festival.admission.type === 'free'
-          ? <ActionBtn icon={Ticket} label="View Festival Details" onClick={() => setTab('overview')} primary />
+          ? <ActionBtn icon={Ticket} label="View Festival Details" onClick={() => setTab('overview')} primary className="w-full sm:w-auto" />
           : (festival.admission.url
-            ? <a href={festival.admission.url} target="_blank" rel="noopener noreferrer"><ActionBtn icon={Ticket} label="Buy Tickets" onClick={() => {}} primary /></a>
-            : <ActionBtn icon={Ticket} label="Buy Tickets" onClick={() => {}} primary />)}
+            ? <a href={festival.admission.url} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto"><ActionBtn icon={Ticket} label="Buy Tickets" onClick={() => {}} primary className="w-full sm:w-auto" /></a>
+            : <ActionBtn icon={Ticket} label="Buy Tickets" onClick={() => {}} primary className="w-full sm:w-auto" />)}
       </div>
 
       {/* Tags */}
