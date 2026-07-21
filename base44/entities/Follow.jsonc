@@ -12,7 +12,8 @@
         "artist",
         "business",
         "community",
-        "event"
+        "event",
+        "festival"
       ]
     },
     "target_id": {

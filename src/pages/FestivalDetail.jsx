@@ -14,6 +14,8 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import SaveButton from '@/components/festivals/SaveButton';
 import ShareButton from '@/components/festivals/ShareButton';
 import AddToCalendarButton from '@/components/festivals/AddToCalendarButton';
+import FollowButton from '@/components/shared/FollowButton';
+import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateComposer';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
@@ -200,7 +202,9 @@ export default function FestivalDetail() {
           </Link>
         )}
         <SaveButton slug={festival.slug} />
-        <ActionBtn icon={Heart} label={isFollowing ? 'Following' : 'Follow'} active={isFollowing} onClick={() => followed.toggle(festival.slug)} />
+        {festival.isUserCreated && festival.id
+          ? <FollowButton targetType="festival" targetId={festival.id} targetName={festival.name} />
+          : <ActionBtn icon={Heart} label={isFollowing ? 'Following' : 'Follow'} active={isFollowing} onClick={() => followed.toggle(festival.slug)} />}
         <ShareButton url={`/festivals/${festival.slug}`} title={festival.name} description={festival.description} />
         <AddToCalendarButton festival={festival} />
         <a href={directionsUrl} target="_blank" rel="noopener noreferrer">
@@ -538,7 +542,9 @@ export default function FestivalDetail() {
               </div>
             ))
           )}
-          {/* TODO: organizer posting tools + emergency alert banners */}
+          {canManage && (
+            <FestivalUpdateComposer festival={festival} onUpdated={setFestival} />
+          )}
         </TabsContent>
 
         {/* FAQ */}

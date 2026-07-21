@@ -24,7 +24,7 @@ export function useUnreadCounts() {
   useEffect(() => {
     if (!user?.id) return;
 
-    base44.entities.Notification.filter({ recipient_id: user.id, is_read: false })
+    base44.entities.Notification.filter({ user_id: user.id, is_read: false })
       .then(data => setUnreadNotifications(data.length))
       .catch(() => {});
 
@@ -38,14 +38,14 @@ export function useUnreadCounts() {
     if (!user?.id) return;
 
     const unsub = base44.entities.Notification.subscribe((event) => {
-      if (event.data?.recipient_id !== user.id) return;
+      if (event.data?.user_id !== user.id) return;
       if (event.type === 'create' && !event.data?.is_read) {
         setUnreadNotifications(c => c + 1);
       } else if (event.type === 'update' && event.data?.is_read) {
         setUnreadNotifications(c => Math.max(0, c - 1));
       } else if (event.type === 'delete') {
         // Re-fetch count on delete to stay accurate
-        base44.entities.Notification.filter({ recipient_id: user.id, is_read: false })
+        base44.entities.Notification.filter({ user_id: user.id, is_read: false })
           .then(data => setUnreadNotifications(data.length))
           .catch(() => {});
       }
