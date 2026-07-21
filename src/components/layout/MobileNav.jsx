@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, Video, Trophy, Settings } from 'lucide-react';
+import { Home, Search, Plus, Bell, User, Menu, MessageCircle, Compass, BookOpen, Users, Shield, Palette, Landmark, Building2, MapPin, Calendar, Ticket, Video, Trophy, Settings, Sparkles } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useUnreadCounts } from '@/hooks/useUnreadCounts';
 
@@ -16,6 +16,7 @@ const moreItems = [
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: BookOpen, label: 'Stories', path: '/stories' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
+  { icon: Sparkles, label: 'Festivals', path: '/festivals' },
   { icon: Calendar, label: 'Calendar', path: '/community-calendar' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: Users, label: 'Communities', path: '/communities' },

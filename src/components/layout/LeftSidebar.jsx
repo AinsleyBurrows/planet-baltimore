@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn, Flag, Video, Trophy, Settings } from 'lucide-react';
+import { Home, Compass, MapPin, Calendar, Users, Palette, Landmark, Building2, MessageCircle, Bell, User, ChevronLeft, ChevronRight, Plus, Shield, BookOpen, Search, Ticket, LogOut, LogIn, Flag, Video, Trophy, Settings, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { base44 } from '@/api/base44Client';
@@ -17,6 +17,7 @@ const navItems = [
   { icon: Shield, label: 'Community Associations', path: '/community-associations' },
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
+  { icon: Sparkles, label: 'Festivals', path: '/festivals' },
   { icon: Users, label: 'Groups/Communities', path: '/communities' },
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
