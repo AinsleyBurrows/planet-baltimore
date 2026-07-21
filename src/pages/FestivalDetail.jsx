@@ -157,7 +157,7 @@ export default function FestivalDetail() {
     .map(a => ({
       day: a.day, time: a.time || '', title: a.name, artist: a.name,
       image: a.image || '', stage: a.stage || '', category: a.discipline || 'performance',
-      description: a.bio || '', _source: 'artist',
+      description: a.bio || '', profileId: a.profile_id || '', _source: 'artist',
     }));
   const headlinerSchedule = (festival.highlights?.headliners || []).map(h => ({
     day: '', time: '', title: h, artist: h, stage: 'Main Stage',
@@ -440,7 +440,11 @@ export default function FestivalDetail() {
                 const id = `${s.day}-${s.time}-${s.title}`;
                 const Icon = CAT_ICON[s.category] || (s._source === 'artist' ? Music : Music);
                 return (
-                  <div key={i} className="bg-card border border-border rounded-xl p-3 flex items-start gap-3">
+                  <div
+                    key={i}
+                    onClick={s.profileId ? () => navigate(`/artists/${s.profileId}`) : undefined}
+                    className={`bg-card border border-border rounded-xl p-3 flex items-start gap-3 transition-colors ${s.profileId ? 'cursor-pointer hover:border-[#d4580a]/40 hover:bg-secondary/30' : ''}`}
+                  >
                     <div className="w-14 flex-shrink-0 text-center">
                       <p className="text-xs font-bold text-[#d4580a]">{(s.time || '').split(' ')[0]}</p>
                       <p className="text-[10px] text-muted-foreground">{(s.time || '').split(' ')[1]}</p>
@@ -455,6 +459,7 @@ export default function FestivalDetail() {
                         {s.stage && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{s.stage}</span>}
                         <span className="flex items-center gap-1 capitalize"><Icon className="w-3 h-3" />{s.category}</span>
                         {s.price && <span className="font-medium text-[#d4580a]">{s.price}</span>}
+                        {s.profileId && <span className="font-medium text-[#d4580a] ml-auto">View Profile →</span>}
                       </div>
                       {s.description && <p className="text-xs text-muted-foreground mt-1">{s.description}</p>}
                     </div>
