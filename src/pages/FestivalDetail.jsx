@@ -130,11 +130,41 @@ export default function FestivalDetail() {
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${festival.coordinates?.lat},${festival.coordinates?.lng}`;
   const emergencies = (festival.updates || []).filter(u => /emergency|alert/i.test(u.type));
 
-  const scheduleForDay = (festival.schedule || []).filter(s => !activeDay || s.day === activeDay).filter(s => {
-    if (!schedSearch) return true;
-    const q = schedSearch.toLowerCase();
-    return s.title.toLowerCase().includes(q) || (s.artist || '').toLowerCase().includes(q) || (s.stage || '').toLowerCase().includes(q);
-  });
+  // Merge manually-entered schedule with artist performances so the lineup
+  // auto-populates the schedule by day/time. Dedupe by day|time|title.
+  const manualSchedule = (festival.schedule || []).map(s => ({ ...s, _source: 'manual' }));
+  const artistSchedule = (festival.artists || [])
+    .filter(a => a.name)
+    .map(a => ({
+      day: a.day, time: a.time || '', title: a.name, artist: a.name,
+      stage: a.stage || '', category: a.discipline || 'performance',
+      description: a.bio || '', _source: 'artist',
+    }));
+  const headlinerSchedule = (festival.highlights?.headliners || []).map(h => ({
+    day: '', time: '', title: h, artist: h, stage: 'Main Stage',
+    category: 'headliner', description: 'Festival headliner', _source: 'headliner',
+  }));
+  const experienceSchedule = (festival.experiences || []).map(e => ({
+    day: '', time: '', title: e.title, artist: '', stage: '',
+    category: 'experience', description: e.description || '', _source: 'experience',
+  }));
+  const seen = new Set();
+  const mergedSchedule = [...manualSchedule, ...artistSchedule].filter(s => {
+    if (!s.day) return false;
+    const key = `${s.day}|${(s.time || '').toLowerCase()}|${(s.title || '').toLowerCase()}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  const featuredExtras = [...headlinerSchedule, ...experienceSchedule];
+
+  const scheduleForDay = mergedSchedule
+    .filter(s => !activeDay || s.day === activeDay)
+    .filter(s => {
+      if (!schedSearch) return true;
+      const q = schedSearch.toLowerCase();
+      return s.title.toLowerCase().includes(q) || (s.artist || '').toLowerCase().includes(q) || (s.stage || '').toLowerCase().includes(q);
+    });
 
   return (
     <div className="space-y-6">
@@ -332,13 +362,27 @@ export default function FestivalDetail() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input value={schedSearch} onChange={e => setSchedSearch(e.target.value)} placeholder="Search schedule…" className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary/50 border-0 text-sm focus:outline-none focus:ring-1 focus:ring-ring" />
           </div>
+          {featuredExtras.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Star className="w-3.5 h-3.5 text-[#d4580a]" />Featured at the Festival</p>
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {featuredExtras.map((f, i) => (
+                  <div key={i} className="flex-shrink-0 w-56 bg-card border border-[#d4580a]/30 rounded-xl p-3">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#d4580a]/15 text-[#d4580a] capitalize">{f.category}</span>
+                    <p className="font-semibold text-sm text-foreground mt-1.5">{f.title}</p>
+                    {f.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{f.description}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           {scheduleForDay.length === 0 ? (
             <p className="text-center py-10 text-sm text-muted-foreground">No schedule items match. Full schedule connects here when live data is ready.</p>
           ) : (
             <div className="space-y-2">
               {scheduleForDay.map((s, i) => {
                 const id = `${s.day}-${s.time}-${s.title}`;
-                const Icon = CAT_ICON[s.category] || Music;
+                const Icon = CAT_ICON[s.category] || (s._source === 'artist' ? Music : Music);
                 return (
                   <div key={i} className="bg-card border border-border rounded-xl p-3 flex items-start gap-3">
                     <div className="w-14 flex-shrink-0 text-center">
