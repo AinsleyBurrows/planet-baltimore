@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, Compass, Calendar, MapPin, Users, Shield,
   Palette, Landmark, Building2, BookOpen, MessageCircle,
-  Bell, User, Menu, Plus, Search, Ticket, Sparkles
+  Bell, User, Menu, Plus, Search, Ticket
 } from 'lucide-react';
 import ThemeToggle from '@/components/shared/ThemeToggle';
 import { useUnreadCounts } from '@/hooks/useUnreadCounts';
@@ -23,7 +23,6 @@ const navItems = [
   { icon: Calendar, label: 'Community Calendar', path: '/community-calendar' },
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
-  { icon: Sparkles, label: 'Festivals', path: '/festivals' },
   { icon: Home, label: 'Home', path: '/' },
   { icon: MapPin, label: 'Neighborhoods', path: '/neighborhoods' },
   { icon: BookOpen, label: 'Stories', path: '/stories' },

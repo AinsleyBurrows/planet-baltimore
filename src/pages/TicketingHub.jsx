@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format, isAfter } from 'date-fns';
 
-const CATEGORIES = ['All', 'Music', 'Art', 'Community', 'Nightlife', 'Food', 'Wellness', 'Education', 'Sports', 'Networking', 'Festival'];
+const CATEGORIES = ['All', 'Music', 'Art', 'Community', 'Nightlife', 'Food', 'Wellness', 'Education', 'Sports', 'Networking'];
 
 function EventCard({ event, ticketTypes = [] }) {
   const navigate = useNavigate();
