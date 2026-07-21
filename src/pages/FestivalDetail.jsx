@@ -392,7 +392,11 @@ export default function FestivalDetail() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {festival.artists.map((a, i) => (
                 <div key={i} className="bg-card border border-border rounded-xl p-3 text-center">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-accent/10 text-accent font-bold flex items-center justify-center mb-2">{a.name?.charAt(0)}</div>
+                  <div className="w-16 h-16 mx-auto rounded-full overflow-hidden bg-accent/10 text-accent font-bold flex items-center justify-center mb-2">
+                    {a.image
+                      ? <img src={a.image} alt={a.name} className="w-full h-full object-cover" />
+                      : <span>{a.name?.charAt(0)}</span>}
+                  </div>
                   <p className="font-semibold text-sm text-foreground">{a.name}</p>
                   <p className="text-xs text-muted-foreground capitalize">{a.discipline}</p>
                   <p className="text-[10px] text-muted-foreground mt-1">{a.day && new Date(a.day + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' })} · {a.time} · {a.stage}</p>
