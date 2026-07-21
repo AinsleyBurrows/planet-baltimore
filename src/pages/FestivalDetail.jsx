@@ -6,7 +6,7 @@ import { dbFestivalToShape } from '@/lib/festivalShape';
 import {
   ArrowLeft, MapPin, Calendar, Clock, Globe, Navigation, Ticket, Users, Heart,
   Bookmark, Share2, CalendarPlus, Check, Shield, Accessibility, Baby, CloudSun,
-  Search, AlertTriangle, Info, Utensils, Store, Palette, Music, Mic, Film, BookOpen,
+  AlertTriangle, Info, Utensils, Store, Palette, Music, Mic, Film, BookOpen,
   Car, Bike, Bus, Sparkles, Star, Pencil,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -86,8 +86,6 @@ export default function FestivalDetail() {
     return () => { cancelled = true; };
   }, [slug]);
 
-  const [activeDay, setActiveDay] = useState('');
-  const [schedSearch, setSchedSearch] = useState('');
   const [liveMode, setLiveMode] = useState(false);
   const followed = useLocalList('pb_followed_festivals');
   const [tab, setTab] = useState('overview');
@@ -101,8 +99,6 @@ export default function FestivalDetail() {
     while (d <= end) { out.push(d.toISOString().slice(0, 10)); d.setDate(d.getDate() + 1); }
     return out;
   }, [festival]);
-
-  useEffect(() => { if (days.length) setActiveDay(days[0]); }, [days]);
 
   if (loading) {
     return (
@@ -127,12 +123,6 @@ export default function FestivalDetail() {
   const isFollowing = followed.has(festival.slug);
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${festival.coordinates?.lat},${festival.coordinates?.lng}`;
   const emergencies = (festival.updates || []).filter(u => /emergency|alert/i.test(u.type));
-
-  const scheduleForDay = (festival.schedule || []).filter(s => !activeDay || s.day === activeDay).filter(s => {
-    if (!schedSearch) return true;
-    const q = schedSearch.toLowerCase();
-    return s.title.toLowerCase().includes(q) || (s.artist || '').toLowerCase().includes(q) || (s.stage || '').toLowerCase().includes(q);
-  });
 
   return (
     <div className="space-y-6">
@@ -225,7 +215,7 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'map', 'artists', 'vendors', 'food', 'visit', 'gallery', 'updates', 'faq'].map(t => (
+          {['overview', 'map', 'artists', 'vendors', 'food', 'visit', 'gallery', 'updates', 'faq'].map(t => (
             <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{t === 'visit' ? 'Plan Your Visit' : t === 'food' ? 'Food + Drink' : t}</TabsTrigger>
           ))}
         </TabsList>
@@ -314,52 +304,6 @@ export default function FestivalDetail() {
               </div>
               {/* TODO: pull nearby places from Planet Baltimore BusinessPage / ArtsOrganization entities */}
             </Card>
-          )}
-        </TabsContent>
-
-        {/* Schedule */}
-        <TabsContent value="schedule" className="mt-5 space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            {days.map(d => (
-              <button key={d} onClick={() => setActiveDay(d)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${activeDay === d ? 'bg-[#d4580a] text-white' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>
-                {new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-              </button>
-            ))}
-          </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input value={schedSearch} onChange={e => setSchedSearch(e.target.value)} placeholder="Search schedule…" className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary/50 border-0 text-sm focus:outline-none focus:ring-1 focus:ring-ring" />
-          </div>
-          {scheduleForDay.length === 0 ? (
-            <p className="text-center py-10 text-sm text-muted-foreground">No schedule items match. Full schedule connects here when live data is ready.</p>
-          ) : (
-            <div className="space-y-2">
-              {scheduleForDay.map((s, i) => {
-                const id = `${s.day}-${s.time}-${s.title}`;
-                const Icon = CAT_ICON[s.category] || Music;
-                return (
-                  <div key={i} className="bg-card border border-border rounded-xl p-3 flex items-start gap-3">
-                    <div className="w-14 flex-shrink-0 text-center">
-                      <p className="text-xs font-bold text-[#d4580a]">{s.time.split(' ')[0]}</p>
-                      <p className="text-[10px] text-muted-foreground">{s.time.split(' ')[1]}</p>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground text-sm">{s.title}</p>
-                      {s.artist && <p className="text-xs text-muted-foreground">{s.artist}</p>}
-                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
-                        {s.stage && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{s.stage}</span>}
-                        <span className="flex items-center gap-1 capitalize"><Icon className="w-3 h-3" />{s.category}</span>
-                      </div>
-                      {s.description && <p className="text-xs text-muted-foreground mt-1">{s.description}</p>}
-                    </div>
-                    <div className="flex flex-col gap-1.5 flex-shrink-0">
-                      <MiniSave id={id} label="My Schedule" />
-                      <button className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-secondary"><CalendarPlus className="w-3.5 h-3.5" /></button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           )}
         </TabsContent>
 
