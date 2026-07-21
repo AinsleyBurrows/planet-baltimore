@@ -90,6 +90,7 @@ export default function FestivalDetail() {
   const [activeDay, setActiveDay] = useState('');
   const [schedSearch, setSchedSearch] = useState('');
   const [liveMode, setLiveMode] = useState(false);
+  const [quickFilter, setQuickFilter] = useState('all');
   const followed = useLocalList('pb_followed_festivals');
   const [tab, setTab] = useState('overview');
   const [shareArtist, setShareArtist] = useState(null);
@@ -104,7 +105,14 @@ export default function FestivalDetail() {
     return out;
   }, [festival]);
 
-  useEffect(() => { if (days.length) setActiveDay(days[0]); }, [days]);
+  const today = new Date().toISOString().slice(0, 10);
+  const visibleDays = useMemo(() => {
+    if (quickFilter === 'today') return days.filter(d => d === today);
+    if (quickFilter === 'weekend') return days.filter(d => { const dow = new Date(d + 'T00:00:00').getDay(); return dow === 0 || dow === 6; });
+    return days;
+  }, [quickFilter, days, today]);
+
+  useEffect(() => { if (visibleDays.length) setActiveDay(visibleDays[0]); }, [visibleDays]);
 
   if (loading) {
     return (
@@ -123,7 +131,6 @@ export default function FestivalDetail() {
     );
   }
 
-  const today = new Date().toISOString().slice(0, 10);
   const canManage = !!user && !!festival && !!festival.isUserCreated && (user.id === festival.owner_id || user.role === 'admin');
   const isLiveNow = days.includes(today);
   const isFollowing = followed.has(festival.slug);
@@ -363,13 +370,22 @@ export default function FestivalDetail() {
 
         {/* Schedule */}
         <TabsContent value="schedule" className="mt-5 space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            {days.map(d => (
-              <button key={d} onClick={() => setActiveDay(d)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${activeDay === d ? 'bg-[#d4580a] text-white' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>
-                {new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-              </button>
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+            {[['all', 'All Time'], ['today', 'Today'], ['weekend', 'This Weekend']].map(([v, l]) => (
+              <button key={v} onClick={() => setQuickFilter(v)} className={`flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${quickFilter === v ? 'bg-foreground text-background' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>{l}</button>
             ))}
           </div>
+          {visibleDays.length > 0 ? (
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+              {visibleDays.map(d => (
+                <button key={d} onClick={() => setActiveDay(d)} className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${activeDay === d ? 'bg-[#d4580a] text-white' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>
+                  {new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No festival days match this filter.</p>
+          )}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input value={schedSearch} onChange={e => setSchedSearch(e.target.value)} placeholder="Search schedule…" className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary/50 border-0 text-sm focus:outline-none focus:ring-1 focus:ring-ring" />
