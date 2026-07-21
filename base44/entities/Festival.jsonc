@@ -138,9 +138,353 @@
       "default": "published",
       "description": "Draft festivals are hidden from the public directory"
     },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "status_badges": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Card status badges e.g. ['Free','Outdoor']"
+    },
     "owner_id": {
       "type": "string",
       "description": "User who created the festival"
+    },
+    "schedule": {
+      "type": "array",
+      "description": "Festival schedule / lineup",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date"
+          },
+          "time": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "artist": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "artists": {
+      "type": "array",
+      "description": "Artist lineup",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "discipline": {
+            "type": "string"
+          },
+          "day": {
+            "type": "string",
+            "format": "date"
+          },
+          "time": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "profile_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "vendors": {
+      "type": "array",
+      "description": "Vendor list",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "booth": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "food_vendors": {
+      "type": "array",
+      "description": "Food + drink vendors",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "cuisine": {
+            "type": "string"
+          },
+          "menu_highlights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "price_range": {
+            "type": "string"
+          },
+          "booth": {
+            "type": "string"
+          },
+          "dietary": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "alcohol": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "experiences": {
+      "type": "array",
+      "description": "Featured experiences / zones",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "highlights": {
+      "type": "object",
+      "description": "Festival highlights by category",
+      "properties": {
+        "headliners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "installations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "performances": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "family": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "food": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "gallery_photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Gallery image URLs"
+    },
+    "faq": {
+      "type": "array",
+      "description": "Frequently asked questions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string"
+          },
+          "a": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "updates": {
+      "type": "array",
+      "description": "Announcements / alerts feed",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "transportation": {
+      "type": "object",
+      "properties": {
+        "lightRail": {
+          "type": "string"
+        },
+        "metro": {
+          "type": "string"
+        },
+        "bus": {
+          "type": "string"
+        },
+        "rideshare": {
+          "type": "string"
+        },
+        "bikeParking": {
+          "type": "string"
+        },
+        "walking": {
+          "type": "string"
+        }
+      }
+    },
+    "parking": {
+      "type": "object",
+      "properties": {
+        "notes": {
+          "type": "string"
+        },
+        "garages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "cost": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "properties": {
+        "bags": {
+          "type": "string"
+        },
+        "chairs": {
+          "type": "string"
+        },
+        "outsideFood": {
+          "type": "string"
+        },
+        "alcohol": {
+          "type": "string"
+        },
+        "smoking": {
+          "type": "string"
+        },
+        "pets": {
+          "type": "string"
+        },
+        "reentry": {
+          "type": "string"
+        },
+        "children": {
+          "type": "string"
+        },
+        "photography": {
+          "type": "string"
+        }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "wheelchair": {
+          "type": "boolean"
+        },
+        "asl": {
+          "type": "boolean"
+        },
+        "restrooms": {
+          "type": "boolean"
+        },
+        "seating": {
+          "type": "boolean"
+        },
+        "sensoryFriendly": {
+          "type": "boolean"
+        },
+        "transit": {
+          "type": "boolean"
+        }
+      }
+    },
+    "social": {
+      "type": "object",
+      "properties": {
+        "website": {
+          "type": "string"
+        },
+        "instagram": {
+          "type": "string"
+        },
+        "facebook": {
+          "type": "string"
+        },
+        "twitter": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": [

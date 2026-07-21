@@ -7,7 +7,7 @@ import {
   ArrowLeft, MapPin, Calendar, Clock, Globe, Navigation, Ticket, Users, Heart,
   Bookmark, Share2, CalendarPlus, Check, Shield, Accessibility, Baby, CloudSun,
   Search, AlertTriangle, Info, Utensils, Store, Palette, Music, Mic, Film, BookOpen,
-  Car, Bike, Bus, Sparkles, Star,
+  Car, Bike, Bus, Sparkles, Star, Pencil,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
@@ -15,6 +15,7 @@ import SaveButton from '@/components/festivals/SaveButton';
 import ShareButton from '@/components/festivals/ShareButton';
 import AddToCalendarButton from '@/components/festivals/AddToCalendarButton';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 /* ---------- local storage hooks ---------- */
 const useLocalList = (key) => {
@@ -88,6 +89,7 @@ export default function FestivalDetail() {
   const [liveMode, setLiveMode] = useState(false);
   const followed = useLocalList('pb_followed_festivals');
   const [tab, setTab] = useState('overview');
+  const { user } = useCurrentUser();
 
   const days = useMemo(() => {
     if (!festival) return [];
@@ -118,6 +120,7 @@ export default function FestivalDetail() {
   }
 
   const today = new Date().toISOString().slice(0, 10);
+  const canManage = !!user && !!festival && !!festival.isUserCreated && (user.id === festival.owner_id || user.role === 'admin');
   const isLiveNow = days.includes(today);
   const isFollowing = followed.has(festival.slug);
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${festival.coordinates?.lat},${festival.coordinates?.lng}`;
@@ -191,6 +194,11 @@ export default function FestivalDetail() {
 
       {/* Action bar */}
       <div className="flex flex-wrap items-center gap-2">
+        {canManage && (
+          <Link to={`/festivals/${festival.slug}/edit`} className="flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10 hover:bg-[#d4580a]/20 transition-colors">
+            <Pencil className="w-4 h-4" />Edit Festival
+          </Link>
+        )}
         <SaveButton slug={festival.slug} />
         <ActionBtn icon={Heart} label={isFollowing ? 'Following' : 'Follow'} active={isFollowing} onClick={() => followed.toggle(festival.slug)} />
         <ShareButton url={`/festivals/${festival.slug}`} title={festival.name} description={festival.description} />
