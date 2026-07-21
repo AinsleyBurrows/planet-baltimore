@@ -50,6 +50,20 @@ const FIELDS_RENDER = {
       <SelectContent>{(opts || []).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
     </Select>
   ),
+  imageurl: (val, set) => (
+    <div className="space-y-1.5">
+      <Input value={val || ''} onChange={(e) => set(e.target.value)} placeholder="https://…" />
+      <label className="inline-flex items-center gap-1.5 cursor-pointer text-xs text-[#d4580a] font-medium hover:underline">
+        <Upload className="w-3.5 h-3.5" /> Upload image
+        <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          try { const { file_url } = await base44.integrations.Core.UploadFile({ file }); set(file_url); } catch { /* ignore */ }
+        }} />
+      </label>
+      {val && <img src={val} alt="" className="w-16 h-16 rounded-lg object-cover" />}
+    </div>
+  ),
 };
 
 function ItemArray({ label, items, onChange, fields, addLabel }) {
@@ -121,7 +135,7 @@ const FOOD_FIELDS = [
 ];
 const EXPERIENCE_FIELDS = [
   { k: 'title', l: 'Title', t: 'text' },
-  { k: 'image', l: 'Image URL', t: 'text' },
+  { k: 'image', l: 'Image', t: 'imageurl' },
   { k: 'description', l: 'Description', t: 'textarea' },
 ];
 const FAQ_FIELDS = [
@@ -396,7 +410,29 @@ export default function EditFestival() {
 
       {/* Gallery */}
       <Card title="Gallery">
-        <StringArray label="Gallery photo URLs" items={form.gallery_photos} onChange={(v) => set('gallery_photos', v)} placeholder="https://…" />
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border border-dashed border-border hover:bg-secondary text-sm text-muted-foreground">
+            <Upload className="w-4 h-4" /> Upload image
+            <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              try { setUploading(true); const { file_url } = await base44.integrations.Core.UploadFile({ file }); set('gallery_photos', [...(form.gallery_photos || []), file_url]); }
+              catch { /* ignore */ } finally { setUploading(false); }
+            }} />
+          </label>
+          {uploading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+        </div>
+        <StringArray label="Or paste URLs (one per line)" items={form.gallery_photos} onChange={(v) => set('gallery_photos', v)} placeholder="https://…" />
+        {(form.gallery_photos || []).length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {form.gallery_photos.map((url, i) => (
+              <div key={i} className="relative group">
+                <img src={url} alt="" className="w-full h-20 object-cover rounded-lg" />
+                <button type="button" onClick={() => set('gallery_photos', form.gallery_photos.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 p-1 rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="w-3 h-3" /></button>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
 
       {/* FAQ */}
