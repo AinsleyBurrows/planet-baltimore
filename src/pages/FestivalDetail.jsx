@@ -314,7 +314,11 @@ export default function FestivalDetail() {
                   <SectionTitle icon={Palette}>Featured Experiences</SectionTitle>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {festival.experiences.map(e => (
-                      <div key={e.title} className="bg-card border border-border rounded-xl overflow-hidden">
+                      <button
+                        key={e.title}
+                        onClick={() => { if (e.day) setActiveDay(e.day); setTab('schedule'); }}
+                        className="text-left bg-card border border-border rounded-xl overflow-hidden interactive-card hover:border-[#d4580a]/40 focus-visible:ring-2 focus-visible:ring-ring"
+                      >
                         <div className="h-20 overflow-hidden bg-muted"><img src={e.image} alt={e.title} className="w-full h-full object-cover" /></div>
                         <div className="p-2">
                         <p className="font-semibold text-sm text-foreground">{e.title}</p>
@@ -328,7 +332,7 @@ export default function FestivalDetail() {
                           </div>
                         )}
                       </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
