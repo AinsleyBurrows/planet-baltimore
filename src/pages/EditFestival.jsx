@@ -110,6 +110,7 @@ const SCHEDULE_FIELDS = [
 ];
 const ARTIST_FIELDS = [
   { k: 'name', l: 'Name', t: 'text' },
+  { k: 'image', l: 'Photo', t: 'imageurl' },
   { k: 'discipline', l: 'Discipline', t: 'select', opts: DISCIPLINE_OPTS },
   { k: 'day', l: 'Day', t: 'date' },
   { k: 'time', l: 'Time', t: 'text' },

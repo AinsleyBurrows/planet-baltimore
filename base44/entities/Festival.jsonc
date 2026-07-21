@@ -193,6 +193,10 @@
           "name": {
             "type": "string"
           },
+          "image": {
+            "type": "string",
+            "description": "Artist photo / headshot URL"
+          },
           "discipline": {
             "type": "string"
           },
