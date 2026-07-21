@@ -467,7 +467,7 @@ export default function FestivalDetail() {
 
         {/* Map */}
         <TabsContent value="map" className="mt-5" id="map">
-          <div className="rounded-xl overflow-hidden border border-border" style={{ height: 400 }}>
+          <div className="rounded-xl overflow-hidden border border-border w-full" style={{ height: 'calc(100vh - 180px)', minHeight: 420 }}>
             <MapContainer center={[festival.coordinates?.lat || 39.3, festival.coordinates?.lng || -76.62]} zoom={13} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker position={[festival.coordinates?.lat || 39.3, festival.coordinates?.lng || -76.62]}>
