@@ -156,7 +156,7 @@ export default function FestivalDetail() {
     .filter(a => a.name)
     .map(a => ({
       day: a.day, time: a.time || '', title: a.name, artist: a.name,
-      stage: a.stage || '', category: a.discipline || 'performance',
+      image: a.image || '', stage: a.stage || '', category: a.discipline || 'performance',
       description: a.bio || '', _source: 'artist',
     }));
   const headlinerSchedule = (festival.highlights?.headliners || []).map(h => ({
@@ -164,7 +164,7 @@ export default function FestivalDetail() {
     category: 'headliner', description: 'Festival headliner', _source: 'headliner',
   }));
   const experienceSchedule = (festival.experiences || []).map(e => ({
-    day: e.day || '', time: e.time || '', title: e.title, artist: '', stage: e.venue || '',
+    day: e.day || '', time: e.time || '', title: e.title, artist: '', image: e.image || '', stage: e.venue || '',
     venue: e.venue || '', price: e.price || '',
     category: 'experience', description: e.description || '', _source: 'experience',
   }));
@@ -438,9 +438,12 @@ export default function FestivalDetail() {
                 return (
                   <div key={i} className="bg-card border border-border rounded-xl p-3 flex items-start gap-3">
                     <div className="w-14 flex-shrink-0 text-center">
-                      <p className="text-xs font-bold text-[#d4580a]">{s.time.split(' ')[0]}</p>
-                      <p className="text-[10px] text-muted-foreground">{s.time.split(' ')[1]}</p>
+                      <p className="text-xs font-bold text-[#d4580a]">{(s.time || '').split(' ')[0]}</p>
+                      <p className="text-[10px] text-muted-foreground">{(s.time || '').split(' ')[1]}</p>
                     </div>
+                    {s.image ? (
+                      <img src={s.image} alt={s.title} loading="lazy" className="w-14 h-14 flex-shrink-0 rounded-lg object-cover bg-muted" />
+                    ) : null}
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground text-sm">{s.title}</p>
                       {s.artist && <p className="text-xs text-muted-foreground">{s.artist}</p>}
