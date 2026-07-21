@@ -15,6 +15,7 @@ import SaveButton from '@/components/festivals/SaveButton';
 import ShareButton from '@/components/festivals/ShareButton';
 import AddToCalendarButton from '@/components/festivals/AddToCalendarButton';
 import FollowButton from '@/components/shared/FollowButton';
+import ShareModal from '@/components/shared/ShareModal';
 import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateComposer';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -91,6 +92,7 @@ export default function FestivalDetail() {
   const [liveMode, setLiveMode] = useState(false);
   const followed = useLocalList('pb_followed_festivals');
   const [tab, setTab] = useState('overview');
+  const [shareArtist, setShareArtist] = useState(null);
   const { user } = useCurrentUser();
 
   const days = useMemo(() => {
@@ -415,6 +417,16 @@ export default function FestivalDetail() {
                         {a.bio && <p className="text-sm text-foreground/80 line-clamp-3">{a.bio}</p>}
                         <div className="flex items-center gap-2 mt-3 pt-2 border-t border-border">
                           <MiniSave id={`artist-${a.name}`} label="" />
+                          <button
+                            onClick={() => setShareArtist({
+                              title: `${a.name} at ${festival.name}`,
+                              url: `${window.location.origin}/festivals/${festival.slug}#artists`,
+                              description: a.bio || festival.description,
+                            })}
+                            className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-secondary transition-colors"
+                          >
+                            <Share2 className="w-3.5 h-3.5" />Share
+                          </button>
                           {a.profileId && <Link to={`/artists/${a.profileId}`} className="text-xs text-[#d4580a] hover:underline font-medium ml-auto">View Profile →</Link>}
                         </div>
                       </div>
@@ -581,6 +593,14 @@ export default function FestivalDetail() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <ShareModal
+        isOpen={!!shareArtist}
+        onClose={() => setShareArtist(null)}
+        url={shareArtist?.url}
+        title={shareArtist?.title}
+        description={shareArtist?.description}
+      />
 
       <div className="text-center pt-4">
         <Link to="/festivals" className="text-sm text-[#d4580a] font-medium hover:underline">← Back to all festivals</Link>
