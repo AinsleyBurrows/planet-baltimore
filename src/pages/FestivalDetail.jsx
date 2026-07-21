@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getFestivalBySlug } from '@/data/festivals';
+import { base44 } from '@/api/base44Client';
+import { dbFestivalToShape } from '@/lib/festivalShape';
 import {
   ArrowLeft, MapPin, Calendar, Clock, Globe, Navigation, Ticket, Users, Heart,
   Bookmark, Share2, CalendarPlus, Check, Shield, Accessibility, Baby, CloudSun,
@@ -60,7 +62,26 @@ const CAT_ICON = { music: Music, poetry: Mic, film: Film, dance: Users, theater:
 export default function FestivalDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const festival = getFestivalBySlug(slug);
+  const [festival, setFestival] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        const records = await base44.entities.Festival.filter({ slug });
+        if (!cancelled) {
+          setFestival(records.length ? dbFestivalToShape(records[0]) : getFestivalBySlug(slug));
+        }
+      } catch {
+        if (!cancelled) setFestival(getFestivalBySlug(slug));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [slug]);
 
   const [activeDay, setActiveDay] = useState('');
   const [schedSearch, setSchedSearch] = useState('');
@@ -78,6 +99,14 @@ export default function FestivalDetail() {
   }, [festival]);
 
   useEffect(() => { if (days.length) setActiveDay(days[0]); }, [days]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <div className="w-7 h-7 border-2 border-muted border-t-[#d4580a] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!festival) {
     return (

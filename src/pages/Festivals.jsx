@@ -1,9 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { festivals, FESTIVAL_CATEGORIES, FESTIVAL_NEIGHBORHOODS } from '@/data/festivals';
+import { base44 } from '@/api/base44Client';
+import { dbFestivalToShape } from '@/lib/festivalShape';
 import {
   Search, MapPin, Calendar, Compass, LayoutGrid, Star, Users, Bookmark,
-  Filter, ChevronDown, Sparkles, Landmark, Ticket,
+  Filter, ChevronDown, Sparkles, Landmark, Ticket, Plus,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -149,6 +151,18 @@ export default function Festivals() {
   const [showPanel, setShowPanel] = useState(false);
   const [tab, setTab] = useState('discover');
   const { saved } = useSavedFestivals();
+  const [userFestivals, setUserFestivals] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const records = await base44.entities.Festival.filter({ status: 'published' }, '-created_date', 50);
+        if (!cancelled) setUserFestivals(records.map(dbFestivalToShape).filter(Boolean));
+      } catch { /* directory still shows curated festivals */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const toggleQuick = (f) => setQuick(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
 
@@ -198,9 +212,14 @@ export default function Festivals() {
     <div className="space-y-6">
       {/* Hero */}
       <div className="relative rounded-2xl overflow-hidden p-8 sm:p-12 bg-transparent border-2" style={{ borderColor: '#d4580a' }}>
-        <div className="relative z-10">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#d4580a' }}>Festivals</h1>
-          <p className="text-muted-foreground text-sm sm:text-base">Discover Baltimore’s festivals, celebrations, performances, food, art, and culture.</p>
+        <div className="relative z-10 flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2" style={{ color: '#d4580a' }}>Festivals</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Discover Baltimore’s festivals, celebrations, performances, food, art, and culture.</p>
+          </div>
+          <Link to="/create-festival" className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-white text-sm font-semibold hover:opacity-90 transition-opacity" style={{ backgroundColor: '#d4580a' }}>
+            <Plus className="w-4 h-4" />Create a Festival
+          </Link>
         </div>
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/2" style={{ backgroundColor: '#d4580a' }} />
@@ -259,6 +278,13 @@ export default function Festivals() {
             )
           ) : (
             <>
+              {userFestivals.length > 0 && (
+                <Section title="Community-Created Festivals">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {userFestivals.map((f) => <FestivalCard key={f.slug} festival={f} />)}
+                  </div>
+                </Section>
+              )}
               <Section title="Happening Soon">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {festivals.filter(isHappeningSoon).map(f => <FestivalCard key={f.slug} festival={f} />)}

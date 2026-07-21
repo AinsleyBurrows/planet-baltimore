@@ -34,6 +34,7 @@ const TicketingHub                = lazy(() => import('@/pages/TicketingHub'));
 const EventTicketingPage          = lazy(() => import('@/pages/EventTicketing'));
 const Festivals                 = lazy(() => import('@/pages/Festivals'));
 const FestivalDetail            = lazy(() => import('@/pages/FestivalDetail'));
+const CreateFestival            = lazy(() => import('@/pages/CreateFestival'));
 const PromoterDashboard         = lazy(() => import('@/pages/PromoterDashboard'));
 const TicketSalesDashboard        = lazy(() => import('@/pages/TicketSalesDashboard'));
 const CommunityCalendar           = lazy(() => import('@/pages/CommunityCalendar'));
@@ -119,6 +120,7 @@ const AuthenticatedApp = () => {
           <Route path="/events/:id/tickets" element={<EventTicketingPage />} />
           <Route path="/festivals" element={<Festivals />} />
           <Route path="/festivals/:slug" element={<FestivalDetail />} />
+          <Route path="/create-festival" element={<CreateFestival />} />
           <Route path="/promoter-dashboard" element={<PromoterDashboard />} />
           <Route path="/ticket-sales-dashboard" element={<TicketSalesDashboard />} />
           <Route path="/community-calendar" element={<CommunityCalendar />} />

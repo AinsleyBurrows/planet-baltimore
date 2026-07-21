@@ -1,0 +1,150 @@
+{
+  "name": "Festival",
+  "type": "object",
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "URL slug (auto-generated from name)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Festival name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description shown on cards and hero"
+    },
+    "long_description": {
+      "type": "string",
+      "description": "Longer about-the-festival text"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Main festival image / hero photo"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "First day of the festival"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last day (same as start_date for single-day festivals)"
+    },
+    "hours": {
+      "type": "string",
+      "description": "Daily hours label, e.g. 'Sat 11am\u20138pm'"
+    },
+    "venue": {
+      "type": "string",
+      "description": "Venue name"
+    },
+    "neighborhood": {
+      "type": "string",
+      "description": "Baltimore neighborhood"
+    },
+    "footprint": {
+      "type": "string",
+      "description": "Festival footprint description"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Festival categories (arts, music, food, film, etc.)"
+    },
+    "admission_type": {
+      "type": "string",
+      "enum": [
+        "free",
+        "paid",
+        "donation"
+      ],
+      "default": "free",
+      "description": "Admission model"
+    },
+    "admission_price": {
+      "type": "string",
+      "description": "Price label for paid festivals, e.g. '$45\u2013$75'"
+    },
+    "admission_url": {
+      "type": "string",
+      "description": "External ticket / registration link"
+    },
+    "organizer_name": {
+      "type": "string",
+      "description": "Organizing entity name"
+    },
+    "organizer_description": {
+      "type": "string",
+      "description": "Short organizer description"
+    },
+    "organizer_website": {
+      "type": "string",
+      "description": "Organizer website URL"
+    },
+    "coordinates_lat": {
+      "type": "number",
+      "description": "Festival latitude"
+    },
+    "coordinates_lng": {
+      "type": "number",
+      "description": "Festival longitude"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "format": {
+      "type": "string",
+      "default": "Festival",
+      "description": "Format, e.g. 'Street Festival', 'Outdoor', 'Indoor'"
+    },
+    "audience": {
+      "type": "string",
+      "default": "All Ages",
+      "description": "Audience, e.g. 'All Ages', '21+'"
+    },
+    "age_restriction": {
+      "type": "string",
+      "description": "Age restriction label"
+    },
+    "pet_policy": {
+      "type": "string",
+      "description": "Pet policy text"
+    },
+    "expected_attendance": {
+      "type": "string",
+      "description": "Expected attendance label"
+    },
+    "website": {
+      "type": "string",
+      "description": "Festival website URL"
+    },
+    "rain_or_shine": {
+      "type": "boolean",
+      "default": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "published",
+      "description": "Draft festivals are hidden from the public directory"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "User who created the festival"
+    }
+  },
+  "required": [
+    "name",
+    "owner_id"
+  ]
+}
