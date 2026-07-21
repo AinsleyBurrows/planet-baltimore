@@ -145,18 +145,19 @@ export default function FestivalDetail() {
     category: 'headliner', description: 'Festival headliner', _source: 'headliner',
   }));
   const experienceSchedule = (festival.experiences || []).map(e => ({
-    day: '', time: '', title: e.title, artist: '', stage: '',
+    day: e.day || '', time: e.time || '', title: e.title, artist: '', stage: e.venue || '',
+    venue: e.venue || '', price: e.price || '',
     category: 'experience', description: e.description || '', _source: 'experience',
   }));
   const seen = new Set();
-  const mergedSchedule = [...manualSchedule, ...artistSchedule].filter(s => {
+  const mergedSchedule = [...manualSchedule, ...artistSchedule, ...experienceSchedule].filter(s => {
     if (!s.day) return false;
     const key = `${s.day}|${(s.time || '').toLowerCase()}|${(s.title || '').toLowerCase()}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   }).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-  const featuredExtras = [...headlinerSchedule, ...experienceSchedule];
+  const featuredExtras = [...headlinerSchedule, ...experienceSchedule.filter(e => !e.day)];
 
   const scheduleForDay = mergedSchedule
     .filter(s => !activeDay || s.day === activeDay)
@@ -284,7 +285,18 @@ export default function FestivalDetail() {
                     {festival.experiences.map(e => (
                       <div key={e.title} className="bg-card border border-border rounded-xl overflow-hidden">
                         <div className="h-20 overflow-hidden bg-muted"><img src={e.image} alt={e.title} className="w-full h-full object-cover" /></div>
-                        <div className="p-2"><p className="font-semibold text-sm text-foreground">{e.title}</p><p className="text-xs text-muted-foreground line-clamp-2">{e.description}</p></div>
+                        <div className="p-2">
+                        <p className="font-semibold text-sm text-foreground">{e.title}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">{e.description}</p>
+                        {(e.day || e.time || e.venue || e.price) && (
+                          <div className="flex flex-wrap gap-1 mt-1 text-[10px] text-muted-foreground">
+                            {e.day && <span className="flex items-center gap-0.5"><Calendar className="w-3 h-3" />{new Date(e.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                            {e.time && <span className="flex items-center gap-0.5"><Clock className="w-3 h-3" />{e.time}</span>}
+                            {e.venue && <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" />{e.venue}</span>}
+                            {e.price && <span className="font-semibold text-[#d4580a]">{e.price}</span>}
+                          </div>
+                        )}
+                      </div>
                       </div>
                     ))}
                   </div>
@@ -395,6 +407,7 @@ export default function FestivalDetail() {
                       <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
                         {s.stage && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{s.stage}</span>}
                         <span className="flex items-center gap-1 capitalize"><Icon className="w-3 h-3" />{s.category}</span>
+                        {s.price && <span className="font-medium text-[#d4580a]">{s.price}</span>}
                       </div>
                       {s.description && <p className="text-xs text-muted-foreground mt-1">{s.description}</p>}
                     </div>

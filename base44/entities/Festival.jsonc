@@ -291,6 +291,23 @@
           "image": {
             "type": "string"
           },
+          "day": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of the experience"
+          },
+          "time": {
+            "type": "string",
+            "description": "Start time, e.g. '2:00 PM'"
+          },
+          "venue": {
+            "type": "string",
+            "description": "Venue / location within the festival"
+          },
+          "price": {
+            "type": "string",
+            "description": "Price label, e.g. 'Free', '$10', '$5\u2013$15'"
+          },
           "description": {
             "type": "string"
           }

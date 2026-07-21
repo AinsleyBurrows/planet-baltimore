@@ -137,6 +137,10 @@ const FOOD_FIELDS = [
 const EXPERIENCE_FIELDS = [
   { k: 'title', l: 'Title', t: 'text' },
   { k: 'image', l: 'Image', t: 'imageurl' },
+  { k: 'day', l: 'Date', t: 'date' },
+  { k: 'time', l: 'Time', t: 'text', ph: '2:00 PM' },
+  { k: 'venue', l: 'Venue / Location', t: 'text' },
+  { k: 'price', l: 'Price', t: 'text', ph: 'Free / $10 / $5–$15' },
   { k: 'description', l: 'Description', t: 'textarea' },
 ];
 const FAQ_FIELDS = [
