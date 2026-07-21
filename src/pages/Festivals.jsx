@@ -12,8 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FestivalCard from '@/components/festivals/FestivalCard';
 import FeaturedFestival from '@/components/festivals/FeaturedFestival';
 import FestivalQuickFilters from '@/components/festivals/FestivalQuickFilters';
+import FestivalMapView from '@/components/festivals/FestivalMapView';
 import { useSavedFestivals } from '@/components/festivals/SaveButton';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 /* ---------- date helpers ---------- */
 const parse = (d) => new Date(d + 'T00:00:00');
@@ -208,6 +208,11 @@ export default function Festivals() {
     return Object.values(map);
   }, []);
 
+  const activeFestivals = useMemo(() => {
+    const all = [...festivals, ...userFestivals];
+    return all.filter(isUpcoming);
+  }, [userFestivals]);
+
   return (
     <div className="space-y-6">
       {/* Hero */}
@@ -368,14 +373,7 @@ export default function Festivals() {
 
         {/* Map */}
         <TabsContent value="map" className="mt-5">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-xl overflow-hidden border border-border" style={{ height: 420 }}>
-              <FestivalMapLite festivals={festivals.filter(f => f.coordinates)} />
-            </div>
-            <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
-              {festivals.map(f => <FestivalCard key={f.slug} festival={f} />)}
-            </div>
-          </div>
+          <FestivalMapView festivals={activeFestivals} />
         </TabsContent>
 
         {/* Categories */}
@@ -453,26 +451,5 @@ export default function Festivals() {
         </TabsContent>
       </Tabs>
     </div>
-  );
-}
-
-/* Lightweight leaflet map for the Map tab */
-function FestivalMapLite({ festivals }) {
-  return (
-    <MapContainer center={[39.3, -76.62]} zoom={11} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {festivals.map(f => (
-        <Marker key={f.slug} position={[f.coordinates.lat, f.coordinates.lng]}>
-          <Popup>
-            <div style={{ minWidth: 180 }}>
-              <strong>{f.name}</strong><br />
-              {new Date(f.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · {f.neighborhood}<br />
-              {f.admission.type === 'free' ? 'Free' : f.admission.price}<br />
-              <a href={`#/festivals/${f.slug}`}>View Festival →</a>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
   );
 }
