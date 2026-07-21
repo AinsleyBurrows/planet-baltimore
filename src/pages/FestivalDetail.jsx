@@ -39,6 +39,18 @@ function fmtRange(f) {
   return `${s} – ${new Date(f.endDate).toLocaleDateString('en-US', opts)}`;
 }
 
+function timeToMinutes(t) {
+  if (!t) return null;
+  const m = String(t).trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+  if (!m) return null;
+  let h = parseInt(m[1], 10);
+  const min = parseInt(m[2], 10);
+  const ap = m[3]?.toUpperCase();
+  if (ap === 'PM' && h !== 12) h += 12;
+  if (ap === 'AM' && h === 12) h = 0;
+  return h * 60 + min;
+}
+
 function ActionBtn({ icon: Icon, label, active, onClick, primary, className = '' }) {
   return (
     <button onClick={onClick} className={`flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors ${primary ? 'text-white' : active ? 'border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10' : 'border border-border text-foreground hover:bg-secondary'} ${className}`} style={primary ? { backgroundColor: '#d4580a' } : {}}>
@@ -163,8 +175,20 @@ export default function FestivalDetail() {
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
-  }).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-  const featuredExtras = [...headlinerSchedule, ...experienceSchedule.filter(e => !e.day)];
+  }).sort((a, b) => {
+    const dayCmp = (a.day || '').localeCompare(b.day || '');
+    if (dayCmp) return dayCmp;
+    const ta = timeToMinutes(a.time) ?? 9999;
+    const tb = timeToMinutes(b.time) ?? 9999;
+    return ta - tb;
+  });
+  const featuredExtras = [...headlinerSchedule, ...experienceSchedule.filter(e => !e.day)].sort((a, b) => {
+    const da = (a.day || '').localeCompare(b.day || '');
+    if (da) return da;
+    const ta = timeToMinutes(a.time) ?? 9999;
+    const tb = timeToMinutes(b.time) ?? 9999;
+    return ta - tb;
+  });
 
   const scheduleForDay = mergedSchedule
     .filter(s => !activeDay || s.day === activeDay)
