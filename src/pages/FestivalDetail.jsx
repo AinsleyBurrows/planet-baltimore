@@ -21,7 +21,6 @@ import FestivalCommentsTab from '@/components/festivals/FestivalCommentsTab';
 import FestivalTicketsTab from '@/components/festivals/FestivalTicketsTab';
 import HeadlinerModal from '@/components/festivals/HeadlinerModal';
 import FestivalExperiencesGrid from '@/components/festivals/FestivalExperiencesGrid';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 /* ---------- local storage hooks ---------- */
@@ -318,7 +317,7 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'performers', 'vendors', 'food', 'tickets', 'travel', 'map', 'gallery', 'updates', 'comments', 'faq'].map(t => {
+          {['overview', 'schedule', 'performers', 'vendors', 'food', 'tickets', 'travel', 'gallery', 'updates', 'comments', 'faq'].map(t => {
             const labels = { food: 'Food + Drink', travel: 'Travel & Parking' };
             return <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{labels[t] || t}</TabsTrigger>;
           })}
@@ -564,27 +563,6 @@ export default function FestivalDetail() {
               ))}
             </div>
           )}
-        </TabsContent>
-
-        {/* Map */}
-        <TabsContent value="map" className="mt-5" id="map">
-          <div className="rounded-xl overflow-hidden border border-border w-full" style={{ height: 'calc(100vh - 180px)', minHeight: 420 }}>
-            <MapContainer center={[festival.coordinates?.lat || 39.3, festival.coordinates?.lng || -76.62]} zoom={13} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <Marker position={[festival.coordinates?.lat || 39.3, festival.coordinates?.lng || -76.62]}>
-                <Popup><strong>{festival.name}</strong><br />{festival.venue}<br /><a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer">Directions →</a></Popup>
-              </Marker>
-            </MapContainer>
-          </div>
-          {/* TODO: detailed festival footprint with pins for stages, food, restrooms, info, etc. + legend + "You Are Here" */}
-          <Card className="mt-4">
-            <SectionTitle icon={MapPin}>Festival Map Legend</SectionTitle>
-            <div className="flex flex-wrap gap-2 text-xs">
-              {['Stages', 'Food', 'Vendors', 'Restrooms', 'Info', 'First Aid', 'Parking', 'Entrances'].map(l => (
-                <span key={l} className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary text-muted-foreground"><MapPin className="w-3 h-3 text-[#d4580a]" />{l}</span>
-              ))}
-            </div>
-          </Card>
         </TabsContent>
 
         {/* Gallery */}
