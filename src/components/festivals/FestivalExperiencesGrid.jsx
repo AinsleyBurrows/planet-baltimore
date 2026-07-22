@@ -6,7 +6,7 @@ import { base44 } from '@/api/base44Client';
 function SectionTitle({ children, icon: Icon }) {
   return (
     <h3 className="font-bold text-foreground flex items-center gap-2 mb-3 mt-6 first:mt-0">
-      {Icon && <Icon className="w-5 h-5 text-[#d4580a]" />}{children}
+      {Icon && <Icon className="w-5 h-5 text-foreground" />}{children}
     </h3>
   );
 }
