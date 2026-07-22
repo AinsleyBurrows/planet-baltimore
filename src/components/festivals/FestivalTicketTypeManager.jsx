@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Edit, Loader2, Ticket } from 'lucide-react';
+import { Plus, Trash2, Edit, Loader2, Ticket, ChevronUp, ChevronDown } from 'lucide-react';
 
 const EMPTY = { name: '', description: '', price: '', quantity_total: '', max_per_buyer: '' };
 
@@ -28,6 +28,7 @@ export default function FestivalTicketTypeManager({ festivalId }) {
         price: parseFloat(form.price) || 0,
         quantity_total: parseInt(form.quantity_total, 10),
         max_per_buyer: form.max_per_buyer ? parseInt(form.max_per_buyer, 10) : null,
+        sort_order: ticketTypes.length,
       }),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey }); resetForm(); },
   });
@@ -47,6 +48,21 @@ export default function FestivalTicketTypeManager({ festivalId }) {
     mutationFn: (id) => base44.entities.TicketType.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });
+
+  const reorderMutation = useMutation({
+    mutationFn: (updates) => base44.entities.TicketType.bulkUpdate(updates),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
+  });
+
+  const move = (index, dir) => {
+    const target = index + dir;
+    if (target < 0 || target >= ticketTypes.length) return;
+    const arr = [...ticketTypes];
+    [arr[index], arr[target]] = [arr[target], arr[index]];
+    const updates = arr.map((t, i) => ({ id: t.id, sort_order: i }));
+    queryClient.setQueryData(queryKey, arr);
+    reorderMutation.mutate(updates);
+  };
 
   const resetForm = () => { setForm(EMPTY); setEditingId(null); };
 
@@ -119,7 +135,7 @@ export default function FestivalTicketTypeManager({ festivalId }) {
         <p className="text-xs text-muted-foreground text-center py-3">No ticket types yet. Add one above to enable platform ticketing.</p>
       ) : (
         <div className="space-y-2">
-          {ticketTypes.map(tt => (
+          {ticketTypes.map((tt, idx) => (
             <div key={tt.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm text-foreground truncate">{tt.name}</p>
@@ -130,6 +146,8 @@ export default function FestivalTicketTypeManager({ festivalId }) {
                 </div>
               </div>
               <div className="flex gap-1">
+                <Button size="sm" variant="ghost" onClick={() => move(idx, -1)} disabled={idx === 0} className="h-8 w-8 p-0"><ChevronUp className="w-3.5 h-3.5" /></Button>
+                <Button size="sm" variant="ghost" onClick={() => move(idx, 1)} disabled={idx === ticketTypes.length - 1} className="h-8 w-8 p-0"><ChevronDown className="w-3.5 h-3.5" /></Button>
                 <Button size="sm" variant="ghost" onClick={() => handleEdit(tt)} className="h-8 w-8 p-0"><Edit className="w-3.5 h-3.5" /></Button>
                 <Button size="sm" variant="ghost" onClick={() => { if (window.confirm('Delete this ticket type?')) deleteMutation.mutate(tt.id); }} disabled={deleteMutation.isPending} className="h-8 w-8 p-0 text-destructive hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></Button>
               </div>
