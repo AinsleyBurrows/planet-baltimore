@@ -105,7 +105,7 @@ export default function FestivalExperiencesGrid({ festival, canManage, onUpdate,
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className="grid grid-cols-1 sm:grid-cols-3 gap-3"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
               >
                 {items.map((e, i) => (
                   <Draggable key={(e.title || 'exp') + '-' + i} draggableId={String(i)} index={i}>
@@ -127,7 +127,7 @@ export default function FestivalExperiencesGrid({ festival, canManage, onUpdate,
           </Droppable>
         </DragDropContext>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {items.map((e, i) => (
             <button
               key={i}
