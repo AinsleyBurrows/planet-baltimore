@@ -533,19 +533,29 @@ export default function FestivalDetail() {
             <p className="text-center py-10 text-sm text-muted-foreground">Vendor list will appear here.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {festival.vendors.map((v, i) => (
-                <div key={i} className="bg-card border border-border rounded-xl p-3">
-                  {v.image && <img src={v.image} alt={v.name} loading="lazy" className="w-full h-28 object-cover rounded-lg mb-2" />}
-                  <p className="font-semibold text-foreground text-sm">{v.name}</p>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{v.category}</span>
-                  {v.booth && <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" />Booth {v.booth}</p>}
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{v.description}</p>
-                  <div className="flex items-center gap-1.5 mt-2">
-                    <MiniSave id={`vendor-${v.name}`} label="" />
-                    {v.website && <a href={v.website} target="_blank" rel="noopener noreferrer" className="text-xs text-[#d4580a] hover:underline">Website →</a>}
+              {festival.vendors.map((v, i) => {
+                const meta = [v.category, v.booth && `Booth ${v.booth}`].filter(Boolean).join(' · ');
+                return (
+                  <div key={i} className="relative rounded-xl overflow-hidden border border-border bg-card aspect-[4/3] sm:aspect-square group w-full">
+                    {v.image ? (
+                      <img src={v.image} alt={v.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-accent/10 text-accent font-black text-6xl">{v.name?.charAt(0) || '?'}</div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    {v.category && <span className="absolute top-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-black/55 text-white backdrop-blur-sm">{v.category}</span>}
+                    <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+                      {v.website && <a href={v.website} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg bg-black/55 text-white backdrop-blur-sm hover:bg-black/75 transition-colors"><Globe className="w-3.5 h-3.5" /></a>}
+                      <MiniSave id={`vendor-${v.name}`} label="" />
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white pointer-events-none">
+                      <p className="font-bold text-xl leading-tight drop-shadow">{v.name}</p>
+                      {meta && <p className="text-xs text-white/85 mt-0.5">{meta}</p>}
+                      {v.description && <p className="text-xs text-white/75 mt-1 line-clamp-2">{v.description}</p>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </TabsContent>
