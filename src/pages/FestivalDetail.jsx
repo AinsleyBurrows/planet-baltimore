@@ -20,6 +20,7 @@ import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateCompose
 import FestivalCommentsTab from '@/components/festivals/FestivalCommentsTab';
 import FestivalTicketsTab from '@/components/festivals/FestivalTicketsTab';
 import HeadlinerModal from '@/components/festivals/HeadlinerModal';
+import FestivalExperiencesGrid from '@/components/festivals/FestivalExperiencesGrid';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
@@ -385,38 +386,13 @@ export default function FestivalDetail() {
               </Card>
 
               {festival.experiences?.length > 0 && (
-                <div>
-                  <SectionTitle icon={Palette}>Featured Experiences</SectionTitle>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {festival.experiences.map((e, i) => {
-                      const dayLabel = e.day ? new Date(e.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                      const meta = [dayLabel, e.time, e.venue].filter(Boolean).join(' · ');
-                      return (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => { if (e.day) setActiveDay(e.day); setTab('schedule'); }}
-                          className="relative rounded-xl overflow-hidden border border-border bg-card aspect-[4/3] sm:aspect-square group text-left w-full interactive-card hover:border-[#d4580a]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          {e.image ? (
-                            <img src={e.image} alt={e.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center bg-accent/10 text-accent font-black text-6xl">{e.title?.charAt(0) || '?'}</div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white pointer-events-none">
-                            <p className="font-bold text-xl leading-tight drop-shadow">{e.title}</p>
-                            {meta && <p className="text-xs text-white/85 mt-0.5">{meta}</p>}
-                            {e.description && <p className="text-xs text-white/75 mt-1 line-clamp-2">{e.description}</p>}
-                            {e.price && (
-                              <span className="inline-flex items-center mt-2 text-xs font-semibold px-2.5 py-1 rounded-lg text-white" style={{ backgroundColor: String(e.price).toLowerCase() === 'free' ? '#16a34a' : '#d4580a' }}>{e.price}</span>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                <FestivalExperiencesGrid
+                  festival={festival}
+                  canManage={canManage}
+                  onUpdate={setFestival}
+                  setActiveDay={setActiveDay}
+                  setTab={setTab}
+                />
               )}
             </div>
 
