@@ -17,16 +17,37 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { eventId, ticketTypeId, quantity, promoterId, promoCodeId } = await req.json();
+    const { eventId, festivalId, ticketTypeId, quantity, promoterId, promoCodeId } = await req.json();
 
-    if (!eventId || !ticketTypeId || !quantity || quantity < 1) {
+    if ((!eventId && !festivalId) || !ticketTypeId || !quantity || quantity < 1) {
       return Response.json({ error: 'Invalid parameters' }, { status: 400 });
     }
 
-    // Fetch event and ticket type
-    const eventResults = await base44.asServiceRole.entities.Event.filter({ id: eventId });
-    const event = eventResults[0];
-    if (!event) return Response.json({ error: 'Event not found' }, { status: 404 });
+    // Fetch event or festival (the ticket's parent) and derive product details
+    let organizerId = null;
+    let productName = '';
+    let productImage = '';
+    let productDesc = '';
+    let cancelPath = '';
+    if (festivalId) {
+      const festResults = await base44.asServiceRole.entities.Festival.filter({ id: festivalId });
+      const festival = festResults[0];
+      if (!festival) return Response.json({ error: 'Festival not found' }, { status: 404 });
+      organizerId = festival.owner_id;
+      productName = festival.name;
+      productImage = festival.image_url || '';
+      productDesc = festival.description || '';
+      cancelPath = festival.slug ? `/festivals/${festival.slug}` : '/festivals';
+    } else {
+      const eventResults = await base44.asServiceRole.entities.Event.filter({ id: eventId });
+      const event = eventResults[0];
+      if (!event) return Response.json({ error: 'Event not found' }, { status: 404 });
+      organizerId = event.organizer_id;
+      productName = event.title;
+      productImage = event.image_url || '';
+      productDesc = event.description || '';
+      cancelPath = `/events/${eventId}/tickets`;
+    }
 
     const ttResults = await base44.asServiceRole.entities.TicketType.filter({ id: ticketTypeId });
     const ticketType = ttResults[0];
@@ -48,7 +69,7 @@ Deno.serve(async (req) => {
     // Look up artist's Stripe Connect Account ID if this is a paid ticket
     let stripeConnectId = null;
     if (baseUnitPrice > 0) {
-      const artistPages = await base44.asServiceRole.entities.ArtistPage.filter({ owner_id: event.organizer_id });
+      const artistPages = await base44.asServiceRole.entities.ArtistPage.filter({ owner_id: organizerId });
       const artistPage = artistPages[0];
       stripeConnectId = artistPage?.stripe_connect_id || null;
 
@@ -100,7 +121,8 @@ Deno.serve(async (req) => {
     if (totalCents === 0) {
       const orderNumber = `ORD-FREE-${Date.now()}`;
       const order = await base44.asServiceRole.entities.TicketOrder.create({
-        event_id: eventId,
+        event_id: eventId || '',
+        festival_id: festivalId || '',
         ticket_type_id: ticketTypeId,
         buyer_id: user.id,
         buyer_email: user.email,
@@ -120,10 +142,11 @@ Deno.serve(async (req) => {
         ticketBatch.push({
           order_id: order.id,
           ticket_type_id: ticketTypeId,
-          event_id: eventId,
+          event_id: eventId || '',
+          festival_id: festivalId || '',
           owner_id: user.id,
           owner_email: user.email,
-          unique_code: `TKT-${eventId.slice(0, 6).toUpperCase()}-FREE-${Date.now()}-${i}`,
+          unique_code: `TKT-${(eventId || festivalId).slice(0, 6).toUpperCase()}-FREE-${Date.now()}-${i}`,
           ticket_number: `${i + 1} of ${quantity}`,
           is_checked_in: false,
         });
@@ -143,9 +166,9 @@ Deno.serve(async (req) => {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: `${event.title} — ${ticketType.name}`,
-            description: ticketType.description || event.description || '',
-            images: event.image_url ? [event.image_url] : [],
+            name: `${productName} — ${ticketType.name}`,
+            description: ticketType.description || productDesc || '',
+            images: productImage ? [productImage] : [],
           },
           unit_amount: Math.round(totalPerTicket * 100),
         },
@@ -159,9 +182,10 @@ Deno.serve(async (req) => {
       line_items: lineItems,
       customer_email: user.email,
       success_url: `${origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/events/${eventId}/tickets`,
+      cancel_url: `${origin}${cancelPath}`,
       metadata: {
-        eventId,
+        eventId: eventId || '',
+        festivalId: festivalId || '',
         ticketTypeId,
         quantity: quantity.toString(),
         buyerId: user.id,

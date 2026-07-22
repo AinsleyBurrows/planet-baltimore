@@ -18,6 +18,7 @@ import FollowButton from '@/components/shared/FollowButton';
 import ShareModal from '@/components/shared/ShareModal';
 import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateComposer';
 import FestivalCommentsTab from '@/components/festivals/FestivalCommentsTab';
+import FestivalTicketsTab from '@/components/festivals/FestivalTicketsTab';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
@@ -107,6 +108,7 @@ export default function FestivalDetail() {
   const followed = useLocalList('pb_followed_festivals');
   const [tab, setTab] = useState('overview');
   const [shareArtist, setShareArtist] = useState(null);
+  const [ticketTypes, setTicketTypes] = useState([]);
   const { user } = useCurrentUser();
 
   const days = useMemo(() => {
@@ -126,6 +128,15 @@ export default function FestivalDetail() {
   }, [quickFilter, days, today]);
 
   useEffect(() => { if (visibleDays.length) setActiveDay(visibleDays[0]); }, [visibleDays]);
+
+  useEffect(() => {
+    if (!festival?.id) return;
+    let cancelled = false;
+    base44.entities.TicketType.filter({ festival_id: festival.id }, 'sort_order', 200)
+      .then((r) => { if (!cancelled) setTicketTypes(r); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [festival?.id]);
 
   if (loading) {
     return (
@@ -360,16 +371,10 @@ export default function FestivalDetail() {
                             {meta && <p className="text-xs text-white/85 mt-0.5">{meta}</p>}
                             {h.bio && <p className="text-xs text-white/75 mt-1 line-clamp-2">{h.bio}</p>}
                             <div className="flex items-center gap-2 mt-2.5">
-                              {h.ticket_url ? (
-                                <a href={h.ticket_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg text-white" style={{ backgroundColor: '#d4580a' }}>
-                                  <Ticket className="w-3.5 h-3.5" />Get Tickets
-                                </a>
-                              ) : (
-                                <button onClick={() => setTab('tickets')} className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10 hover:bg-[#d4580a]/20">
-                                  <CalendarPlus className="w-3.5 h-3.5" />RSVP
-                                </button>
-                              )}
-                              {h.ticket_price && <span className="text-xs font-semibold text-white/90">{h.ticket_price}</span>}
+                              <button onClick={() => setTab('tickets')} className={h.ticket_type_id ? "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg text-white" : "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10 hover:bg-[#d4580a]/20"} style={h.ticket_type_id ? { backgroundColor: '#d4580a' } : undefined}>
+                                <Ticket className="w-3.5 h-3.5" />{h.ticket_type_id ? 'Get Tickets' : 'RSVP'}
+                              </button>
+                              {(() => { const tt = ticketTypes.find(t => t.id === h.ticket_type_id); return tt ? <span className="text-xs font-semibold text-white/90">{tt.price === 0 ? 'Free' : `$${tt.price}`}</span> : null; })()}
                             </div>
                           </div>
                         </div>
@@ -696,11 +701,11 @@ export default function FestivalDetail() {
               <div className="flex justify-between"><span className="text-muted-foreground">Age</span><span className="font-medium">{festival.ageRestriction || 'All Ages'}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Rain or Shine</span><span className="font-medium">{festival.rainOrShine ? 'Yes' : 'No'}</span></div>
             </div>
-            {festival.admission?.type !== 'free' && festival.admission?.url && (
-              <a href={festival.admission.url} target="_blank" rel="noopener noreferrer" className="mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg text-white font-semibold text-sm w-full sm:w-auto" style={{ backgroundColor: '#d4580a' }}><Ticket className="w-4 h-4" />Buy Tickets</a>
+            {festival.admission?.url && (
+              <a href={festival.admission.url} target="_blank" rel="noopener noreferrer" className="mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg text-white font-semibold text-sm w-full sm:w-auto" style={{ backgroundColor: '#d4580a' }}><Ticket className="w-4 h-4" />Buy Tickets (external)</a>
             )}
-            {festival.admission?.type === 'free' && <p className="mt-3 text-sm text-muted-foreground">This is a free festival — no ticket required.</p>}
           </Card>
+          <FestivalTicketsTab festival={festival} ticketTypes={ticketTypes} />
         </TabsContent>
 
         {/* Travel & Parking */}

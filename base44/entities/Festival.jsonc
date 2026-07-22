@@ -348,13 +348,9 @@
                 "type": "string",
                 "description": "Short bio / description"
               },
-              "ticket_url": {
+              "ticket_type_id": {
                 "type": "string",
-                "description": "Direct ticket / RSVP link for this headliner"
-              },
-              "ticket_price": {
-                "type": "string",
-                "description": "Price label, e.g. '$45', 'Free', '$5\u2013$15'"
+                "description": "Linked platform TicketType for this headliner's tickets"
               }
             }
           }

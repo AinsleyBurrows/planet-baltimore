@@ -3,7 +3,12 @@
   "type": "object",
   "properties": {
     "event_id": {
-      "type": "string"
+      "type": "string",
+      "description": "Reference to Event (when order is for an event)"
+    },
+    "festival_id": {
+      "type": "string",
+      "description": "Reference to Festival (when order is for a festival)"
     },
     "ticket_type_id": {
       "type": "string"
@@ -97,7 +102,6 @@
     }
   },
   "required": [
-    "event_id",
     "ticket_type_id",
     "buyer_id",
     "buyer_email",

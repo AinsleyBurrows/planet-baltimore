@@ -410,7 +410,7 @@ export default function EditFestival() {
 
       {/* Highlights */}
       <Card title="Highlights">
-        <HeadlinerEditor items={form.highlights?.headliners} onChange={(v) => setNested('highlights', 'headliners', v)} />
+        <HeadlinerEditor items={form.highlights?.headliners} onChange={(v) => setNested('highlights', 'headliners', v)} festivalId={record.id} />
         <StringArray label="Installations" items={form.highlights?.installations} onChange={(v) => setNested('highlights', 'installations', v)} />
         <StringArray label="Performances" items={form.highlights?.performances} onChange={(v) => setNested('highlights', 'performances', v)} />
         <StringArray label="Family" items={form.highlights?.family} onChange={(v) => setNested('highlights', 'family', v)} />

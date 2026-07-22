@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Plus, Trash2, Upload, Ticket } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 
-export default function HeadlinerEditor({ items, onChange }) {
+export default function HeadlinerEditor({ items, onChange, festivalId }) {
   const list = Array.isArray(items) ? items : [];
   const update = (i, k, v) => onChange(list.map((it, idx) => (idx === i ? { ...it, [k]: v } : it)));
   const remove = (i) => onChange(list.filter((_, idx) => idx !== i));
-  const add = () => onChange([...list, { name: '', image: '', day: '', time: '', stage: '', bio: '', ticket_url: '', ticket_price: '' }]);
+  const add = () => onChange([...list, { name: '', image: '', day: '', time: '', stage: '', bio: '', ticket_type_id: '' }]);
+
+  const { data: ticketTypes = [] } = useQuery({
+    queryKey: ['festival-ticket-types', festivalId],
+    queryFn: () => base44.entities.TicketType.filter({ festival_id: festivalId }, 'sort_order', 200),
+    enabled: !!festivalId,
+  });
 
   const upload = async (i, file) => {
     if (!file) return;
@@ -93,21 +103,26 @@ export default function HeadlinerEditor({ items, onChange }) {
                   </div>
                 </div>
 
-                {/* Ticket section */}
+                {/* Ticket section — linked to platform ticket types */}
                 <div className="rounded-lg border border-dashed border-[#d4580a]/40 p-2.5 space-y-2 bg-[#d4580a]/5">
                   <p className="text-xs font-semibold text-[#d4580a] flex items-center gap-1.5">
-                    <Ticket className="w-3.5 h-3.5" />Tickets
+                    <Ticket className="w-3.5 h-3.5" />Ticket type
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Ticket / RSVP link</span>
-                      <Input value={h.ticket_url || ''} onChange={(e) => update(i, 'ticket_url', e.target.value)} placeholder="https://…" />
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Price label</span>
-                      <Input value={h.ticket_price || ''} onChange={(e) => update(i, 'ticket_price', e.target.value)} placeholder="$45, Free, $5–$15" />
-                    </div>
-                  </div>
+                  {!festivalId ? (
+                    <p className="text-xs text-muted-foreground">Save the festival first, then link a platform ticket type (created in the Admission section).</p>
+                  ) : ticketTypes.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No ticket types yet. Create one in the Admission section to link it here.</p>
+                  ) : (
+                    <Select value={h.ticket_type_id || '__none'} onValueChange={(v) => update(i, 'ticket_type_id', v === '__none' ? '' : v)}>
+                      <SelectTrigger><SelectValue placeholder="Link a platform ticket type…" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none">None (free / RSVP)</SelectItem>
+                        {ticketTypes.map((tt) => (
+                          <SelectItem key={tt.id} value={tt.id}>{tt.name} — ${tt.price}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </div>
             </div>
