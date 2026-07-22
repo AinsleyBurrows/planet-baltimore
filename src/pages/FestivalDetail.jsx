@@ -326,7 +326,7 @@ export default function FestivalDetail() {
               </Card>
 
               <Card>
-                <SectionTitle icon={Star}>Festival Highlights</SectionTitle>
+                <SectionTitle icon={Star}>Festival Headliners</SectionTitle>
                 {(festival.highlights?.headliners || []).filter(h => h && (h.name || h.image)).length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                     {(festival.highlights.headliners).filter(h => h && (h.name || h.image)).map((h, i) => {
