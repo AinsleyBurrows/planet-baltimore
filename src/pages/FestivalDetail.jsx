@@ -710,29 +710,6 @@ export default function FestivalDetail() {
           <FestivalTicketsTab key={preselectTicket || 'none'} festival={festival} ticketTypes={ticketTypes} preselectTicketTypeId={preselectTicket} />
         </TabsContent>
 
-        {/* Travel & Parking */}
-        <TabsContent value="travel" className="mt-5 space-y-4">
-          <Card>
-            <SectionTitle icon={Bus}>Getting There</SectionTitle>
-            <dl className="space-y-1.5 text-sm">
-              <div><dt className="text-muted-foreground text-xs">Light Rail</dt><dd>{festival.transportation?.lightRail || '—'}</dd></div>
-              <div><dt className="text-muted-foreground text-xs">Metro</dt><dd>{festival.transportation?.metro || '—'}</dd></div>
-              <div><dt className="text-muted-foreground text-xs">Bus</dt><dd>{festival.transportation?.bus || '—'}</dd></div>
-              <div><dt className="text-muted-foreground text-xs">Rideshare</dt><dd>{festival.transportation?.rideshare || '—'}</dd></div>
-              <div><dt className="text-muted-foreground text-xs">Bike Parking</dt><dd>{festival.transportation?.bikeParking || '—'}</dd></div>
-              <div><dt className="text-muted-foreground text-xs">Walking</dt><dd>{festival.transportation?.walking || '—'}</dd></div>
-            </dl>
-            <a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-sm text-[#d4580a] hover:underline font-medium"><Navigation className="w-4 h-4" />Get Directions</a>
-          </Card>
-          <Card>
-            <SectionTitle icon={Car}>Parking</SectionTitle>
-            <p className="text-sm text-foreground/80">{festival.parking?.notes || 'Parking details will be posted closer to the festival.'}</p>
-            {festival.parking?.garages?.length > 0 && (
-              <ul className="mt-2 space-y-1 text-sm">{festival.parking.garages.map(g => <li key={g.name} className="flex justify-between"><span>{g.name}</span><span className="text-muted-foreground">{g.cost}</span></li>)}</ul>
-            )}
-          </Card>
-        </TabsContent>
-
         {/* Comments */}
         <TabsContent value="comments" className="mt-5 space-y-4">
           <FestivalCommentsTab festival={festival} />
