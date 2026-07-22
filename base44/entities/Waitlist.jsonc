@@ -5,6 +5,10 @@
     "event_id": {
       "type": "string"
     },
+    "festival_id": {
+      "type": "string",
+      "description": "Reference to Festival (for festival waitlists)"
+    },
     "ticket_type_id": {
       "type": "string",
       "description": "Which sold-out ticket type they want"
@@ -27,7 +31,6 @@
     }
   },
   "required": [
-    "event_id",
     "ticket_type_id",
     "user_id",
     "user_email"
