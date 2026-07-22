@@ -535,6 +535,7 @@ export default function FestivalDetail() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {festival.vendors.map((v, i) => (
                 <div key={i} className="bg-card border border-border rounded-xl p-3">
+                  {v.image && <img src={v.image} alt={v.name} loading="lazy" className="w-full h-28 object-cover rounded-lg mb-2" />}
                   <p className="font-semibold text-foreground text-sm">{v.name}</p>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{v.category}</span>
                   {v.booth && <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" />Booth {v.booth}</p>}

@@ -122,6 +122,7 @@ const ARTIST_FIELDS = [
 ];
 const VENDOR_FIELDS = [
   { k: 'name', l: 'Name', t: 'text' },
+  { k: 'image', l: 'Photo', t: 'imageurl' },
   { k: 'category', l: 'Category', t: 'text' },
   { k: 'booth', l: 'Booth', t: 'text' },
   { k: 'description', l: 'Description', t: 'textarea' },
