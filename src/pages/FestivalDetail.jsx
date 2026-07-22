@@ -289,9 +289,10 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'map', 'artists', 'vendors', 'food', 'visit', 'gallery', 'updates', 'faq'].map(t => (
-            <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{t === 'visit' ? 'Plan Your Visit' : t === 'food' ? 'Food + Drink' : t}</TabsTrigger>
-          ))}
+          {['overview', 'schedule', 'map', 'artists', 'performers', 'venue', 'tickets', 'travel', 'vendors', 'food', 'visit', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
+            const labels = { visit: 'Plan Your Visit', food: 'Food + Drink', venue: 'Venue Details', travel: 'Travel & Parking', reviews: 'Reviews & Past' };
+            return <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{labels[t] || t}</TabsTrigger>;
+          })}
         </TabsList>
 
         {/* Overview */}
@@ -699,6 +700,130 @@ export default function FestivalDetail() {
                 </AccordionItem>
               ))}
             </Accordion>
+          </Card>
+        </TabsContent>
+        {/* Performers */}
+        <TabsContent value="performers" className="mt-5 space-y-4">
+          {(festival.highlights?.headliners?.length || 0) > 0 && (
+            <Card>
+              <SectionTitle icon={Star}>Headliners</SectionTitle>
+              <div className="flex flex-wrap gap-2">
+                {festival.highlights.headliners.map(h => <span key={h} className="px-3 py-1.5 rounded-full bg-[#d4580a]/10 text-[#d4580a] text-sm font-semibold">{h}</span>)}
+              </div>
+            </Card>
+          )}
+          {(festival.artists || []).length === 0 ? (
+            <p className="text-center py-10 text-sm text-muted-foreground">Performer details will appear here.</p>
+          ) : (
+            <div className="space-y-3">
+              {(festival.artists || []).map((a, i) => (
+                <div key={i} className="bg-card border border-border rounded-xl p-3 flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                    {a.image ? <img src={a.image} alt={a.name} className="w-full h-full object-cover" loading="lazy" /> : <div className="w-full h-full flex items-center justify-center text-accent font-bold">{a.name?.charAt(0) || '?'}</div>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-foreground text-sm">{a.name}</p>
+                    {a.discipline && <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground capitalize">{a.discipline}</span>}
+                    <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground flex-wrap">
+                      {a.day && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(a.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
+                      {a.time && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{a.time}</span>}
+                      {a.stage && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{a.stage}</span>}
+                    </div>
+                  </div>
+                  {a.profileId && <Link to={`/artists/${a.profileId}`} className="text-xs text-[#d4580a] hover:underline font-medium flex-shrink-0">Profile →</Link>}
+                </div>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Venue Details */}
+        <TabsContent value="venue" className="mt-5 space-y-4">
+          <Card>
+            <SectionTitle icon={MapPin}>Venue</SectionTitle>
+            <div className="space-y-1.5 text-sm">
+              {festival.venue && <p className="font-medium text-foreground">{festival.venue}</p>}
+              {festival.neighborhood && <p className="text-muted-foreground flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{festival.neighborhood}</p>}
+              {festival.footprint && <p className="text-muted-foreground mt-2">{festival.footprint}</p>}
+            </div>
+          </Card>
+          <Card>
+            <SectionTitle icon={Accessibility}>Accessibility</SectionTitle>
+            <div className="flex flex-wrap gap-1.5 text-xs">
+              {Object.entries(festival.accessibility || {}).filter(([, v]) => v).map(([k]) => (
+                <span key={k} className="px-2.5 py-1 rounded-full bg-secondary text-muted-foreground capitalize">{k.replace(/([A-Z])/g, ' $1').trim()}</span>
+              ))}
+              {Object.values(festival.accessibility || {}).every(v => !v) && <p className="text-sm text-muted-foreground">Contact the organizer for accessibility details.</p>}
+            </div>
+          </Card>
+          <Card>
+            <SectionTitle icon={Users}>On-Site Facilities</SectionTitle>
+            <div className="flex flex-wrap gap-1.5 text-sm text-foreground/80">
+              {festival.accessibility?.restrooms && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />Restrooms</span>}
+              {festival.accessibility?.seating && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />Seating areas</span>}
+              {festival.accessibility?.wheelchair && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Accessibility className="w-3.5 h-3.5 text-[#d4580a]" />Wheelchair accessible</span>}
+              {festival.accessibility?.asl && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />ASL interpretation</span>}
+              {festival.accessibility?.sensoryFriendly && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />Sensory-friendly</span>}
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Tickets */}
+        <TabsContent value="tickets" className="mt-5 space-y-4">
+          <Card>
+            <SectionTitle icon={Ticket}>Tickets</SectionTitle>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Admission</span><span className="font-medium capitalize">{festival.admission?.type}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Price</span><span className="font-medium">{festival.admission?.type === 'free' ? 'Free' : festival.admission?.price || '—'}</span></div>
+              {festival.expectedAttendance && <div className="flex justify-between"><span className="text-muted-foreground">Expected Attendance</span><span className="font-medium">{festival.expectedAttendance}</span></div>}
+              <div className="flex justify-between"><span className="text-muted-foreground">Age</span><span className="font-medium">{festival.ageRestriction || 'All Ages'}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Rain or Shine</span><span className="font-medium">{festival.rainOrShine ? 'Yes' : 'No'}</span></div>
+            </div>
+            {festival.admission?.type !== 'free' && festival.admission?.url && (
+              <a href={festival.admission.url} target="_blank" rel="noopener noreferrer" className="mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg text-white font-semibold text-sm w-full sm:w-auto" style={{ backgroundColor: '#d4580a' }}><Ticket className="w-4 h-4" />Buy Tickets</a>
+            )}
+            {festival.admission?.type === 'free' && <p className="mt-3 text-sm text-muted-foreground">This is a free festival — no ticket required.</p>}
+          </Card>
+        </TabsContent>
+
+        {/* Travel & Parking */}
+        <TabsContent value="travel" className="mt-5 space-y-4">
+          <Card>
+            <SectionTitle icon={Bus}>Getting There</SectionTitle>
+            <dl className="space-y-1.5 text-sm">
+              <div><dt className="text-muted-foreground text-xs">Light Rail</dt><dd>{festival.transportation?.lightRail || '—'}</dd></div>
+              <div><dt className="text-muted-foreground text-xs">Metro</dt><dd>{festival.transportation?.metro || '—'}</dd></div>
+              <div><dt className="text-muted-foreground text-xs">Bus</dt><dd>{festival.transportation?.bus || '—'}</dd></div>
+              <div><dt className="text-muted-foreground text-xs">Rideshare</dt><dd>{festival.transportation?.rideshare || '—'}</dd></div>
+              <div><dt className="text-muted-foreground text-xs">Bike Parking</dt><dd>{festival.transportation?.bikeParking || '—'}</dd></div>
+              <div><dt className="text-muted-foreground text-xs">Walking</dt><dd>{festival.transportation?.walking || '—'}</dd></div>
+            </dl>
+            <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-sm text-[#d4580a] hover:underline font-medium"><Navigation className="w-4 h-4" />Get Directions</a>
+          </Card>
+          <Card>
+            <SectionTitle icon={Car}>Parking</SectionTitle>
+            <p className="text-sm text-foreground/80">{festival.parking?.notes || 'Parking details will be posted closer to the festival.'}</p>
+            {festival.parking?.garages?.length > 0 && (
+              <ul className="mt-2 space-y-1 text-sm">{festival.parking.garages.map(g => <li key={g.name} className="flex justify-between"><span>{g.name}</span><span className="text-muted-foreground">{g.cost}</span></li>)}</ul>
+            )}
+          </Card>
+        </TabsContent>
+
+        {/* Reviews & Past Editions */}
+        <TabsContent value="reviews" className="mt-5 space-y-4">
+          <Card>
+            <SectionTitle icon={Star}>Reviews</SectionTitle>
+            <p className="text-sm text-muted-foreground">Attendee reviews and ratings from past editions will appear here once the festival has taken place.</p>
+          </Card>
+          <Card>
+            <SectionTitle icon={Calendar}>Past Editions</SectionTitle>
+            {(festival.gallery?.photos || []).length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {festival.gallery.photos.slice(0, 6).map((src, i) => <img key={i} src={src} alt={`Past ${i + 1}`} className="w-full h-24 object-cover rounded-lg" loading="lazy" />)}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Photos and highlights from past editions will be added here.</p>
+            )}
           </Card>
         </TabsContent>
       </Tabs>
