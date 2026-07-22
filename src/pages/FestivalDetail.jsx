@@ -108,6 +108,7 @@ export default function FestivalDetail() {
   const followed = useLocalList('pb_followed_festivals');
   const [tab, setTab] = useState('overview');
   const [shareArtist, setShareArtist] = useState(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const [ticketTypes, setTicketTypes] = useState([]);
   const [selectedHeadliner, setSelectedHeadliner] = useState(null);
   const [preselectTicket, setPreselectTicket] = useState(null);
@@ -296,7 +297,7 @@ export default function FestivalDetail() {
         {festival.isUserCreated && festival.id
           ? <FollowButton targetType="festival" targetId={festival.id} targetName={festival.name} />
           : <ActionBtn icon={Heart} label={isFollowing ? 'Following' : 'Follow'} active={isFollowing} onClick={() => followed.toggle(festival.slug)} />}
-        <ShareButton url={`/festivals/${festival.slug}`} title={festival.name} description={festival.description} />
+        <ActionBtn icon={Share2} label="Share" onClick={() => setShareOpen(true)} />
         <a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer">
           <ActionBtn icon={Navigation} label="Directions" onClick={() => {}} />
         </a>
@@ -744,6 +745,14 @@ export default function FestivalDetail() {
         url={shareArtist?.url}
         title={shareArtist?.title}
         description={shareArtist?.description}
+      />
+
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        url={`${window.location.origin}/festivals/${festival.slug}`}
+        title={festival.name}
+        description={festival.description}
       />
 
       <HeadlinerModal
