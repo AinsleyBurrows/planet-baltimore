@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import SaveButton from '@/components/festivals/SaveButton';
 import ShareButton from '@/components/festivals/ShareButton';
-import AddToCalendarButton from '@/components/festivals/AddToCalendarButton';
 import FollowButton from '@/components/shared/FollowButton';
 import ShareModal from '@/components/shared/ShareModal';
 import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateComposer';
@@ -298,7 +297,6 @@ export default function FestivalDetail() {
           ? <FollowButton targetType="festival" targetId={festival.id} targetName={festival.name} />
           : <ActionBtn icon={Heart} label={isFollowing ? 'Following' : 'Follow'} active={isFollowing} onClick={() => followed.toggle(festival.slug)} />}
         <ShareButton url={`/festivals/${festival.slug}`} title={festival.name} description={festival.description} />
-        <AddToCalendarButton festival={festival} />
         <a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer">
           <ActionBtn icon={Navigation} label="Directions" onClick={() => {}} />
         </a>
