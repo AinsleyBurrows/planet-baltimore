@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import FestivalTicketTypeManager from '@/components/festivals/FestivalTicketTypeManager';
+import HeadlinerEditor from '@/components/festivals/HeadlinerEditor';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -409,7 +410,7 @@ export default function EditFestival() {
 
       {/* Highlights */}
       <Card title="Highlights">
-        <StringArray label="Headliners" items={form.highlights?.headliners} onChange={(v) => setNested('highlights', 'headliners', v)} />
+        <HeadlinerEditor items={form.highlights?.headliners} onChange={(v) => setNested('highlights', 'headliners', v)} />
         <StringArray label="Installations" items={form.highlights?.installations} onChange={(v) => setNested('highlights', 'installations', v)} />
         <StringArray label="Performances" items={form.highlights?.performances} onChange={(v) => setNested('highlights', 'performances', v)} />
         <StringArray label="Family" items={form.highlights?.family} onChange={(v) => setNested('highlights', 'family', v)} />

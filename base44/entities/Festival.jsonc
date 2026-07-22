@@ -320,8 +320,43 @@
       "properties": {
         "headliners": {
           "type": "array",
+          "description": "Festival headliners with rich details and ticket info",
           "items": {
-            "type": "string"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Headliner / artist name"
+              },
+              "image": {
+                "type": "string",
+                "description": "Headliner photo / poster URL"
+              },
+              "day": {
+                "type": "string",
+                "format": "date"
+              },
+              "time": {
+                "type": "string",
+                "description": "Start time, e.g. '9:00 PM'"
+              },
+              "stage": {
+                "type": "string",
+                "description": "Stage name"
+              },
+              "bio": {
+                "type": "string",
+                "description": "Short bio / description"
+              },
+              "ticket_url": {
+                "type": "string",
+                "description": "Direct ticket / RSVP link for this headliner"
+              },
+              "ticket_price": {
+                "type": "string",
+                "description": "Price label, e.g. '$45', 'Free', '$5\u2013$15'"
+              }
+            }
           }
         },
         "installations": {

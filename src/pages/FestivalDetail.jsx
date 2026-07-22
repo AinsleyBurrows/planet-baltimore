@@ -161,8 +161,8 @@ export default function FestivalDetail() {
       description: a.bio || '', profileId: a.profile_id || '', _source: 'artist',
     }));
   const headlinerSchedule = (festival.highlights?.headliners || []).map(h => ({
-    day: '', time: '', title: h, artist: h, stage: 'Main Stage',
-    category: 'headliner', description: 'Festival headliner', _source: 'headliner',
+    day: h.day || '', time: h.time || '', title: h.name, artist: h.name, stage: h.stage || 'Main Stage',
+    category: 'headliner', description: h.bio || 'Festival headliner', _source: 'headliner',
   }));
   const experienceSchedule = (festival.experiences || []).map(e => ({
     day: e.day || '', time: e.time || '', title: e.title, artist: '', image: e.image || '', stage: e.venue || '',
@@ -342,8 +342,43 @@ export default function FestivalDetail() {
 
               <Card>
                 <SectionTitle icon={Star}>Festival Highlights</SectionTitle>
+                {(festival.highlights?.headliners || []).filter(h => h && (h.name || h.image)).length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    {(festival.highlights.headliners).filter(h => h && (h.name || h.image)).map((h, i) => {
+                      const dayLabel = h.day ? new Date(h.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+                      const meta = [dayLabel, h.time, h.stage].filter(Boolean).join(' · ');
+                      return (
+                        <div key={i} className="relative rounded-xl overflow-hidden border border-border bg-card aspect-[4/3] sm:aspect-square group">
+                          {h.image ? (
+                            <img src={h.image} alt={h.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center bg-accent/10 text-accent font-black text-6xl">{h.name?.charAt(0) || '?'}</div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                            <p className="font-bold text-xl leading-tight drop-shadow">{h.name}</p>
+                            {meta && <p className="text-xs text-white/85 mt-0.5">{meta}</p>}
+                            {h.bio && <p className="text-xs text-white/75 mt-1 line-clamp-2">{h.bio}</p>}
+                            <div className="flex items-center gap-2 mt-2.5">
+                              {h.ticket_url ? (
+                                <a href={h.ticket_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg text-white" style={{ backgroundColor: '#d4580a' }}>
+                                  <Ticket className="w-3.5 h-3.5" />Get Tickets
+                                </a>
+                              ) : (
+                                <button onClick={() => setTab('tickets')} className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10 hover:bg-[#d4580a]/20">
+                                  <CalendarPlus className="w-3.5 h-3.5" />RSVP
+                                </button>
+                              )}
+                              {h.ticket_price && <span className="text-xs font-semibold text-white/90">{h.ticket_price}</span>}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
                 <div className="space-y-3 text-sm">
-                  {Object.entries(festival.highlights || {}).filter(([, v]) => v?.length).map(([k, v]) => (
+                  {Object.entries(festival.highlights || {}).filter(([k, v]) => k !== 'headliners' && v?.length).map(([k, v]) => (
                     <div key={k}>
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider capitalize">{k}</p>
                       <ul className="list-disc list-inside text-foreground/80 mt-0.5">{v.map(x => <li key={x}>{x}</li>)}</ul>
@@ -595,14 +630,6 @@ export default function FestivalDetail() {
         </TabsContent>
         {/* Performers */}
         <TabsContent value="performers" className="mt-5 space-y-4">
-          {(festival.highlights?.headliners?.length || 0) > 0 && (
-            <Card>
-              <SectionTitle icon={Star}>Headliners</SectionTitle>
-              <div className="flex flex-wrap gap-2">
-                {festival.highlights.headliners.map(h => <span key={h} className="px-3 py-1.5 rounded-full bg-[#d4580a]/10 text-[#d4580a] text-sm font-semibold">{h}</span>)}
-              </div>
-            </Card>
-          )}
           {(festival.artists || []).length === 0 ? (
             <p className="text-center py-10 text-sm text-muted-foreground">Performer details will appear here.</p>
           ) : (
