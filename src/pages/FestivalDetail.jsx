@@ -293,7 +293,7 @@ export default function FestivalDetail() {
             <Pencil className="w-4 h-4" />Edit Festival
           </Link>
         )}
-        <SaveButton slug={festival.slug} />
+        <SaveButton slug={festival.slug} festivalId={festival.id} festivalName={festival.name} />
         {festival.isUserCreated && festival.id
           ? <FollowButton targetType="festival" targetId={festival.id} targetName={festival.name} />
           : <ActionBtn icon={Heart} label={isFollowing ? 'Following' : 'Follow'} active={isFollowing} onClick={() => followed.toggle(festival.slug)} />}

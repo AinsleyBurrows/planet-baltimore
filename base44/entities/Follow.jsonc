@@ -13,7 +13,8 @@
         "business",
         "community",
         "event",
-        "festival"
+        "festival",
+        "saved_festival"
       ]
     },
     "target_id": {
