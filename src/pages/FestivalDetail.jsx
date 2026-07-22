@@ -289,7 +289,7 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'map', 'performers', 'venue', 'tickets', 'travel', 'vendors', 'food', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
+          {['overview', 'schedule', 'map', 'performers', 'tickets', 'travel', 'vendors', 'food', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
             const labels = { visit: 'Plan Your Visit', food: 'Food + Drink', venue: 'Venue Details', travel: 'Travel & Parking', reviews: 'Reviews & Past' };
             return <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{labels[t] || t}</TabsTrigger>;
           })}
@@ -646,37 +646,6 @@ export default function FestivalDetail() {
               })}
             </div>
           )}
-        </TabsContent>
-
-        {/* Venue Details */}
-        <TabsContent value="venue" className="mt-5 space-y-4">
-          <Card>
-            <SectionTitle icon={MapPin}>Venue</SectionTitle>
-            <div className="space-y-1.5 text-sm">
-              {festival.venue && <p className="font-medium text-foreground">{festival.venue}</p>}
-              {festival.neighborhood && <p className="text-muted-foreground flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{festival.neighborhood}</p>}
-              {festival.footprint && <p className="text-muted-foreground mt-2">{festival.footprint}</p>}
-            </div>
-          </Card>
-          <Card>
-            <SectionTitle icon={Accessibility}>Accessibility</SectionTitle>
-            <div className="flex flex-wrap gap-1.5 text-xs">
-              {Object.entries(festival.accessibility || {}).filter(([, v]) => v).map(([k]) => (
-                <span key={k} className="px-2.5 py-1 rounded-full bg-secondary text-muted-foreground capitalize">{k.replace(/([A-Z])/g, ' $1').trim()}</span>
-              ))}
-              {Object.values(festival.accessibility || {}).every(v => !v) && <p className="text-sm text-muted-foreground">Contact the organizer for accessibility details.</p>}
-            </div>
-          </Card>
-          <Card>
-            <SectionTitle icon={Users}>On-Site Facilities</SectionTitle>
-            <div className="flex flex-wrap gap-1.5 text-sm text-foreground/80">
-              {festival.accessibility?.restrooms && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />Restrooms</span>}
-              {festival.accessibility?.seating && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />Seating areas</span>}
-              {festival.accessibility?.wheelchair && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Accessibility className="w-3.5 h-3.5 text-[#d4580a]" />Wheelchair accessible</span>}
-              {festival.accessibility?.asl && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />ASL interpretation</span>}
-              {festival.accessibility?.sensoryFriendly && <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary"><Check className="w-3.5 h-3.5 text-[#d4580a]" />Sensory-friendly</span>}
-            </div>
-          </Card>
         </TabsContent>
 
         {/* Tickets */}
