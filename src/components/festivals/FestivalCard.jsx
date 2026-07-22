@@ -4,6 +4,7 @@ import { MapPin, Calendar, Clock, Ticket } from 'lucide-react';
 import SaveButton from './SaveButton';
 import ShareButton from './ShareButton';
 import AddToCalendarButton from './AddToCalendarButton';
+import AdminFeatureButton from './AdminFeatureButton';
 
 function formatDateRange(f) {
   const opts = { month: 'short', day: 'numeric' };
@@ -67,6 +68,7 @@ export default function FestivalCard({ festival }) {
           <SaveButton slug={festival.slug} />
           <ShareButton url={`/festivals/${festival.slug}`} title={festival.name} />
           <AddToCalendarButton festival={festival} />
+          <AdminFeatureButton festival={festival} />
           <span className="ml-auto flex items-center gap-1 text-xs font-medium text-[#d4580a] group-hover:underline">
             <Ticket className="w-3.5 h-3.5" />View
           </span>

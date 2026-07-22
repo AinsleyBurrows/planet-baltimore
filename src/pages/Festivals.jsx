@@ -153,16 +153,20 @@ export default function Festivals() {
   const { saved } = useSavedFestivals();
   const [userFestivals, setUserFestivals] = useState([]);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const records = await base44.entities.Festival.filter({ status: 'published' }, '-created_date', 50);
-        if (!cancelled) setUserFestivals(records.map(dbFestivalToShape).filter(Boolean));
-      } catch { /* directory still shows curated festivals */ }
-    })();
-    return () => { cancelled = true; };
+  const loadUserFestivals = React.useCallback(async (signal) => {
+    try {
+      const records = await base44.entities.Festival.filter({ status: 'published' }, '-created_date', 50);
+      if (!signal.aborted) setUserFestivals(records.map(dbFestivalToShape).filter(Boolean));
+    } catch { /* directory still shows curated festivals */ }
   }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    loadUserFestivals(controller);
+    const onChange = () => loadUserFestivals(controller);
+    window.addEventListener('pb_festival_feature_change', onChange);
+    return () => { controller.abort(); window.removeEventListener('pb_festival_feature_change', onChange); };
+  }, [loadUserFestivals]);
 
   const toggleQuick = (f) => setQuick(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
 
@@ -181,7 +185,8 @@ export default function Festivals() {
     return list;
   }, [search, quick, panelFilters]);
 
-  const featured = festivals.find(f => f.featured) || festivals[0];
+  const dbFeatured = userFestivals.filter(f => f.featured);
+  const featured = dbFeatured[0] || festivals.find(f => f.featured) || festivals[0];
   const upcoming = festivals.filter(isUpcoming).sort((a, b) => parse(a.startDate) - parse(b.startDate));
   const hasFilters = search || quick.length || Object.values(panelFilters).flat().length;
 
@@ -302,7 +307,10 @@ export default function Festivals() {
               </Section>
               <Section title="Featured Festivals">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {festivals.filter(f => f.featured || (f.statusBadges || []).length > 0).slice(0, 3).map(f => <FestivalCard key={f.slug} festival={f} />)}
+                  {[...dbFeatured, ...festivals.filter(f => f.featured || (f.statusBadges || []).length > 0)]
+                    .filter((f, i, arr) => arr.findIndex(x => x.slug === f.slug) === i)
+                    .slice(0, 6)
+                    .map(f => <FestivalCard key={f.slug || f.id} festival={f} />)}
                 </div>
               </Section>
               <Section title="Free Festivals">
