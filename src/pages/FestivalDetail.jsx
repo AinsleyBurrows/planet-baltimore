@@ -638,7 +638,16 @@ export default function FestivalDetail() {
                           >
                             <Share2 className="w-3.5 h-3.5" />Share
                           </button>
-                          {a.profileId && <Link to={`/artists/${a.profileId}`} className="text-xs text-[#d4580a] hover:underline font-medium ml-auto">View Profile →</Link>}
+                          {festival.admission?.type !== 'free' && festival.admission?.url ? (
+                            <a href={festival.admission.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg text-white ml-auto" style={{ backgroundColor: '#d4580a' }}>
+                              <Ticket className="w-3.5 h-3.5" />Get Tickets
+                            </a>
+                          ) : (
+                            <button onClick={() => setTab('tickets')} className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10 hover:bg-[#d4580a]/20 ml-auto">
+                              <CalendarPlus className="w-3.5 h-3.5" />RSVP
+                            </button>
+                          )}
+                          {a.profileId && <Link to={`/artists/${a.profileId}`} className="text-xs text-[#d4580a] hover:underline font-medium">View Profile →</Link>}
                         </div>
                       </div>
                     )}
