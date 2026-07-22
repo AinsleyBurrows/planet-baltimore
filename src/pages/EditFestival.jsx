@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import FestivalTicketTypeManager from '@/components/festivals/FestivalTicketTypeManager';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -365,6 +366,8 @@ export default function EditFestival() {
             </SelectContent>
           </Select>
         </div>
+
+        <FestivalTicketTypeManager festivalId={record.id} />
       </Card>
 
       {/* Organizer & Social */}
