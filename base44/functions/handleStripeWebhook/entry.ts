@@ -1,5 +1,6 @@
 import Stripe from 'npm:stripe@14.0.0';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { notifyOrganizerTicketSale } from '../../shared/notifyOrganizerTicketSale.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
@@ -90,6 +91,15 @@ Deno.serve(async (req) => {
           quantity_sold: (ticketTypeData[0].quantity_sold || 0) + qty,
         });
       }
+
+      // Notify the event/festival organizer of the sale
+      await notifyOrganizerTicketSale(base44, {
+        eventId, festivalId: metadata.festivalId || '', ticketTypeId, quantity: qty,
+        buyerName: session.customer_details?.name || 'Customer',
+        buyerEmail: session.customer_email || session.customer_details?.email || '',
+        orderNumber, totalAmount: amountPaid,
+        origin: req.headers.get('origin') || 'https://planetbaltimore.base44.app',
+      });
 
       // Track promoter commission
       if (promoterId) {

@@ -1,5 +1,6 @@
 import Stripe from 'npm:stripe@14.0.0';
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { notifyOrganizerTicketSale } from '../../shared/notifyOrganizerTicketSale.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
@@ -154,6 +155,13 @@ Deno.serve(async (req) => {
       await base44.asServiceRole.entities.Ticket.bulkCreate(ticketBatch);
       await base44.asServiceRole.entities.TicketType.update(ticketTypeId, {
         quantity_sold: (ticketType.quantity_sold || 0) + quantity,
+      });
+
+      await notifyOrganizerTicketSale(base44, {
+        eventId, festivalId, ticketTypeId, quantity,
+        buyerName: user.full_name, buyerEmail: user.email,
+        orderNumber, totalAmount: 0,
+        origin: req.headers.get('origin') || 'https://planetbaltimore.base44.app',
       });
 
       return Response.json({ success: true, free: true, orderId: order.id });
