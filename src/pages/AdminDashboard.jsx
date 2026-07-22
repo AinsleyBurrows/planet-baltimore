@@ -3,8 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, BarChart3, Shield, Settings, Inbox, Award } from 'lucide-react';
+import { AlertCircle, BarChart3, Shield, Settings, Inbox, Award, TrendingUp } from 'lucide-react';
 import AdminAnalytics from '@/components/admin/AdminAnalytics';
+import AdminEventInsights from '@/components/admin/AdminEventInsights';
 import AdminModeration from '@/components/admin/AdminModeration';
 import AdminFlaggedQueue from '@/components/admin/AdminFlaggedQueue';
 import AdminVerification from '@/components/admin/AdminVerification';
@@ -46,11 +47,15 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-         <TabsList className="grid grid-cols-5 w-full max-w-4xl">
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Analytics</span>
-            </TabsTrigger>
+         <TabsList className="grid grid-cols-6 w-full max-w-5xl">
+           <TabsTrigger value="analytics" className="flex items-center gap-2">
+             <BarChart3 className="w-4 h-4" />
+             <span className="hidden sm:inline">Analytics</span>
+           </TabsTrigger>
+           <TabsTrigger value="insights" className="flex items-center gap-2">
+             <TrendingUp className="w-4 h-4" />
+             <span className="hidden sm:inline">Event Insights</span>
+           </TabsTrigger>
             <TabsTrigger value="queue" className="flex items-center gap-2">
               <Inbox className="w-4 h-4" />
               <span className="hidden sm:inline">Queue</span>
@@ -71,6 +76,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="analytics" className="mt-8">
             <AdminAnalytics data={analyticsData} isLoading={isLoading} />
+          </TabsContent>
+
+          <TabsContent value="insights" className="mt-8">
+            <AdminEventInsights />
           </TabsContent>
 
           <TabsContent value="queue" className="mt-8">
