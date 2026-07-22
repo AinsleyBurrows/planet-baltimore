@@ -467,10 +467,21 @@ export default function FestivalDetail() {
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5"><Star className="w-3.5 h-3.5 text-[#d4580a]" />Featured at the Festival</p>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 {featuredExtras.map((f, i) => (
-                  <div key={i} className="flex-shrink-0 w-56 bg-card border border-[#d4580a]/30 rounded-xl p-3">
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#d4580a]/15 text-[#d4580a] capitalize">{f.category}</span>
-                    <p className="font-semibold text-sm text-foreground mt-1.5">{f.title}</p>
-                    {f.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{f.description}</p>}
+                  <div key={i} className="flex-shrink-0 w-56 bg-card border border-[#d4580a]/30 rounded-xl overflow-hidden">
+                    {f.image ? (
+                      <div className="relative aspect-[4/3] w-full bg-muted overflow-hidden">
+                        <img src={f.image} alt={f.title} loading="lazy" className="w-full h-full object-cover" />
+                        <span className="absolute top-2 left-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#d4580a]/85 text-white capitalize">{f.category}</span>
+                      </div>
+                    ) : (
+                      <div className="p-3">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#d4580a]/15 text-[#d4580a] capitalize">{f.category}</span>
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="font-semibold text-sm text-foreground">{f.title}</p>
+                      {f.description && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{f.description}</p>}
+                    </div>
                   </div>
                 ))}
               </div>
