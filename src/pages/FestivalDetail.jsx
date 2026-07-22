@@ -17,6 +17,7 @@ import AddToCalendarButton from '@/components/festivals/AddToCalendarButton';
 import FollowButton from '@/components/shared/FollowButton';
 import ShareModal from '@/components/shared/ShareModal';
 import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateComposer';
+import FestivalCommentsTab from '@/components/festivals/FestivalCommentsTab';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
@@ -289,8 +290,8 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'performers', 'tickets', 'travel', 'vendors', 'food', 'map', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
-            const labels = { visit: 'Plan Your Visit', food: 'Food + Drink', venue: 'Venue Details', travel: 'Travel & Parking', reviews: 'Reviews & Past' };
+          {['overview', 'schedule', 'performers', 'tickets', 'travel', 'vendors', 'food', 'map', 'gallery', 'updates', 'comments', 'faq'].map(t => {
+            const labels = { food: 'Food + Drink', travel: 'Travel & Parking' };
             return <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{labels[t] || t}</TabsTrigger>;
           })}
         </TabsList>
@@ -689,22 +690,9 @@ export default function FestivalDetail() {
           </Card>
         </TabsContent>
 
-        {/* Reviews & Past Editions */}
-        <TabsContent value="reviews" className="mt-5 space-y-4">
-          <Card>
-            <SectionTitle icon={Star}>Reviews</SectionTitle>
-            <p className="text-sm text-muted-foreground">Attendee reviews and ratings from past editions will appear here once the festival has taken place.</p>
-          </Card>
-          <Card>
-            <SectionTitle icon={Calendar}>Past Editions</SectionTitle>
-            {(festival.gallery?.photos || []).length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {festival.gallery.photos.slice(0, 6).map((src, i) => <img key={i} src={src} alt={`Past ${i + 1}`} className="w-full h-24 object-cover rounded-lg" loading="lazy" />)}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Photos and highlights from past editions will be added here.</p>
-            )}
-          </Card>
+        {/* Comments */}
+        <TabsContent value="comments" className="mt-5 space-y-4">
+          <FestivalCommentsTab festival={festival} />
         </TabsContent>
       </Tabs>
 

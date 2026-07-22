@@ -20,7 +20,8 @@
         "post",
         "event",
         "story",
-        "community"
+        "community",
+        "festival"
       ]
     },
     "target_id": {
