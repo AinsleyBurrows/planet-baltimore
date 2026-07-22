@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Ticket, Loader2, ShieldCheck, Lock } from 'lucide-react';
 import TicketSelector from '@/components/ticketing/TicketSelector';
 
-export default function FestivalTicketsTab({ festival, ticketTypes }) {
+export default function FestivalTicketsTab({ festival, ticketTypes, preselectTicketTypeId }) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selected, setSelected] = useState({});
+  const [selected, setSelected] = useState(() => (preselectTicketTypeId ? { [preselectTicketTypeId]: 1 } : {}));
   const [user, setUser] = useState(null);
 
   useEffect(() => { base44.auth.me().then(setUser).catch(() => {}); }, []);

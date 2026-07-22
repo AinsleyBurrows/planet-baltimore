@@ -19,6 +19,7 @@ import ShareModal from '@/components/shared/ShareModal';
 import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateComposer';
 import FestivalCommentsTab from '@/components/festivals/FestivalCommentsTab';
 import FestivalTicketsTab from '@/components/festivals/FestivalTicketsTab';
+import HeadlinerModal from '@/components/festivals/HeadlinerModal';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
@@ -109,6 +110,8 @@ export default function FestivalDetail() {
   const [tab, setTab] = useState('overview');
   const [shareArtist, setShareArtist] = useState(null);
   const [ticketTypes, setTicketTypes] = useState([]);
+  const [selectedHeadliner, setSelectedHeadliner] = useState(null);
+  const [preselectTicket, setPreselectTicket] = useState(null);
   const { user } = useCurrentUser();
 
   const days = useMemo(() => {
@@ -359,25 +362,30 @@ export default function FestivalDetail() {
                       const dayLabel = h.day ? new Date(h.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
                       const meta = [dayLabel, h.time, h.stage].filter(Boolean).join(' · ');
                       return (
-                        <div key={i} className="relative rounded-xl overflow-hidden border border-border bg-card aspect-[4/3] sm:aspect-square group">
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setSelectedHeadliner(h)}
+                          className="relative rounded-xl overflow-hidden border border-border bg-card aspect-[4/3] sm:aspect-square group text-left w-full interactive-card hover:border-[#d4580a]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
                           {h.image ? (
                             <img src={h.image} alt={h.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                           ) : (
                             <div className="absolute inset-0 flex items-center justify-center bg-accent/10 text-accent font-black text-6xl">{h.name?.charAt(0) || '?'}</div>
                           )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white pointer-events-none">
                             <p className="font-bold text-xl leading-tight drop-shadow">{h.name}</p>
                             {meta && <p className="text-xs text-white/85 mt-0.5">{meta}</p>}
                             {h.bio && <p className="text-xs text-white/75 mt-1 line-clamp-2">{h.bio}</p>}
                             <div className="flex items-center gap-2 mt-2.5">
-                              <button onClick={() => setTab('tickets')} className={h.ticket_type_id ? "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg text-white" : "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10 hover:bg-[#d4580a]/20"} style={h.ticket_type_id ? { backgroundColor: '#d4580a' } : undefined}>
+                              <span className={h.ticket_type_id ? "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg text-white" : "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10"} style={h.ticket_type_id ? { backgroundColor: '#d4580a' } : undefined}>
                                 <Ticket className="w-3.5 h-3.5" />{h.ticket_type_id ? 'Get Tickets' : 'RSVP'}
-                              </button>
+                              </span>
                               {(() => { const tt = ticketTypes.find(t => t.id === h.ticket_type_id); return tt ? <span className="text-xs font-semibold text-white/90">{tt.price === 0 ? 'Free' : `$${tt.price}`}</span> : null; })()}
                             </div>
                           </div>
-                        </div>
+                        </button>
                       );
                     })}
                   </div>
@@ -705,7 +713,7 @@ export default function FestivalDetail() {
               <a href={festival.admission.url} target="_blank" rel="noopener noreferrer" className="mt-4 flex items-center justify-center gap-2 py-2.5 rounded-lg text-white font-semibold text-sm w-full sm:w-auto" style={{ backgroundColor: '#d4580a' }}><Ticket className="w-4 h-4" />Buy Tickets (external)</a>
             )}
           </Card>
-          <FestivalTicketsTab festival={festival} ticketTypes={ticketTypes} />
+          <FestivalTicketsTab key={preselectTicket || 'none'} festival={festival} ticketTypes={ticketTypes} preselectTicketTypeId={preselectTicket} />
         </TabsContent>
 
         {/* Travel & Parking */}
@@ -743,6 +751,20 @@ export default function FestivalDetail() {
         url={shareArtist?.url}
         title={shareArtist?.title}
         description={shareArtist?.description}
+      />
+
+      <HeadlinerModal
+        headliner={selectedHeadliner}
+        festival={festival}
+        ticketTypes={ticketTypes}
+        onClose={() => setSelectedHeadliner(null)}
+        onRSVP={() => { setPreselectTicket(null); setTab('tickets'); setSelectedHeadliner(null); }}
+        onBuyTickets={() => {
+          const h = selectedHeadliner;
+          if (h?.ticket_type_id) { setPreselectTicket(h.ticket_type_id); setTab('tickets'); setSelectedHeadliner(null); }
+          else if (festival.admission?.url) { window.open(festival.admission.url, '_blank', 'noopener'); }
+          else { setPreselectTicket(null); setTab('tickets'); setSelectedHeadliner(null); }
+        }}
       />
 
       <div className="text-center pt-4">
