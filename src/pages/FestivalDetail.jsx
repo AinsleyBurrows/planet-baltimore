@@ -289,7 +289,7 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'map', 'artists', 'performers', 'venue', 'tickets', 'travel', 'vendors', 'food', 'visit', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
+          {['overview', 'schedule', 'map', 'performers', 'venue', 'tickets', 'travel', 'vendors', 'food', 'visit', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
             const labels = { visit: 'Plan Your Visit', food: 'Food + Drink', venue: 'Venue Details', travel: 'Travel & Parking', reviews: 'Reviews & Past' };
             return <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{labels[t] || t}</TabsTrigger>;
           })}
@@ -494,58 +494,6 @@ export default function FestivalDetail() {
               ))}
             </div>
           </Card>
-        </TabsContent>
-
-        {/* Artists */}
-        <TabsContent value="artists" className="mt-5 space-y-4">
-          {(festival.artists || []).length === 0 ? (
-            <p className="text-center py-10 text-sm text-muted-foreground">Artist lineup will appear here.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {festival.artists.map((a, i) => {
-                const dayLabel = a.day && new Date(a.day + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                const metaLabel = [dayLabel, a.time, a.stage].filter(Boolean).join(' · ');
-                return (
-                  <div key={i} className="group bg-card border border-border rounded-2xl overflow-hidden flex flex-col transition-all hover:shadow-lg hover:-translate-y-0.5">
-                    <div className="relative aspect-square w-full overflow-hidden bg-gradient-to-br from-accent/20 to-accent/5">
-                      {a.image ? (
-                        <img src={a.image} alt={a.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-accent/40 font-black text-6xl">{a.name?.charAt(0) || '?'}</div>
-                      )}
-                      {a.discipline && (
-                        <span className="absolute top-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-black/55 text-white backdrop-blur-sm capitalize">{a.discipline}</span>
-                      )}
-                      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent" />
-                      <div className="absolute bottom-3 left-3 right-3">
-                        <p className="text-white font-bold text-lg leading-tight drop-shadow">{a.name}</p>
-                      </div>
-                    </div>
-                    {(metaLabel || a.bio) && (
-                      <div className="p-3 flex-1 flex flex-col">
-                        {metaLabel && <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Calendar className="w-3 h-3" />{metaLabel}</p>}
-                        {a.bio && <p className="text-sm text-foreground/80 line-clamp-3">{a.bio}</p>}
-                        <div className="flex items-center gap-2 mt-3 pt-2 border-t border-border">
-                          <MiniSave id={`artist-${a.name}`} label="" />
-                          <button
-                            onClick={() => setShareArtist({
-                              title: `${a.name} at ${festival.name}`,
-                              url: `${window.location.origin}/festivals/${festival.slug}#artists`,
-                              description: a.bio || festival.description,
-                            })}
-                            className="flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-secondary transition-colors"
-                          >
-                            <Share2 className="w-3.5 h-3.5" />Share
-                          </button>
-                          {a.profileId && <Link to={`/artists/${a.profileId}`} className="text-xs text-[#d4580a] hover:underline font-medium ml-auto">View Profile →</Link>}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </TabsContent>
 
         {/* Vendors */}
