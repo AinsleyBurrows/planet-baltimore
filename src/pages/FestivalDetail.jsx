@@ -289,7 +289,7 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'map', 'performers', 'venue', 'tickets', 'travel', 'vendors', 'food', 'visit', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
+          {['overview', 'schedule', 'map', 'performers', 'venue', 'tickets', 'travel', 'vendors', 'food', 'gallery', 'updates', 'reviews', 'faq'].map(t => {
             const labels = { visit: 'Plan Your Visit', food: 'Food + Drink', venue: 'Venue Details', travel: 'Travel & Parking', reviews: 'Reviews & Past' };
             return <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{labels[t] || t}</TabsTrigger>;
           })}
@@ -541,64 +541,6 @@ export default function FestivalDetail() {
               ))}
             </div>
           )}
-        </TabsContent>
-
-        {/* Plan Your Visit */}
-        <TabsContent value="visit" className="mt-5 space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <SectionTitle icon={Bus}>Getting There</SectionTitle>
-              <dl className="space-y-1.5 text-sm">
-                <div><dt className="text-muted-foreground text-xs">Light Rail</dt><dd>{festival.transportation?.lightRail}</dd></div>
-                <div><dt className="text-muted-foreground text-xs">Metro</dt><dd>{festival.transportation?.metro}</dd></div>
-                <div><dt className="text-muted-foreground text-xs">Bus</dt><dd>{festival.transportation?.bus}</dd></div>
-                <div><dt className="text-muted-foreground text-xs">Rideshare</dt><dd>{festival.transportation?.rideshare}</dd></div>
-                <div><dt className="text-muted-foreground text-xs">Bike Parking</dt><dd>{festival.transportation?.bikeParking}</dd></div>
-              </dl>
-            </Card>
-            <Card>
-              <SectionTitle icon={Car}>Parking</SectionTitle>
-              <p className="text-sm text-foreground/80">{festival.parking?.notes}</p>
-              {festival.parking?.garages?.length > 0 && (
-                <ul className="mt-2 space-y-1 text-sm">{festival.parking.garages.map(g => <li key={g.name} className="flex justify-between"><span>{g.name}</span><span className="text-muted-foreground">{g.cost}</span></li>)}</ul>
-              )}
-            </Card>
-          </div>
-
-          <Card>
-            <SectionTitle icon={AlertTriangle}>Street Closures</SectionTitle>
-            <p className="text-sm text-muted-foreground">Street closure and traffic alert information will appear here closer to the festival date. {/* TODO: connect to live city traffic feed */}</p>
-          </Card>
-
-          <Card>
-            <SectionTitle icon={Accessibility}>Accessibility</SectionTitle>
-            <div className="flex flex-wrap gap-1.5 text-xs">
-              {Object.entries(festival.accessibility).filter(([, v]) => v).map(([k]) => (
-                <span key={k} className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary text-muted-foreground capitalize">{k.replace(/([A-Z])/g, ' $1').trim()}</span>
-              ))}
-            </div>
-          </Card>
-
-          <Card>
-            <SectionTitle icon={Check}>What to Bring</SectionTitle>
-            <ul className="grid grid-cols-2 gap-1 text-sm text-foreground/80 list-disc list-inside">
-              <li>Reusable water bottle</li><li>Comfortable shoes</li><li>Sunscreen</li><li>Weather protection</li><li>ID if required</li><li>Cash + card</li>
-            </ul>
-          </Card>
-
-          <Card>
-            <SectionTitle icon={Shield}>Festival Rules</SectionTitle>
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm">
-              {Object.entries(festival.rules || {}).map(([k, v]) => (
-                <div key={k} className="flex gap-2"><dt className="text-muted-foreground capitalize w-24 flex-shrink-0">{k}:</dt><dd>{v}</dd></div>
-              ))}
-            </dl>
-          </Card>
-
-          <Card>
-            <SectionTitle icon={CloudSun}>Weather</SectionTitle>
-            <p className="text-sm text-muted-foreground">Weather forecast will appear here closer to the festival. {/* TODO: connect to weather API */}</p>
-          </Card>
         </TabsContent>
 
         {/* Gallery */}
