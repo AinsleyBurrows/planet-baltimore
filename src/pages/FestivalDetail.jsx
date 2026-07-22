@@ -293,7 +293,7 @@ export default function FestivalDetail() {
           ? <ActionBtn icon={Ticket} label="View Festival Details" onClick={() => setTab('overview')} primary className="w-full sm:w-auto" />
           : (festival.admission.url
             ? <a href={festival.admission.url} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto"><ActionBtn icon={Ticket} label="Buy Tickets" onClick={() => {}} primary className="w-full sm:w-auto" /></a>
-            : <ActionBtn icon={Ticket} label="Buy Tickets" onClick={() => {}} primary className="w-full sm:w-auto" />)}
+            : <ActionBtn icon={Ticket} label="Buy Tickets" onClick={() => setTab('tickets')} primary className="w-full sm:w-auto" />)}
       </div>
 
       {/* Tags */}
