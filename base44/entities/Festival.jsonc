@@ -228,6 +228,10 @@
           "name": {
             "type": "string"
           },
+          "image": {
+            "type": "string",
+            "description": "Vendor photo / logo URL"
+          },
           "category": {
             "type": "string"
           },
