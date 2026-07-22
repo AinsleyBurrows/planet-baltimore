@@ -161,7 +161,20 @@ export default function FestivalDetail() {
   const canManage = !!user && !!festival && !!festival.isUserCreated && (user.id === festival.owner_id || user.role === 'admin');
   const isLiveNow = days.includes(today);
   const isFollowing = followed.has(festival.slug);
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${festival.coordinates?.lat},${festival.coordinates?.lng}`;
+  const destLat = festival.coordinates?.lat || 39.3;
+  const destLng = festival.coordinates?.lng || -76.62;
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}`;
+  const openDirections = () => {
+    const dest = `${destLat},${destLng}`;
+    const win = window.open('', '_blank');
+    const go = (origin) => { win.location.href = `https://www.google.com/maps/dir/?api=1&${origin ? `origin=${origin}&` : ''}destination=${dest}`; };
+    if (!navigator.geolocation) { go(''); return; }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => go(`${pos.coords.latitude},${pos.coords.longitude}`),
+      () => go(''),
+      { timeout: 8000, enableHighAccuracy: true }
+    );
+  };
   const emergencies = (festival.updates || []).filter(u => /emergency|alert/i.test(u.type));
 
   // Merge manually-entered schedule with artist performances so the lineup
@@ -245,7 +258,7 @@ export default function FestivalDetail() {
             <a href="#map" className="bg-secondary rounded-lg p-3"><MapPin className="w-4 h-4 text-[#d4580a] mb-1" />Nearest restroom<br /><span className="text-muted-foreground">Block B (placeholder)</span></a>
             <a href="#food" className="bg-secondary rounded-lg p-3"><Utensils className="w-4 h-4 text-[#d4580a] mb-1" />Nearest food<br /><span className="text-muted-foreground">Food row (placeholder)</span></a>
             <a href="#map" className="bg-secondary rounded-lg p-3"><Info className="w-4 h-4 text-[#d4580a] mb-1" />Info booth<br /><span className="text-muted-foreground">Main entrance</span></a>
-            <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="bg-secondary rounded-lg p-3"><Navigation className="w-4 h-4 text-[#d4580a] mb-1" />Directions<br /><span className="text-muted-foreground">Open map</span></a>
+            <a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer" className="bg-secondary rounded-lg p-3"><Navigation className="w-4 h-4 text-[#d4580a] mb-1" />Directions<br /><span className="text-muted-foreground">Open map</span></a>
           </div>
           <p className="text-xs text-muted-foreground mt-3">Happening now: {(festival.schedule || []).filter(s => s.day === today).slice(0, 2).map(s => `${s.time} ${s.title}`).join(' · ') || 'Check the Schedule tab.'}</p>
           {/* TODO: replace placeholder location data with live GPS + proximity sorting */}
@@ -286,7 +299,7 @@ export default function FestivalDetail() {
           : <ActionBtn icon={Heart} label={isFollowing ? 'Following' : 'Follow'} active={isFollowing} onClick={() => followed.toggle(festival.slug)} />}
         <ShareButton url={`/festivals/${festival.slug}`} title={festival.name} description={festival.description} />
         <AddToCalendarButton festival={festival} />
-        <a href={directionsUrl} target="_blank" rel="noopener noreferrer">
+        <a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer">
           <ActionBtn icon={Navigation} label="Directions" onClick={() => {}} />
         </a>
         {festival.admission.type === 'free'
@@ -577,7 +590,7 @@ export default function FestivalDetail() {
             <MapContainer center={[festival.coordinates?.lat || 39.3, festival.coordinates?.lng || -76.62]} zoom={13} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker position={[festival.coordinates?.lat || 39.3, festival.coordinates?.lng || -76.62]}>
-                <Popup><strong>{festival.name}</strong><br />{festival.venue}<br /><a href={directionsUrl} target="_blank" rel="noopener noreferrer">Directions →</a></Popup>
+                <Popup><strong>{festival.name}</strong><br />{festival.venue}<br /><a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer">Directions →</a></Popup>
               </Marker>
             </MapContainer>
           </div>
@@ -728,7 +741,7 @@ export default function FestivalDetail() {
               <div><dt className="text-muted-foreground text-xs">Bike Parking</dt><dd>{festival.transportation?.bikeParking || '—'}</dd></div>
               <div><dt className="text-muted-foreground text-xs">Walking</dt><dd>{festival.transportation?.walking || '—'}</dd></div>
             </dl>
-            <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-sm text-[#d4580a] hover:underline font-medium"><Navigation className="w-4 h-4" />Get Directions</a>
+            <a href={directionsUrl} onClick={(e) => { e.preventDefault(); openDirections(); }} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1.5 text-sm text-[#d4580a] hover:underline font-medium"><Navigation className="w-4 h-4" />Get Directions</a>
           </Card>
           <Card>
             <SectionTitle icon={Car}>Parking</SectionTitle>
