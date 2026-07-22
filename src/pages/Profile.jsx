@@ -25,6 +25,8 @@ import StoryCard from '@/components/shared/StoryCard';
 import MyPagesTab from '@/components/profile/MyPagesTab';
 import FollowersModal from '@/components/profile/FollowersModal';
 import MyTicketsTab from '@/components/profile/MyTicketsTab';
+import SavedFestivals from '@/components/profile/SavedFestivals';
+import { useSavedFestivals } from '@/components/festivals/SaveButton';
 import MyDashboardTab from '@/components/profile/MyDashboardTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 import ReferralsCard from '@/components/profile/ReferralsCard';
@@ -59,6 +61,7 @@ export default function Profile() {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(null); // 'followers' | 'following' | null
   const queryClient = useQueryClient();
+  const { saved: savedFestivalSlugs } = useSavedFestivals();
 
   const avatarSrc = user?.avatar_url || undefined;
   const bannerSrc = user?.banner_url || undefined;
@@ -531,10 +534,11 @@ export default function Profile() {
         )}
 
         {activeTab === 'saved' && isOwnProfile && (
-          savedPosts.length === 0 && savedStories.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground text-sm">No saved items yet. Bookmark posts and stories to find them here.</div>
+          savedPosts.length === 0 && savedStories.length === 0 && savedFestivalSlugs.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground text-sm">No saved items yet. Bookmark posts, stories, and festivals to find them here.</div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
+              <SavedFestivals />
               {savedPosts.length > 0 && (
                 <div className="space-y-4">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Saved Posts</p>
