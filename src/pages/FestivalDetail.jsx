@@ -21,6 +21,7 @@ import FestivalTicketsTab from '@/components/festivals/FestivalTicketsTab';
 import HeadlinerModal from '@/components/festivals/HeadlinerModal';
 import HeadlinerReorderGrid from '@/components/festivals/HeadlinerReorderGrid';
 import FestivalExperiencesGrid from '@/components/festivals/FestivalExperiencesGrid';
+import ImageLightbox from '@/components/shared/ImageLightbox';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 /* ---------- local storage hooks ---------- */
@@ -113,6 +114,7 @@ export default function FestivalDetail() {
   const [ticketTypes, setTicketTypes] = useState([]);
   const [selectedHeadliner, setSelectedHeadliner] = useState(null);
   const [preselectTicket, setPreselectTicket] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const { user } = useCurrentUser();
 
   const days = useMemo(() => {
@@ -567,11 +569,24 @@ export default function FestivalDetail() {
           ) : (
             <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 [&>*]:mb-3">
               {festival.gallery.photos.map((src, i) => (
-                <img key={i} src={src} alt={`${festival.name} ${i + 1}`} className="w-full rounded-xl break-inside-avoid" loading="lazy" />
+                <img
+                  key={i}
+                  src={src}
+                  alt={`${festival.name} ${i + 1}`}
+                  onClick={() => setLightboxIndex(i)}
+                  className="w-full rounded-xl break-inside-avoid cursor-pointer transition-transform duration-200 hover:opacity-90 hover:scale-[1.01]"
+                  loading="lazy"
+                />
               ))}
             </div>
           )}
           {/* TODO: video gallery, past years, user-submitted images, media coverage */}
+          <ImageLightbox
+            images={festival.gallery?.photos || []}
+            initialIndex={lightboxIndex || 0}
+            isOpen={lightboxIndex !== null}
+            onClose={() => setLightboxIndex(null)}
+          />
         </TabsContent>
 
         {/* Updates */}
