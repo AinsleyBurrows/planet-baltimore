@@ -19,6 +19,7 @@ import FestivalUpdateComposer from '@/components/festivals/FestivalUpdateCompose
 import FestivalCommentsTab from '@/components/festivals/FestivalCommentsTab';
 import FestivalTicketsTab from '@/components/festivals/FestivalTicketsTab';
 import HeadlinerModal from '@/components/festivals/HeadlinerModal';
+import HeadlinerReorderGrid from '@/components/festivals/HeadlinerReorderGrid';
 import FestivalExperiencesGrid from '@/components/festivals/FestivalExperiencesGrid';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
@@ -338,41 +339,13 @@ export default function FestivalDetail() {
               </Card>
 
               <Card>
-                <SectionTitle icon={Star}>Festival Headliners</SectionTitle>
-                {(festival.highlights?.headliners || []).filter(h => h && (h.name || h.image)).length > 0 && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    {(festival.highlights.headliners).filter(h => h && (h.name || h.image)).map((h, i) => {
-                      const dayLabel = h.day ? new Date(h.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                      const meta = [dayLabel, h.time, h.stage].filter(Boolean).join(' · ');
-                      return (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => setSelectedHeadliner(h)}
-                          className="relative rounded-xl overflow-hidden border border-border bg-card aspect-[4/3] sm:aspect-square group text-left w-full interactive-card hover:border-[#d4580a]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          {h.image ? (
-                            <img src={h.image} alt={h.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                          ) : (
-                            <div className="absolute inset-0 flex items-center justify-center bg-accent/10 text-accent font-black text-6xl">{h.name?.charAt(0) || '?'}</div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white pointer-events-none">
-                            <p className="font-bold text-xl leading-tight drop-shadow">{h.name}</p>
-                            {meta && <p className="text-xs text-white/85 mt-0.5">{meta}</p>}
-                            {h.bio && <p className="text-xs text-white/75 mt-1 line-clamp-2">{h.bio}</p>}
-                            <div className="flex items-center gap-2 mt-2.5">
-                              <span className={h.ticket_type_id ? "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg text-white" : "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10"} style={h.ticket_type_id ? { backgroundColor: '#d4580a' } : undefined}>
-                                <Ticket className="w-3.5 h-3.5" />{h.ticket_type_id ? 'Get Tickets' : 'RSVP'}
-                              </span>
-                              {(() => { const tt = ticketTypes.find(t => t.id === h.ticket_type_id); return tt ? <span className="text-xs font-semibold text-white/90">{tt.price === 0 ? 'Free' : `$${tt.price}`}</span> : null; })()}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                <HeadlinerReorderGrid
+                  festival={festival}
+                  canManage={canManage}
+                  onUpdate={setFestival}
+                  onSelectHeadliner={setSelectedHeadliner}
+                  ticketTypes={ticketTypes}
+                />
                 <div className="space-y-3 text-sm">
                   {Object.entries(festival.highlights || {}).filter(([k, v]) => k !== 'headliners' && v?.length).map(([k, v]) => (
                     <div key={k}>
