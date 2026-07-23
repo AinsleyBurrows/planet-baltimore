@@ -16,6 +16,8 @@ function distanceMi(lat1, lng1, lat2, lng2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+const NEARBY_RADIUS_MI = 15; // Baltimore-area proximity radius
+
 function NearbyCard({ to, image, name, meta, description, fallbackLetter }) {
   return (
     <Link
@@ -54,7 +56,7 @@ function NearbyCard({ to, image, name, meta, description, fallbackLetter }) {
   );
 }
 
-function Section({ icon: Icon, title, items, renderCard, emptyText }) {
+function Section({ icon: Icon, title, items, renderCard }) {
   if (!items || items.length === 0) return null;
   return (
     <div>
@@ -79,41 +81,53 @@ export default function NearbyOnPlanetBaltimore({ festival }) {
   const neighborhood = festival?.neighborhood;
   const lat = festival?.coordinates?.lat;
   const lng = festival?.coordinates?.lng;
+  const hasCoords = lat != null && lng != null;
+  const nbh = (neighborhood || '').toLowerCase().trim();
 
   useEffect(() => {
     let cancelled = false;
-    if (!neighborhood) {
+    // Need at least a neighborhood or coordinates to find nearby listings.
+    if (!nbh && !hasCoords) {
       setLoading(false);
       return;
     }
     setLoading(true);
-    const nbh = neighborhood.toLowerCase().trim();
     (async () => {
       try {
-        // Fetch a larger batch and match neighborhood client-side (case-insensitive)
-        // so minor casing/spacing differences don't hide nearby listings.
         const [biz, org, art] = await Promise.all([
-          base44.entities.BusinessPage.list('-updated_date', 60).catch(() => []),
-          base44.entities.ArtsOrganization.list('-updated_date', 60).catch(() => []),
-          base44.entities.ArtistPage.list('-updated_date', 60).catch(() => []),
+          base44.entities.BusinessPage.list('-updated_date', 80).catch(() => []),
+          base44.entities.ArtsOrganization.list('-updated_date', 80).catch(() => []),
+          base44.entities.ArtistPage.list('-updated_date', 80).catch(() => []),
         ]);
-
         if (cancelled) return;
 
         const matchNbh = (item) =>
-          (item.neighborhood_name || '').toLowerCase().trim() === nbh;
+          nbh && (item.neighborhood_name || '').toLowerCase().trim() === nbh;
 
-        const orgsWithDist = org
-          .filter((o) => !o.is_muted && matchNbh(o))
+        // Businesses & artists have no coordinates, so we match by neighborhood.
+        setBusinesses(biz.filter((b) => !b.is_muted && matchNbh(b)));
+        setArtists(art.filter((a) => !a.is_muted && matchNbh(a)));
+
+        // Arts organizations have lat/lng — pull everything within the radius,
+        // supplemented by neighborhood matches, then sort by distance.
+        const orgByProximity = org
+          .filter((o) => !o.is_muted)
           .map((o) => ({
             ...o,
-            _dist: distanceMi(lat, lng, o.latitude, o.longitude),
+            _dist: hasCoords ? distanceMi(lat, lng, o.latitude, o.longitude) : null,
           }))
-          .sort((a, b) => (a._dist == null ? 1 : b._dist == null ? -1 : a._dist - b._dist));
-
-        setBusinesses(biz.filter((b) => !b.is_muted && matchNbh(b)));
-        setOrgs(orgsWithDist);
-        setArtists(art.filter((a) => !a.is_muted && matchNbh(a)));
+          .filter((o) => {
+            if (hasCoords && o._dist != null && o._dist <= NEARBY_RADIUS_MI) return true;
+            if (matchNbh(o)) return true;
+            return false;
+          })
+          .sort((a, b) => {
+            if (a._dist == null && b._dist == null) return 0;
+            if (a._dist == null) return 1;
+            if (b._dist == null) return -1;
+            return a._dist - b._dist;
+          });
+        setOrgs(orgByProximity);
       } catch {
         if (!cancelled) {
           setBusinesses([]);
@@ -127,7 +141,7 @@ export default function NearbyOnPlanetBaltimore({ festival }) {
     return () => {
       cancelled = true;
     };
-  }, [neighborhood, lat, lng]);
+  }, [nbh, lat, lng, hasCoords]);
 
   const total = businesses.length + orgs.length + artists.length;
 
@@ -145,9 +159,9 @@ export default function NearbyOnPlanetBaltimore({ festival }) {
         <MapPin className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
         <p className="text-sm font-medium text-foreground">No nearby listings yet</p>
         <p className="text-xs text-muted-foreground mt-1">
-          {neighborhood
-            ? `Be the first business, organization, or artist from ${neighborhood} to appear here.`
-            : 'Add a neighborhood to this festival to show nearby spots.'}
+          {neighborhood || hasCoords
+            ? 'Be the first business, organization, or artist from this area to appear here.'
+            : 'Add a neighborhood or location to this festival to show nearby spots.'}
         </p>
       </div>
     );
@@ -175,17 +189,21 @@ export default function NearbyOnPlanetBaltimore({ festival }) {
         icon={Palette}
         title="Nearby Arts Organizations"
         items={orgs}
-        renderCard={(o) => (
-          <NearbyCard
-            key={o.id}
-            to={`/arts-organizations/${o.id}`}
-            image={o.image_url}
-            name={o.name}
-            meta={o.org_type || o.neighborhood_name}
-            description={o.description || o.mission}
-            fallbackLetter={o.name?.charAt(0)}
-          />
-        )}
+        renderCard={(o) => {
+          const distLabel = o._dist != null ? `${o._dist.toFixed(1)} mi` : null;
+          const meta = [o.org_type, distLabel].filter(Boolean).join(' · ');
+          return (
+            <NearbyCard
+              key={o.id}
+              to={`/arts-organizations/${o.id}`}
+              image={o.image_url}
+              name={o.name}
+              meta={meta || o.neighborhood_name}
+              description={o.description || o.mission}
+              fallbackLetter={o.name?.charAt(0)}
+            />
+          );
+        }}
       />
       <Section
         icon={User}
