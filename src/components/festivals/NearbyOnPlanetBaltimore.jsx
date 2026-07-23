@@ -105,8 +105,19 @@ export default function NearbyOnPlanetBaltimore({ festival }) {
           nbh && (item.neighborhood_name || '').toLowerCase().trim() === nbh;
 
         // Businesses & artists have no coordinates, so we match by neighborhood.
-        setBusinesses(biz.filter((b) => !b.is_muted && matchNbh(b)));
-        setArtists(art.filter((a) => !a.is_muted && matchNbh(a)));
+        // Sort so the most active/established listings surface first.
+        const byActivity = (a, b) => {
+          if (!!b.is_verified !== !!a.is_verified) return b.is_verified - a.is_verified;
+          if (!!b.is_founding_member !== !!a.is_founding_member)
+            return (b.is_founding_member ? 1 : 0) - (a.is_founding_member ? 1 : 0);
+          return (b.followers_count || 0) - (a.followers_count || 0);
+        };
+        setBusinesses(
+          biz.filter((b) => !b.is_muted && matchNbh(b)).sort(byActivity)
+        );
+        setArtists(
+          art.filter((a) => !a.is_muted && matchNbh(a)).sort(byActivity)
+        );
 
         // Arts organizations have lat/lng — pull everything within the radius,
         // supplemented by neighborhood matches, then sort by distance.
