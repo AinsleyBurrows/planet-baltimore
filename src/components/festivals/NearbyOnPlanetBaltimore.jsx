@@ -87,28 +87,33 @@ export default function NearbyOnPlanetBaltimore({ festival }) {
       return;
     }
     setLoading(true);
+    const nbh = neighborhood.toLowerCase().trim();
     (async () => {
       try {
+        // Fetch a larger batch and match neighborhood client-side (case-insensitive)
+        // so minor casing/spacing differences don't hide nearby listings.
         const [biz, org, art] = await Promise.all([
-          base44.entities.BusinessPage.filter({ neighborhood_name: neighborhood }, '-updated_date', 12).catch(() => []),
-          base44.entities.ArtsOrganization.filter({ neighborhood_name: neighborhood }, '-updated_date', 12).catch(() => []),
-          base44.entities.ArtistPage.filter({ neighborhood_name: neighborhood }, '-updated_date', 12).catch(() => []),
+          base44.entities.BusinessPage.list('-updated_date', 60).catch(() => []),
+          base44.entities.ArtsOrganization.list('-updated_date', 60).catch(() => []),
+          base44.entities.ArtistPage.list('-updated_date', 60).catch(() => []),
         ]);
 
         if (cancelled) return;
 
-        // Arts orgs: sort by distance when coordinates are available
+        const matchNbh = (item) =>
+          (item.neighborhood_name || '').toLowerCase().trim() === nbh;
+
         const orgsWithDist = org
-          .filter((o) => !o.is_muted)
+          .filter((o) => !o.is_muted && matchNbh(o))
           .map((o) => ({
             ...o,
             _dist: distanceMi(lat, lng, o.latitude, o.longitude),
           }))
           .sort((a, b) => (a._dist == null ? 1 : b._dist == null ? -1 : a._dist - b._dist));
 
-        setBusinesses(biz.filter((b) => !b.is_muted));
+        setBusinesses(biz.filter((b) => !b.is_muted && matchNbh(b)));
         setOrgs(orgsWithDist);
-        setArtists(art.filter((a) => !a.is_muted));
+        setArtists(art.filter((a) => !a.is_muted && matchNbh(a)));
       } catch {
         if (!cancelled) {
           setBusinesses([]);
