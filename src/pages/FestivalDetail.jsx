@@ -115,6 +115,7 @@ export default function FestivalDetail() {
   const [selectedHeadliner, setSelectedHeadliner] = useState(null);
   const [preselectTicket, setPreselectTicket] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const [updateLightbox, setUpdateLightbox] = useState(null);
   const { user } = useCurrentUser();
 
   const days = useMemo(() => {
@@ -600,7 +601,20 @@ export default function FestivalDetail() {
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${/emergency|alert/i.test(u.type) ? 'bg-red-500/15 text-red-600' : 'bg-[#d4580a]/15 text-[#d4580a]'}`}>{u.type}</span>
                   <span className="text-xs text-muted-foreground">{u.timestamp}</span>
                 </div>
-                <p className="text-sm text-foreground mt-1.5">{u.message}</p>
+                {u.message && <p className="text-sm text-foreground mt-1.5">{u.message}</p>}
+                {u.media_urls?.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                    {u.media_urls.map((src, mi) => (
+                      <button
+                        key={mi}
+                        onClick={() => setUpdateLightbox({ images: u.media_urls, index: mi })}
+                        className="relative aspect-square rounded-lg overflow-hidden bg-muted group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <img src={src} alt={`${festival.name} update ${mi + 1}`} loading="lazy" className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <div className="mt-2"><ShareButton url={`/festivals/${festival.slug}`} title={`${festival.name} update`} /></div>
               </div>
             ))
@@ -719,6 +733,13 @@ export default function FestivalDetail() {
         url={`${window.location.origin}/festivals/${festival.slug}`}
         title={festival.name}
         description={festival.description}
+      />
+
+      <ImageLightbox
+        images={updateLightbox?.images || []}
+        initialIndex={updateLightbox?.index || 0}
+        isOpen={!!updateLightbox}
+        onClose={() => setUpdateLightbox(null)}
       />
 
       <HeadlinerModal
