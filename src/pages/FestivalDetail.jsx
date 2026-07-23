@@ -328,17 +328,6 @@ export default function FestivalDetail() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 space-y-4">
               <Card>
-                <SectionTitle icon={Sparkles}>About the Festival</SectionTitle>
-                <p className="text-sm text-foreground/80 leading-relaxed">{festival.longDescription || festival.description}</p>
-                <div className="grid grid-cols-2 gap-3 mt-4 text-sm">
-                  {festival.expectedAttendance && <div><p className="text-xs text-muted-foreground">Expected Attendance</p><p className="font-medium">{festival.expectedAttendance}</p></div>}
-                  {festival.footprint && <div><p className="text-xs text-muted-foreground">Festival Footprint</p><p className="font-medium">{festival.footprint}</p></div>}
-                  {festival.organizer?.name && <div><p className="text-xs text-muted-foreground">Organizer</p><p className="font-medium">{festival.organizer.name}</p></div>}
-                  {festival.social?.website && <div><p className="text-xs text-muted-foreground">Website</p><a href={festival.social.website} target="_blank" rel="noopener noreferrer" className="font-medium text-[#d4580a] hover:underline flex items-center gap-1"><Globe className="w-3 h-3" />Visit</a></div>}
-                </div>
-              </Card>
-
-              <Card>
                 <HeadlinerReorderGrid
                   festival={festival}
                   canManage={canManage}
@@ -382,6 +371,17 @@ export default function FestivalDetail() {
                     </div>
                   ))}
                 </dl>
+              </Card>
+
+              <Card>
+                <SectionTitle icon={Sparkles}>About the Festival</SectionTitle>
+                <p className="text-sm text-foreground/80 leading-relaxed">{festival.longDescription || festival.description}</p>
+                <div className="grid grid-cols-2 gap-3 mt-4 text-sm">
+                  {festival.expectedAttendance && <div><p className="text-xs text-muted-foreground">Expected Attendance</p><p className="font-medium">{festival.expectedAttendance}</p></div>}
+                  {festival.footprint && <div><p className="text-xs text-muted-foreground">Festival Footprint</p><p className="font-medium">{festival.footprint}</p></div>}
+                  {festival.organizer?.name && <div><p className="text-xs text-muted-foreground">Organizer</p><p className="font-medium">{festival.organizer.name}</p></div>}
+                  {festival.social?.website && <div><p className="text-xs text-muted-foreground">Website</p><a href={festival.social.website} target="_blank" rel="noopener noreferrer" className="font-medium text-[#d4580a] hover:underline flex items-center gap-1"><Globe className="w-3 h-3" />Visit</a></div>}
+                </div>
               </Card>
 
               <Card>
