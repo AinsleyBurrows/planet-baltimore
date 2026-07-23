@@ -1,19 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Trash2, Upload, Ticket } from 'lucide-react';
+import { Plus, Trash2, Upload, Ticket, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 export default function HeadlinerEditor({ items, onChange, festivalId }) {
   const list = Array.isArray(items) ? items : [];
   const update = (i, k, v) => onChange(list.map((it, idx) => (idx === i ? { ...it, [k]: v } : it)));
   const remove = (i) => onChange(list.filter((_, idx) => idx !== i));
   const add = () => onChange([...list, { name: '', image: '', day: '', time: '', stage: '', bio: '', ticket_type_id: '' }]);
+
+  const move = (i, dir) => {
+    const j = i + dir;
+    if (j < 0 || j >= list.length) return;
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  };
+
+  const onDragEnd = (result) => {
+    if (!result.destination || result.destination.index === result.source.index) return;
+    const next = Array.from(list);
+    const [moved] = next.splice(result.source.index, 1);
+    next.splice(result.destination.index, 0, moved);
+    onChange(next);
+  };
 
   const { data: ticketTypes = [] } = useQuery({
     queryKey: ['festival-ticket-types', festivalId],
@@ -41,30 +58,56 @@ export default function HeadlinerEditor({ items, onChange, festivalId }) {
       </div>
       {list.length === 0 && <p className="text-xs text-muted-foreground">No headliners yet. Add one to make it feel like a headliner.</p>}
 
-      <div className="space-y-4">
-        {list.map((h, i) => {
-          const dayLabel = h.day ? new Date(h.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-          const meta = [dayLabel, h.time, h.stage].filter(Boolean).join(' · ');
-          return (
-            <div key={i} className="border border-border rounded-xl overflow-hidden">
-              {/* Big tombstone preview */}
-              <div className="relative h-44 bg-muted">
-                {h.image ? (
-                  <img src={h.image} alt={h.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-accent/40 font-black text-5xl">
-                    {h.name ? h.name.charAt(0) : '?'}
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <button type="button" onClick={() => remove(i)} className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-                <div className="absolute bottom-2 left-3 right-3">
-                  <p className="text-white font-bold text-xl leading-tight drop-shadow">{h.name || 'Untitled headliner'}</p>
-                  {meta && <p className="text-white/85 text-xs mt-0.5">{meta}</p>}
-                </div>
-              </div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="headliners">
+          {(provided) => (
+            <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-4">
+              {list.map((h, i) => {
+                const dayLabel = h.day ? new Date(h.day + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+                const meta = [dayLabel, h.time, h.stage].filter(Boolean).join(' · ');
+                return (
+                  <Draggable key={`hl-${i}`} draggableId={`hl-${i}`} index={i}>
+                    {(prov, snap) => (
+                      <div
+                        ref={prov.innerRef}
+                        {...prov.draggableProps}
+                        className={`border border-border rounded-xl overflow-hidden ${snap.isDragging ? 'shadow-2xl ring-2 ring-[#d4580a]' : ''}`}
+                      >
+                        {/* Big tombstone preview */}
+                        <div className="relative h-44 bg-muted">
+                          {h.image ? (
+                            <img src={h.image} alt={h.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-accent/40 font-black text-5xl">
+                              {h.name ? h.name.charAt(0) : '?'}
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          {/* Order controls */}
+                          <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                            <div
+                              {...prov.dragHandleProps}
+                              className="p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors cursor-grab active:cursor-grabbing"
+                              title="Drag to reorder"
+                            >
+                              <GripVertical className="w-4 h-4" />
+                            </div>
+                            <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="p-1 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title="Move up">
+                              <ChevronUp className="w-4 h-4" />
+                            </button>
+                            <button type="button" onClick={() => move(i, 1)} disabled={i === list.length - 1} className="p-1 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title="Move down">
+                              <ChevronDown className="w-4 h-4" />
+                            </button>
+                            <button type="button" onClick={() => remove(i)} className="p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors" title="Remove">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white backdrop-blur-sm">#{i + 1}</span>
+                          <div className="absolute bottom-2 left-3 right-3">
+                            <p className="text-white font-bold text-xl leading-tight drop-shadow">{h.name || 'Untitled headliner'}</p>
+                            {meta && <p className="text-white/85 text-xs mt-0.5">{meta}</p>}
+                          </div>
+                        </div>
 
               {/* Fields */}
               <div className="p-3 space-y-2.5">
@@ -124,11 +167,17 @@ export default function HeadlinerEditor({ items, onChange, festivalId }) {
                     </Select>
                   )}
                 </div>
+                 </div>
+                </div>
+                    )}
+                  </Draggable>
+                );
+                })}
+                {provided.placeholder}
               </div>
-            </div>
-          );
-        })}
-      </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }
