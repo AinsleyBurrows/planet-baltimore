@@ -317,8 +317,8 @@ export default function FestivalDetail() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
-          {['overview', 'schedule', 'performers', 'vendors', 'food', 'tickets', 'travel', 'gallery', 'updates', 'comments', 'faq'].map(t => {
-            const labels = { food: 'Food + Drink', travel: 'Travel & Parking' };
+          {['overview', 'schedule', 'performers', 'vendors', 'food', 'tickets', 'gallery', 'updates', 'comments', 'faq'].map(t => {
+            const labels = { food: 'Food + Drink' };
             return <TabsTrigger key={t} value={t} className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3 capitalize">{labels[t] || t}</TabsTrigger>;
           })}
         </TabsList>
