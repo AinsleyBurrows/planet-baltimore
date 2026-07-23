@@ -22,6 +22,7 @@ import HeadlinerModal from '@/components/festivals/HeadlinerModal';
 import HeadlinerReorderGrid from '@/components/festivals/HeadlinerReorderGrid';
 import FestivalExperiencesGrid from '@/components/festivals/FestivalExperiencesGrid';
 import ImageLightbox from '@/components/shared/ImageLightbox';
+import FestivalDiscoverSection from '@/components/festivals/FestivalDiscoverSection';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 /* ---------- local storage hooks ---------- */
@@ -755,6 +756,8 @@ export default function FestivalDetail() {
           else { setPreselectTicket(null); setTab('tickets'); setSelectedHeadliner(null); }
         }}
       />
+
+      <FestivalDiscoverSection neighborhood={festival.neighborhood} />
 
       <div className="text-center pt-4">
         <Link to="/festivals" className="text-sm text-[#d4580a] font-medium hover:underline">← Back to all festivals</Link>
