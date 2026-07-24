@@ -7,7 +7,6 @@ import { format } from 'date-fns';
 import AppImage from './AppImage';
 import InlineRSVP from '@/components/events/InlineRSVP';
 import EventLikeShareButtons from '@/components/events/EventLikeShareButtons';
-import ShareToProfileButton from '@/components/events/ShareToProfileButton';
 
 const EventCard = React.memo(function EventCard({ event, compact = false }) {
   const navigate = useNavigate();
@@ -93,12 +92,9 @@ const EventCard = React.memo(function EventCard({ event, compact = false }) {
             <span className="text-[11px] text-muted-foreground hover:text-accent transition-colors truncate">{event.organizer_name}</span>
           </Link>
         )}
-        <div className="flex items-center justify-between gap-2 mt-3 flex-wrap" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mt-3" onClick={e => e.stopPropagation()}>
           <InlineRSVP eventId={event.id} />
-          <div className="flex items-center gap-1">
-            <ShareToProfileButton event={event} />
-            <EventLikeShareButtons event={event} />
-          </div>
+          <EventLikeShareButtons event={event} />
         </div>
       </div>
     </div>

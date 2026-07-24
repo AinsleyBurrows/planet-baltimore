@@ -23,7 +23,6 @@ import PostsGrid from '@/components/profile/PostsGrid';
 import RSVPEvents from '@/components/profile/RSVPEvents';
 import StoryCard from '@/components/shared/StoryCard';
 import MyPagesTab from '@/components/profile/MyPagesTab';
-import SharedEventsTab from '@/components/profile/SharedEventsTab';
 import FollowersModal from '@/components/profile/FollowersModal';
 import MyTicketsTab from '@/components/profile/MyTicketsTab';
 import SavedFestivals from '@/components/profile/SavedFestivals';
@@ -39,7 +38,6 @@ const tabs = [
   { id: 'writings', label: 'My Writings', icon: BookOpen },
   { id: 'saved', label: 'Saved', icon: Bookmark },
   { id: 'events', label: 'Attending', icon: CalendarCheck },
-  { id: 'shared_events', label: 'Shared', icon: Share2 },
   { id: 'created_events', label: 'Organized', icon: Calendar },
   { id: 'tickets', label: 'My Tickets', icon: Ticket },
   { id: 'pages', label: 'My Pages', icon: Shield },
@@ -581,9 +579,6 @@ export default function Profile() {
         )}
 
         {activeTab === 'events' && <RSVPEvents myRsvps={myRsvps} rsvpedEvents={rsvpedEvents} />}
-        {activeTab === 'shared_events' && (
-          <SharedEventsTab userId={user?.id} isOwnProfile={isOwnProfile} />
-        )}
         {activeTab === 'created_events' && (
           createdEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
