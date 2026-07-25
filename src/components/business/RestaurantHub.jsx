@@ -8,6 +8,7 @@ import {
 import BusinessPostsFeed from '@/components/business/BusinessPostsFeed';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import EventCard from '@/components/shared/EventCard';
 import RestaurantBroadcastModal from '@/components/business/RestaurantBroadcastModal';
@@ -266,59 +267,78 @@ export default function RestaurantHub({ business, isOwner, user, events = [] }) 
         </div>
       )}
 
-      {/* Today's Specials */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-foreground flex items-center gap-2"><Star className="w-4 h-4 text-accent" /> Today's Specials</h2>
+      {/* Restaurant sub-tabs */}
+      <Tabs defaultValue="overview">
+        <div className="overflow-x-auto -mx-1 px-1">
+          <TabsList className="w-max min-w-full bg-secondary/50 rounded-xl flex gap-0.5">
+            <TabsTrigger value="overview" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+              <Utensils className="w-3.5 h-3.5" /> Overview
+            </TabsTrigger>
+            <TabsTrigger value="specials" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+              <Star className="w-3.5 h-3.5" /> Specials
+            </TabsTrigger>
+          </TabsList>
         </div>
-        {(business.todays_specials || []).length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center bg-secondary/30 rounded-xl">
-            {isOwner ? 'No specials today. Add one above!' : 'No specials posted today.'}
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {(business.todays_specials || []).map((special, i) => (
-              <SpecialCard key={i} special={special} isOwner={isOwner} onDelete={deleteSpecial} />
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Menu */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-foreground flex items-center gap-2"><Utensils className="w-4 h-4 text-accent" /> Menu</h2>
-          {isOwner && (
-            <button onClick={() => setShowAddMenuItem(true)} className="flex items-center gap-1.5 text-xs text-accent hover:underline font-medium">
-              <Plus className="w-3.5 h-3.5" /> Add Item
-            </button>
+        {/* Specials sub-tab */}
+        <TabsContent value="specials" className="mt-4">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold text-foreground flex items-center gap-2"><Star className="w-4 h-4 text-accent" /> Today's Specials</h2>
+            </div>
+            {(business.todays_specials || []).length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center bg-secondary/30 rounded-xl">
+                {isOwner ? 'No specials today. Add one above!' : 'No specials posted today.'}
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {(business.todays_specials || []).map((special, i) => (
+                  <SpecialCard key={i} special={special} isOwner={isOwner} onDelete={deleteSpecial} />
+                ))}
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
+        {/* Overview sub-tab */}
+        <TabsContent value="overview" className="mt-4 space-y-6">
+          {/* Menu */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold text-foreground flex items-center gap-2"><Utensils className="w-4 h-4 text-accent" /> Menu</h2>
+              {isOwner && (
+                <button onClick={() => setShowAddMenuItem(true)} className="flex items-center gap-1.5 text-xs text-accent hover:underline font-medium">
+                  <Plus className="w-3.5 h-3.5" /> Add Item
+                </button>
+              )}
+            </div>
+            {(business.menu_sections || []).length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center bg-secondary/30 rounded-xl">
+                {isOwner ? 'No menu added yet. Click "Add Item" to start building your menu.' : 'Menu coming soon.'}
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {(business.menu_sections || []).map((section, idx) => (
+                  <MenuSection key={idx} section={section} idx={idx} isOwner={isOwner} onDeleteItem={deleteMenuItem} onDeleteSection={deleteSection} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Upcoming Events */}
+          {upcomingEvents.length > 0 && (
+            <div>
+              <h2 className="font-semibold text-foreground flex items-center gap-2 mb-3"><CalendarDays className="w-4 h-4 text-accent" /> Upcoming Events</h2>
+              <div className="space-y-3">
+                {upcomingEvents.slice(0, 3).map(e => <EventCard key={e.id} event={e} compact />)}
+              </div>
+            </div>
           )}
-        </div>
-        {(business.menu_sections || []).length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center bg-secondary/30 rounded-xl">
-            {isOwner ? 'No menu added yet. Click "Add Item" to start building your menu.' : 'Menu coming soon.'}
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {(business.menu_sections || []).map((section, idx) => (
-              <MenuSection key={idx} section={section} idx={idx} isOwner={isOwner} onDeleteItem={deleteMenuItem} onDeleteSection={deleteSection} />
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Upcoming Events */}
-      {upcomingEvents.length > 0 && (
-        <div>
-          <h2 className="font-semibold text-foreground flex items-center gap-2 mb-3"><CalendarDays className="w-4 h-4 text-accent" /> Upcoming Events</h2>
-          <div className="space-y-3">
-            {upcomingEvents.slice(0, 3).map(e => <EventCard key={e.id} event={e} compact />)}
-          </div>
-        </div>
-      )}
-
-      {/* Posts / Updates Feed */}
-      <BusinessPostsFeed business={business} isOwner={isOwner} user={user} />
+          {/* Posts / Updates Feed */}
+          <BusinessPostsFeed business={business} isOwner={isOwner} user={user} />
+        </TabsContent>
+      </Tabs>
 
       {/* Modals */}
       {showAddSpecial && <AddSpecialModal business={business} onClose={() => setShowAddSpecial(false)} onSaved={refresh} />}
