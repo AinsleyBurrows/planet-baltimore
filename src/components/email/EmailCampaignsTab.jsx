@@ -3,8 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { Button } from '@/components/ui/button';
-import { Mail, Plus, Loader2, CheckCircle2, XCircle, Send, Settings } from 'lucide-react';
+import { Mail, Plus, Loader2, CheckCircle2, XCircle, Send, Settings, Ticket } from 'lucide-react';
 import ComposeCampaignModal from './ComposeCampaignModal';
+import CompTicketsModal from './CompTicketsModal';
 
 const STATUS = {
   draft: { label: 'Draft', Icon: Mail, color: 'text-muted-foreground' },
@@ -17,6 +18,7 @@ const STATUS = {
 export default function EmailCampaignsTab() {
   const { user } = useCurrentUser();
   const [composing, setComposing] = useState(false);
+  const [compOpen, setCompOpen] = useState(false);
 
   const { data: campaigns = [], isLoading } = useQuery({
     queryKey: ['email-campaigns', user?.id],
@@ -28,7 +30,10 @@ export default function EmailCampaignsTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">Compose branded invitations and send them to your lists or event attendees.</p>
-        <Button onClick={() => setComposing(true)} className="text-white shrink-0" style={{ backgroundColor: '#d4580a' }}><Plus className="w-4 h-4" /> New Campaign</Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button variant="outline" onClick={() => setCompOpen(true)} className="flex items-center gap-1.5"><Ticket className="w-4 h-4" /> Comp Tickets</Button>
+          <Button onClick={() => setComposing(true)} className="text-white" style={{ backgroundColor: '#d4580a' }}><Plus className="w-4 h-4" /> New Campaign</Button>
+        </div>
       </div>
 
       {isLoading ? <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
@@ -59,6 +64,7 @@ export default function EmailCampaignsTab() {
       )}
 
       {composing && <ComposeCampaignModal onClose={() => setComposing(false)} />}
+      {compOpen && <CompTicketsModal onClose={() => setCompOpen(false)} />}
     </div>
   );
 }
