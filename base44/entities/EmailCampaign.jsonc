@@ -1,0 +1,66 @@
+{
+  "name": "EmailCampaign",
+  "type": "object",
+  "properties": {
+    "owner_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "from_name": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string",
+      "description": "HTML or plain message body"
+    },
+    "list_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "include_event_attendees": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "sending",
+        "sent",
+        "failed",
+        "not_configured"
+      ],
+      "default": "draft"
+    },
+    "total_recipients": {
+      "type": "number",
+      "default": 0
+    },
+    "sent_count": {
+      "type": "number",
+      "default": 0
+    },
+    "failed_count": {
+      "type": "number",
+      "default": 0
+    },
+    "error": {
+      "type": "string"
+    },
+    "sent_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "owner_id",
+    "subject"
+  ]
+}

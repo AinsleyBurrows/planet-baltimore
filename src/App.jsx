@@ -31,6 +31,7 @@ const CreateCommunityAssociation  = lazy(() => import('@/pages/CreateCommunityAs
 const NotificationSettings        = lazy(() => import('@/pages/NotificationSettings'));
 const OrganizerStudio             = lazy(() => import('@/pages/OrganizerStudio'));
 const TicketingHub                = lazy(() => import('@/pages/TicketingHub'));
+const EmailLists                  = lazy(() => import('@/pages/EmailLists'));
 const EventTicketingPage          = lazy(() => import('@/pages/EventTicketing'));
 const Festivals                 = lazy(() => import('@/pages/Festivals'));
 const FestivalDetail            = lazy(() => import('@/pages/FestivalDetail'));
@@ -118,6 +119,7 @@ const AuthenticatedApp = () => {
           <Route path="/notification-settings" element={<NotificationSettings />} />
           <Route path="/organizer-studio" element={<OrganizerStudio />} />
           <Route path="/ticketing" element={<TicketingHub />} />
+          <Route path="/email-lists" element={<EmailLists />} />
           <Route path="/events/:id/tickets" element={<EventTicketingPage />} />
           <Route path="/festivals" element={<Festivals />} />
           <Route path="/festivals/:slug" element={<FestivalDetail />} />

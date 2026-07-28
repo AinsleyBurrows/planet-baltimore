@@ -1,0 +1,40 @@
+{
+  "name": "EmailListContact",
+  "type": "object",
+  "properties": {
+    "list_id": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "subscribed",
+        "unsubscribed"
+      ],
+      "default": "subscribed"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "paste",
+        "upload"
+      ],
+      "default": "manual"
+    }
+  },
+  "required": [
+    "list_id",
+    "owner_id",
+    "email"
+  ]
+}

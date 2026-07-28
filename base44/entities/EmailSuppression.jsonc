@@ -1,0 +1,23 @@
+{
+  "name": "EmailSuppression",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "unsubscribed",
+        "bounced"
+      ],
+      "default": "unsubscribed"
+    },
+    "campaign_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email"
+  ]
+}

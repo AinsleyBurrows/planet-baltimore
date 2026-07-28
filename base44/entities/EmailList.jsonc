@@ -1,0 +1,28 @@
+{
+  "name": "EmailList",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "List name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Optional linked event"
+    },
+    "contact_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "name",
+    "owner_id"
+  ]
+}
