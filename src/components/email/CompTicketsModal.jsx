@@ -22,7 +22,8 @@ export default function CompTicketsModal({ onClose }) {
   const [eventId, setEventId] = useState('');
   const [ticketTypeId, setTicketTypeId] = useState('');
   const [selected, setSelected] = useState([]);
-  const [manualText, setManualText] = useState('');
+  const [manualEmails, setManualEmails] = useState([]);
+  const [manualInput, setManualInput] = useState('');
   const [notify, setNotify] = useState(true);
   const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
@@ -57,7 +58,25 @@ export default function CompTicketsModal({ onClose }) {
   });
 
   const attendeeEmails = useMemo(() => new Set(attendees.map(a => a.email).filter(Boolean)), [attendees]);
-  const manualEmails = useMemo(() => parseEmails(manualText).filter(e => !attendeeEmails.has(e)), [manualText, attendeeEmails]);
+
+  const addManualEmails = (text) => {
+    const tokens = parseEmails(text);
+    setManualEmails(prev => {
+      const next = [...prev];
+      tokens.forEach(t => { if (!next.includes(t) && !attendeeEmails.has(t)) next.push(t); });
+      return next;
+    });
+  };
+  const onManualKey = (e) => {
+    if (e.key === ',' || e.key === 'Enter' || e.key === ' ' || e.key === ';') {
+      e.preventDefault();
+      addManualEmails(manualInput);
+      setManualInput('');
+    } else if (e.key === 'Backspace' && manualInput === '' && manualEmails.length > 0) {
+      setManualEmails(prev => prev.slice(0, -1));
+    }
+  };
+
   const totalRecipients = selected.length + manualEmails.length;
 
   const toggle = (id) => setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -115,7 +134,7 @@ export default function CompTicketsModal({ onClose }) {
         <div className="p-5 space-y-4 overflow-y-auto">
           <div>
             <label className="text-xs font-semibold text-muted-foreground">Event</label>
-            <select value={eventId} onChange={e => { setEventId(e.target.value); setTicketTypeId(''); setSelected([]); setManualText(''); }} className="w-full mt-1 h-10 rounded-lg bg-secondary/50 border-0 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring">
+            <select value={eventId} onChange={e => { setEventId(e.target.value); setTicketTypeId(''); setSelected([]); setManualEmails([]); setManualInput(''); }} className="w-full mt-1 h-10 rounded-lg bg-secondary/50 border-0 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring">
               <option value="">Select an event…</option>
               {events.map(ev => <option key={ev.id} value={ev.id}>{ev.title}</option>)}
             </select>
@@ -169,18 +188,23 @@ export default function CompTicketsModal({ onClose }) {
 
               <div className="border-t border-border pt-4">
                 <p className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1.5"><UserPlus className="w-3.5 h-3.5" /> Add by email or Planet Baltimore address</p>
-                <p className="text-xs text-muted-foreground mb-2">Type one or more emails (the address they use on Planet Baltimore). Separate with commas or new lines.</p>
-                <textarea value={manualText} onChange={e => setManualText(e.target.value)} rows={3} placeholder={'friend@example.com, another@example.com'} className="w-full p-3 rounded-xl bg-secondary/50 border-0 text-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none" />
-                {manualEmails.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {manualEmails.map(e => (
-                      <span key={e} className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-full text-xs font-medium bg-[#d4580a]/10 text-[#d4580a] border border-[#d4580a]/30">
-                        {e}
-                        <button type="button" onClick={() => setManualText(prev => prev.split(/[\s,;]+/).filter(t => t.trim().toLowerCase() !== e).join(', '))} className="p-0.5 rounded-full hover:bg-[#d4580a]/20"><X className="w-3 h-3" /></button>
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <p className="text-xs text-muted-foreground mb-2">Type an email (the address they use on Planet Baltimore) and press comma, space, or enter to add it.</p>
+                <div className="flex flex-wrap items-center gap-1.5 p-2.5 min-h-[2.75rem] rounded-xl bg-secondary/50 border-0 focus-within:ring-1 focus-within:ring-ring">
+                  {manualEmails.map(e => (
+                    <span key={e} className="inline-flex items-center gap-1 pl-2.5 pr-1 py-1 rounded-full text-xs font-medium bg-[#d4580a]/10 text-[#d4580a] border border-[#d4580a]/30">
+                      {e}
+                      <button type="button" onClick={() => setManualEmails(prev => prev.filter(x => x !== e))} className="p-0.5 rounded-full hover:bg-[#d4580a]/20"><X className="w-3 h-3" /></button>
+                    </span>
+                  ))}
+                  <input
+                    value={manualInput}
+                    onChange={e => setManualInput(e.target.value)}
+                    onKeyDown={onManualKey}
+                    onBlur={() => { if (manualInput.trim()) { addManualEmails(manualInput); setManualInput(''); } }}
+                    placeholder={manualEmails.length === 0 ? 'friend@example.com' : ''}
+                    className="flex-1 min-w-[8rem] bg-transparent border-0 text-sm focus:outline-none py-1"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground mt-2">Recipients are matched to existing Planet Baltimore accounts. Unmatched addresses will be skipped.</p>
               </div>
 
