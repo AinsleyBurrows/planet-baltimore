@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
 
     let body;
     try { body = await req.json(); } catch { return Response.json({ error: 'Invalid JSON' }, { status: 400 }); }
-    const { event_id, ticket_type_id, recipients = [], notify = true } = body;
+    const { event_id, ticket_type_id, recipients = [], notify = true, note = '' } = body;
     if (!event_id || !ticket_type_id) return Response.json({ error: 'event_id and ticket_type_id are required' }, { status: 400 });
     if (!Array.isArray(recipients) || recipients.length === 0) return Response.json({ error: 'No recipients provided' }, { status: 400 });
 
@@ -60,8 +60,9 @@ Deno.serve(async (req) => {
 
     let emailed = 0;
     if (notify) {
+      const noteSection = note ? `\n\nA note from the organizer:\n"${note}"\n` : '';
       const subject = `You've been comped to ${event.title || 'our event'}`;
-      const bodyTxt = `Good news — you've received a complimentary ticket to ${event.title || 'our event'}.\n\nYour ticket is now in your My Tickets tab on Planet Baltimore. We'll see you there!\n\n— ${user.full_name || 'Planet Baltimore'}`;
+      const bodyTxt = `Good news — you've received a complimentary ticket to ${event.title || 'our event'}.\n\nYour ticket is now in your My Tickets tab on Planet Baltimore. We'll see you there!${noteSection}\n\n— ${user.full_name || 'Planet Baltimore'}`;
       for (const a of resolved) {
         if (a.email) { try { await base44.asServiceRole.integrations.Core.SendEmail({ to: a.email, subject, body: bodyTxt }); emailed++; } catch (_e) {} }
       }

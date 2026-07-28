@@ -24,6 +24,7 @@ export default function CompTicketsModal({ onClose }) {
   const [selected, setSelected] = useState([]);
   const [manualText, setManualText] = useState('');
   const [notify, setNotify] = useState(true);
+  const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
   const [creatingType, setCreatingType] = useState(false);
 
@@ -84,7 +85,7 @@ export default function CompTicketsModal({ onClose }) {
       const selectedAttendees = attendees.filter(a => selected.includes(a.user_id)).map(a => ({ user_id: a.user_id, email: a.email, name: a.name }));
       const manual = manualEmails.map(e => ({ email: e }));
       const recipients = [...selectedAttendees, ...manual];
-      const res = await base44.functions.invoke('issueCompTickets', { event_id: eventId, ticket_type_id: ticketTypeId, recipients, notify });
+      const res = await base44.functions.invoke('issueCompTickets', { event_id: eventId, ticket_type_id: ticketTypeId, recipients, notify, note });
       const data = res.data || {};
       qc.invalidateQueries({ queryKey: ['email-campaigns'] });
       const issued = data.issued || 0;
@@ -181,6 +182,11 @@ export default function CompTicketsModal({ onClose }) {
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground mt-2">Recipients are matched to existing Planet Baltimore accounts. Unmatched addresses will be skipped.</p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground mb-1">Note to attendee (optional)</p>
+                <textarea value={note} onChange={e => setNote(e.target.value)} rows={2} placeholder="Add a personal message…" className="w-full p-3 rounded-xl bg-secondary/50 border-0 text-sm focus:outline-none focus:ring-1 focus:ring-ring resize-none" />
               </div>
 
               <label className="flex items-center gap-2 p-2 rounded-lg hover:bg-secondary/50 cursor-pointer">
