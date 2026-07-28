@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { X, Send, Loader2, Users, Mail, Eye } from 'lucide-react';
+import { EMAIL_TEMPLATES, fillTemplate } from './emailTemplates';
 
 export default function ComposeCampaignModal({ onClose }) {
   const { user } = useCurrentUser();
@@ -19,6 +20,14 @@ export default function ComposeCampaignModal({ onClose }) {
   const [includeAttendees, setIncludeAttendees] = useState(false);
   const [sending, setSending] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState(null);
+
+  const selectTemplate = (t) => {
+    setActiveTemplate(t.id);
+    const ev = events.find(e => e.id === eventId);
+    setSubject(fillTemplate(t.subject, ev, user));
+    setBody(fillTemplate(t.body, ev, user));
+  };
 
   const { data: lists = [] } = useQuery({
     queryKey: ['email-lists', user?.id],
@@ -84,6 +93,14 @@ export default function ComposeCampaignModal({ onClose }) {
           <button onClick={onClose} className="p-1.5 rounded-full hover:bg-secondary"><X className="w-4 h-4" /></button>
         </div>
         <div className="p-5 space-y-4 overflow-y-auto">
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground">Start from a template</label>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 mt-1">
+              {EMAIL_TEMPLATES.map(t => (
+                <button key={t.id} type="button" onClick={() => selectTemplate(t)} className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${activeTemplate === t.id ? 'border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10' : 'border-border text-muted-foreground hover:bg-secondary'}`}>{t.name}</button>
+              ))}
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div><label className="text-xs font-semibold text-muted-foreground">From name</label><Input value={fromName} onChange={e => setFromName(e.target.value)} placeholder="Planet Baltimore" className="mt-1" /></div>
             <div><label className="text-xs font-semibold text-muted-foreground">Link to event (optional)</label>
