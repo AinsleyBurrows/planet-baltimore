@@ -8,12 +8,20 @@ Deno.serve(async (req) => {
     const h = u.searchParams.get('h') || '';
     let dest = u.searchParams.get('u') || '';
     if (c && h) {
-      try {
-        await base44.asServiceRole.entities.EmailCampaign.updateMany(
+      const camp = await base44.asServiceRole.entities.EmailCampaign.get(c).catch(() => null);
+      await Promise.allSettled([
+        base44.asServiceRole.entities.EmailCampaign.updateMany(
           { id: c },
           { $inc: { clicks_count: 1 }, $addToSet: { click_hashes: h } }
-        );
-      } catch (_e) {}
+        ),
+        base44.asServiceRole.entities.EmailEvent.create({
+          campaign_id: c,
+          event_id: camp?.event_id || '',
+          owner_id: camp?.owner_id || '',
+          event_type: 'click',
+          recipient_hash: h
+        })
+      ]);
     }
     if (!/^https?:\/\//i.test(dest)) dest = '';
     if (!dest) return new Response('Invalid link', { status: 400 });

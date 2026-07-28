@@ -12,12 +12,20 @@ Deno.serve(async (req) => {
     const c = u.searchParams.get('c') || '';
     const h = u.searchParams.get('h') || '';
     if (c && h) {
-      try {
-        await base44.asServiceRole.entities.EmailCampaign.updateMany(
+      const camp = await base44.asServiceRole.entities.EmailCampaign.get(c).catch(() => null);
+      await Promise.allSettled([
+        base44.asServiceRole.entities.EmailCampaign.updateMany(
           { id: c },
           { $inc: { opens_count: 1 }, $addToSet: { open_hashes: h } }
-        );
-      } catch (_e) {}
+        ),
+        base44.asServiceRole.entities.EmailEvent.create({
+          campaign_id: c,
+          event_id: camp?.event_id || '',
+          owner_id: camp?.owner_id || '',
+          event_type: 'open',
+          recipient_hash: h
+        })
+      ]);
     }
     return new Response(GIF, {
       headers: { 'Content-Type': 'image/gif', 'Cache-Control': 'no-store, max-age=0' }

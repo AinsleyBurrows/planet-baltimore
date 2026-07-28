@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { Loader2, MailOpen, MousePointerClick, Send, BarChart3, Ticket } from 'lucide-react';
+import { BarChart, Bar as ReBar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
 const pct = (n, d) => (d > 0 ? Math.round((n / d) * 100) : 0);
 
@@ -10,6 +11,18 @@ export default function CampaignAnalytics({ currentUser }) {
   const { data: campaigns = [], isLoading } = useQuery({
     queryKey: ['campaign-analytics', currentUser?.id],
     queryFn: () => base44.entities.EmailCampaign.filter({ owner_id: currentUser.id }, '-sent_date', 100),
+    enabled: !!currentUser?.id,
+  });
+
+  const { data: events = [] } = useQuery({
+    queryKey: ['campaign-analytics-events', currentUser?.id],
+    queryFn: () => base44.entities.Event.filter({ organizer_id: currentUser.id }, '-date', 100),
+    enabled: !!currentUser?.id,
+  });
+
+  const { data: emailEvents = [] } = useQuery({
+    queryKey: ['email-events-log', currentUser?.id],
+    queryFn: () => base44.entities.EmailEvent.filter({ owner_id: currentUser.id }, '-created_date', 2000),
     enabled: !!currentUser?.id,
   });
 
@@ -21,6 +34,30 @@ export default function CampaignAnalytics({ currentUser }) {
     const totalClicks = campaigns.reduce((s, c) => s + (c.clicks_count || 0), 0);
     return { sent, opens, clicks, totalOpens, totalClicks, openRate: pct(opens, sent), clickRate: pct(clicks, sent) };
   }, [campaigns]);
+
+  const dailyData = useMemo(() => {
+    const activeEventIds = new Set(events.filter(e => e.status === 'upcoming' || e.status === 'ongoing').map(e => e.id));
+    const days = 14;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const buckets = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(today); d.setDate(d.getDate() - i);
+      buckets.push({ ts: d.getTime(), opens: 0, clicks: 0 });
+    }
+    for (const ev of emailEvents) {
+      if (!ev.event_id || !activeEventIds.has(ev.event_id)) continue;
+      const ts = new Date(ev.created_date).setHours(0, 0, 0, 0);
+      const b = buckets.find(x => x.ts === ts);
+      if (!b) continue;
+      if (ev.event_type === 'open') b.opens++;
+      else if (ev.event_type === 'click') b.clicks++;
+    }
+    return buckets.map(b => ({
+      day: new Date(b.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      opens: b.opens,
+      clicks: b.clicks,
+    }));
+  }, [emailEvents, events]);
 
   if (isLoading) {
     return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-foreground/40" /></div>;
@@ -42,6 +79,37 @@ export default function CampaignAnalytics({ currentUser }) {
         <Stat label="Open Rate" value={`${stats.openRate}%`} icon={MailOpen} />
         <Stat label="Unique Clicks" value={stats.clicks} sub={`${stats.totalClicks} total`} icon={MousePointerClick} />
         <Stat label="Click Rate" value={`${stats.clickRate}%`} icon={Ticket} />
+      </div>
+
+      {/* Daily chart */}
+      <div className="bg-card border border-border rounded-2xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-semibold text-foreground">Daily opens &amp; click-throughs</p>
+          <span className="text-xs text-muted-foreground">last 14 days · your active events</span>
+        </div>
+        {dailyData.every(d => d.opens === 0 && d.clicks === 0) ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <BarChart3 className="w-7 h-7 text-foreground/30 mb-2" />
+            <p className="text-sm text-muted-foreground">No opens or clicks recorded yet for your active events.</p>
+          </div>
+        ) : (
+          <div className="w-full h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dailyData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <XAxis dataKey="day" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={8} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} width={28} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', fontSize: 12, background: 'hsl(var(--card))' }}
+                  cursor={{ fill: 'hsl(var(--muted))' }}
+                />
+                <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" />
+                <ReBar dataKey="opens" name="Opens" fill="#d4580a" radius={[4, 4, 0, 0]} maxBarSize={18} />
+                <ReBar dataKey="clicks" name="Clicks" fill="#1a1f2e" radius={[4, 4, 0, 0]} maxBarSize={18} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
 
       {campaigns.length === 0 ? (

@@ -1,0 +1,34 @@
+{
+  "name": "EmailEvent",
+  "type": "object",
+  "properties": {
+    "campaign_id": {
+      "type": "string",
+      "description": "Reference to EmailCampaign"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Reference to Event (copied from the campaign, for scoping)"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Campaign owner (copied for ownership scoping)"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "open",
+        "click"
+      ],
+      "description": "open = tracking pixel impression, click = ticket-link click"
+    },
+    "recipient_hash": {
+      "type": "string",
+      "description": "Per-recipient hash (same one used for unique counts)"
+    }
+  },
+  "required": [
+    "campaign_id",
+    "event_type"
+  ]
+}
