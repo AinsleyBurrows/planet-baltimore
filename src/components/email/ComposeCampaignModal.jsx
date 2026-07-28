@@ -117,15 +117,32 @@ export default function ComposeCampaignModal({ onClose }) {
           </div>
 
           <div className="border-t border-border pt-4">
-            <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> Audience</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> Send to</p>
+            <p className="text-xs text-muted-foreground mb-2">Add the list(s) you want to send this email to.</p>
+
+            {listIds.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {listIds.map(id => {
+                  const l = lists.find(x => x.id === id);
+                  if (!l) return null;
+                  return (
+                    <span key={id} className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1 rounded-full text-xs font-medium bg-[#d4580a]/10 text-[#d4580a] border border-[#d4580a]/30">
+                      {l.name} <span className="text-[10px] opacity-70">{l.contact_count || 0}</span>
+                      <button type="button" onClick={() => toggleList(id)} className="p-0.5 rounded-full hover:bg-[#d4580a]/20"><X className="w-3 h-3" /></button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
             <div className="space-y-1">
               {lists.length === 0 && <p className="text-xs text-muted-foreground">No lists yet — create some in the Lists tab first.</p>}
-              {lists.map(l => (
-                <label key={l.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-secondary/50 cursor-pointer">
-                  <input type="checkbox" checked={listIds.includes(l.id)} onChange={() => toggleList(l.id)} className="w-4 h-4 accent-[#d4580a]" />
+              {lists.filter(l => !listIds.includes(l.id)).map(l => (
+                <div key={l.id} className="flex items-center gap-2 p-2 rounded-lg bg-secondary/30">
                   <span className="text-sm text-foreground flex-1 truncate">{l.name}</span>
-                  <span className="text-xs text-muted-foreground">{l.contact_count || 0}</span>
-                </label>
+                  <span className="text-xs text-muted-foreground">{l.contact_count || 0} contacts</span>
+                  <button type="button" onClick={() => toggleList(l.id)} className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg text-white" style={{ backgroundColor: '#d4580a' }}>Add</button>
+                </div>
               ))}
               {eventId && (
                 <label className="flex items-center gap-2 p-2 rounded-lg hover:bg-secondary/50 cursor-pointer">
