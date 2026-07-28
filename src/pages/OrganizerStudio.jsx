@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Ticket, Users, TrendingUp, Loader2, DollarSign, QrCode, Mail, Plus, Clapperboard } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import EventSelector from '@/components/organizer/EventSelector';
 import OrganizerTicketManager from '@/components/organizer/OrganizerTicketManager';
@@ -147,20 +148,15 @@ export default function OrganizerStudio() {
 
       {/* ── Top-level tabs: Manage / Create ─────────────────────── */}
       <Tabs defaultValue="manage" className="w-full">
-        <TabsList className="w-full bg-secondary/50 border border-border rounded-2xl grid grid-cols-2 h-auto gap-1 p-1.5 mb-6">
-          <TabsTrigger
-            value="manage"
-            className="rounded-xl text-sm font-medium py-2.5 transition-all"
-          >
-            Manage Events
-          </TabsTrigger>
-          <TabsTrigger
-            value="create"
-            className="rounded-xl text-sm font-medium py-2.5 flex items-center gap-1.5 transition-all"
-          >
-            <Plus className="w-3.5 h-3.5" /> Create Event
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex flex-col sm:flex-row gap-2 mb-6">
+          <TabsList className="flex-1 bg-secondary/50 border border-border rounded-2xl grid grid-cols-2 h-auto gap-1 p-1.5">
+            <TabsTrigger value="manage" className="rounded-xl text-sm font-medium py-2.5 transition-all">Manage Events</TabsTrigger>
+            <TabsTrigger value="create" className="rounded-xl text-sm font-medium py-2.5 flex items-center gap-1.5 transition-all"><Plus className="w-3.5 h-3.5" /> Create Event</TabsTrigger>
+          </TabsList>
+          <Link to="/email-lists" className="flex items-center justify-center gap-2 px-5 rounded-2xl text-sm font-medium border border-[#d4580a] text-[#d4580a] bg-[#d4580a]/10 hover:bg-[#d4580a]/20 transition-colors shrink-0">
+            <Mail className="w-4 h-4" /> Email Lists
+          </Link>
+        </div>
 
         {/* ── CREATE ──────────────────────────────────────────────── */}
         <TabsContent value="create">
