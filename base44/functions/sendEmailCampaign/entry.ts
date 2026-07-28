@@ -65,14 +65,20 @@ Deno.serve(async (req) => {
     }
 
     const u = new URL(req.url);
-    const unsubBase = u.origin + u.pathname.replace(/\/[^\/]*$/, '/emailUnsubscribe');
+    const fnBase = u.origin + u.pathname.replace(/\/[^\/]*$/, '');
+    const unsubBase = fnBase + '/emailUnsubscribe';
+    const trackOpenUrl = fnBase + '/trackOpen';
+    const trackClickUrl = fnBase + '/trackClick';
     const appBase = (app_url || u.origin).replace(/\/$/, '');
     const ctaLink = campaign.event_id ? `${appBase}/events/${campaign.event_id}` : appBase;
+    const hashEmail = (email) => { let h = 5381; for (let i = 0; i < email.length; i++) h = ((h << 5) + h + email.charCodeAt(i)) >>> 0; return h.toString(36); };
 
     const esc = (s) => String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const eventDate = event && event.date ? new Date(event.date).toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
 
     const buildHtml = (email, name) => {
+      const hash = hashEmail(email);
+      const trackedCta = `${trackClickUrl}?c=${encodeURIComponent(campaign_id)}&h=${hash}&u=${encodeURIComponent(ctaLink)}`;
       const greeting = name ? `Hi ${esc(name)},` : "You're invited,";
       const eventCard = event ? `
         <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;background:#f6f7f9;border-radius:14px;">
@@ -91,9 +97,10 @@ Deno.serve(async (req) => {
     <div style="font-size:15px;line-height:1.6;white-space:pre-wrap;">${campaign.body || ''}</div>
     ${eventCard}
     <div style="text-align:center;margin:28px 0 8px;">
-      <a href="${esc(ctaLink)}" style="display:inline-block;padding:14px 30px;background:#d4580a;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:12px;">${campaign.event_id ? 'Get Tickets / RSVP' : 'View on Planet Baltimore'}</a>
+      <a href="${esc(trackedCta)}" style="display:inline-block;padding:14px 30px;background:#d4580a;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:12px;">${campaign.event_id ? 'Get Tickets / RSVP' : 'View on Planet Baltimore'}</a>
     </div>
     <p style="font-size:11px;color:#8a92a6;margin:22px 0 6px;line-height:1.5;">You received this invitation from ${esc(campaign.from_name || 'a Planet Baltimore organizer')}. If you no longer wish to receive these emails, <a href="${unsubBase}?email=${encodeURIComponent(email)}&campaign=${encodeURIComponent(campaign_id)}" style="color:#d4580a;">unsubscribe here</a>.</p>
+    <img src="${trackOpenUrl}?c=${encodeURIComponent(campaign_id)}&h=${hash}" width="1" height="1" alt="" style="display:none;width:1px;height:1px;border:0;" />
   </div>
 </body></html>`;
     };

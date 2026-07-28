@@ -57,6 +57,32 @@
     "sent_date": {
       "type": "string",
       "format": "date-time"
+    },
+    "opens_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total email opens (tracking pixel impressions)"
+    },
+    "clicks_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total ticket-link clicks"
+    },
+    "open_hashes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Per-recipient hashes that opened (for unique open count)",
+      "default": []
+    },
+    "click_hashes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Per-recipient hashes that clicked (for unique click count)",
+      "default": []
     }
   },
   "required": [
