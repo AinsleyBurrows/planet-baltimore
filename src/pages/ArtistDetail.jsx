@@ -37,6 +37,7 @@ import PostCard from '@/components/shared/PostCard';
 import PageAdminBar from '@/components/shared/PageAdminBar';
 import ArtistCVTab from '@/components/artist/ArtistCVTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
+import StripeVerifiedBadge from '@/components/shared/StripeVerifiedBadge';
 
 import PodcastEpisodesTab from '@/components/artist/podcast/PodcastEpisodesTab';
 import PodcastGuestsTab from '@/components/artist/podcast/PodcastGuestsTab';
@@ -268,6 +269,7 @@ export default function ArtistDetail() {
         <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h1 className="text-xl font-bold text-foreground">{artist.name}</h1>
           {artist.is_verified && <CheckCircle className="w-5 h-5 text-foreground fill-foreground/20" />}
+          {artist.stripe_key_verified && <StripeVerifiedBadge />}
           {artist.is_founding_member && <FoundingMemberBadge />}
           {isPlatformAdmin && (
             <button
