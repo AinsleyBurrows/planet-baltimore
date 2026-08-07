@@ -40,19 +40,19 @@ function WorkForm({ initial, onSave, onCancel, saving }) {
 
 function WorkCard({ item, isOwner, onEdit, onDelete, onOpen }) {
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
       <div className="aspect-square bg-secondary cursor-pointer" onClick={() => onOpen(item)}>
         {item.image_url ? <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-8 h-8 text-muted-foreground/40" /></div>}
       </div>
       <div className="p-3">
         <div className="flex items-start justify-between gap-1">
-          <p className="font-semibold text-foreground text-sm truncate">{item.title}</p>
+          <p className="font-serif text-base font-medium text-foreground truncate leading-tight">{item.title}</p>
           {isOwner && <div className="flex gap-1 flex-shrink-0">
             <button onClick={onEdit} className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
             <button onClick={onDelete} className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>}
         </div>
-        {(item.medium || item.year || item.dimensions) && <p className="text-xs text-muted-foreground mt-1">{[item.year, item.medium, item.dimensions].filter(Boolean).join(' · ')}</p>}
+        {(item.medium || item.year || item.dimensions) && <p className="text-[11px] uppercase tracking-wide text-muted-foreground mt-1.5">{[item.year, item.medium, item.dimensions].filter(Boolean).join(' · ')}</p>}
       </div>
     </div>
   );
@@ -77,8 +77,8 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
       {isOwner && !showForm && editing === null && <div className="flex justify-end"><Button size="sm" onClick={() => setShowForm(true)} className="gap-1.5 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg"><Plus className="w-3.5 h-3.5" /> Add Work</Button></div>}
       {showForm && <WorkForm onSave={saveNew} onCancel={() => setShowForm(false)} saving={saving} />}
       {works.length === 0 && !showForm
-        ? <div className="text-center py-12 text-sm text-muted-foreground"><Layers className="w-8 h-8 mx-auto mb-2 opacity-30" />No portfolio works yet.</div>
-        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{works.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
+        ? <div className="text-center py-16"><Layers className="w-10 h-10 mx-auto mb-3 opacity-25" /><p className="font-serif text-base text-muted-foreground">No portfolio works yet.</p></div>
+        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">{works.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
 
       {detail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setDetail(null)}>
@@ -88,8 +88,8 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
               <button onClick={() => setDetail(null)} className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80"><X className="w-4 h-4" /></button>
             </div>
             <div className="p-5">
-              <h3 className="font-semibold text-foreground">{detail.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">{[detail.year, detail.medium, detail.dimensions].filter(Boolean).join(' · ')}</p>
+              <h3 className="font-serif text-xl font-medium text-foreground">{detail.title}</h3>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground mt-1.5">{[detail.year, detail.medium, detail.dimensions].filter(Boolean).join(' · ')}</p>
               {detail.description && <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{detail.description}</p>}
             </div>
           </div>

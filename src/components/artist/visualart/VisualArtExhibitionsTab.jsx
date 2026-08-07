@@ -62,7 +62,7 @@ function ExCard({ ex, isOwner, onEdit, onDelete }) {
   const st = statusOf(ex);
   const badge = st === 'current' ? 'bg-green-100 text-green-700' : st === 'upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-muted text-muted-foreground';
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
       <div className="grid grid-cols-3 gap-1 bg-secondary">
         {(ex.installation_shots || []).slice(0, 3).map((u, i) => <div key={i} className="aspect-square"><img src={u} alt="" className="w-full h-full object-cover" /></div>)}
         {(!ex.installation_shots || ex.installation_shots.length === 0) && <div className="col-span-3 aspect-video flex items-center justify-center"><Building2 className="w-8 h-8 text-muted-foreground/40" /></div>}
@@ -70,7 +70,7 @@ function ExCard({ ex, isOwner, onEdit, onDelete }) {
       <div className="p-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="font-semibold text-foreground text-sm truncate">{ex.title}</p>
+            <p className="font-serif text-base font-medium text-foreground truncate leading-tight">{ex.title}</p>
             {ex.venue && <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3" />{ex.venue}{ex.city && `, ${ex.city}`}</p>}
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
@@ -109,10 +109,10 @@ export default function VisualArtExhibitionsTab({ artistId, isOwner, ownerId }) 
     <div className="space-y-5">
       {isOwner && !showForm && editing === null && <div className="flex justify-end"><Button size="sm" onClick={() => setShowForm(true)} className="gap-1.5 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg"><Plus className="w-3.5 h-3.5" /> Add Exhibition</Button></div>}
       {showForm && <ExForm onSave={saveNew} onCancel={() => setShowForm(false)} saving={saving} />}
-      {exhibitions.length === 0 && !showForm && <div className="text-center py-12 text-sm text-muted-foreground"><Building2 className="w-8 h-8 mx-auto mb-2 opacity-30" />No exhibitions listed.</div>}
+      {exhibitions.length === 0 && !showForm && <div className="text-center py-16"><Building2 className="w-10 h-10 mx-auto mb-3 opacity-25" /><p className="font-serif text-base text-muted-foreground">No exhibitions listed.</p></div>}
       {['current', 'upcoming', 'past'].map(key => groups[key].length > 0 && (
         <div key={key}>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">{key === 'current' ? 'Current' : key === 'upcoming' ? 'Upcoming' : 'Past'}</h3>
+          <h3 className="font-serif text-sm font-medium tracking-wide text-foreground mb-3 flex items-center gap-2"><span className="w-6 h-px bg-border" />{key === 'current' ? 'Current' : key === 'upcoming' ? 'Upcoming' : 'Past'}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {groups[key].map(ex => editing?.id === ex.id ? <ExForm key={ex.id} initial={ex} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <ExCard key={ex.id} ex={ex} isOwner={isOwner} onEdit={() => setEditing(ex)} onDelete={() => del(ex)} />)}
           </div>

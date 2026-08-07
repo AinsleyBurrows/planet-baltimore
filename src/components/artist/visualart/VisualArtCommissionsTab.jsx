@@ -98,7 +98,7 @@ export default function VisualArtCommissionsTab({ artistId, isOwner, ownerId }) 
       ) : (
         <div className="bg-card border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2"><Handshake className="w-5 h-5 text-foreground" /><h3 className="font-semibold text-foreground">Commissions</h3></div>
+            <div className="flex items-center gap-2"><Handshake className="w-5 h-5 text-foreground" /><h3 className="font-serif text-lg font-medium text-foreground">Commissions</h3></div>
             {isOwner && <Button size="sm" variant="outline" onClick={() => setEditSetting(true)} className="gap-1.5"><Pencil className="w-3.5 h-3.5" /> Edit</Button>}
           </div>
           {accepting ? <Badge className="bg-green-100 text-green-700 border-0 text-[10px]">Accepting commissions</Badge> : <Badge className="bg-muted text-muted-foreground border-0 text-[10px]">Not accepting right now</Badge>}
@@ -108,7 +108,7 @@ export default function VisualArtCommissionsTab({ artistId, isOwner, ownerId }) 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
               {setting.packages.map((p, i) => (
                 <div key={i} className="border border-border rounded-xl p-3">
-                  <div className="flex items-center justify-between"><p className="font-semibold text-sm text-foreground">{p.title}</p>{p.price && <span className="font-bold text-sm text-accent">{p.price}</span>}</div>
+                  <div className="flex items-center justify-between"><p className="font-serif text-base font-medium text-foreground">{p.title}</p>{p.price && <span className="font-serif text-base font-medium text-accent">{p.price}</span>}</div>
                   {p.description && <p className="text-xs text-muted-foreground mt-1">{p.description}</p>}
                 </div>
               ))}
@@ -125,14 +125,14 @@ export default function VisualArtCommissionsTab({ artistId, isOwner, ownerId }) 
 
       {isOwner && (
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">Requests ({requests.length})</h3>
+          <h3 className="font-serif text-sm font-medium tracking-wide text-foreground mb-3 flex items-center gap-2"><span className="w-6 h-px bg-border" />Requests ({requests.length})</h3>
           {isLoading ? <div className="h-20 rounded-xl bg-muted animate-pulse" /> : requests.length === 0 ? <p className="text-sm text-muted-foreground py-6 text-center">No commission requests yet.</p> : (
             <div className="space-y-2">
               {requests.map(r => (
                 <div key={r.id} className="bg-card border border-border rounded-xl p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm text-foreground">{r.requester_name} <span className="text-xs text-muted-foreground font-normal">· {r.email}</span></p>
+                      <p className="font-serif text-sm font-medium text-foreground">{r.requester_name} <span className="text-xs text-muted-foreground font-sans font-normal">· {r.email}</span></p>
                       <div className="flex flex-wrap gap-1.5 mt-1.5 text-[10px]">
                         {r.package_title && <Badge variant="secondary">{r.package_title}</Badge>}
                         {r.size && <Badge variant="secondary">Size: {r.size}</Badge>}

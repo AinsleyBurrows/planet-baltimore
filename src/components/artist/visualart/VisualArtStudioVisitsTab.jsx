@@ -73,7 +73,7 @@ export default function VisualArtStudioVisitsTab({ artistId, isOwner, ownerId })
       ) : (
         <div className="bg-card border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-foreground">Studio Visits</h3>
+            <h3 className="font-serif text-lg font-medium text-foreground">Studio Visits</h3>
             {isOwner && <Button size="sm" variant="outline" onClick={() => setEditSetting(true)} className="gap-1.5"><Pencil className="w-3.5 h-3.5" /> Edit</Button>}
           </div>
           {setting?.address && <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-2"><MapPin className="w-3.5 h-3.5" />{setting.address}</p>}
@@ -90,14 +90,14 @@ export default function VisualArtStudioVisitsTab({ artistId, isOwner, ownerId })
 
       {isOwner && (
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">Visit Requests ({requests.length})</h3>
+          <h3 className="font-serif text-sm font-medium tracking-wide text-foreground mb-3 flex items-center gap-2"><span className="w-6 h-px bg-border" />Visit Requests ({requests.length})</h3>
           {isLoading ? <div className="h-20 rounded-xl bg-muted animate-pulse" /> : requests.length === 0 ? <p className="text-sm text-muted-foreground py-6 text-center">No visit requests yet.</p> : (
             <div className="space-y-2">
               {requests.map(r => (
                 <div key={r.id} className="bg-card border border-border rounded-xl p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm text-foreground">{r.requester_name} <span className="text-xs text-muted-foreground font-normal">· {r.email}</span></p>
+                      <p className="font-serif text-sm font-medium text-foreground">{r.requester_name} <span className="text-xs text-muted-foreground font-sans font-normal">· {r.email}</span></p>
                       <div className="flex flex-wrap gap-1.5 mt-1.5 text-[10px]">
                         {r.preferred_date && <Badge variant="secondary"><Calendar className="w-2.5 h-2.5 mr-0.5" />{r.preferred_date}</Badge>}
                         {r.preferred_time && <Badge variant="secondary">{r.preferred_time}</Badge>}
