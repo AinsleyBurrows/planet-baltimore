@@ -1,0 +1,45 @@
+{
+  "name": "CommissionSetting",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "accepting_commissions": {
+      "type": "boolean",
+      "default": true
+    },
+    "intro": {
+      "type": "string"
+    },
+    "turnaround": {
+      "type": "string"
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "turnaround": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "artist_id"
+  ]
+}

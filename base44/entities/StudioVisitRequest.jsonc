@@ -1,0 +1,50 @@
+{
+  "name": "StudioVisitRequest",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "preferred_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "preferred_time": {
+      "type": "string"
+    },
+    "visit_type": {
+      "type": "string",
+      "enum": [
+        "in_person",
+        "virtual"
+      ],
+      "default": "in_person"
+    },
+    "brief": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "declined"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "artist_id",
+    "requester_name",
+    "email"
+  ]
+}

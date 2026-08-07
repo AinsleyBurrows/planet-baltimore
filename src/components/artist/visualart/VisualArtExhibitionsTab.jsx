@@ -1,0 +1,123 @@
+import React, { useState, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Plus, Trash2, Pencil, Loader2, Image as ImageIcon, X, MapPin, Calendar, Building2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+const TYPES = [{ value: 'solo', label: 'Solo' }, { value: 'group', label: 'Group' }, { value: 'booth', label: 'Booth' }, { value: 'fair', label: 'Fair' }, { value: 'residency', label: 'Residency' }, { value: 'other', label: 'Other' }];
+const EMPTY = { title: '', venue: '', city: '', start_date: '', end_date: '', exhibition_type: 'solo', reception_date: '', description: '', installation_shots: [] };
+
+function statusOf(ex) {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const start = ex.start_date ? new Date(ex.start_date) : null;
+  const end = ex.end_date ? new Date(ex.end_date) : null;
+  if (start && end) { if (end < today) return 'past'; if (start > today) return 'upcoming'; return 'current'; }
+  if (start && start > today) return 'upcoming';
+  if (end && end < today) return 'past';
+  return 'current';
+}
+
+function ExForm({ initial, onSave, onCancel, saving }) {
+  const [form, setForm] = useState(initial || EMPTY);
+  const [uploading, setUploading] = useState(false);
+  const imgRef = useRef(null);
+  const addShots = async (files) => { setUploading(true); const urls = []; for (const f of files) { const { file_url } = await base44.integrations.Core.UploadFile({ file: f }); urls.push(file_url); } setForm(s => ({ ...s, installation_shots: [...(s.installation_shots || []), ...urls] })); setUploading(false); };
+  return (
+    <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+      <input className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Exhibition title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
+      <div className="grid grid-cols-2 gap-2">
+        <input className="px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Venue" value={form.venue} onChange={e => setForm(f => ({ ...f, venue: e.target.value }))} />
+        <input className="px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="City" value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} />
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <input type="date" className="px-3 py-2 rounded-lg border border-input bg-background text-sm" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} />
+        <input type="date" className="px-3 py-2 rounded-lg border border-input bg-background text-sm" value={form.end_date} onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))} />
+        <select className="px-3 py-2 rounded-lg border border-input bg-background text-sm" value={form.exhibition_type} onChange={e => setForm(f => ({ ...f, exhibition_type: e.target.value }))}>{TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select>
+      </div>
+      <input className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Reception / opening (optional)" value={form.reception_date} onChange={e => setForm(f => ({ ...f, reception_date: e.target.value }))} />
+      <textarea className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm resize-none h-16" placeholder="Description (optional)" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+      <div>
+        <button onClick={() => imgRef.current?.click()} className="flex items-center gap-1.5 text-xs text-accent hover:underline"><ImageIcon className="w-3.5 h-3.5" /> Add installation shots</button>
+        {uploading && <Loader2 className="w-3.5 h-3.5 animate-spin inline ml-2" />}
+        <div className="grid grid-cols-4 gap-2 mt-2">
+          {(form.installation_shots || []).map((u, i) => (
+            <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-secondary">
+              <img src={u} alt="" className="w-full h-full object-cover" />
+              <button onClick={() => setForm(s => ({ ...s, installation_shots: s.installation_shots.filter((_, j) => j !== i) }))} className="absolute top-1 right-1 p-0.5 rounded bg-black/60 text-white"><X className="w-3 h-3" /></button>
+            </div>
+          ))}
+        </div>
+        <input ref={imgRef} type="file" accept="image/*" multiple className="hidden" onChange={e => e.target.files.length && addShots(Array.from(e.target.files))} />
+      </div>
+      <div className="flex gap-2">
+        <Button size="sm" onClick={() => onSave(form)} disabled={!form.title || saving} className="bg-accent hover:bg-accent/90 text-accent-foreground">{saving ? 'Saving…' : 'Save'}</Button>
+        <Button size="sm" variant="outline" onClick={onCancel}>Cancel</Button>
+      </div>
+    </div>
+  );
+}
+
+function ExCard({ ex, isOwner, onEdit, onDelete }) {
+  const st = statusOf(ex);
+  const badge = st === 'current' ? 'bg-green-100 text-green-700' : st === 'upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-muted text-muted-foreground';
+  return (
+    <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="grid grid-cols-3 gap-1 bg-secondary">
+        {(ex.installation_shots || []).slice(0, 3).map((u, i) => <div key={i} className="aspect-square"><img src={u} alt="" className="w-full h-full object-cover" /></div>)}
+        {(!ex.installation_shots || ex.installation_shots.length === 0) && <div className="col-span-3 aspect-video flex items-center justify-center"><Building2 className="w-8 h-8 text-muted-foreground/40" /></div>}
+      </div>
+      <div className="p-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="font-semibold text-foreground text-sm truncate">{ex.title}</p>
+            {ex.venue && <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3" />{ex.venue}{ex.city && `, ${ex.city}`}</p>}
+          </div>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium uppercase ${badge}`}>{st}</span>
+            {isOwner && <div className="flex gap-1">
+              <button onClick={onEdit} className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
+              <button onClick={onDelete} className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
+            </div>}
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Calendar className="w-3 h-3" />{ex.start_date || 'TBD'}{ex.end_date && ` → ${ex.end_date}`}</p>
+        <div className="flex items-center gap-1.5 mt-1.5"><Badge variant="secondary" className="text-[10px] capitalize">{ex.exhibition_type}</Badge>{ex.reception_date && <span className="text-[10px] text-accent">Reception {ex.reception_date}</span>}</div>
+        {ex.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{ex.description}</p>}
+      </div>
+    </div>
+  );
+}
+
+export default function VisualArtExhibitionsTab({ artistId, isOwner, ownerId }) {
+  const queryClient = useQueryClient();
+  const { data: exhibitions = [], isLoading } = useQuery({ queryKey: ['exhibitions', artistId], queryFn: () => base44.entities.Exhibition.filter({ artist_id: artistId }, '-start_date', 100), enabled: !!artistId });
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['exhibitions', artistId] });
+  const saveNew = async (form) => { setSaving(true); await base44.entities.Exhibition.create({ ...form, artist_id: artistId, owner_id: ownerId }); setSaving(false); setShowForm(false); refresh(); };
+  const saveEdit = async (form) => { setSaving(true); await base44.entities.Exhibition.update(editing.id, form); setSaving(false); setEditing(null); refresh(); };
+  const del = async (ex) => { if (!window.confirm('Remove this exhibition?')) return; await base44.entities.Exhibition.delete(ex.id); refresh(); };
+
+  const groups = { current: [], upcoming: [], past: [] };
+  exhibitions.forEach(e => groups[statusOf(e)]?.push(e));
+
+  if (isLoading) return <div className="space-y-3">{[1, 2].map(i => <div key={i} className="h-32 rounded-xl bg-muted animate-pulse" />)}</div>;
+
+  return (
+    <div className="space-y-5">
+      {isOwner && !showForm && editing === null && <div className="flex justify-end"><Button size="sm" onClick={() => setShowForm(true)} className="gap-1.5 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg"><Plus className="w-3.5 h-3.5" /> Add Exhibition</Button></div>}
+      {showForm && <ExForm onSave={saveNew} onCancel={() => setShowForm(false)} saving={saving} />}
+      {exhibitions.length === 0 && !showForm && <div className="text-center py-12 text-sm text-muted-foreground"><Building2 className="w-8 h-8 mx-auto mb-2 opacity-30" />No exhibitions listed.</div>}
+      {['current', 'upcoming', 'past'].map(key => groups[key].length > 0 && (
+        <div key={key}>
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">{key === 'current' ? 'Current' : key === 'upcoming' ? 'Upcoming' : 'Past'}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {groups[key].map(ex => editing?.id === ex.id ? <ExForm key={ex.id} initial={ex} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <ExCard key={ex.id} ex={ex} isOwner={isOwner} onEdit={() => setEditing(ex)} onDelete={() => del(ex)} />)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

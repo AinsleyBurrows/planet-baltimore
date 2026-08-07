@@ -1,0 +1,57 @@
+{
+  "name": "CommissionRequest",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "size": {
+      "type": "string"
+    },
+    "medium": {
+      "type": "string"
+    },
+    "budget": {
+      "type": "string"
+    },
+    "timeline": {
+      "type": "string"
+    },
+    "reference_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "message": {
+      "type": "string"
+    },
+    "package_title": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "accepted",
+        "declined"
+      ],
+      "default": "new"
+    }
+  },
+  "required": [
+    "artist_id",
+    "requester_name",
+    "email"
+  ]
+}
