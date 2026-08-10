@@ -1,0 +1,104 @@
+{
+  "name": "ArtistReview",
+  "type": "object",
+  "properties": {
+    "artist_id": {
+      "type": "string",
+      "description": "Reference to the ArtistPage being reviewed"
+    },
+    "artist_owner_id": {
+      "type": "string",
+      "description": "Denormalized owner_id of the ArtistPage (used for RLS so the artist can manage reviews of their page)"
+    },
+    "reviewer_name": {
+      "type": "string",
+      "description": "Display name of the collector leaving the review"
+    },
+    "reviewer_email": {
+      "type": "string",
+      "description": "Optional collector email (not shown publicly)"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Rating from 1 to 5",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "title": {
+      "type": "string",
+      "description": "Optional review title"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Review comment / testimonial"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Approval status \u2014 only approved reviews are visible to the public"
+    }
+  },
+  "required": [
+    "artist_id",
+    "artist_owner_id",
+    "reviewer_name",
+    "rating",
+    "comment"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "approved"
+        },
+        {
+          "data.artist_owner_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "data.artist_owner_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.artist_owner_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -6,7 +6,7 @@ import {
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
   Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
   Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award, BookOpen, PenLine,
-  BadgeDollarSign, Scissors, HelpCircle, Lock, Headphones, Palette, Frame, Handshake, DoorOpen
+  BadgeDollarSign, Scissors, HelpCircle, Lock, Headphones, Palette, Frame, Handshake, DoorOpen, Quote
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +38,7 @@ import PageAdminBar from '@/components/shared/PageAdminBar';
 import ArtistCVTab from '@/components/artist/ArtistCVTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
 import StripeVerifiedBadge from '@/components/shared/StripeVerifiedBadge';
+import ArtistReviewsTab from '@/components/artist/ArtistReviewsTab';
 
 import PodcastEpisodesTab from '@/components/artist/podcast/PodcastEpisodesTab';
 import PodcastGuestsTab from '@/components/artist/podcast/PodcastGuestsTab';
@@ -533,6 +534,9 @@ export default function ArtistDetail() {
           {!isPodcaster && <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Talk</span>
           </TabsTrigger>}
+          <TabsTrigger value="collector_reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+            <Quote className="w-3.5 h-3.5" /><span className="hidden xs:inline">Collector Reviews</span>
+          </TabsTrigger>
           {!isMusic && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
           </TabsTrigger>}
@@ -803,6 +807,11 @@ export default function ArtistDetail() {
             </div>
             <CommentSection targetType="artist" targetId={artistId} />
           </div>
+        </TabsContent>
+
+        {/* Collector Reviews */}
+        <TabsContent value="collector_reviews" className="mt-4">
+          <ArtistReviewsTab artistId={artistId} ownerId={artist.owner_id} isOwner={isOwner} artistName={artist.name} />
         </TabsContent>
 
         {/* Contact */}
