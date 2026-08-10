@@ -72,10 +72,10 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
   const [detail, setDetail] = useState(null);
   const [saving, setSaving] = useState(false);
   const [ctrlsVisible, setCtrlsVisible] = useState(true);
-  const [showInfo, setShowInfo] = useState(false);
+  const [showInfo, setShowInfo] = useState(true);
   const detailIndex = detail ? works.findIndex(w => w.id === detail.id) : -1;
-  const goPrev = () => { if (detailIndex > 0) { setShowInfo(false); setDetail(works[detailIndex - 1]); } };
-  const goNext = () => { if (detailIndex >= 0 && detailIndex < works.length - 1) { setShowInfo(false); setDetail(works[detailIndex + 1]); } };
+  const goPrev = () => { if (detailIndex > 0) setDetail(works[detailIndex - 1]); };
+  const goNext = () => { if (detailIndex >= 0 && detailIndex < works.length - 1) setDetail(works[detailIndex + 1]); };
 
   useEffect(() => {
     if (!detail) return;
@@ -118,29 +118,30 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
         : <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 sm:gap-8">{works.map((it, i) => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} index={i + 1} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
 
       {detail && (
-        <div className="fixed inset-0 z-50 bg-white flex items-center justify-center p-4 sm:p-8 group viewer" onClick={() => setDetail(null)}>
-          {detail.image_url && <img src={detail.image_url} alt={detail.title} className="max-w-full max-h-full object-contain cursor-default" onClick={e => e.stopPropagation()} />}
-          <button onClick={() => setDetail(null)} className={`absolute top-4 right-4 p-2.5 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><X className="w-5 h-5" /></button>
-          <button onClick={(e) => { e.stopPropagation(); setShowInfo(v => !v); }} className={`absolute top-14 right-4 p-2.5 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><Info className="w-5 h-5" /></button>
-          {detailIndex > 0 && (
-            <button onClick={(e) => { e.stopPropagation(); goPrev(); }} className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><ChevronLeft className="w-6 h-6" /></button>
-          )}
-          {detailIndex >= 0 && detailIndex < works.length - 1 && (
-            <button onClick={(e) => { e.stopPropagation(); goNext(); }} className={`absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><ChevronRight className="w-6 h-6" /></button>
-          )}
-          {works.length > 1 && !showInfo && (
-            <span className={`absolute bottom-5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/5 text-foreground text-xs font-medium tracking-wide backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}>{detailIndex + 1} / {works.length}</span>
-          )}
-          <div className={`absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-black/10 transition-transform duration-300 ease-out ${showInfo ? 'translate-y-0' : 'translate-y-full'}`} onClick={e => e.stopPropagation()}>
-            <div className="max-w-xl mx-auto px-6 py-6 sm:px-8 sm:py-7 max-h-[55vh] overflow-y-auto">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mb-2">Lot {String(detailIndex + 1).padStart(2, '0')}</p>
+        <div className="fixed inset-0 z-50 bg-white group viewer flex flex-col sm:flex-row" onClick={() => setDetail(null)}>
+          <div className="relative flex-1 flex items-center justify-center p-4 sm:p-8 min-h-0">
+            {detail.image_url && <img src={detail.image_url} alt={detail.title} className="max-w-full max-h-full object-contain cursor-default" onClick={e => e.stopPropagation()} />}
+            {detailIndex > 0 && (
+              <button onClick={(e) => { e.stopPropagation(); goPrev(); }} className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><ChevronLeft className="w-6 h-6" /></button>
+            )}
+            {detailIndex >= 0 && detailIndex < works.length - 1 && (
+              <button onClick={(e) => { e.stopPropagation(); goNext(); }} className={`absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><ChevronRight className="w-6 h-6" /></button>
+            )}
+            {works.length > 1 && !showInfo && (
+              <span className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/5 text-foreground text-xs font-medium tracking-wide backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}>{detailIndex + 1} / {works.length}</span>
+            )}
+          </div>
+          <aside className={`overflow-y-auto transition-all duration-300 ease-out bg-white border-black/10 ${showInfo ? 'sm:w-80 lg:w-96 max-h-[42vh] sm:max-h-full opacity-100 border-t sm:border-l' : 'sm:w-0 max-h-0 opacity-0 overflow-hidden border-t-0'}`} onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-6 sm:px-8 sm:pt-20 sm:pb-10">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mb-3">Lot {String(detailIndex + 1).padStart(2, '0')}</p>
               <h3 className="font-serif italic text-2xl text-foreground leading-snug">{detail.title}{detail.year ? `, ${detail.year}` : ''}</h3>
               {detail.medium && <p className="text-sm text-muted-foreground mt-3">{detail.medium}</p>}
               {detail.dimensions && <p className="text-sm text-muted-foreground">{detail.dimensions}</p>}
-              {detail.description && <p className="text-sm text-muted-foreground mt-4 leading-relaxed font-serif">{detail.description}</p>}
-              <button onClick={() => setShowInfo(false)} className="mt-5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-colors">Hide</button>
+              {detail.description && <p className="text-sm text-muted-foreground mt-5 leading-relaxed font-serif">{detail.description}</p>}
             </div>
-          </div>
+          </aside>
+          <button onClick={() => setDetail(null)} className={`absolute top-4 right-4 p-2.5 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 z-10 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><X className="w-5 h-5" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setShowInfo(v => !v); }} className={`absolute top-14 right-4 p-2.5 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 z-10 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><Info className="w-5 h-5" /></button>
         </div>
       )}
     </div>
