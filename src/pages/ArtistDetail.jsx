@@ -384,17 +384,8 @@ export default function ArtistDetail() {
             <TabsTrigger value="showreel" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Clapperboard className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reel</span>
             </TabsTrigger>
-            <TabsTrigger value="performances" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shows</span>
-            </TabsTrigger>
-            <TabsTrigger value="reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reviews</span>
-            </TabsTrigger>
-            <TabsTrigger value="booking" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
-            </TabsTrigger>
           </>}
-          {/* Performance artists: Collector Reviews tab removed */}
+          {/* Performance artists: Shows, Reviews, Book, Collector Reviews tabs removed */}
           {isPhoto && <>
             <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
