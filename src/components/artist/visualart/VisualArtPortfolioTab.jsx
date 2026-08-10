@@ -38,21 +38,27 @@ function WorkForm({ initial, onSave, onCancel, saving }) {
   );
 }
 
-function WorkCard({ item, isOwner, onEdit, onDelete, onOpen }) {
+function WorkCard({ item, isOwner, index, onEdit, onDelete, onOpen }) {
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-      <div className="bg-secondary cursor-pointer" onClick={() => onOpen(item)}>
-        {item.image_url ? <img src={item.image_url} alt={item.title} className="w-full h-auto block" /> : <div className="w-full aspect-square flex items-center justify-center"><ImageIcon className="w-8 h-8 text-muted-foreground/40" /></div>}
+    <div className="group bg-card border border-border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-foreground/20">
+      <div className="relative aspect-[4/5] bg-secondary/40 flex items-center justify-center p-5 cursor-pointer" onClick={() => onOpen(item)}>
+        {item.image_url ? (
+          <img src={item.image_url} alt={item.title} className="max-w-full max-h-full object-contain" />
+        ) : (
+          <ImageIcon className="w-8 h-8 text-muted-foreground/30" />
+        )}
+        <span className="absolute top-3 left-3 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 font-medium select-none">Lot {String(index).padStart(2, '0')}</span>
       </div>
-      <div className="p-3">
-        <div className="flex items-start justify-between gap-1">
-          <p className="font-serif text-base font-medium text-foreground truncate leading-tight">{item.title}</p>
-          {isOwner && <div className="flex gap-1 flex-shrink-0">
+      <div className="px-4 py-3.5 border-t border-border">
+        <div className="flex items-start justify-between gap-2">
+          <p className="font-serif italic text-base text-foreground leading-snug truncate">{item.title}{item.year ? `, ${item.year}` : ''}</p>
+          {isOwner && <div className="flex gap-1 flex-shrink-0 -mt-0.5">
             <button onClick={onEdit} className="p-1 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /></button>
             <button onClick={onDelete} className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>}
         </div>
-        {(item.medium || item.year || item.dimensions) && <p className="text-[11px] uppercase tracking-wide text-muted-foreground mt-1.5">{[item.year, item.medium, item.dimensions].filter(Boolean).join(' · ')}</p>}
+        {item.medium && <p className="text-xs text-muted-foreground mt-1.5">{item.medium}</p>}
+        {item.dimensions && <p className="text-xs text-muted-foreground">{item.dimensions}</p>}
       </div>
     </div>
   );
@@ -85,7 +91,7 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
   const saveEdit = async (form) => { setSaving(true); await base44.entities.PortfolioWork.update(editing.id, form); setSaving(false); setEditing(null); refresh(); };
   const del = async (it) => { if (!window.confirm('Remove this work?')) return; await base44.entities.PortfolioWork.delete(it.id); refresh(); };
 
-  if (isLoading) return <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="aspect-square rounded-xl" />)}</div>;
+  if (isLoading) return <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 sm:gap-8">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-lg" />)}</div>;
 
   return (
     <div className="space-y-4">
@@ -93,28 +99,29 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
       {showForm && <WorkForm onSave={saveNew} onCancel={() => setShowForm(false)} saving={saving} />}
       {works.length === 0 && !showForm
         ? <div className="text-center py-16"><Layers className="w-10 h-10 mx-auto mb-3 opacity-25" /><p className="font-serif text-base text-muted-foreground">No portfolio works yet.</p></div>
-        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 items-start">{works.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
+        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 sm:gap-8">{works.map((it, i) => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} index={i + 1} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
 
       {detail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setDetail(null)}>
-          <div className="relative max-w-2xl w-full bg-card rounded-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-            <div className="relative bg-secondary">
-              {detail.image_url && <img src={detail.image_url} alt={detail.title} className="w-full max-h-[60vh] object-contain" />}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4" onClick={() => setDetail(null)}>
+          <div className="relative max-w-3xl w-full bg-card rounded-lg overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="relative bg-secondary/30 flex items-center justify-center p-6">
+              {detail.image_url && <img src={detail.image_url} alt={detail.title} className="max-w-full max-h-[60vh] object-contain" />}
               <button onClick={() => setDetail(null)} className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><X className="w-4 h-4" /></button>
               {detailIndex > 0 && (
-                <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronLeft className="w-5 h-5" /></button>
+                <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronLeft className="w-5 h-5" /></button>
               )}
               {detailIndex >= 0 && detailIndex < works.length - 1 && (
-                <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronRight className="w-5 h-5" /></button>
+                <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronRight className="w-5 h-5" /></button>
               )}
               {works.length > 1 && (
-                <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-medium z-10">{detailIndex + 1} / {works.length}</span>
+                <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white text-xs font-medium tracking-wide z-10">{detailIndex + 1} / {works.length}</span>
               )}
             </div>
-            <div className="p-5">
-              <h3 className="font-serif text-xl font-medium text-foreground">{detail.title}</h3>
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground mt-1.5">{[detail.year, detail.medium, detail.dimensions].filter(Boolean).join(' · ')}</p>
-              {detail.description && <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{detail.description}</p>}
+            <div className="px-6 py-5 border-t border-border">
+              <h3 className="font-serif italic text-xl text-foreground leading-snug">{detail.title}{detail.year ? `, ${detail.year}` : ''}</h3>
+              {detail.medium && <p className="text-xs text-muted-foreground mt-2">{detail.medium}</p>}
+              {detail.dimensions && <p className="text-xs text-muted-foreground">{detail.dimensions}</p>}
+              {detail.description && <p className="text-sm text-muted-foreground mt-4 leading-relaxed font-serif">{detail.description}</p>}
             </div>
           </div>
         </div>
