@@ -71,6 +71,7 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
   const [editing, setEditing] = useState(null);
   const [detail, setDetail] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [ctrlsVisible, setCtrlsVisible] = useState(true);
   const detailIndex = detail ? works.findIndex(w => w.id === detail.id) : -1;
   const goPrev = () => { if (detailIndex > 0) setDetail(works[detailIndex - 1]); };
   const goNext = () => { if (detailIndex >= 0 && detailIndex < works.length - 1) setDetail(works[detailIndex + 1]); };
@@ -85,6 +86,19 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [detail, detailIndex, works]);
+
+  useEffect(() => {
+    if (!detail) return;
+    let hideTimer;
+    const onMove = () => {
+      setCtrlsVisible(true);
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => setCtrlsVisible(false), 2500);
+    };
+    onMove();
+    window.addEventListener('mousemove', onMove);
+    return () => { window.removeEventListener('mousemove', onMove); clearTimeout(hideTimer); };
+  }, [detail]);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['portfolio-works', artistId] });
   const saveNew = async (form) => { setSaving(true); await base44.entities.PortfolioWork.create({ ...form, artist_id: artistId, owner_id: ownerId }); setSaving(false); setShowForm(false); refresh(); };
@@ -102,28 +116,18 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
         : <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 sm:gap-8">{works.map((it, i) => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} index={i + 1} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
 
       {detail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4" onClick={() => setDetail(null)}>
-          <div className="relative max-w-3xl w-full bg-card rounded-lg overflow-hidden" onClick={e => e.stopPropagation()}>
-            <div className="relative bg-secondary/30 flex items-center justify-center p-6">
-              {detail.image_url && <img src={detail.image_url} alt={detail.title} className="max-w-full max-h-[60vh] object-contain" />}
-              <button onClick={() => setDetail(null)} className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><X className="w-4 h-4" /></button>
-              {detailIndex > 0 && (
-                <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronLeft className="w-5 h-5" /></button>
-              )}
-              {detailIndex >= 0 && detailIndex < works.length - 1 && (
-                <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronRight className="w-5 h-5" /></button>
-              )}
-              {works.length > 1 && (
-                <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white text-xs font-medium tracking-wide z-10">{detailIndex + 1} / {works.length}</span>
-              )}
-            </div>
-            <div className="px-6 py-5 border-t border-border">
-              <h3 className="font-serif italic text-xl text-foreground leading-snug">{detail.title}{detail.year ? `, ${detail.year}` : ''}</h3>
-              {detail.medium && <p className="text-xs text-muted-foreground mt-2">{detail.medium}</p>}
-              {detail.dimensions && <p className="text-xs text-muted-foreground">{detail.dimensions}</p>}
-              {detail.description && <p className="text-sm text-muted-foreground mt-4 leading-relaxed font-serif">{detail.description}</p>}
-            </div>
-          </div>
+        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center p-4 sm:p-8 group viewer" onClick={() => setDetail(null)}>
+          {detail.image_url && <img src={detail.image_url} alt={detail.title} className="max-w-full max-h-full object-contain cursor-default" onClick={e => e.stopPropagation()} />}
+          <button onClick={() => setDetail(null)} className={`absolute top-4 right-4 p-2.5 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><X className="w-5 h-5" /></button>
+          {detailIndex > 0 && (
+            <button onClick={(e) => { e.stopPropagation(); goPrev(); }} className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><ChevronLeft className="w-6 h-6" /></button>
+          )}
+          {detailIndex >= 0 && detailIndex < works.length - 1 && (
+            <button onClick={(e) => { e.stopPropagation(); goNext(); }} className={`absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><ChevronRight className="w-6 h-6" /></button>
+          )}
+          {works.length > 1 && (
+            <span className={`absolute bottom-5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-medium tracking-wide backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}>{detailIndex + 1} / {works.length}</span>
+          )}
         </div>
       )}
     </div>
