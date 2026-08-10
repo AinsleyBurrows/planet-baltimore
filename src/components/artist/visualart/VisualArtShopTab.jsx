@@ -101,9 +101,9 @@ function StripeBanner({ artist, connected, onToggle }) {
   );
 }
 
-function WorkCard({ item, isOwner, onEdit, onDelete, onPurchase, purchasing, stripeConnected }) {
+function WorkCard({ item, isOwner, onEdit, onDelete, onPurchase, purchasing }) {
   const status = STATUSES.find(s => s.value === item.status);
-  const canBuy = item.status === 'available' && (Number(item.price) || 0) > 0 && stripeConnected;
+  const canBuy = item.status === 'available' && (Number(item.price) || 0) > 0;
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
       <div className="aspect-square bg-secondary">
@@ -137,7 +137,7 @@ function WorkCard({ item, isOwner, onEdit, onDelete, onPurchase, purchasing, str
           <span className="font-bold text-foreground text-sm">{item.price ? `$${Number(item.price).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : 'Free'}</span>
           {canBuy ? (
             <button onClick={onPurchase} disabled={purchasing} className="text-xs text-accent hover:underline font-medium disabled:opacity-60">
-              {purchasing ? <Loader2 className="w-3.5 h-3.5 animate-spin inline" /> : 'Purchase →'}
+              {purchasing ? <Loader2 className="w-3.5 h-3.5 animate-spin inline" /> : 'Buy →'}
             </button>
           ) : item.buy_url && item.status !== 'sold_out' ? (
             <a href={item.buy_url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline font-medium">Buy →</a>
@@ -201,7 +201,7 @@ export default function VisualArtShopTab({ artistId, isOwner, artist }) {
             <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />
             No works available right now.
           </div>
-        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{items.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onPurchase={() => purchase(it)} purchasing={purchasingId === it.id} stripeConnected={stripeConnected} />)}</div>}
+        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{items.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onPurchase={() => purchase(it)} purchasing={purchasingId === it.id} />)}</div>}
     </div>
   );
 }
