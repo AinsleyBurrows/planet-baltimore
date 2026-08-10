@@ -120,8 +120,8 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
       {detail && (
         <div className="fixed inset-0 z-50 bg-white flex items-center justify-center p-4 sm:p-8 group viewer" onClick={() => setDetail(null)}>
           {detail.image_url && <img src={detail.image_url} alt={detail.title} className="max-w-full max-h-full object-contain cursor-default" onClick={e => e.stopPropagation()} />}
-          <button onClick={(e) => { e.stopPropagation(); setShowInfo(v => !v); }} className={`absolute top-4 left-4 p-2.5 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><Info className="w-5 h-5" /></button>
           <button onClick={() => setDetail(null)} className={`absolute top-4 right-4 p-2.5 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><X className="w-5 h-5" /></button>
+          <button onClick={(e) => { e.stopPropagation(); setShowInfo(v => !v); }} className={`absolute top-14 right-4 p-2.5 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><Info className="w-5 h-5" /></button>
           {detailIndex > 0 && (
             <button onClick={(e) => { e.stopPropagation(); goPrev(); }} className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/5 text-foreground hover:bg-black/10 backdrop-blur-sm transition-opacity duration-300 ${ctrlsVisible ? 'opacity-100' : 'opacity-0'}`}><ChevronLeft className="w-6 h-6" /></button>
           )}
