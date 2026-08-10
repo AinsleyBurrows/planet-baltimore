@@ -41,8 +41,8 @@ function WorkForm({ initial, onSave, onCancel, saving }) {
 function WorkCard({ item, isOwner, onEdit, onDelete, onOpen }) {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-      <div className="aspect-square bg-secondary cursor-pointer" onClick={() => onOpen(item)}>
-        {item.image_url ? <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-8 h-8 text-muted-foreground/40" /></div>}
+      <div className="bg-secondary cursor-pointer" onClick={() => onOpen(item)}>
+        {item.image_url ? <img src={item.image_url} alt={item.title} className="w-full h-auto block" /> : <div className="w-full aspect-square flex items-center justify-center"><ImageIcon className="w-8 h-8 text-muted-foreground/40" /></div>}
       </div>
       <div className="p-3">
         <div className="flex items-start justify-between gap-1">
@@ -78,7 +78,7 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
       {showForm && <WorkForm onSave={saveNew} onCancel={() => setShowForm(false)} saving={saving} />}
       {works.length === 0 && !showForm
         ? <div className="text-center py-16"><Layers className="w-10 h-10 mx-auto mb-3 opacity-25" /><p className="font-serif text-base text-muted-foreground">No portfolio works yet.</p></div>
-        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">{works.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
+        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5 items-start">{works.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onOpen={setDetail} />)}</div>}
 
       {detail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setDetail(null)}>
