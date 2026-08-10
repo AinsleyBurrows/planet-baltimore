@@ -112,12 +112,6 @@ function Viewer({ posts, index, onClose, onIndex }) {
             </div>
           )}
 
-          {posts.length > 1 && (
-            <>
-              <button onClick={() => go(-1)} className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur-sm"><ChevronLeft className="w-6 h-6" /></button>
-              <button onClick={() => go(1)} className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur-sm"><ChevronRight className="w-6 h-6" /></button>
-            </>
-          )}
         </div>
 
         {/* Info side panel */}
@@ -156,6 +150,12 @@ function Viewer({ posts, index, onClose, onIndex }) {
         </aside>
       </div>
 
+      {posts.length > 1 && (
+        <>
+          <button onClick={() => go(-1)} className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm z-10"><ChevronLeft className="w-6 h-6" /></button>
+          <button onClick={() => go(1)} className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm z-10"><ChevronRight className="w-6 h-6" /></button>
+        </>
+      )}
       <button onClick={onClose} className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm z-10"><X className="w-5 h-5" /></button>
     </div>
   );
