@@ -417,9 +417,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="watch" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Video className="w-3.5 h-3.5" /><span className="hidden xs:inline">Watch</span>
             </TabsTrigger>
-            <TabsTrigger value="screenings" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Calendar className="w-3.5 h-3.5" /><span className="hidden xs:inline">Screenings</span>
-            </TabsTrigger>
             <TabsTrigger value="awards" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Trophy className="w-3.5 h-3.5" /><span className="hidden xs:inline">Awards</span>
             </TabsTrigger>
@@ -727,9 +724,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="watch" className="mt-4">
             <WatchTab artistId={artistId} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="screenings" className="mt-4">
-            <ScreeningsTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
           <TabsContent value="awards" className="mt-4">
             <AwardsPressTab artistId={artistId} isOwner={isOwner} />
