@@ -325,7 +325,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "filmography" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : isVisualArt ? "portfolio" : isMixedMedia ? "materials" : "journal"}>
+      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "reel" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : isVisualArt ? "portfolio" : isMixedMedia ? "materials" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -411,9 +411,6 @@ export default function ArtistDetail() {
             </TabsTrigger>
           </>}
           {isVideo && <>
-            <TabsTrigger value="filmography" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Film className="w-3.5 h-3.5" /><span className="hidden xs:inline">Filmography</span>
-            </TabsTrigger>
             <TabsTrigger value="reel" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Play className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reel</span>
             </TabsTrigger>
@@ -725,9 +722,6 @@ export default function ArtistDetail() {
 
         {/* Video-specific tabs */}
         {isVideo && <>
-          <TabsContent value="filmography" className="mt-4">
-            <FilmographyTab artistId={artistId} isOwner={isOwner} />
-          </TabsContent>
           <TabsContent value="reel" className="mt-4">
             <ReelTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
