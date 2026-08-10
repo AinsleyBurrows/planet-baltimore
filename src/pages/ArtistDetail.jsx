@@ -34,6 +34,7 @@ import CollabCallsTab from '@/components/artist/fashion/CollabCallsTab';
 import ArtistGallery from '@/components/artist/ArtistGallery';
 import ArtistCreatePostModal from '@/components/artist/ArtistCreatePostModal';
 import PostCard from '@/components/shared/PostCard';
+import PostsImageGrid from '@/components/shared/PostsImageGrid';
 import PageAdminBar from '@/components/shared/PageAdminBar';
 import ArtistCVTab from '@/components/artist/ArtistCVTab';
 import FoundingMemberBadge from '@/components/shared/FoundingMemberBadge.jsx';
@@ -561,9 +562,7 @@ export default function ArtistDetail() {
           {posts.length === 0
             ? <p className="text-center py-10 text-sm text-muted-foreground">No posts yet.</p>
             : (
-              <div className="grid grid-cols-3 gap-3">
-                {posts.map(p => <PostCard key={p.id} post={p} currentUserId={user?.id} />)}
-              </div>
+              <PostsImageGrid posts={posts} />
             )
           }
         </TabsContent>
