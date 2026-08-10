@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Bell, Heart, MessageCircle, Users, Calendar, Check, Settings } from 'lucide-react';
+import { Bell, Heart, MessageCircle, Users, Calendar, Check, Settings, Star } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,7 @@ const iconMap = {
   mention: MessageCircle,
   message: MessageCircle,
   announcement: Bell,
+  review: Star,
 };
 
 export default function Notifications() {

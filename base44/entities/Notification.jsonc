@@ -15,7 +15,8 @@
         "community_update",
         "mention",
         "message",
-        "announcement"
+        "announcement",
+        "review"
       ]
     },
     "title": {
