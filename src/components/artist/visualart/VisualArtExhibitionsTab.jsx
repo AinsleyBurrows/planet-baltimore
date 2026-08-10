@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 const TYPES = [{ value: 'solo', label: 'Solo' }, { value: 'group', label: 'Group' }, { value: 'booth', label: 'Booth' }, { value: 'fair', label: 'Fair' }, { value: 'residency', label: 'Residency' }, { value: 'other', label: 'Other' }];
-const EMPTY = { title: '', venue: '', city: '', start_date: '', end_date: '', exhibition_type: 'solo', reception_date: '', description: '', installation_shots: [] };
+const EMPTY = { title: '', venue: '', city: '', start_date: '', end_date: '', exhibition_type: 'solo', reception_date: '', description: '', installation_shots: [], works: [] };
 
 function statusOf(ex) {
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -19,10 +19,16 @@ function statusOf(ex) {
 }
 
 function ExForm({ initial, onSave, onCancel, saving }) {
-  const [form, setForm] = useState(initial || EMPTY);
+  const [form, setForm] = useState(initial ? { ...EMPTY, ...initial, works: initial.works || [] } : EMPTY);
   const [uploading, setUploading] = useState(false);
+  const [activeWork, setActiveWork] = useState(null);
   const imgRef = useRef(null);
+  const workImgRef = useRef(null);
   const addShots = async (files) => { setUploading(true); const urls = []; for (const f of files) { const { file_url } = await base44.integrations.Core.UploadFile({ file: f }); urls.push(file_url); } setForm(s => ({ ...s, installation_shots: [...(s.installation_shots || []), ...urls] })); setUploading(false); };
+  const uploadWorkImg = async (file) => { setUploading(true); const { file_url } = await base44.integrations.Core.UploadFile({ file }); setForm(s => ({ ...s, works: s.works.map((w, j) => j === activeWork ? { ...w, image_url: file_url } : w) })); setUploading(false); setActiveWork(null); };
+  const setWork = (i, patch) => setForm(s => ({ ...s, works: s.works.map((w, j) => j === i ? { ...w, ...patch } : w) }));
+  const addWork = () => setForm(s => ({ ...s, works: [...(s.works || []), { title: '', year: '', medium: '', dimensions: '', image_url: '' }] }));
+  const removeWork = (i) => setForm(s => ({ ...s, works: s.works.filter((_, j) => j !== i) }));
   return (
     <div className="bg-card border border-border rounded-xl p-4 space-y-3">
       <input className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Exhibition title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
@@ -49,6 +55,26 @@ function ExForm({ initial, onSave, onCancel, saving }) {
           ))}
         </div>
         <input ref={imgRef} type="file" accept="image/*" multiple className="hidden" onChange={e => e.target.files.length && addShots(Array.from(e.target.files))} />
+      </div>
+      <div className="border-t border-border pt-3 space-y-2">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">Artworks in this exhibition</p>
+        {(form.works || []).map((w, i) => (
+          <div key={i} className="flex gap-3 items-start p-2 rounded-lg border border-border bg-background/50">
+            <button type="button" onClick={() => { setActiveWork(i); workImgRef.current?.click(); }} className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-secondary border border-border flex items-center justify-center relative">
+              {w.image_url ? <img src={w.image_url} alt="" className="w-full h-full object-cover" /> : <ImageIcon className="w-5 h-5 text-muted-foreground" />}
+              {uploading && activeWork === i && <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><Loader2 className="w-4 h-4 text-white animate-spin" /></div>}
+            </button>
+            <div className="flex-1 grid grid-cols-2 gap-1.5">
+              <input className="col-span-2 px-2 py-1.5 rounded-md border border-input bg-background text-sm" placeholder="Work title *" value={w.title} onChange={e => setWork(i, { title: e.target.value })} />
+              <input className="px-2 py-1.5 rounded-md border border-input bg-background text-sm" placeholder="Year" value={w.year} onChange={e => setWork(i, { year: e.target.value })} />
+              <input className="px-2 py-1.5 rounded-md border border-input bg-background text-sm" placeholder="Medium" value={w.medium} onChange={e => setWork(i, { medium: e.target.value })} />
+              <input className="col-span-2 px-2 py-1.5 rounded-md border border-input bg-background text-sm" placeholder="Size / dimensions" value={w.dimensions} onChange={e => setWork(i, { dimensions: e.target.value })} />
+            </div>
+            <button type="button" onClick={() => removeWork(i)} className="p-1 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive"><X className="w-3.5 h-3.5" /></button>
+          </div>
+        ))}
+        <button type="button" onClick={addWork} className="flex items-center gap-1.5 text-xs text-accent hover:underline"><Plus className="w-3.5 h-3.5" /> Add artwork</button>
+        <input ref={workImgRef} type="file" accept="image/*" className="hidden" onChange={e => { if (e.target.files[0]) uploadWorkImg(e.target.files[0]); e.target.value = ''; }} />
       </div>
       <div className="flex gap-2">
         <Button size="sm" onClick={() => onSave(form)} disabled={!form.title || saving} className="bg-accent hover:bg-accent/90 text-accent-foreground">{saving ? 'Saving…' : 'Save'}</Button>
@@ -84,6 +110,20 @@ function ExCard({ ex, isOwner, onEdit, onDelete }) {
         <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Calendar className="w-3 h-3" />{ex.start_date || 'TBD'}{ex.end_date && ` → ${ex.end_date}`}</p>
         <div className="flex items-center gap-1.5 mt-1.5"><Badge variant="secondary" className="text-[10px] capitalize">{ex.exhibition_type}</Badge>{ex.reception_date && <span className="text-[10px] text-accent">Reception {ex.reception_date}</span>}</div>
         {ex.description && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{ex.description}</p>}
+        {ex.works && ex.works.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-border space-y-2">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">Artworks</p>
+            {ex.works.map((w, i) => (
+              <div key={i} className="flex items-center gap-2">
+                {w.image_url && <img src={w.image_url} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />}
+                <div className="min-w-0 text-xs">
+                  <p className="font-serif italic text-foreground truncate">{w.title || 'Untitled'}{w.year ? `, ${w.year}` : ''}</p>
+                  {(w.medium || w.dimensions) && <p className="text-muted-foreground truncate">{[w.medium, w.dimensions].filter(Boolean).join(' · ')}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
