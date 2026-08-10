@@ -6,7 +6,7 @@ import {
   Layers, Flame, FileText, Calendar, Mail, MessageCircle, LayoutGrid,
   Camera, Pencil, MessageSquare, Plus, Zap, TrendingUp, Star, Theater, Clapperboard,
   Film, Play, Video, Trophy, ShoppingBag, Heart, Images, Camera as CameraIcon, Award, BookOpen, PenLine,
-  BadgeDollarSign, Scissors, HelpCircle, Lock, Headphones, Palette, Frame, Handshake, DoorOpen, Quote
+  BadgeDollarSign, Scissors, HelpCircle, Lock, Headphones, Palette, Frame, Handshake, DoorOpen, Quote, Bookmark
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -103,6 +103,7 @@ import PortfolioCollectionsTab from '@/components/artist/photo/PortfolioCollecti
 import PhotoCVTab from '@/components/artist/photo/PhotoCVTab';
 import BookingsSessionsTab from '@/components/artist/photo/BookingsSessionsTab';
 import ExhibitionsPublicationsTab from '@/components/artist/photo/ExhibitionsPublicationsTab';
+import PhotoSavedTab from '@/components/artist/photo/PhotoSavedTab';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
@@ -402,6 +403,9 @@ export default function ArtistDetail() {
             </TabsTrigger>
             <TabsTrigger value="printshop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Bookmark className="w-3.5 h-3.5" /><span className="hidden xs:inline">Saved</span>
             </TabsTrigger>
           </>}
           {isVideo && <>
@@ -710,6 +714,9 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="printshop" className="mt-4">
             <ShopTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="saved" className="mt-4">
+            <PhotoSavedTab user={user} />
           </TabsContent>
         </>}
 
