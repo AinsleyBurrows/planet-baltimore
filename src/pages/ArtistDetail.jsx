@@ -426,6 +426,11 @@ export default function ArtistDetail() {
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
             </TabsTrigger>
+            <TabsTrigger value="events" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Events</span>
+              {upcomingCount > 0 && <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground text-[9px] font-bold">{upcomingCount}</span>}
+            </TabsTrigger>
             <TabsTrigger value="membership" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Heart className="w-3.5 h-3.5" /><span className="hidden xs:inline">Support</span>
             </TabsTrigger>
