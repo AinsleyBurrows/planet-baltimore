@@ -398,7 +398,7 @@ export default function ArtistDetail() {
               <Images className="w-3.5 h-3.5" /><span className="hidden xs:inline">Portfolio</span>
             </TabsTrigger>
             <TabsTrigger value="printshop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Print Shop</span>
+              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
             </TabsTrigger>
             <TabsTrigger value="bookings" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <CameraIcon className="w-3.5 h-3.5" /><span className="hidden xs:inline">Bookings</span>
