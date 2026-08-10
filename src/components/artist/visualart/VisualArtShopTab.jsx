@@ -1,15 +1,16 @@
 import React, { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Trash2, Pencil, ShoppingBag, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Pencil, ShoppingBag, Loader2, CreditCard, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import StripeSetupPanel from '@/components/artist/StripeSetupPanel';
 
 const TYPES = [
-  { value: 'original', label: 'Original' },
+  { value: 'original', label: 'Original Work' },
   { value: 'print', label: 'Print' },
-  { value: 'digital_download', label: 'Digital Download' },
-  { value: 'other', label: 'Other' },
+  { value: 'collectable', label: 'Collectable' },
+  { value: 'merch', label: 'Merchandise' },
 ];
 const STATUSES = [
   { value: 'available', label: 'Available', badge: 'bg-green-100 text-green-700' },
@@ -17,7 +18,7 @@ const STATUSES = [
   { value: 'on_hold', label: 'On Hold', badge: 'bg-amber-100 text-amber-700' },
   { value: 'preorder', label: 'Preorder', badge: 'bg-blue-100 text-blue-700' },
 ];
-const EMPTY = { title: '', description: '', image_url: '', price: '', item_type: 'original', medium: '', dimensions: '', buy_url: '', status: 'available' };
+const EMPTY = { title: '', description: '', image_url: '', price: '', item_type: 'original', medium: '', dimensions: '', status: 'available' };
 
 function WorkForm({ initial, onSave, onCancel, saving }) {
   const [form, setForm] = useState(initial || EMPTY);
@@ -43,7 +44,7 @@ function WorkForm({ initial, onSave, onCancel, saving }) {
         <div className="flex-1 space-y-2">
           <input className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Work title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
           <div className="flex gap-2">
-            <select className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm capitalize" value={form.item_type} onChange={e => setForm(f => ({ ...f, item_type: e.target.value }))}>
+            <select className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm" value={form.item_type} onChange={e => setForm(f => ({ ...f, item_type: e.target.value }))}>
               {TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
             <input className="w-24 px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Price" type="number" min="0" step="0.01" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value === '' ? '' : Number(e.target.value) }))} />
@@ -56,7 +57,6 @@ function WorkForm({ initial, onSave, onCancel, saving }) {
       </div>
       <textarea className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm resize-none h-16" placeholder="Description / statement (optional)" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
       <div className="flex gap-2">
-        <input className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm" placeholder="Buy link URL (optional)" value={form.buy_url} onChange={e => setForm(f => ({ ...f, buy_url: e.target.value }))} />
         <select className="px-3 py-2 rounded-lg border border-input bg-background text-sm" value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}>
           {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
         </select>
@@ -73,9 +73,37 @@ function WorkForm({ initial, onSave, onCancel, saving }) {
 }
 
 const STATUS_BADGE = Object.fromEntries(STATUSES.map(s => [s.value, s.badge]));
+const TYPE_LABEL = Object.fromEntries(TYPES.map(t => [t.value, t.label]));
 
-function WorkCard({ item, isOwner, onEdit, onDelete }) {
+function StripeBanner({ artist, connected, onToggle }) {
+  if (connected) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-green-50 border border-green-200 text-green-800 text-xs">
+        <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+        <span className="font-medium">Stripe connected</span>
+        <span className="text-green-700/80">— buyers can purchase your work directly.</span>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 space-y-3">
+      <div className="flex items-start gap-2">
+        <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-semibold text-amber-900">Connect Stripe to enable sales</p>
+          <p className="text-xs text-amber-800/80 mt-0.5">You can list work now, but buyers won't be able to purchase until you connect a Stripe account. Your earnings go directly to your Stripe account; Planet Baltimore collects a 10% platform fee.</p>
+        </div>
+      </div>
+      <Button size="sm" variant="outline" onClick={onToggle} className="gap-1.5">
+        <CreditCard className="w-3.5 h-3.5" /> Connect Stripe
+      </Button>
+    </div>
+  );
+}
+
+function WorkCard({ item, isOwner, onEdit, onDelete, onPurchase, purchasing, stripeConnected }) {
   const status = STATUSES.find(s => s.value === item.status);
+  const canBuy = item.status === 'available' && (Number(item.price) || 0) > 0 && stripeConnected;
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
       <div className="aspect-square bg-secondary">
@@ -94,7 +122,7 @@ function WorkCard({ item, isOwner, onEdit, onDelete }) {
           )}
         </div>
         <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent font-medium capitalize">{item.item_type?.replace('_', ' ')}</span>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent font-medium">{TYPE_LABEL[item.item_type] || item.item_type}</span>
           {item.status !== 'available' && <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium uppercase ${STATUS_BADGE[item.status] || 'bg-secondary text-muted-foreground'}`}>{status?.label || item.status}</span>}
         </div>
         {(item.medium || item.dimensions) && (
@@ -107,14 +135,20 @@ function WorkCard({ item, isOwner, onEdit, onDelete }) {
         {item.description && <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">{item.description}</p>}
         <div className="flex items-center justify-between mt-2">
           <span className="font-bold text-foreground text-sm">{item.price ? `$${Number(item.price).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : 'Free'}</span>
-          {item.buy_url && item.status !== 'sold_out' && <a href={item.buy_url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline font-medium">Buy →</a>}
+          {canBuy ? (
+            <button onClick={onPurchase} disabled={purchasing} className="text-xs text-accent hover:underline font-medium disabled:opacity-60">
+              {purchasing ? <Loader2 className="w-3.5 h-3.5 animate-spin inline" /> : 'Purchase →'}
+            </button>
+          ) : item.buy_url && item.status !== 'sold_out' ? (
+            <a href={item.buy_url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline font-medium">Buy →</a>
+          ) : null}
         </div>
       </div>
     </div>
   );
 }
 
-export default function VisualArtShopTab({ artistId, isOwner }) {
+export default function VisualArtShopTab({ artistId, isOwner, artist }) {
   const queryClient = useQueryClient();
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['visual-art-works', artistId],
@@ -124,16 +158,38 @@ export default function VisualArtShopTab({ artistId, isOwner }) {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [showStripe, setShowStripe] = useState(false);
+  const [purchasingId, setPurchasingId] = useState(null);
+
+  const stripeConnected = !!(artist?.stripe_key_verified && artist?.stripe_connect_id);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['visual-art-works', artistId] });
   const saveNew = async (form) => { setSaving(true); await base44.entities.ShopItem.create({ ...form, artist_id: artistId }); setSaving(false); setShowForm(false); refresh(); };
   const saveEdit = async (form) => { setSaving(true); await base44.entities.ShopItem.update(editing.id, form); setSaving(false); setEditing(null); refresh(); };
   const del = async (item) => { if (!window.confirm('Remove this work?')) return; await base44.entities.ShopItem.delete(item.id); refresh(); };
 
+  const purchase = async (item) => {
+    try {
+      setPurchasingId(item.id);
+      const res = await base44.functions.invoke('createShopItemCheckout', { shopItemId: item.id });
+      if (res.data?.url) window.location.href = res.data.url;
+    } catch (e) {
+      alert(e?.response?.data?.error || e?.message || 'Unable to start checkout');
+    } finally {
+      setPurchasingId(null);
+    }
+  };
+
   if (isLoading) return <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="aspect-square rounded-xl" />)}</div>;
 
   return (
     <div className="space-y-4">
+      {isOwner && (
+        showStripe
+          ? <div className="bg-card border border-border rounded-xl p-4"><StripeSetupPanel artist={artist} onSaved={() => queryClient.invalidateQueries({ queryKey: ['artist', artistId] })} /><div className="mt-3 text-right"><Button size="sm" variant="ghost" onClick={() => setShowStripe(false)}>Close</Button></div></div>
+          : <StripeBanner artist={artist} connected={stripeConnected} onToggle={() => setShowStripe(true)} />
+      )}
+
       {isOwner && !showForm && editing === null && (
         <div className="flex justify-end">
           <Button size="sm" onClick={() => setShowForm(true)} className="gap-1.5 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg"><Plus className="w-3.5 h-3.5" /> Add Work</Button>
@@ -145,7 +201,7 @@ export default function VisualArtShopTab({ artistId, isOwner }) {
             <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />
             No works available right now.
           </div>
-        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{items.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} />)}</div>}
+        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{items.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onPurchase={() => purchase(it)} purchasing={purchasingId === it.id} stripeConnected={stripeConnected} />)}</div>}
     </div>
   );
 }

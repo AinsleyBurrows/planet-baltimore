@@ -29,15 +29,16 @@
     "item_type": {
       "type": "string",
       "enum": [
-        "print",
         "original",
-        "digital_download",
+        "print",
+        "collectable",
         "merch",
+        "digital_download",
         "vinyl",
         "book",
         "other"
       ],
-      "default": "other",
+      "default": "original",
       "description": "Kind of shop item"
     },
     "medium": {

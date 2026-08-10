@@ -675,7 +675,7 @@ export default function ArtistDetail() {
             <VisualArtPressTab artistId={artistId} />
           </TabsContent>
           <TabsContent value="shop" className="mt-4">
-            <VisualArtShopTab artistId={artistId} isOwner={isOwner} />
+            <VisualArtShopTab artistId={artistId} isOwner={isOwner} artist={artist} />
           </TabsContent>
         </>}
 
