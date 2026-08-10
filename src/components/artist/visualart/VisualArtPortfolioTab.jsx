@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Plus, Trash2, Pencil, Loader2, Image as ImageIcon, X, Layers } from 'lucide-react';
+import { Plus, Trash2, Pencil, Loader2, Image as ImageIcon, X, Layers, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -65,6 +65,21 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
   const [editing, setEditing] = useState(null);
   const [detail, setDetail] = useState(null);
   const [saving, setSaving] = useState(false);
+  const detailIndex = detail ? works.findIndex(w => w.id === detail.id) : -1;
+  const goPrev = () => { if (detailIndex > 0) setDetail(works[detailIndex - 1]); };
+  const goNext = () => { if (detailIndex >= 0 && detailIndex < works.length - 1) setDetail(works[detailIndex + 1]); };
+
+  useEffect(() => {
+    if (!detail) return;
+    const onKey = (e) => {
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
+      if (e.key === 'Escape') setDetail(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [detail, detailIndex, works]);
+
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['portfolio-works', artistId] });
   const saveNew = async (form) => { setSaving(true); await base44.entities.PortfolioWork.create({ ...form, artist_id: artistId, owner_id: ownerId }); setSaving(false); setShowForm(false); refresh(); };
   const saveEdit = async (form) => { setSaving(true); await base44.entities.PortfolioWork.update(editing.id, form); setSaving(false); setEditing(null); refresh(); };
@@ -82,10 +97,19 @@ export default function VisualArtPortfolioTab({ artistId, isOwner, ownerId }) {
 
       {detail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setDetail(null)}>
-          <div className="max-w-2xl w-full bg-card rounded-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+          <div className="relative max-w-2xl w-full bg-card rounded-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="relative bg-secondary">
               {detail.image_url && <img src={detail.image_url} alt={detail.title} className="w-full max-h-[60vh] object-contain" />}
-              <button onClick={() => setDetail(null)} className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80"><X className="w-4 h-4" /></button>
+              <button onClick={() => setDetail(null)} className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><X className="w-4 h-4" /></button>
+              {detailIndex > 0 && (
+                <button onClick={goPrev} className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronLeft className="w-5 h-5" /></button>
+              )}
+              {detailIndex >= 0 && detailIndex < works.length - 1 && (
+                <button onClick={goNext} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 z-10"><ChevronRight className="w-5 h-5" /></button>
+              )}
+              {works.length > 1 && (
+                <span className="absolute bottom-3 left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-medium z-10">{detailIndex + 1} / {works.length}</span>
+              )}
             </div>
             <div className="p-5">
               <h3 className="font-serif text-xl font-medium text-foreground">{detail.title}</h3>
