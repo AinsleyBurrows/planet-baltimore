@@ -90,7 +90,6 @@ import AwardsPressTab from '@/components/artist/video/AwardsPressTab';
 import VisualArtShopTab from '@/components/artist/visualart/VisualArtShopTab';
 import VisualArtPortfolioTab from '@/components/artist/visualart/VisualArtPortfolioTab';
 import VisualArtExhibitionsTab from '@/components/artist/visualart/VisualArtExhibitionsTab';
-import VisualArtCommissionsTab from '@/components/artist/visualart/VisualArtCommissionsTab';
 import VisualArtStudioVisitsTab from '@/components/artist/visualart/VisualArtStudioVisitsTab';
 import VisualArtPressTab from '@/components/artist/visualart/VisualArtPressTab';
 
@@ -491,9 +490,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="exhibitions" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Exhibitions</span>
             </TabsTrigger>
-            <TabsTrigger value="commissions" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Handshake className="w-3.5 h-3.5" /><span className="hidden xs:inline">Commissions</span>
-            </TabsTrigger>
             <TabsTrigger value="studio_visits" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <DoorOpen className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio Visits</span>
             </TabsTrigger>
@@ -671,9 +667,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="exhibitions" className="mt-4">
             <VisualArtExhibitionsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
-          </TabsContent>
-          <TabsContent value="commissions" className="mt-4">
-            <VisualArtCommissionsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
           </TabsContent>
           <TabsContent value="studio_visits" className="mt-4">
             <VisualArtStudioVisitsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
