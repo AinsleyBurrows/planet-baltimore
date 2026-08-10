@@ -494,9 +494,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="exhibitions" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Exhibitions</span>
             </TabsTrigger>
-            <TabsTrigger value="studio_visits" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <DoorOpen className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio Visits</span>
-            </TabsTrigger>
             <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
@@ -671,9 +668,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="exhibitions" className="mt-4">
             <VisualArtExhibitionsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
-          </TabsContent>
-          <TabsContent value="studio_visits" className="mt-4">
-            <VisualArtStudioVisitsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
           </TabsContent>
           <TabsContent value="press" className="mt-4">
             <VisualArtPressTab artistId={artistId} />
