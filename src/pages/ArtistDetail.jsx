@@ -59,7 +59,6 @@ import TracksTab from '@/components/artist/music/TracksTab';
 import TourDatesTab from '@/components/artist/music/TourDatesTab';
 import MusicVideosTab from '@/components/artist/music/MusicVideosTab';
 import EPKTab from '@/components/artist/music/EPKTab';
-import BookingTab from '@/components/artist/music/BookingTab';
 
 // Performance-specific tabs
 import RepertoireTab from '@/components/artist/performance/RepertoireTab';
@@ -342,9 +341,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="epk" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">EPK</span>
             </TabsTrigger>
-            <TabsTrigger value="booking" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Book</span>
-            </TabsTrigger>
             <TabsTrigger value="videos" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Video className="w-3.5 h-3.5" /><span className="hidden xs:inline">Videos</span>
             </TabsTrigger>
@@ -579,9 +575,6 @@ export default function ArtistDetail() {
 
           <TabsContent value="epk" className="mt-4">
             <EPKTab artist={artist} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="booking" className="mt-4">
-            <BookingTab artist={artist} isOwner={isOwner} />
           </TabsContent>
           <TabsContent value="videos" className="mt-4">
             <MusicVideosTab artist={artist} isOwner={isOwner} />
