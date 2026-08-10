@@ -403,15 +403,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="printshop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
             </TabsTrigger>
-            <TabsTrigger value="bookings" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <CameraIcon className="w-3.5 h-3.5" /><span className="hidden xs:inline">Bookings</span>
-            </TabsTrigger>
-            <TabsTrigger value="recognition" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Award className="w-3.5 h-3.5" /><span className="hidden xs:inline">Recognition</span>
-            </TabsTrigger>
-            <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <CameraIcon className="w-3.5 h-3.5" /><span className="hidden xs:inline">Field Notes</span>
-            </TabsTrigger>
           </>}
           {isVideo && <>
             <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -719,12 +710,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="printshop" className="mt-4">
             <ShopTab artistId={artistId} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="bookings" className="mt-4">
-            <BookingsSessionsTab artistId={artistId} artist={artist} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="recognition" className="mt-4">
-            <ExhibitionsPublicationsTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
         </>}
 
