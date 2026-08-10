@@ -337,12 +337,11 @@ export default function ArtistDetail() {
             <TabsTrigger value="tracks" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               ▶️ <span className="hidden xs:inline">Singles</span>
             </TabsTrigger>
-
-            <TabsTrigger value="epk" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">EPK</span>
-            </TabsTrigger>
             <TabsTrigger value="videos" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Video className="w-3.5 h-3.5" /><span className="hidden xs:inline">Videos</span>
+            </TabsTrigger>
+            <TabsTrigger value="epk" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">EPK</span>
             </TabsTrigger>
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
