@@ -494,11 +494,11 @@ export default function ArtistDetail() {
             <TabsTrigger value="exhibitions" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Exhibitions</span>
             </TabsTrigger>
-            <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
-            </TabsTrigger>
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
+            </TabsTrigger>
+            <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
           </>}
           {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && !isPhoto && !isMixedMedia && <>
