@@ -534,7 +534,7 @@ export default function ArtistDetail() {
           {!isPodcaster && <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Talk</span>
           </TabsTrigger>}
-          {!isVisualArt && !isMusic && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && <TabsTrigger value="collector_reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+          {!isVisualArt && !isMusic && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && !isPodcaster && <TabsTrigger value="collector_reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Quote className="w-3.5 h-3.5" /><span className="hidden xs:inline">Collector Reviews</span>
           </TabsTrigger>}
           {!isMusic && !isVisualArt && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
