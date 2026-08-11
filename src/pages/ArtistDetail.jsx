@@ -94,7 +94,7 @@ import VisualArtStudioVisitsTab from '@/components/artist/visualart/VisualArtStu
 import VisualArtPressTab from '@/components/artist/visualart/VisualArtPressTab';
 
 // Mixed-media-specific tabs
-import MixedMediaInstallationsTab from '@/components/artist/mixedmedia/MixedMediaInstallationsTab';
+
 
 // Photography-specific tabs
 import PortfolioCollectionsTab from '@/components/artist/photo/PortfolioCollectionsTab';
@@ -461,8 +461,8 @@ export default function ArtistDetail() {
             <TabsTrigger value="portfolio" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Portfolio</span>
             </TabsTrigger>
-            <TabsTrigger value="installations" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Installations</span>
+            <TabsTrigger value="exhibitions" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Exhibitions</span>
             </TabsTrigger>
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
@@ -660,8 +660,8 @@ export default function ArtistDetail() {
           <TabsContent value="portfolio" className="mt-4">
             <VisualArtPortfolioTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
           </TabsContent>
-          <TabsContent value="installations" className="mt-4">
-            <MixedMediaInstallationsTab artist={artist} isOwner={isOwner} />
+          <TabsContent value="exhibitions" className="mt-4">
+            <VisualArtExhibitionsTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
           </TabsContent>
           <TabsContent value="shop" className="mt-4">
             <ShopTab artistId={artistId} isOwner={isOwner} />
