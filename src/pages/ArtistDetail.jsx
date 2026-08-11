@@ -94,7 +94,6 @@ import VisualArtStudioVisitsTab from '@/components/artist/visualart/VisualArtStu
 import VisualArtPressTab from '@/components/artist/visualart/VisualArtPressTab';
 
 // Mixed-media-specific tabs
-import MixedMediaMaterialsTab from '@/components/artist/mixedmedia/MixedMediaMaterialsTab';
 import MixedMediaInstallationsTab from '@/components/artist/mixedmedia/MixedMediaInstallationsTab';
 
 // Photography-specific tabs
@@ -462,9 +461,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="portfolio" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Portfolio</span>
             </TabsTrigger>
-            <TabsTrigger value="materials" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Palette className="w-3.5 h-3.5" /><span className="hidden xs:inline">Materials</span>
-            </TabsTrigger>
             <TabsTrigger value="installations" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Installations</span>
             </TabsTrigger>
@@ -663,9 +659,6 @@ export default function ArtistDetail() {
         {isMixedMedia && <>
           <TabsContent value="portfolio" className="mt-4">
             <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
-          </TabsContent>
-          <TabsContent value="materials" className="mt-4">
-            <MixedMediaMaterialsTab artist={artist} isOwner={isOwner} />
           </TabsContent>
           <TabsContent value="installations" className="mt-4">
             <MixedMediaInstallationsTab artist={artist} isOwner={isOwner} />
