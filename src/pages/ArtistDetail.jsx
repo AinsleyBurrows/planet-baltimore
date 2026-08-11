@@ -96,7 +96,6 @@ import VisualArtPressTab from '@/components/artist/visualart/VisualArtPressTab';
 // Mixed-media-specific tabs
 import MixedMediaMaterialsTab from '@/components/artist/mixedmedia/MixedMediaMaterialsTab';
 import MixedMediaInstallationsTab from '@/components/artist/mixedmedia/MixedMediaInstallationsTab';
-import MixedMediaCommissionsTab from '@/components/artist/mixedmedia/MixedMediaCommissionsTab';
 
 // Photography-specific tabs
 import PortfolioCollectionsTab from '@/components/artist/photo/PortfolioCollectionsTab';
@@ -463,9 +462,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="installations" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Frame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Installations</span>
             </TabsTrigger>
-            <TabsTrigger value="commissions" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Handshake className="w-3.5 h-3.5" /><span className="hidden xs:inline">Commissions</span>
-            </TabsTrigger>
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
             </TabsTrigger>
@@ -664,9 +660,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="installations" className="mt-4">
             <MixedMediaInstallationsTab artist={artist} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="commissions" className="mt-4">
-            <MixedMediaCommissionsTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
           <TabsContent value="shop" className="mt-4">
             <ShopTab artistId={artistId} isOwner={isOwner} />
