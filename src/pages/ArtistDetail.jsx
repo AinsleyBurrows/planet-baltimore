@@ -96,6 +96,9 @@ import VisualArtPressTab from '@/components/artist/visualart/VisualArtPressTab';
 // Mixed-media-specific tabs
 
 
+// DJ-specific tabs
+import DjCVTab from '@/components/artist/dj/DjCVTab';
+
 // Photography-specific tabs
 import PortfolioCollectionsTab from '@/components/artist/photo/PortfolioCollectionsTab';
 import PhotoCVTab from '@/components/artist/photo/PhotoCVTab';
@@ -473,6 +476,9 @@ export default function ArtistDetail() {
             </TabsTrigger>
           </>}
           {isDj && <>
+            <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">Bio/CV</span>
+            </TabsTrigger>
             <TabsTrigger value="mixes" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               🎵 <span className="hidden xs:inline">Mixes</span>
             </TabsTrigger>
@@ -556,7 +562,7 @@ export default function ArtistDetail() {
           {!isMusic && !isVisualArt && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
           </TabsTrigger>}
-          {!isVisualArt && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && !isPodcaster && !isMixedMedia && <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+          {!isVisualArt && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && !isPodcaster && !isMixedMedia && !isDj && <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
           </TabsTrigger>}
           <TabsTrigger value="invite" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -847,6 +853,8 @@ export default function ArtistDetail() {
             ? <PodcastCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isPerformance
             ? <PerformanceCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+            : isDj
+            ? <DjCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
         )}
