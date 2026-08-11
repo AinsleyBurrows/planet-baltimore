@@ -384,6 +384,9 @@ export default function ArtistDetail() {
             <TabsTrigger value="showreel" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Clapperboard className="w-3.5 h-3.5" /><span className="hidden xs:inline">Reel</span>
             </TabsTrigger>
+            <TabsTrigger value="saved" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Bookmark className="w-3.5 h-3.5" /><span className="hidden xs:inline">Saved</span>
+            </TabsTrigger>
           </>}
           {/* Performance artists: Shows, Reviews, Book, Collector Reviews tabs removed */}
           {isPhoto && <>
@@ -628,14 +631,8 @@ export default function ArtistDetail() {
           <TabsContent value="showreel" className="mt-4">
             <ShowreelTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
-          <TabsContent value="performances" className="mt-4">
-            <PerformancesTab artistId={artistId} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="reviews" className="mt-4">
-            <ReviewsTab artistId={artistId} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="booking" className="mt-4">
-            <PerformanceBookingTab artist={artist} isOwner={isOwner} />
+          <TabsContent value="saved" className="mt-4">
+            <PhotoSavedTab user={user} />
           </TabsContent>
         </>}
 
