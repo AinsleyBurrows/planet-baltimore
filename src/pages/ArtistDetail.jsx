@@ -105,7 +105,7 @@ import PhotoSavedTab from '@/components/artist/photo/PhotoSavedTab';
 
 const categoryLabels = {
   visual_art: 'Visual Art', music: 'Music', video: 'Video', photography: 'Photography',
-  performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', fashion: 'Fashion', podcaster: 'Podcaster', other: 'Other'
+  performance: 'Performance', literary: 'Literary', mixed_media: 'Mixed Media', digital: 'Digital', fashion: 'Fashion', podcaster: 'Podcaster', dj: 'DJ', other: 'Other'
 };
 
 const socialIcons = {
@@ -180,6 +180,7 @@ export default function ArtistDetail() {
   const isPhoto = artist.category === 'photography';
   const isMixedMedia = artist.category === 'mixed_media';
   const isVisualArt = artist.category === 'visual_art';
+  const isDj = artist.category === 'dj';
 
   const handleDelete = async () => {
     await base44.entities.ArtistPage.delete(artistId);
@@ -324,7 +325,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "reel" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "writing" : isVisualArt ? "portfolio" : isMixedMedia ? "materials" : "journal"}>
+      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "reel" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "writing" : isVisualArt ? "portfolio" : isMixedMedia ? "portfolio" : isDj ? "mixes" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -471,6 +472,26 @@ export default function ArtistDetail() {
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
           </>}
+          {isDj && <>
+            <TabsTrigger value="mixes" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              🎵 <span className="hidden xs:inline">Mixes</span>
+            </TabsTrigger>
+            <TabsTrigger value="tracks" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              ▶️ <span className="hidden xs:inline">Tracks</span>
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Video className="w-3.5 h-3.5" /><span className="hidden xs:inline">Videos</span>
+            </TabsTrigger>
+            <TabsTrigger value="epk" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">EPK</span>
+            </TabsTrigger>
+            <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Bookmark className="w-3.5 h-3.5" /><span className="hidden xs:inline">Saved</span>
+            </TabsTrigger>
+          </>}
           {isVisualArt && <>
             <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">Bio/CV</span>
@@ -496,7 +517,7 @@ export default function ArtistDetail() {
               {upcomingCount > 0 && <span className="ml-0.5 px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground text-[9px] font-bold">{upcomingCount}</span>}
             </TabsTrigger>
           </>}
-          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && !isPhoto && !isMixedMedia && <>
+          {!isMusic && !isPodcaster && !isPerformance && !isLiterary && !isVideo && !isPhoto && !isMixedMedia && !isDj && <>
             {!isFashion && !isVisualArt && <TabsTrigger value="journal" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Flame className="w-3.5 h-3.5" /><span className="hidden xs:inline">Studio</span>
             </TabsTrigger>}
@@ -529,7 +550,7 @@ export default function ArtistDetail() {
           {!isPodcaster && <TabsTrigger value="discussion" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <MessageCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Talk</span>
           </TabsTrigger>}
-          {!isVisualArt && !isMusic && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && !isPodcaster && !isMixedMedia && <TabsTrigger value="collector_reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+          {!isVisualArt && !isMusic && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && !isPodcaster && !isMixedMedia && !isDj && <TabsTrigger value="collector_reviews" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Quote className="w-3.5 h-3.5" /><span className="hidden xs:inline">Collector Reviews</span>
           </TabsTrigger>}
           {!isMusic && !isVisualArt && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -671,6 +692,28 @@ export default function ArtistDetail() {
           </TabsContent>
         </>}
 
+        {/* DJ-specific tabs */}
+        {isDj && <>
+          <TabsContent value="mixes" className="mt-4">
+            <DiscographyTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="tracks" className="mt-4">
+            <TracksTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="videos" className="mt-4">
+            <MusicVideosTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="epk" className="mt-4">
+            <EPKTab artist={artist} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="shop" className="mt-4">
+            <ShopTab artistId={artist.id} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="saved" className="mt-4">
+            <PhotoSavedTab user={user} />
+          </TabsContent>
+        </>}
+
         {/* Literary-specific tabs */}
         {isLiterary && <>
           <TabsContent value="cv" className="mt-4">
@@ -777,10 +820,12 @@ export default function ArtistDetail() {
         {/* Contact */}
         <TabsContent value="contact" className="mt-4">
           <div className="bg-card border border-border rounded-xl p-5">
-            <h2 className="font-semibold text-foreground mb-1">{isPodcaster ? 'Book Me As A Guest' : 'Book or Collaborate'}</h2>
+            <h2 className="font-semibold text-foreground mb-1">{isPodcaster ? 'Book Me As A Guest' : isDj ? 'Book This DJ' : 'Book or Collaborate'}</h2>
             <p className="text-sm text-muted-foreground mb-5">
               {isPodcaster
                 ? `I would love to be a guest on your podcast`
+                : isDj
+                ? `Reach out to ${artist.name} for bookings, events, collaborations, or any inquiry.`
                 : `Reach out to ${artist.name} for commissions, collaborations, bookings, or any project inquiry.`}
             </p>
             <ArtistContactForm artist={artist} />
