@@ -435,6 +435,9 @@ export default function ArtistDetail() {
             </TabsTrigger>
           </>}
           {isLiterary && <>
+            <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
+            </TabsTrigger>
             <TabsTrigger value="books" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <BookOpen className="w-3.5 h-3.5" /><span className="hidden xs:inline">Books</span>
             </TabsTrigger>
@@ -529,7 +532,7 @@ export default function ArtistDetail() {
           {!isMusic && !isVisualArt && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
           </TabsTrigger>}
-          {!isVisualArt && !isVideo && !isPhoto && !isPerformance && <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+          {!isVisualArt && !isVideo && !isPhoto && !isPerformance && !isLiterary && <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
           </TabsTrigger>}
           <TabsTrigger value="invite" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -676,6 +679,9 @@ export default function ArtistDetail() {
 
         {/* Literary-specific tabs */}
         {isLiterary && <>
+          <TabsContent value="cv" className="mt-4">
+            <WriterCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
+          </TabsContent>
           <TabsContent value="books" className="mt-4">
             <BooksTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
@@ -785,6 +791,7 @@ export default function ArtistDetail() {
         </TabsContent>
 
         {/* CV / Bio */}
+        {!isLiterary && (
         <TabsContent value="cv" className="mt-4">
           {isFashion
             ? <FashionCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
@@ -794,14 +801,13 @@ export default function ArtistDetail() {
             ? <VideoCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isPhoto
             ? <PhotoCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
-            : isLiterary
-            ? <WriterCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isPodcaster
             ? <PodcastCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : isPerformance
             ? <PerformanceCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
             : <ArtistCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} artistName={artist.name} />}
         </TabsContent>
+        )}
 
         {/* Invite Friends */}
         <TabsContent value="invite" className="mt-4">
