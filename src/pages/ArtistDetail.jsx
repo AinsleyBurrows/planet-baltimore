@@ -444,9 +444,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="shop" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <ShoppingBag className="w-3.5 h-3.5" /><span className="hidden xs:inline">Shop</span>
             </TabsTrigger>
-            <TabsTrigger value="membership" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Heart className="w-3.5 h-3.5" /><span className="hidden xs:inline">Support</span>
-            </TabsTrigger>
             <TabsTrigger value="newsletter" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Newsletter</span>
             </TabsTrigger>
@@ -687,9 +684,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="shop" className="mt-4">
             <ShopTab artistId={artistId} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="membership" className="mt-4">
-            <MembershipTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
           <TabsContent value="newsletter" className="mt-4">
             <NewsletterTab artistId={artistId} ownerId={artist.owner_id} isOwner={isOwner} />
