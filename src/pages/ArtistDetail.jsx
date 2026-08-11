@@ -658,7 +658,7 @@ export default function ArtistDetail() {
         {/* Mixed-media-specific tabs */}
         {isMixedMedia && <>
           <TabsContent value="portfolio" className="mt-4">
-            <ArtistGallery portfolioUrls={artist.portfolio_urls} posts={mediaPosts} isOwner={isOwner} artist={artist} />
+            <VisualArtPortfolioTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
           </TabsContent>
           <TabsContent value="installations" className="mt-4">
             <MixedMediaInstallationsTab artist={artist} isOwner={isOwner} />
