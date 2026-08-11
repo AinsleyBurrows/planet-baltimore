@@ -372,12 +372,6 @@ export default function ArtistDetail() {
             <TabsTrigger value="clips" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Scissors className="w-3.5 h-3.5" /><span className="hidden xs:inline">Clips</span>
             </TabsTrigger>
-            <TabsTrigger value="qna" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <HelpCircle className="w-3.5 h-3.5" /><span className="hidden xs:inline">Q&A</span>
-            </TabsTrigger>
-            <TabsTrigger value="bonus" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <Lock className="w-3.5 h-3.5" /><span className="hidden xs:inline">Bonus</span>
-            </TabsTrigger>
             <TabsTrigger value="saved" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Bookmark className="w-3.5 h-3.5" /><span className="hidden xs:inline">Saved</span>
             </TabsTrigger>
@@ -622,12 +616,6 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="clips" className="mt-4">
             <ClipsTab artist={artist} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="qna" className="mt-4">
-            <ListenerQATab artist={artist} isOwner={isOwner} />
-          </TabsContent>
-          <TabsContent value="bonus" className="mt-4">
-            <BonusTab artist={artist} isOwner={isOwner} />
           </TabsContent>
           <TabsContent value="saved" className="mt-4">
             <PhotoSavedTab user={user} />
