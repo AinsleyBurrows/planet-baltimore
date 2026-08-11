@@ -326,7 +326,7 @@ export default function ArtistDetail() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "reel" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "books" : isVisualArt ? "portfolio" : isMixedMedia ? "materials" : "journal"}>
+      <Tabs defaultValue={isPhoto ? "portfolio" : isVideo ? "reel" : isMusic ? "discography" : isFashion ? "lookbook" : isPodcaster ? "episodes" : isPerformance ? "repertoire" : isLiterary ? "writing" : isVisualArt ? "portfolio" : isMixedMedia ? "materials" : "journal"}>
         <TabsList className="w-full bg-secondary/50 rounded-xl p-1 h-auto flex overflow-x-auto scrollbar-hide gap-0.5 justify-start">
           <TabsTrigger value="posts" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <LayoutGrid className="w-3.5 h-3.5" /><span className="hidden xs:inline">Posts</span>
@@ -437,9 +437,6 @@ export default function ArtistDetail() {
           {isLiterary && <>
             <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
-            </TabsTrigger>
-            <TabsTrigger value="books" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
-              <BookOpen className="w-3.5 h-3.5" /><span className="hidden xs:inline">Books</span>
             </TabsTrigger>
             <TabsTrigger value="writing" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <PenLine className="w-3.5 h-3.5" /><span className="hidden xs:inline">Writing</span>
@@ -681,9 +678,6 @@ export default function ArtistDetail() {
         {isLiterary && <>
           <TabsContent value="cv" className="mt-4">
             <WriterCVTab artistId={artistId} isOwner={isOwner} ownerId={artist.owner_id} />
-          </TabsContent>
-          <TabsContent value="books" className="mt-4">
-            <BooksTab artistId={artistId} isOwner={isOwner} />
           </TabsContent>
           <TabsContent value="writing" className="mt-4">
             <WritingExcerptsTab artistId={artistId} ownerId={artist.owner_id} isOwner={isOwner} />
