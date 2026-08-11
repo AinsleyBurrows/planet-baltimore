@@ -450,6 +450,9 @@ export default function ArtistDetail() {
             <TabsTrigger value="press" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               <Star className="w-3.5 h-3.5" /><span className="hidden xs:inline">Press</span>
             </TabsTrigger>
+            <TabsTrigger value="saved" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <Bookmark className="w-3.5 h-3.5" /><span className="hidden xs:inline">Saved</span>
+            </TabsTrigger>
           </>}
           {isMixedMedia && <>
             <TabsTrigger value="materials" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
@@ -690,6 +693,9 @@ export default function ArtistDetail() {
           </TabsContent>
           <TabsContent value="press" className="mt-4">
             <PressReviewsTab artistId={artistId} isOwner={isOwner} />
+          </TabsContent>
+          <TabsContent value="saved" className="mt-4">
+            <PhotoSavedTab user={user} />
           </TabsContent>
         </>}
 
