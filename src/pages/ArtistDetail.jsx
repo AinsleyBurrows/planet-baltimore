@@ -355,6 +355,9 @@ export default function ArtistDetail() {
 
           </>}
           {isPodcaster && <>
+            <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+              <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
+            </TabsTrigger>
             <TabsTrigger value="episodes" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
               🎙️ <span className="hidden xs:inline">Episodes</span>
             </TabsTrigger>
@@ -534,7 +537,7 @@ export default function ArtistDetail() {
           {!isMusic && !isVisualArt && <TabsTrigger value="contact" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <Mail className="w-3.5 h-3.5" /><span className="hidden xs:inline">Contact</span>
           </TabsTrigger>}
-          {!isVisualArt && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
+          {!isVisualArt && !isVideo && !isPhoto && !isPerformance && !isLiterary && !isFashion && !isPodcaster && <TabsTrigger value="cv" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
             <FileText className="w-3.5 h-3.5" /><span className="hidden xs:inline">CV/Bio</span>
           </TabsTrigger>}
           <TabsTrigger value="invite" className="rounded-lg flex items-center gap-1 py-2 text-xs sm:text-sm flex-shrink-0 px-3">
