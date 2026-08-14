@@ -5,6 +5,7 @@ import { Plus, Trash2, Pencil, ShoppingBag, Loader2, CreditCard, CheckCircle2, A
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import StripeSetupPanel from '@/components/artist/StripeSetupPanel';
+import ImageLightbox from '@/components/shared/ImageLightbox';
 
 const TYPES = [
   { value: 'original', label: 'Original Work' },
@@ -101,14 +102,14 @@ function StripeBanner({ artist, connected, onToggle }) {
   );
 }
 
-function WorkCard({ item, isOwner, onEdit, onDelete, onPurchase, purchasing }) {
+function WorkCard({ item, isOwner, onEdit, onDelete, onPurchase, purchasing, onImageClick }) {
   const status = STATUSES.find(s => s.value === item.status);
   const canBuy = item.status === 'available' && (Number(item.price) || 0) > 0;
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
-      <div className="aspect-square bg-secondary">
+      <div className="aspect-square bg-secondary relative group">
         {item.image_url
-          ? <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+          ? <img src={item.image_url} alt={item.title} className="w-full h-full object-cover cursor-zoom-in" onClick={() => onImageClick?.(item)} />
           : <div className="w-full h-full flex items-center justify-center"><ShoppingBag className="w-8 h-8 text-muted-foreground/40" /></div>}
       </div>
       <div className="p-3">
@@ -160,8 +161,11 @@ export default function VisualArtShopTab({ artistId, isOwner, artist }) {
   const [saving, setSaving] = useState(false);
   const [showStripe, setShowStripe] = useState(false);
   const [purchasingId, setPurchasingId] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
 
   const stripeConnected = !!(artist?.stripe_key_verified && artist?.stripe_connect_id);
+
+  const lightboxImages = items.map(it => it.image_url).filter(Boolean);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['visual-art-works', artistId] });
   const saveNew = async (form) => { setSaving(true); await base44.entities.ShopItem.create({ ...form, artist_id: artistId }); setSaving(false); setShowForm(false); refresh(); };
@@ -201,7 +205,14 @@ export default function VisualArtShopTab({ artistId, isOwner, artist }) {
             <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />
             No works available right now.
           </div>
-        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{items.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onPurchase={() => purchase(it)} purchasing={purchasingId === it.id} />)}</div>}
+        : <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{items.map(it => editing?.id === it.id ? <WorkForm key={it.id} initial={it} onSave={saveEdit} onCancel={() => setEditing(null)} saving={saving} /> : <WorkCard key={it.id} item={it} isOwner={isOwner} onEdit={() => setEditing(it)} onDelete={() => del(it)} onPurchase={() => purchase(it)} purchasing={purchasingId === it.id} onImageClick={(clicked) => { const idx = lightboxImages.indexOf(clicked.image_url); if (idx >= 0) setLightboxIndex(idx); }} />)}</div>}
+
+      <ImageLightbox
+        images={lightboxImages}
+        initialIndex={lightboxIndex || 0}
+        isOpen={lightboxIndex !== null}
+        onClose={() => setLightboxIndex(null)}
+      />
     </div>
   );
 }
