@@ -1,0 +1,291 @@
+{
+  "name": "GovernmentAgency",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "agency_type": {
+      "type": "string",
+      "enum": [
+        "mayor_office",
+        "city_council",
+        "department",
+        "commission",
+        "agency",
+        "office",
+        "court",
+        "other"
+      ],
+      "default": "department"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "neighborhood_id": {
+      "type": "string"
+    },
+    "neighborhood_name": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "hours": {
+      "type": "string"
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_founding_member": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_muted": {
+      "type": "boolean",
+      "default": false
+    },
+    "mute_reason": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "social_links": {
+      "type": "object"
+    },
+    "mission": {
+      "type": "string"
+    },
+    "jurisdiction_area": {
+      "type": "string"
+    },
+    "services": {
+      "type": "array",
+      "description": "Services, programs, permits, and resources the agency offers",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "closed",
+              "seasonal"
+            ],
+            "default": "active"
+          }
+        }
+      }
+    },
+    "leadership": {
+      "type": "array",
+      "description": "Department heads, commissioners, and key staff",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "image_url": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "head",
+              "deputy",
+              "director",
+              "staff",
+              "other"
+            ],
+            "default": "head"
+          },
+          "sort_order": {
+            "type": "number",
+            "default": 0
+          }
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "description": "Public records, forms, minutes, budgets, reports",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "posted_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "polls": {
+      "type": "array",
+      "description": "Public input: polls, surveys, and formal votes",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "poll",
+              "survey",
+              "vote"
+            ],
+            "default": "poll"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "votes": {
+                  "type": "number",
+                  "default": 0
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "default": "open"
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "closes_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reports": {
+      "type": "array",
+      "description": "311-style issue reports submitted by residents",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "submitted_by_name": {
+            "type": "string"
+          },
+          "submitted_by_email": {
+            "type": "string"
+          },
+          "submitted_at": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "reviewing",
+              "resolved"
+            ],
+            "default": "new"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "owner_id"
+  ]
+}

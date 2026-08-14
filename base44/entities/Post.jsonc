@@ -23,7 +23,8 @@
         "artist",
         "business",
         "community",
-        "event_producer"
+        "event_producer",
+        "government"
       ],
       "default": "user"
     },
@@ -36,7 +37,8 @@
         "personal",
         "artist",
         "business",
-        "community"
+        "community",
+        "government"
       ]
     },
     "content": {

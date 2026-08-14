@@ -28,6 +28,9 @@ const CreateArtsOrg               = lazy(() => import('@/pages/CreateArtsOrg'));
 const CommunityAssociations       = lazy(() => import('@/pages/CommunityAssociations'));
 const CommunityAssociationDetail  = lazy(() => import('@/pages/CommunityAssociationDetail'));
 const CreateCommunityAssociation  = lazy(() => import('@/pages/CreateCommunityAssociation'));
+const GovernmentAgencies           = lazy(() => import('@/pages/GovernmentAgencies'));
+const GovernmentAgencyDetail       = lazy(() => import('@/pages/GovernmentAgencyDetail'));
+const CreateGovernmentAgency       = lazy(() => import('@/pages/CreateGovernmentAgency'));
 const NotificationSettings        = lazy(() => import('@/pages/NotificationSettings'));
 const OrganizerStudio             = lazy(() => import('@/pages/OrganizerStudio'));
 const TicketingHub                = lazy(() => import('@/pages/TicketingHub'));
@@ -116,6 +119,9 @@ const AuthenticatedApp = () => {
           <Route path="/community-associations" element={<CommunityAssociations />} />
           <Route path="/community-associations/:id" element={<CommunityAssociationDetail />} />
           <Route path="/create-community-association" element={<CreateCommunityAssociation />} />
+          <Route path="/government-agencies" element={<GovernmentAgencies />} />
+          <Route path="/government-agencies/:id" element={<GovernmentAgencyDetail />} />
+          <Route path="/create-government-agency" element={<CreateGovernmentAgency />} />
           <Route path="/notification-settings" element={<NotificationSettings />} />
           <Route path="/organizer-studio" element={<OrganizerStudio />} />
           <Route path="/ticketing" element={<TicketingHub />} />

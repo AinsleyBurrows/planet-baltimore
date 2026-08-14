@@ -15,6 +15,7 @@ const navItems = [
   { icon: Building2, label: 'Businesses', path: '/businesses' },
   { icon: Calendar, label: 'Calendar', path: '/community-calendar' },
   { icon: Shield, label: 'Community Associations', path: '/community-associations' },
+  { icon: Landmark, label: 'Government Agencies', path: '/government-agencies' },
   { icon: Compass, label: 'Discover', path: '/discover' },
   { icon: Ticket, label: 'Events', path: '/ticketing' },
   { icon: Sparkles, label: 'Festivals', path: '/festivals' },

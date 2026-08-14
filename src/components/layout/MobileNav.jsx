@@ -21,6 +21,7 @@ const moreItems = [
   { icon: MessageCircle, label: 'Messages', path: '/messages' },
   { icon: Users, label: 'Communities', path: '/communities' },
   { icon: Shield, label: 'Associations', path: '/community-associations' },
+  { icon: Landmark, label: 'Gov Agencies', path: '/government-agencies' },
   { icon: Palette, label: 'Artists', path: '/artists' },
   { icon: Landmark, label: 'Arts Orgs', path: '/arts-organizations' },
   { icon: Building2, label: 'Businesses', path: '/businesses' },
