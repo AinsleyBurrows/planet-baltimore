@@ -74,6 +74,11 @@
     "mute_reason": {
       "type": "string"
     },
+    "last_mass_message_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last mass message sent to followers (for rate limiting)"
+    },
     "tags": {
       "type": "array",
       "items": {

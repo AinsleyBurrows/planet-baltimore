@@ -21,6 +21,7 @@ import GovLeadershipTab from '@/components/government/GovLeadershipTab';
 import GovPublicInputTab from '@/components/government/GovPublicInputTab';
 import GovContactTab from '@/components/government/GovContactTab';
 import GovAboutTab from '@/components/government/GovAboutTab';
+import GovMessageFollowersModal from '@/components/government/GovMessageFollowersModal';
 
 const AGENCY_TYPE_LABELS = {
   mayor_office: "Mayor's Office", city_council: 'City Council', department: 'Department',
@@ -34,6 +35,7 @@ export default function GovernmentAgencyDetail() {
   const [user, setUser] = useState(null);
   const [showShare, setShowShare] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
   const bannerInputRef = useRef(null);
   const avatarInputRef = useRef(null);
 
@@ -49,6 +51,12 @@ export default function GovernmentAgencyDetail() {
     queryKey: ['gov-events', agency?.owner_id],
     queryFn: () => base44.entities.Event.filter({ organizer_id: agency.owner_id }, '-date', 20),
     enabled: !!agency?.owner_id,
+  });
+
+  const { data: followers = [] } = useQuery({
+    queryKey: ['gov-followers', agencyId],
+    queryFn: () => base44.entities.Follow.filter({ target_type: 'government', target_id: agencyId }),
+    enabled: !!agencyId,
   });
 
   const uploadImage = async (file, field) => {
@@ -130,9 +138,14 @@ export default function GovernmentAgencyDetail() {
           </div>
           <div className="flex gap-2 mb-1">
             {isOwner && (
-              <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowEdit(true)}>
-                <Pencil className="w-3.5 h-3.5" /> Edit Profile
-              </Button>
+              <>
+                <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowMessage(true)}>
+                  <MessageCircle className="w-3.5 h-3.5" /> Message Followers
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-lg gap-1.5 text-xs h-9" onClick={() => setShowEdit(true)}>
+                  <Pencil className="w-3.5 h-3.5" /> Edit Profile
+                </Button>
+              </>
             )}
             <Button variant="outline" size="icon" className="rounded-lg h-9 w-9" onClick={() => setShowShare(true)}><Share2 className="w-4 h-4" /></Button>
             {!isOwner && agency && <FollowButton targetType="government" targetId={agency.id} targetName={agency.name} />}
@@ -198,6 +211,7 @@ export default function GovernmentAgencyDetail() {
       </Tabs>
 
       <ShareModal isOpen={showShare} onClose={() => setShowShare(false)} url={window.location.href} title={agency.name} description={agency.description} />
+      {showMessage && <GovMessageFollowersModal agency={agency} followerCount={followers.length} onClose={() => setShowMessage(false)} />}
     </div>
   );
 }
