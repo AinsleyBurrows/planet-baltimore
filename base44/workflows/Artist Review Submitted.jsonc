@@ -1,0 +1,37 @@
+{
+  "name": "Artist Review Submitted",
+  "description": "Notifies the artist (in-app + email) whenever a collector submits a review for approval.",
+  "trigger": {
+    "condition": "${ (.trigger.data.status == \"pending\") }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "ArtistReview"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "artist_review_submitted",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "notifyArtistReview",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "notifyArtistReview"
+  }
+}

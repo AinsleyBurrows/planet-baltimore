@@ -1,0 +1,37 @@
+{
+  "name": "Waitlist Alert on Refund",
+  "description": "When a TicketOrder is refunded/cancelled, alert the first person on that ticket type's waitlist.",
+  "trigger": {
+    "condition": "${ ((.trigger.changed_fields | index(\"payment_status\") != null) and (.trigger.data.payment_status == \"refunded\")) }",
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "update"
+      ],
+      "entity_name": "TicketOrder"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "waitlist_alert_on_refund",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "notifyWaitlistAvailability",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "notifyWaitlistAvailability"
+  }
+}
