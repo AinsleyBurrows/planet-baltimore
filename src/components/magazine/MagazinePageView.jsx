@@ -3,6 +3,7 @@ import { GripVertical } from 'lucide-react';
 import MagazineTextBlock from './MagazineTextBlock';
 import MagazineImageBlock from './MagazineImageBlock';
 import MagazineAdvertBlock from './MagazineAdvertBlock';
+import MagazineContinuedBlock from './MagazineContinuedBlock';
 import MagazineBlockToolbar from './MagazineBlockToolbar';
 import useBlockDrag from '@/hooks/useBlockDrag';
 
@@ -22,7 +23,18 @@ export default function MagazinePageView({
   const pageRef = useRef(null);
   const blocks = page?.blocks || [];
   const { draggingId, startDrag } = useBlockDrag({ pageRef, blocks, onChange });
-  const firstBody = blocks.findIndex((block) => block.type === 'body');
+  /* The drop cap opens the story that begins on this page, so a story carried
+     over from an earlier page never takes it. */
+  const firstHeadline = blocks.findIndex((block) => block.type === 'headline');
+  const dropCapIndex =
+    firstHeadline < 0
+      ? -1
+      : blocks.findIndex((block, blockIndex) => block.type === 'body' && blockIndex > firstHeadline);
+
+  const continuesOver =
+    pageNumber < totalPages ? `Continued on page ${pageNumber + 1}` : 'Continued on the next page';
+  const continuedFromLabel =
+    pageNumber > 1 ? `Continued from page ${pageNumber - 1}` : 'Continued from the previous page';
 
   const patch = (id, updates) =>
     onChange(blocks.map((block) => (block.id === id ? { ...block, ...updates } : block)));
@@ -87,11 +99,21 @@ export default function MagazinePageView({
                 onStartDrag={(event) => startDrag(event, block)}
                 onUpdate={(updates) => patch(block.id, updates)}
               />
+            ) : block.type === 'continued_on' || block.type === 'continued_from' ? (
+              <MagazineContinuedBlock
+                block={block}
+                direction={block.type === 'continued_on' ? 'on' : 'from'}
+                label={block.type === 'continued_on' ? continuesOver : continuedFromLabel}
+                editable={editable}
+                selected={selectedId === block.id}
+                onSelect={() => onSelect?.(block.id)}
+                onUpdate={(updates) => patch(block.id, updates)}
+              />
             ) : (
               <MagazineTextBlock
                 block={block}
                 editable={editable}
-                dropCap={index === firstBody}
+                dropCap={index === dropCapIndex}
                 selected={selectedId === block.id}
                 onSelect={() => onSelect?.(block.id)}
                 onUpdate={(updates) => patch(block.id, updates)}

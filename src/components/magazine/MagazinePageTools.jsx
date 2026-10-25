@@ -16,6 +16,10 @@ export default function MagazinePageTools({
   onDeletePage,
 }) {
   const isCover = variant === 'cover';
+  /* A cover is one sheet, so it has nothing to continue onto */
+  const blockTypes = isCover
+    ? BLOCK_TYPES.filter((blockType) => !blockType.type.startsWith('continued_'))
+    : BLOCK_TYPES;
 
   return (
     <Card>
@@ -24,7 +28,7 @@ export default function MagazinePageTools({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-2">
-          {BLOCK_TYPES.map((blockType) => (
+          {blockTypes.map((blockType) => (
             <Button
               key={blockType.type}
               variant="outline"

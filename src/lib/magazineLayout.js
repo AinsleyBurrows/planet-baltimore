@@ -12,6 +12,8 @@ export const BLOCK_TYPES = [
   { type: 'image', label: 'Image' },
   { type: 'caption', label: 'Caption' },
   { type: 'advert', label: 'Advert' },
+  { type: 'continued_on', label: 'Continues on' },
+  { type: 'continued_from', label: 'Continued from' },
 ];
 
 /* Typography per block role — shared by the editable and the published view,
@@ -23,6 +25,11 @@ export const ROLE_CLASSES = {
   quote: 'font-serif italic text-neutral-900 text-xl sm:text-2xl leading-snug text-center border-y border-neutral-300 py-5 my-6',
   caption: 'font-sans uppercase tracking-[0.18em] text-neutral-500 text-[10px] sm:text-[11px] leading-relaxed mb-4',
 };
+
+/* The cue that carries a story over a page break, at the foot of one page and
+   the top of the next. The page number is worked out from where it sits. */
+export const CONTINUED_CLASS =
+  'font-sans uppercase tracking-[0.18em] text-neutral-500 text-[10px] sm:text-[11px] border-neutral-300';
 
 /* Layout controls — any element can be wrapped, sized, aligned and spaced, so
    covers and pages can be laid out the way the editor wants them. */

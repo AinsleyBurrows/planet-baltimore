@@ -64,7 +64,7 @@
               },
               "text": {
                 "type": "string",
-                "description": "Text content, or the advert copy for advert blocks"
+                "description": "Text content, or the advert copy for advert blocks. A continuation cue can override its automatic page number here."
               },
               "url": {
                 "type": "string",
@@ -146,12 +146,14 @@
                     "quote",
                     "caption",
                     "image",
-                    "advert"
+                    "advert",
+                    "continued_on",
+                    "continued_from"
                   ]
                 },
                 "text": {
                   "type": "string",
-                  "description": "Text content, or the advert copy for advert blocks"
+                  "description": "Text content, the advert copy for advert blocks, or an override for a continuation cue"
                 },
                 "url": {
                   "type": "string",
