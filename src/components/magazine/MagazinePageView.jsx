@@ -40,7 +40,7 @@ export default function MagazinePageView({
   return (
     <div
       ref={pageRef}
-      className="relative mx-auto flex min-h-[540px] w-full max-w-[820px] flex-col border border-border/70 shadow-[0_18px_50px_-18px_rgba(0,0,0,0.4)] sm:min-h-[900px]"
+      className="relative mx-auto flex min-h-[1080px] w-full max-w-[820px] flex-col border border-border/70 shadow-[0_18px_50px_-18px_rgba(0,0,0,0.4)] sm:min-h-[1800px]"
       style={{ backgroundColor: page?.bg_color || '#ffffff' }}
     >
       <div className="flex-1 px-6 py-8 sm:px-12 sm:py-14">
