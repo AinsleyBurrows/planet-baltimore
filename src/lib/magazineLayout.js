@@ -11,6 +11,7 @@ export const BLOCK_TYPES = [
   { type: 'quote', label: 'Pull quote' },
   { type: 'image', label: 'Image' },
   { type: 'caption', label: 'Caption' },
+  { type: 'advert', label: 'Advert' },
 ];
 
 /* Typography per block role — shared by the editable and the published view,
@@ -43,11 +44,24 @@ const STARTER_TEXT = {
   body: 'Start writing here. Drag any photo on this page and the words will flow around it.',
   quote: 'A line worth pulling out.',
   caption: 'Photo caption',
+  advert: 'Say what you are offering, in a sentence or two.',
 };
 
 export const createBlock = (type) => {
   if (type === 'image') {
     return { id: uid(), type: 'image', url: '', caption: '', float: 'full', width: 100 };
+  }
+  if (type === 'advert') {
+    return {
+      id: uid(),
+      type: 'advert',
+      advertiser: 'Your business',
+      text: STARTER_TEXT.advert,
+      cta: 'Learn more',
+      url: '',
+      float: 'full',
+      width: 100,
+    };
   }
   return { id: uid(), type, text: STARTER_TEXT[type] || '' };
 };

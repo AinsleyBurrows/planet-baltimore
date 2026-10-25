@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import MagazineTextBlock from './MagazineTextBlock';
 import MagazineImageBlock from './MagazineImageBlock';
+import MagazineAdvertBlock from './MagazineAdvertBlock';
 import MagazineBlockToolbar from './MagazineBlockToolbar';
 import useBlockDrag from '@/hooks/useBlockDrag';
 
@@ -48,6 +49,16 @@ export default function MagazinePageView({
           <div key={block.id} data-block-id={block.id} className="relative">
             {block.type === 'image' ? (
               <MagazineImageBlock
+                block={block}
+                editable={editable}
+                selected={selectedId === block.id}
+                dragging={draggingId === block.id}
+                onSelect={() => onSelect?.(block.id)}
+                onStartDrag={(event) => startDrag(event, block)}
+                onUpdate={(updates) => patch(block.id, updates)}
+              />
+            ) : block.type === 'advert' ? (
+              <MagazineAdvertBlock
                 block={block}
                 editable={editable}
                 selected={selectedId === block.id}

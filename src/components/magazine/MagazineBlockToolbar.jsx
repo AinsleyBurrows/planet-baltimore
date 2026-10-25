@@ -24,13 +24,13 @@ function ToolButton({ label, onClick, disabled, active, danger, children }) {
 }
 
 export default function MagazineBlockToolbar({ block, isFirst, isLast, onUpdate, onMoveUp, onMoveDown, onDelete }) {
-  const isImage = block.type === 'image';
+  const canFloat = block.type === 'image' || block.type === 'advert';
   return (
     <div
       onPointerDown={(event) => event.stopPropagation()}
       className="absolute -top-3.5 right-0 z-20 flex items-center gap-0.5 rounded-full border border-border bg-card px-1 py-0.5 shadow-md"
     >
-      {isImage && (
+      {canFloat && (
         <>
           <ToolButton label="Float left" active={block.float === 'left'} onClick={() => onUpdate({ float: 'left' })}>
             <AlignLeft className="h-3.5 w-3.5" />
@@ -53,7 +53,7 @@ export default function MagazineBlockToolbar({ block, isFirst, isLast, onUpdate,
               max="100"
               step="5"
               value={block.width || 100}
-              aria-label="Image width"
+              aria-label="Block width"
               onChange={(event) => onUpdate({ width: Number(event.target.value) })}
               className="h-1 w-14 cursor-pointer accent-accent"
             />

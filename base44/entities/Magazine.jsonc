@@ -45,7 +45,7 @@
           },
           "blocks": {
             "type": "array",
-            "description": "Content blocks in reading order. Image blocks float and the text flows around them.",
+            "description": "Content blocks in reading order. Image and advert blocks float and the text flows around them.",
             "items": {
               "type": "object",
               "properties": {
@@ -60,14 +60,17 @@
                     "body",
                     "quote",
                     "caption",
-                    "image"
+                    "image",
+                    "advert"
                   ]
                 },
                 "text": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Text content, or the advert copy for advert blocks"
                 },
                 "url": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Image URL, or the destination link for advert blocks"
                 },
                 "caption": {
                   "type": "string"
@@ -84,6 +87,14 @@
                 "width": {
                   "type": "number",
                   "default": 100
+                },
+                "advertiser": {
+                  "type": "string",
+                  "description": "Sponsor or business name shown on an advert block"
+                },
+                "cta": {
+                  "type": "string",
+                  "description": "Call-to-action label on an advert block"
                 }
               }
             }
