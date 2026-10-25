@@ -5,6 +5,7 @@ export const uid = () => `${Date.now().toString(36)}${Math.random().toString(36)
 
 /* Element palette offered in the editor */
 export const BLOCK_TYPES = [
+  { type: 'masthead', label: 'Magazine name' },
   { type: 'headline', label: 'Headline' },
   { type: 'subhead', label: 'Subhead' },
   { type: 'body', label: 'Body text' },
@@ -30,6 +31,53 @@ export const ROLE_CLASSES = {
    the top of the next. The page number is worked out from where it sits. */
 export const CONTINUED_CLASS =
   'font-sans uppercase tracking-[0.18em] text-neutral-500 text-[10px] sm:text-[11px] border-neutral-300';
+
+/* The magazine's own name, set large over the cover photo */
+export const MASTHEAD_CLASS =
+  'font-serif font-bold uppercase leading-[0.92] tracking-[0.01em] text-[38px] sm:text-[64px]';
+
+/* Cover text laid over the photo. The sheet is what it holds on to, so the
+   words keep their place whatever the photo is doing underneath. */
+export const OVERLAY_ANCHORS = [
+  { value: 'top', label: 'Top' },
+  { value: 'middle', label: 'Middle' },
+  { value: 'bottom', label: 'Bottom' },
+];
+
+const OVERLAY_ANCHOR_CLASSES = {
+  top: 'top-8 sm:top-12',
+  middle: 'top-1/2 -translate-y-1/2',
+  bottom: 'bottom-14 sm:bottom-20',
+};
+
+const OVERLAY_LAYER_CLASSES = { front: 'z-20', behind: 'z-0' };
+
+/* Cover text sits in one of six places: three heights, in front of the photo
+   or behind it. Elements sharing a place stack in order. */
+export const OVERLAY_SLOTS = ['top', 'middle', 'bottom'].flatMap((anchor) =>
+  ['behind', 'front'].map((layer) => ({ anchor, layer })),
+);
+
+export const overlayKey = (block) => `${block.overlay_anchor || 'top'}|${block.overlay_layer || 'front'}`;
+
+export const overlaySlotClass = (anchor, layer) =>
+  `absolute inset-x-0 ${OVERLAY_ANCHOR_CLASSES[anchor] || OVERLAY_ANCHOR_CLASSES.top} ${
+    OVERLAY_LAYER_CLASSES[layer] || OVERLAY_LAYER_CLASSES.front
+  } flex flex-col gap-1 px-8 sm:px-14`;
+
+/* Text colours for cover lines, plus the shadow that keeps them legible */
+export const COVER_TEXT_COLORS = [
+  { value: '', label: 'Sheet' },
+  { value: '#ffffff', label: 'White' },
+  { value: '#0f1729', label: 'Ink' },
+  { value: '#1b294b', label: 'Navy' },
+  { value: '#b3261e', label: 'Red' },
+];
+
+export const TEXT_SHADOW_CLASS = '[text-shadow:0_2px_18px_rgba(0,0,0,0.55)]';
+
+export const textColorStyle = (block) => (block.text_color ? { color: block.text_color } : undefined);
+export const textShadowClass = (block) => (block.shadow ? TEXT_SHADOW_CLASS : '');
 
 /* Layout controls — any element can be wrapped, sized, aligned and spaced, so
    covers and pages can be laid out the way the editor wants them. */
@@ -88,6 +136,9 @@ export const createBlock = (type) => {
   if (type === 'image') {
     return { id: uid(), type: 'image', url: '', caption: '', float: 'full', width: 100 };
   }
+  if (type === 'masthead') {
+    return { id: uid(), type: 'masthead', text: '' };
+  }
   if (type === 'advert') {
     return {
       id: uid(),
@@ -109,15 +160,41 @@ export const createPage = () => ({
   blocks: [createBlock('headline'), createBlock('subhead'), createBlock('body')],
 });
 
-/* A cover is laid out like a page, but the sheet is half a page tall */
+/* A cover is one sheet with the photo running to its edges and the magazine's
+   own name laid over the picture — the newsstand look. */
 export const createCover = ({ title = '', issue_label = '', tagline = '' } = {}) => ({
   id: uid(),
   bg_color: '#ffffff',
   blocks: [
-    { ...createBlock('caption'), text: issue_label || 'Issue 01' },
-    { ...createBlock('headline'), text: title || 'Your magazine name' },
-    { ...createBlock('subhead'), text: tagline || 'What this issue promises' },
-    { ...createBlock('image'), caption: 'Cover photo' },
+    { ...createBlock('image'), caption: '', bleed: true },
+    {
+      ...createBlock('masthead'),
+      text: title,
+      overlay: true,
+      overlay_anchor: 'top',
+      align: 'center',
+      text_color: '#ffffff',
+      shadow: true,
+    },
+    {
+      ...createBlock('caption'),
+      text: issue_label || 'Issue 01',
+      overlay: true,
+      overlay_anchor: 'top',
+      align: 'center',
+      text_color: '#ffffff',
+      shadow: true,
+    },
+    {
+      ...createBlock('headline'),
+      text: tagline || 'What this issue promises',
+      overlay: true,
+      overlay_anchor: 'bottom',
+      align: 'left',
+      width: 90,
+      text_color: '#ffffff',
+      shadow: true,
+    },
   ],
 });
 

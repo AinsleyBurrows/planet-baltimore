@@ -3,7 +3,7 @@ import { ImagePlus, Loader2 } from 'lucide-react';
 import EditableText from './EditableText';
 import { ROLE_CLASSES, uploadMagazineImage, layoutClass, blockStyle } from '@/lib/magazineLayout';
 
-export default function MagazineImageBlock({ block, editable, selected, dragging, onSelect, onStartDrag, onUpdate }) {
+export default function MagazineImageBlock({ block, cover = false, editable, selected, dragging, onSelect, onStartDrag, onUpdate }) {
   const fileRef = useRef(null);
   const [uploading, setUploading] = useState(false);
 
@@ -20,7 +20,12 @@ export default function MagazineImageBlock({ block, editable, selected, dragging
   };
 
   const sized = { ...block, float: block.float || 'full', width: block.width || 100 };
-  const figureClasses = `${layoutClass(sized)} relative m-0 ${selected ? 'ring-2 ring-accent/50' : ''}`;
+  /* On a cover the photo can run to the sheet's edges and sits above anything
+     the editor has placed behind it. */
+  const bleed = block.bleed && cover ? '-mx-6 max-w-none sm:-mx-12' : '';
+  const figureClasses = `${layoutClass(sized)} relative m-0 ${bleed} ${
+    cover ? 'z-10' : ''
+  } ${selected ? 'ring-2 ring-accent/50' : ''}`;
   const width = blockStyle(sized);
 
   if (!block.url) {

@@ -43,7 +43,7 @@
         },
         "blocks": {
           "type": "array",
-          "description": "Cover elements in reading order. Image and advert blocks float and the text flows around them.",
+          "description": "Cover elements in reading order. Image and advert blocks float and the text flows around them; elements with overlay sit on top of the cover photo instead of in the column.",
           "items": {
             "type": "object",
             "properties": {
@@ -53,6 +53,7 @@
               "type": {
                 "type": "string",
                 "enum": [
+                  "masthead",
                   "headline",
                   "subhead",
                   "body",
@@ -64,7 +65,7 @@
               },
               "text": {
                 "type": "string",
-                "description": "Text content, or the advert copy for advert blocks. A continuation cue can override its automatic page number here."
+                "description": "Text content, or the advert copy for advert blocks. The masthead falls back to the magazine's own title when left empty."
               },
               "url": {
                 "type": "string",
@@ -101,6 +102,44 @@
                 "type": "number",
                 "default": 0,
                 "description": "Extra space above the element, 0 (none) to 4 (most)"
+              },
+              "overlay": {
+                "type": "boolean",
+                "default": false,
+                "description": "Lay this element over the cover photo instead of in the column"
+              },
+              "overlay_anchor": {
+                "type": "string",
+                "enum": [
+                  "top",
+                  "middle",
+                  "bottom"
+                ],
+                "default": "top",
+                "description": "Where the overlaid element sits on the sheet"
+              },
+              "overlay_layer": {
+                "type": "string",
+                "enum": [
+                  "front",
+                  "behind"
+                ],
+                "default": "front",
+                "description": "Overlaid elements sit in front of the cover photo, or behind it so the photo laps over them"
+              },
+              "text_color": {
+                "type": "string",
+                "description": "Text colour for cover lines; empty means the element's own colour"
+              },
+              "shadow": {
+                "type": "boolean",
+                "default": false,
+                "description": "Drop shadow behind the text, to keep it legible over a photo"
+              },
+              "bleed": {
+                "type": "boolean",
+                "default": false,
+                "description": "Run the photo to the edges of the sheet"
               },
               "advertiser": {
                 "type": "string",

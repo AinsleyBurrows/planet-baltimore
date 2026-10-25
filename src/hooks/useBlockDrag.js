@@ -41,30 +41,37 @@ export default function useBlockDrag({ pageRef, blocks, onChange }) {
       if (!pageEl) return;
       const rect = pageEl.getBoundingClientRect();
       const across = (event.clientX - rect.left) / rect.width;
-      const float = across < 0.34 ? 'left' : across > 0.66 ? 'right' : 'full';
-
-      const others = rectsRef.current.filter((item) => item.id !== draggingId);
-      let insertAt = others.length;
-      for (let i = 0; i < others.length; i += 1) {
-        if (event.clientY < others[i].mid) {
-          insertAt = i;
-          break;
-        }
-      }
 
       const { blocks: current, onChange: change } = latest.current;
       const from = current.findIndex((block) => block.id === draggingId);
       if (from < 0) return;
       const moving = current[from];
+      const overlaid = !!moving.overlay;
+
+      /* Only elements sharing the dragged element's layer are neighbours, so a
+         cover line never jumps into the column and vice versa. */
+      const isOverlaid = (id) => !!current.find((block) => block.id === id)?.overlay;
+      const others = rectsRef.current.filter((item) => item.id !== draggingId && isOverlaid(item.id) === overlaid);
+      const followedBy = others.find((item) => event.clientY < item.mid);
+
+      const float = overlaid ? moving.float : across < 0.34 ? 'left' : across > 0.66 ? 'right' : 'full';
       /* A side wrap needs a side-sized box, so widen down to a column when a
          full-width element is dragged out to the left or right. */
-      const width =
-        (float === 'left' || float === 'right') && (moving.width || 100) >= 90 ? 45 : moving.width;
-      if (from === insertAt && moving.float === float && moving.width === width) return;
+      const width = overlaid
+        ? moving.width
+        : (float === 'left' || float === 'right') && (moving.width || 100) >= 90
+          ? 45
+          : moving.width;
 
       const rest = current.filter((block) => block.id !== draggingId);
+      /* Land where the dragged element is, measured against the block it is now
+         sitting above rather than against the element's own index. */
+      const target = followedBy ? rest.findIndex((block) => block.id === followedBy.id) : rest.length;
       const next = [...rest];
-      next.splice(insertAt, 0, { ...moving, float, width });
+      next.splice(target < 0 ? rest.length : target, 0, { ...moving, float, width });
+
+      const order = (list) => list.map((block) => block.id).join('|');
+      if (order(next) === order(current) && moving.float === float && moving.width === width) return;
       change(next);
     };
 

@@ -8,6 +8,8 @@ import {
   blockWidth,
   blockAlign,
   blockStyle,
+  textColorStyle,
+  textShadowClass,
 } from '@/lib/magazineLayout';
 
 const TAGS = { headline: 'h2', subhead: 'p', body: 'p', quote: 'blockquote', caption: 'p' };
@@ -15,7 +17,7 @@ const TAGS = { headline: 'h2', subhead: 'p', body: 'p', quote: 'blockquote', cap
 export default function MagazineTextBlock({ block, editable, dropCap, selected, onSelect, onUpdate }) {
   const classes = `${ROLE_CLASSES[block.type] || ROLE_CLASSES.body} whitespace-pre-line ${
     dropCap && block.type === 'body' ? DROP_CAP_CLASS : ''
-  }`;
+  } ${textShadowClass(block)}`;
 
   const layout = layoutClass(block, { fullIsDefault: true });
 
@@ -32,7 +34,7 @@ export default function MagazineTextBlock({ block, editable, dropCap, selected, 
           onChange={(text) => onUpdate({ text })}
           placeholder={BLOCK_PLACEHOLDERS[block.type] || 'Text'}
           className={classes}
-          style={blockAlign(block)}
+          style={{ ...blockAlign(block), ...textColorStyle(block) }}
         />
       </div>
     );
@@ -41,7 +43,7 @@ export default function MagazineTextBlock({ block, editable, dropCap, selected, 
   if (!block.text?.trim()) return null;
   const Tag = TAGS[block.type] || 'p';
   return (
-    <Tag className={`${classes} ${layout}`} style={blockStyle(block)}>
+    <Tag className={`${classes} ${layout}`} style={{ ...blockStyle(block), ...textColorStyle(block) }}>
       {block.text}
     </Tag>
   );

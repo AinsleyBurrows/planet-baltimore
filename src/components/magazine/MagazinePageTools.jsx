@@ -16,10 +16,11 @@ export default function MagazinePageTools({
   onDeletePage,
 }) {
   const isCover = variant === 'cover';
-  /* A cover is one sheet, so it has nothing to continue onto */
+  /* A cover is one sheet, so it has nothing to continue onto; the masthead
+     belongs to the cover only. */
   const blockTypes = isCover
     ? BLOCK_TYPES.filter((blockType) => !blockType.type.startsWith('continued_'))
-    : BLOCK_TYPES;
+    : BLOCK_TYPES.filter((blockType) => blockType.type !== 'masthead');
 
   return (
     <Card>
