@@ -160,43 +160,110 @@ export const createPage = () => ({
   blocks: [createBlock('headline'), createBlock('subhead'), createBlock('body')],
 });
 
-/* A cover is one sheet with the photo running to its edges and the magazine's
-   own name laid over the picture — the newsstand look. */
-export const createCover = ({ title = '', issue_label = '', tagline = '' } = {}) => ({
-  id: uid(),
-  bg_color: '#ffffff',
-  blocks: [
-    { ...createBlock('image'), caption: '', bleed: true },
-    {
-      ...createBlock('masthead'),
-      text: title,
-      overlay: true,
-      overlay_anchor: 'top',
-      align: 'center',
-      text_color: '#ffffff',
-      shadow: true,
-    },
-    {
-      ...createBlock('caption'),
-      text: issue_label || 'Issue 01',
-      overlay: true,
-      overlay_anchor: 'top',
-      align: 'center',
-      text_color: '#ffffff',
-      shadow: true,
-    },
-    {
-      ...createBlock('headline'),
-      text: tagline || 'What this issue promises',
-      overlay: true,
-      overlay_anchor: 'bottom',
-      align: 'left',
-      width: 90,
-      text_color: '#ffffff',
-      shadow: true,
-    },
-  ],
+/* ---------------------------------------------------------------------------
+   Cover styles
+
+   A style lays the magazine's own name, the issue line and the cover lines out
+   on the sheet for you — over the photo or beside it — so a cover is never a
+   blank half-page.
+   --------------------------------------------------------------------------- */
+
+const coverText = (type, { text = '', anchor, align, width, color, shadow = true }) => ({
+  ...createBlock(type),
+  text,
+  ...(anchor ? { overlay: true, overlay_anchor: anchor, overlay_layer: 'front', shadow } : {}),
+  ...(align ? { align } : {}),
+  ...(width ? { width } : {}),
+  ...(color ? { text_color: color } : {}),
 });
+
+/* The photo runs to the edges of the sheet, or sits in the column */
+const coverPhoto = (url) => ({ ...createBlock('image'), url, caption: '', bleed: true });
+const sheetPhoto = (url) => ({ ...createBlock('image'), url, caption: '' });
+const deckLine = (text, options) => (text ? [coverText('subhead', { ...options, text })] : []);
+
+export const COVER_STYLES = [
+  {
+    id: 'newsstand',
+    label: 'Newsstand',
+    note: 'Name over the top of the photo, lines along the foot.',
+    build: ({ issue, coverLine, deck, photo }) => [
+      coverPhoto(photo),
+      coverText('masthead', { anchor: 'top', align: 'center', color: '#ffffff' }),
+      coverText('caption', { text: issue, anchor: 'top', align: 'center', color: '#ffffff' }),
+      coverText('headline', { text: coverLine, anchor: 'bottom', align: 'left', width: 92, color: '#ffffff' }),
+      ...deckLine(deck, { anchor: 'bottom', align: 'left', width: 92, color: '#f2eee3' }),
+    ],
+  },
+  {
+    id: 'poster',
+    label: 'Poster',
+    note: 'Name set across the middle of the photo, one line at the foot.',
+    build: ({ issue, coverLine, photo }) => [
+      coverPhoto(photo),
+      coverText('caption', { text: issue, anchor: 'top', align: 'left', color: '#ffffff' }),
+      coverText('masthead', { anchor: 'middle', align: 'left', color: '#ffffff' }),
+      coverText('headline', { text: coverLine, anchor: 'bottom', align: 'left', width: 70, color: '#ffffff' }),
+    ],
+  },
+  {
+    id: 'column',
+    label: 'Column',
+    note: 'Name top left, cover lines stacked down the left edge.',
+    build: ({ issue, coverLine, deck, photo }) => [
+      coverPhoto(photo),
+      coverText('masthead', { anchor: 'top', align: 'left', color: '#ffffff' }),
+      coverText('caption', { text: issue, anchor: 'top', align: 'right', color: '#ffffff' }),
+      coverText('headline', { text: coverLine, anchor: 'bottom', align: 'left', width: 60, color: '#ffffff' }),
+      ...deckLine(deck, { anchor: 'bottom', align: 'left', width: 60, color: '#f2eee3' }),
+    ],
+  },
+  {
+    id: 'band',
+    label: 'Band',
+    note: 'Name above the photo, cover lines below it.',
+    build: ({ issue, coverLine, deck, photo }) => [
+      coverText('masthead', { align: 'center' }),
+      coverText('caption', { text: issue, align: 'center' }),
+      sheetPhoto(photo),
+      coverText('headline', { text: coverLine }),
+      ...deckLine(deck, {}),
+    ],
+  },
+  {
+    id: 'minimal',
+    label: 'Minimal',
+    note: 'The photo, the name and a single cover line.',
+    build: ({ coverLine, photo }) => [
+      coverPhoto(photo),
+      coverText('masthead', { anchor: 'top', align: 'center', color: '#ffffff' }),
+      coverText('headline', { text: coverLine, anchor: 'bottom', align: 'left', width: 80, color: '#ffffff' }),
+    ],
+  },
+];
+
+/* What a cover style has to work with: the wording already on the cover, with
+   the magazine's own issue label as the fallback. */
+export const coverContent = ({ issue_label = '', tagline = '', cover } = {}) => {
+  const blocks = cover?.blocks || [];
+  const pick = (type) => blocks.find((block) => block.type === type) || {};
+  const previousHeadline = (pick('headline').text || '').trim();
+
+  return {
+    issue: (pick('caption').text || '').trim() || (issue_label || '').trim() || 'Issue 01',
+    coverLine: (tagline || '').trim() || previousHeadline || 'The stories inside this issue',
+    deck: (pick('subhead').text || '').trim(),
+    photo: pick('image').url || '',
+  };
+};
+
+export const buildCoverStyle = (styleId, content) => {
+  const style = COVER_STYLES.find((item) => item.id === styleId) || COVER_STYLES[0];
+  return { id: uid(), bg_color: '#ffffff', blocks: style.build(content) };
+};
+
+/* A new cover starts on the newsstand layout */
+export const createCover = (record = {}) => buildCoverStyle('newsstand', coverContent(record));
 
 export const createMagazine = () => ({
   title: 'Untitled Magazine',

@@ -7,7 +7,14 @@ import MagazinePageView from '@/components/magazine/MagazinePageView';
 import MagazinePager from '@/components/magazine/MagazinePager';
 import MagazinePageTools from '@/components/magazine/MagazinePageTools';
 import MagazineSettingsPanel from '@/components/magazine/MagazineSettingsPanel';
-import { createBlock, createCover, createMagazine, createPage } from '@/lib/magazineLayout';
+import {
+  createBlock,
+  createCover,
+  createMagazine,
+  createPage,
+  buildCoverStyle,
+  coverContent,
+} from '@/lib/magazineLayout';
 
 export default function MagazineEditor() {
   const { id } = useParams();
@@ -77,6 +84,14 @@ export default function MagazineEditor() {
     updateMagazine({ pages: pages.map((page, pageIndex) => (pageIndex === index ? { ...page, ...updates } : page)) });
   const updateCover = (updates) => updateMagazine({ cover: { ...cover, ...updates } });
   const updateCurrent = editingCover ? updateCover : updatePage;
+
+  /* Lay the cover out from a chosen style, keeping the photo and the wording
+     already on it. */
+  const applyCoverStyle = (styleId) => {
+    updateMagazine({ cover: buildCoverStyle(styleId, coverContent(magazine)) });
+    setCoverMode(true);
+    setSelectedId(null);
+  };
 
   const addBlock = (type) => {
     updateCurrent({ blocks: [...(currentPage.blocks || []), createBlock(type)] });
@@ -248,6 +263,7 @@ export default function MagazineEditor() {
               onAddBlock={addBlock}
               onAddPage={addPage}
               onDeletePage={deletePage}
+              onCoverStyle={applyCoverStyle}
             />
             <MagazineSettingsPanel
               magazine={magazine}

@@ -3,7 +3,7 @@ import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { BLOCK_TYPES, BG_SWATCHES } from '@/lib/magazineLayout';
+import { BLOCK_TYPES, BG_SWATCHES, COVER_STYLES } from '@/lib/magazineLayout';
 
 export default function MagazinePageTools({
   page,
@@ -14,6 +14,7 @@ export default function MagazinePageTools({
   onAddBlock,
   onAddPage,
   onDeletePage,
+  onCoverStyle,
 }) {
   const isCover = variant === 'cover';
   /* A cover is one sheet, so it has nothing to continue onto; the masthead
@@ -28,6 +29,31 @@ export default function MagazinePageTools({
         <CardTitle className="text-sm">{isCover ? 'Cover elements' : `Page ${pageIndex + 1} elements`}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {isCover && (
+          <div>
+            <Label className="text-xs">Cover styles</Label>
+            <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+              Lays the name, issue line and cover lines out for you. Replaces the cover's elements.
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {COVER_STYLES.map((style) => (
+                <Button
+                  key={style.id}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onCoverStyle?.(style.id)}
+                  className="h-auto flex-col items-start gap-0.5 whitespace-normal px-2.5 py-2 text-left"
+                >
+                  <span className="text-xs font-medium">{style.label}</span>
+                  <span className="text-[10px] font-normal leading-snug text-muted-foreground">
+                    {style.note}
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-2">
           {blockTypes.map((blockType) => (
             <Button
