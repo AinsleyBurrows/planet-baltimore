@@ -24,6 +24,36 @@ export const ROLE_CLASSES = {
   caption: 'font-sans uppercase tracking-[0.18em] text-neutral-500 text-[10px] sm:text-[11px] leading-relaxed mb-4',
 };
 
+/* Layout controls — any element can be wrapped, sized, aligned and spaced, so
+   covers and pages can be laid out the way the editor wants them. */
+export const FLOAT_SIDE_CLASSES = {
+  left: 'float-left mr-4 sm:mr-6 mb-4',
+  right: 'float-right ml-4 sm:ml-6 mb-4',
+};
+
+/* Space above an element, in steps (0 = the element's own spacing) */
+export const SPACE_CLASSES = ['', 'mt-2', 'mt-6', 'mt-12', 'mt-20'];
+export const SPACE_STEPS = SPACE_CLASSES.length - 1;
+
+/* Width and alignment are inline, so an element's own typography can never win
+   over the layout the editor chose for it. */
+export const blockWidth = (block) => (block.width ? { width: `${block.width}%` } : undefined);
+export const blockAlign = (block) => (block.align ? { textAlign: block.align } : undefined);
+export const blockStyle = (block) => ({ ...blockAlign(block), ...blockWidth(block) });
+
+/* Wrapping and spacing, as classes. `fullIsDefault` is for text elements, where
+   sitting in the column is the normal state and must not add a clear. */
+export const layoutClass = (block, { fullIsDefault = false } = {}) => {
+  const parts = [];
+  const wrapped = FLOAT_SIDE_CLASSES[block.float];
+  if (wrapped) parts.push(wrapped);
+  else if (block.float === 'full' && !fullIsDefault) parts.push('float-none clear-both mb-6');
+  if (!wrapped && block.width && block.width < 100) parts.push('mx-auto');
+  const space = SPACE_CLASSES[Number(block.space_before) || 0];
+  if (space) parts.push(space);
+  return parts.join(' ');
+};
+
 export const DROP_CAP_CLASS =
   'first-letter:float-left first-letter:font-serif first-letter:font-bold first-letter:text-[52px] first-letter:leading-[0.78] first-letter:pr-2 first-letter:pt-1';
 

@@ -1,13 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { ImagePlus, Loader2 } from 'lucide-react';
 import EditableText from './EditableText';
-import { ROLE_CLASSES, uploadMagazineImage } from '@/lib/magazineLayout';
-
-const FLOAT_CLASSES = {
-  left: 'float-left mr-4 sm:mr-6 mb-3',
-  right: 'float-right ml-4 sm:ml-6 mb-3',
-  full: 'float-none clear-both mx-auto mb-6',
-};
+import { ROLE_CLASSES, uploadMagazineImage, layoutClass, blockStyle } from '@/lib/magazineLayout';
 
 export default function MagazineImageBlock({ block, editable, selected, dragging, onSelect, onStartDrag, onUpdate }) {
   const fileRef = useRef(null);
@@ -25,8 +19,9 @@ export default function MagazineImageBlock({ block, editable, selected, dragging
     }
   };
 
-  const figureClasses = `${FLOAT_CLASSES[block.float || 'full']} relative m-0 ${selected ? 'ring-2 ring-accent/50' : ''}`;
-  const width = { width: `${block.width || 100}%` };
+  const sized = { ...block, float: block.float || 'full', width: block.width || 100 };
+  const figureClasses = `${layoutClass(sized)} relative m-0 ${selected ? 'ring-2 ring-accent/50' : ''}`;
+  const width = blockStyle(sized);
 
   if (!block.url) {
     if (!editable) return null;

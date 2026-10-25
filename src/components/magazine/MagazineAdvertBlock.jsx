@@ -1,12 +1,7 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import EditableText from './EditableText';
-
-const FLOAT_CLASSES = {
-  left: 'float-left mr-4 sm:mr-6 mb-4',
-  right: 'float-right ml-4 sm:ml-6 mb-4',
-  full: 'float-none clear-both mx-auto mb-6',
-};
+import { layoutClass, blockStyle } from '@/lib/magazineLayout';
 
 const ADVERT_LABEL = 'font-sans uppercase tracking-[0.18em] text-neutral-500 text-[10px] leading-none';
 
@@ -15,8 +10,10 @@ const ADVERT_LABEL = 'font-sans uppercase tracking-[0.18em] text-neutral-500 tex
  * column, and links out through its call-to-action when a reader clicks it.
  */
 export default function MagazineAdvertBlock({ block, editable, selected, dragging, onSelect, onStartDrag, onUpdate }) {
-  const width = { width: `${block.width || 100}%` };
-  const plateClasses = `${FLOAT_CLASSES[block.float || 'full']} relative m-0 border border-neutral-300 bg-white/75 px-5 py-5 ${
+  const sized = { ...block, float: block.float || 'full', width: block.width || 100 };
+  const width = blockStyle(sized);
+  const layout = layoutClass(sized);
+  const plateClasses = `${layout} relative m-0 border border-neutral-300 bg-white/75 px-5 py-5 ${
     selected ? 'ring-2 ring-accent/50' : ''
   } ${dragging ? 'opacity-70' : ''}`;
 

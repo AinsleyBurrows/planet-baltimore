@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { GripVertical } from 'lucide-react';
 import MagazineTextBlock from './MagazineTextBlock';
 import MagazineImageBlock from './MagazineImageBlock';
 import MagazineAdvertBlock from './MagazineAdvertBlock';
@@ -50,7 +51,22 @@ export default function MagazinePageView({
     >
       <div className="flex-1 px-6 py-8 sm:px-12 sm:py-14">
         {blocks.map((block, index) => (
-          <div key={block.id} data-block-id={block.id} className="relative">
+          <div key={block.id} data-block-id={block.id} className="group relative">
+            {editable && (
+              <button
+                type="button"
+                aria-label="Drag to move this element"
+                title="Drag to move this element"
+                onPointerDown={(event) => startDrag(event, block)}
+                className={`absolute -left-6 top-1 z-10 flex h-6 w-6 cursor-grab touch-none items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-opacity active:cursor-grabbing ${
+                  selectedId === block.id
+                    ? 'opacity-100'
+                    : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100'
+                }`}
+              >
+                <GripVertical className="h-3.5 w-3.5" />
+              </button>
+            )}
             {block.type === 'image' ? (
               <MagazineImageBlock
                 block={block}

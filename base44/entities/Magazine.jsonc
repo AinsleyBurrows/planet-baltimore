@@ -80,11 +80,27 @@
                   "right",
                   "full"
                 ],
-                "default": "full"
+                "default": "full",
+                "description": "Wrap the element beside the text on the left or right, or give it the full column"
               },
               "width": {
                 "type": "number",
-                "default": 100
+                "default": 100,
+                "description": "Width of the element as a percentage of the column"
+              },
+              "align": {
+                "type": "string",
+                "enum": [
+                  "left",
+                  "center",
+                  "right"
+                ],
+                "description": "Alignment of the element's text"
+              },
+              "space_before": {
+                "type": "number",
+                "default": 0,
+                "description": "Extra space above the element, 0 (none) to 4 (most)"
               },
               "advertiser": {
                 "type": "string",
@@ -151,11 +167,27 @@
                     "right",
                     "full"
                   ],
-                  "default": "full"
+                  "default": "full",
+                  "description": "Wrap the element beside the text on the left or right, or give it the full column"
                 },
                 "width": {
                   "type": "number",
-                  "default": 100
+                  "default": 100,
+                  "description": "Width of the element as a percentage of the column"
+                },
+                "align": {
+                  "type": "string",
+                  "enum": [
+                    "left",
+                    "center",
+                    "right"
+                  ],
+                  "description": "Alignment of the element's text"
+                },
+                "space_before": {
+                  "type": "number",
+                  "default": 0,
+                  "description": "Extra space above the element, 0 (none) to 4 (most)"
                 },
                 "advertiser": {
                   "type": "string",

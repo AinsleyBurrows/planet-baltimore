@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
- * Drag behaviour for magazine image blocks.
+ * Drag behaviour for magazine elements.
  *
- * Dragging sideways decides which side of the page the image floats on
- * (left / right / full width). Dragging up and down moves the image through the
- * text, and the words re-flow around it as you go.
+ * Dragging sideways decides which side of the sheet the element wraps on
+ * (left / right / full width). Dragging up and down moves the element through
+ * the text, and the words re-flow around it as you go.
  *
  * Positions are measured once when the drag starts, so the page never jitters
  * while the text re-wraps underneath the pointer.
@@ -56,11 +56,15 @@ export default function useBlockDrag({ pageRef, blocks, onChange }) {
       const from = current.findIndex((block) => block.id === draggingId);
       if (from < 0) return;
       const moving = current[from];
-      if (from === insertAt && moving.float === float) return;
+      /* A side wrap needs a side-sized box, so widen down to a column when a
+         full-width element is dragged out to the left or right. */
+      const width =
+        (float === 'left' || float === 'right') && (moving.width || 100) >= 90 ? 45 : moving.width;
+      if (from === insertAt && moving.float === float && moving.width === width) return;
 
       const rest = current.filter((block) => block.id !== draggingId);
       const next = [...rest];
-      next.splice(insertAt, 0, { ...moving, float });
+      next.splice(insertAt, 0, { ...moving, float, width });
       change(next);
     };
 

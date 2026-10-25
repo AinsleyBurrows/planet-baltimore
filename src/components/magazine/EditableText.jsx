@@ -7,7 +7,7 @@ import React, { useEffect, useRef } from 'react';
  * The element is deliberately uncontrolled: React writes the text in once on
  * mount and reads it back on input, so the caret is never reset mid-sentence.
  */
-export default function EditableText({ value, onChange, placeholder, className = '' }) {
+export default function EditableText({ value, onChange, placeholder, className = '', style }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -22,6 +22,7 @@ export default function EditableText({ value, onChange, placeholder, className =
         suppressContentEditableWarning
         role="textbox"
         onInput={(event) => onChange(event.currentTarget.innerText)}
+        style={style}
         className={`${className} outline-none`}
       />
       {!value?.trim() && (
