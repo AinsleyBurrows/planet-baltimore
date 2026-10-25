@@ -1,0 +1,99 @@
+{
+  "name": "Magazine",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Magazine title"
+    },
+    "issue_label": {
+      "type": "string",
+      "description": "Issue label, e.g. 'Issue 01'"
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short line shown on the cover card"
+    },
+    "description": {
+      "type": "string",
+      "description": "About this magazine"
+    },
+    "cover_image_url": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "owner_name": {
+      "type": "string"
+    },
+    "owner_avatar": {
+      "type": "string"
+    },
+    "pages": {
+      "type": "array",
+      "description": "Magazine pages in reading order",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "bg_color": {
+            "type": "string",
+            "default": "#ffffff"
+          },
+          "blocks": {
+            "type": "array",
+            "description": "Content blocks in reading order. Image blocks float and the text flows around them.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "headline",
+                    "subhead",
+                    "body",
+                    "quote",
+                    "caption",
+                    "image"
+                  ]
+                },
+                "text": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "caption": {
+                  "type": "string"
+                },
+                "float": {
+                  "type": "string",
+                  "enum": [
+                    "left",
+                    "right",
+                    "full"
+                  ],
+                  "default": "full"
+                },
+                "width": {
+                  "type": "number",
+                  "default": 100
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "title",
+    "owner_id"
+  ]
+}

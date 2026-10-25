@@ -55,6 +55,9 @@ const Stories                     = lazy(() => import('@/pages/Stories'));
 const Search                      = lazy(() => import('@/pages/Search'));
 const StoryDetail                 = lazy(() => import('@/pages/StoryDetail'));
 const CreateStory                 = lazy(() => import('@/pages/CreateStory'));
+const Magazines                   = lazy(() => import('@/pages/Magazines'));
+const MagazineDetail              = lazy(() => import('@/pages/MagazineDetail'));
+const MagazineEditor              = lazy(() => import('@/pages/MagazineEditor'));
 const EventDetail                 = lazy(() => import('@/pages/EventDetail'));
 const BannerPreview               = lazy(() => import('@/pages/BannerPreview'));
 const Videos                      = lazy(() => import('@/pages/Videos'));
@@ -147,6 +150,10 @@ const AuthenticatedApp = () => {
           <Route path="/search" element={<Search />} />
           <Route path="/stories/:id" element={<StoryDetail />} />
           <Route path="/create-story" element={<CreateStory />} />
+          <Route path="/magazines" element={<Magazines />} />
+          <Route path="/magazines/new" element={<MagazineEditor />} />
+          <Route path="/magazines/:id" element={<MagazineDetail />} />
+          <Route path="/magazines/:id/edit" element={<MagazineEditor />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/banner-preview" element={<BannerPreview />} />
           <Route path="/videos" element={<Videos />} />

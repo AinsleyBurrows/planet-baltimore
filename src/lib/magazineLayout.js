@@ -1,0 +1,74 @@
+import { base44 } from '@/api/base44Client';
+
+/* Unique id for a page or block (client generated, stored with the record) */
+export const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+
+/* Element palette offered in the editor */
+export const BLOCK_TYPES = [
+  { type: 'headline', label: 'Headline' },
+  { type: 'subhead', label: 'Subhead' },
+  { type: 'body', label: 'Body text' },
+  { type: 'quote', label: 'Pull quote' },
+  { type: 'image', label: 'Image' },
+  { type: 'caption', label: 'Caption' },
+];
+
+/* Typography per block role — shared by the editable and the published view,
+   so a page looks the same while you build it and while readers read it. */
+export const ROLE_CLASSES = {
+  headline: 'font-serif font-bold text-neutral-900 text-[26px] sm:text-4xl lg:text-[44px] leading-[1.08] mb-3',
+  subhead: 'font-serif italic text-neutral-600 text-base sm:text-xl leading-snug mb-5',
+  body: 'font-serif text-neutral-800 text-[15px] sm:text-[17px] leading-[1.85] text-justify mb-5',
+  quote: 'font-serif italic text-neutral-900 text-xl sm:text-2xl leading-snug text-center border-y border-neutral-300 py-5 my-6',
+  caption: 'font-sans uppercase tracking-[0.18em] text-neutral-500 text-[10px] sm:text-[11px] leading-relaxed mb-4',
+};
+
+export const DROP_CAP_CLASS =
+  'first-letter:float-left first-letter:font-serif first-letter:font-bold first-letter:text-[52px] first-letter:leading-[0.78] first-letter:pr-2 first-letter:pt-1';
+
+export const BLOCK_PLACEHOLDERS = {
+  headline: 'Headline',
+  subhead: 'Subhead or deck line',
+  body: 'Write your page here',
+  quote: 'Pull quote',
+  caption: 'Caption',
+};
+
+/* Light paper tones only, so the page text stays readable */
+export const BG_SWATCHES = ['#ffffff', '#faf7f2', '#f4efe4', '#eef2f6', '#f6eef1', '#eef4ef'];
+
+const STARTER_TEXT = {
+  headline: 'A headline for your page',
+  subhead: 'A deck line that sets up the story',
+  body: 'Start writing here. Drag any photo on this page and the words will flow around it.',
+  quote: 'A line worth pulling out.',
+  caption: 'Photo caption',
+};
+
+export const createBlock = (type) => {
+  if (type === 'image') {
+    return { id: uid(), type: 'image', url: '', caption: '', float: 'full', width: 100 };
+  }
+  return { id: uid(), type, text: STARTER_TEXT[type] || '' };
+};
+
+export const createPage = () => ({
+  id: uid(),
+  bg_color: '#ffffff',
+  blocks: [createBlock('headline'), createBlock('subhead'), createBlock('body')],
+});
+
+export const createMagazine = () => ({
+  title: 'Untitled Magazine',
+  issue_label: '',
+  tagline: '',
+  description: '',
+  cover_image_url: '',
+  pages: [createPage()],
+});
+
+/* Magazine photos are stored publicly so every reader can see them. */
+export const uploadMagazineImage = async (file) => {
+  const { file_url } = await base44.integrations.Core.UploadFile({ file });
+  return file_url;
+};
