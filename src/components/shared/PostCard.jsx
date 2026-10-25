@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { fetchPostReaction } from '@/lib/postReactions';
 
 function FeedVideo({ src, thumbnail }) {
   const [playing, setPlaying] = useState(false);
@@ -117,37 +118,32 @@ const PostCard = React.memo(function PostCard({ post, currentUserId, currentUser
   const postUrl = `${window.location.origin}/profile/${post.author_id}`;
   const displayPost = localPost;
 
-  const { data: likeRecords = [] } = useQuery({
-    queryKey: ['post-liked', post.id, currentUser?.id],
-    queryFn: () => base44.entities.Like.filter({ user_id: currentUser.id, target_type: 'post', target_id: post.id }),
-    enabled: !!currentUser?.id,
-    onSuccess: (data) => setLiked(data.length > 0),
-    staleTime: 60000,
-  });
-
-  // Sync liked state when query result arrives
-  React.useEffect(() => {
-    setLiked(likeRecords.length > 0);
-  }, [likeRecords.length]);
-
-  const { data: savedRecords = [] } = useQuery({
-    queryKey: ['saved-post', post.id, currentUser?.id],
-    queryFn: () => base44.entities.SavedPost.filter({ user_id: currentUser.id, post_id: post.id }),
+  /* The reader's like and save for this post, answered together with every
+     other card on screen (see lib/postReactions). */
+  const { data: reaction } = useQuery({
+    queryKey: ['post-reaction', post.id, currentUser?.id],
+    queryFn: () => fetchPostReaction(currentUser.id, post.id),
     enabled: !!currentUser?.id,
   });
 
-  const isSaved = savedRecords.length > 0;
+  // Sync liked state when the answer arrives
+  useEffect(() => {
+    if (reaction) setLiked(reaction.liked);
+  }, [reaction]);
+
+  const isSaved = !!reaction?.saved;
 
   const toggleSaveMutation = useMutation({
     mutationFn: async () => {
       if (isSaved) {
-        await base44.entities.SavedPost.delete(savedRecords[0].id);
+        const [existing] = await base44.entities.SavedPost.filter({ user_id: currentUser.id, post_id: post.id });
+        if (existing) await base44.entities.SavedPost.delete(existing.id);
       } else {
         await base44.entities.SavedPost.create({ user_id: currentUser.id, post_id: post.id, saved_at: new Date().toISOString() });
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['saved-post', post.id, currentUser?.id] });
+      queryClient.invalidateQueries({ queryKey: ['post-reaction', post.id, currentUser?.id] });
       queryClient.invalidateQueries({ queryKey: ['saved-posts-profile', currentUser?.id] });
     },
   });

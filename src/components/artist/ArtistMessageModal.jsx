@@ -20,7 +20,10 @@ export default function ArtistMessageModal({ artist, onClose }) {
     });
 
     const followerIds = follows.map(f => f.follower_id).filter(Boolean);
-    const users = await Promise.all(followerIds.map(id => base44.entities.User.filter({ id }).then(r => r[0]).catch(() => null)));
+    // One lookup for every follower, instead of one per follower
+    const users = followerIds.length
+      ? await base44.entities.User.filter({ id: { $in: followerIds } })
+      : [];
     const emails = users.filter(u => u?.email).map(u => u.email);
 
     await Promise.all(emails.map(email =>

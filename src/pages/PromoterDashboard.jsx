@@ -33,10 +33,9 @@ export default function PromoterDashboard() {
     queryKey: ['promoter-events', eventIds],
     queryFn: async () => {
       if (eventIds.length === 0) return [];
-      const results = await Promise.all(
-        eventIds.map(id => base44.entities.Event.filter({ id }))
-      );
-      return results.map(r => r[0]).filter(Boolean);
+      const found = await base44.entities.Event.filter({ id: { $in: eventIds } });
+      const byId = new Map(found.map((event) => [event.id, event]));
+      return eventIds.map((id) => byId.get(id)).filter(Boolean);
     },
     enabled: eventIds.length > 0,
   });
@@ -45,11 +44,19 @@ export default function PromoterDashboard() {
     queryKey: ['promoter-sales', eventIds],
     queryFn: async () => {
       if (eventIds.length === 0) return {};
+      /* One query for every promoted event instead of one query per event */
+      const sales = await base44.entities.TicketSale.filter(
+        { event_id: { $in: eventIds }, sold_by_promoter_id: currentUser?.id },
+        '-created_date',
+        500
+      );
       const data = {};
-      for (const eventId of eventIds) {
-        const sales = await base44.entities.TicketSale.filter({ event_id: eventId, sold_by_promoter_id: currentUser?.id }, '-created_date', 100);
-        data[eventId] = sales;
-      }
+      eventIds.forEach((eventId) => {
+        data[eventId] = [];
+      });
+      sales.forEach((sale) => {
+        if (data[sale.event_id]) data[sale.event_id].push(sale);
+      });
       return data;
     },
     enabled: eventIds.length > 0 && !!currentUser?.id,

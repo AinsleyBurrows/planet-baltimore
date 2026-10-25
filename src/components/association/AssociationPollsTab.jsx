@@ -100,7 +100,7 @@ function PollCard({ poll, currentUser, isAdmin }) {
   const { data: votes = [] } = useQuery({
     queryKey: ['poll-votes', poll.id],
     queryFn: () => base44.entities.Vote.filter({ voting_id: poll.id }),
-    refetchInterval: 5000, // real-time feel: refresh every 5s
+    refetchInterval: 30000, // refresh every 30s — a faster beat trips the app's request limits
   });
 
   const myVote = votes.find(v => v.user_id === currentUser?.id);

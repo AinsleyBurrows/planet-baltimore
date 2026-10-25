@@ -22,11 +22,10 @@ export default function ArtsOrgMessageModal({ org, onClose }) {
       setLoadingFollowers(true);
       try {
         const follows = await base44.entities.Follow.filter({ target_id: org.id });
-        // Fetch user details for each follower
-        const userDetails = await Promise.all(
-          follows.map(f => base44.entities.User.filter({ id: f.follower_id }).then(r => r[0]).catch(() => null))
-        );
-        setFollowers(userDetails.filter(Boolean));
+        // One lookup for every follower, instead of one per follower
+        const ids = follows.map(f => f.follower_id).filter(Boolean);
+        const users = ids.length ? await base44.entities.User.filter({ id: { $in: ids } }) : [];
+        setFollowers(users.filter(Boolean));
       } catch {}
       setLoadingFollowers(false);
     };

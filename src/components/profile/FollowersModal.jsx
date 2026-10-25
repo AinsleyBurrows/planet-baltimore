@@ -13,12 +13,12 @@ export default function FollowersModal({ userId, mode, onClose }) {
     queryFn: async () => {
       if (mode === 'followers') {
         const records = await base44.entities.Follow.filter({ target_type: 'user', target_id: userId }, '-created_date', 500);
-        // Batch-fetch all follower User records in parallel
-        const userResults = await Promise.all(
-          records.map(f => base44.entities.User.get(f.follower_id).catch(() => null))
-        );
-        return records.map((f, i) => {
-          const u = userResults[i];
+        // One lookup for every follower, instead of one per follower
+        const ids = records.map((f) => f.follower_id).filter(Boolean);
+        const users = ids.length ? await base44.entities.User.filter({ id: { $in: ids } }) : [];
+        const byId = new Map(users.map((u) => [u.id, u]));
+        return records.map((f) => {
+          const u = byId.get(f.follower_id);
           return {
             ...f,
             follower_name: u?.full_name || u?.display_name || f.follower_name || f.follower_id,
