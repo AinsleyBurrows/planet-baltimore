@@ -7,7 +7,7 @@ import MagazinePageView from '@/components/magazine/MagazinePageView';
 import MagazinePager from '@/components/magazine/MagazinePager';
 import MagazinePageTools from '@/components/magazine/MagazinePageTools';
 import MagazineSettingsPanel from '@/components/magazine/MagazineSettingsPanel';
-import { createBlock, createMagazine, createPage } from '@/lib/magazineLayout';
+import { createBlock, createCover, createMagazine, createPage } from '@/lib/magazineLayout';
 
 export default function MagazineEditor() {
   const { id } = useParams();
@@ -16,6 +16,7 @@ export default function MagazineEditor() {
   const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
+  const [coverMode, setCoverMode] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [preview, setPreview] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -31,7 +32,18 @@ export default function MagazineEditor() {
         if (id) {
           const record = await base44.entities.Magazine.get(id);
           if (!active) return;
-          setMagazine({ ...record, pages: record.pages?.length ? record.pages : [createPage()] });
+          setMagazine({
+            ...record,
+            cover:
+              record.cover?.blocks?.length
+                ? record.cover
+                : createCover({
+                    title: record.title,
+                    issue_label: record.issue_label,
+                    tagline: record.tagline,
+                  }),
+            pages: record.pages?.length ? record.pages : [createPage()],
+          });
         } else {
           setMagazine({
             ...createMagazine(),
@@ -56,20 +68,25 @@ export default function MagazineEditor() {
   }, [saved]);
 
   const pages = magazine?.pages || [];
-  const currentPage = pages[index] || pages[0];
+  const cover = magazine?.cover;
+  const editingCover = coverMode && !!cover;
+  const currentPage = editingCover ? cover : pages[index] || pages[0];
 
   const updateMagazine = (updates) => setMagazine((current) => ({ ...current, ...updates }));
   const updatePage = (updates) =>
     updateMagazine({ pages: pages.map((page, pageIndex) => (pageIndex === index ? { ...page, ...updates } : page)) });
+  const updateCover = (updates) => updateMagazine({ cover: { ...cover, ...updates } });
+  const updateCurrent = editingCover ? updateCover : updatePage;
 
   const addBlock = (type) => {
-    updatePage({ blocks: [...(currentPage.blocks || []), createBlock(type)] });
+    updateCurrent({ blocks: [...(currentPage.blocks || []), createBlock(type)] });
     setPreview(false);
   };
 
   const addPage = () => {
     const next = [...pages, createPage()];
     updateMagazine({ pages: next });
+    setCoverMode(false);
     setIndex(next.length - 1);
     setSelectedId(null);
   };
@@ -91,6 +108,7 @@ export default function MagazineEditor() {
         tagline: magazine.tagline || '',
         description: magazine.description || '',
         cover_image_url: magazine.cover_image_url || '',
+        cover: magazine.cover,
         pages: magazine.pages,
       };
       if (magazine.id) {
@@ -195,14 +213,23 @@ export default function MagazineEditor() {
             magazineTitle={magazine.title}
             issueLabel={magazine.issue_label}
             editable={!preview}
+            compact={editingCover}
+            footerRight={editingCover ? 'Cover' : undefined}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            onChange={(blocks) => updatePage({ blocks })}
+            onChange={(blocks) => updateCurrent({ blocks })}
           />
           <MagazinePager
             index={index}
             total={pages.length}
+            cover
+            coverActive={editingCover}
+            onSelectCover={() => {
+              setCoverMode(true);
+              setSelectedId(null);
+            }}
             onChange={(next) => {
+              setCoverMode(false);
               setIndex(next);
               setSelectedId(null);
             }}
@@ -216,7 +243,8 @@ export default function MagazineEditor() {
               page={currentPage}
               pageIndex={index}
               pageCount={pages.length}
-              onPageChange={updatePage}
+              variant={editingCover ? 'cover' : 'page'}
+              onPageChange={updateCurrent}
               onAddBlock={addBlock}
               onAddPage={addPage}
               onDeletePage={deletePage}

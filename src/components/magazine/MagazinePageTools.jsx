@@ -9,15 +9,18 @@ export default function MagazinePageTools({
   page,
   pageIndex,
   pageCount,
+  variant = 'page',
   onPageChange,
   onAddBlock,
   onAddPage,
   onDeletePage,
 }) {
+  const isCover = variant === 'cover';
+
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm">Page {pageIndex + 1} elements</CardTitle>
+        <CardTitle className="text-sm">{isCover ? 'Cover elements' : `Page ${pageIndex + 1} elements`}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-2">
@@ -35,7 +38,7 @@ export default function MagazinePageTools({
         </div>
 
         <div>
-          <Label className="text-xs">Page background</Label>
+          <Label className="text-xs">{isCover ? 'Cover background' : 'Page background'}</Label>
           <div className="mt-2 flex flex-wrap gap-2">
             {BG_SWATCHES.map((color) => (
               <button
@@ -54,20 +57,22 @@ export default function MagazinePageTools({
           </div>
         </div>
 
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onAddPage} className="h-9 flex-1 gap-1.5 text-xs">
-            <Plus className="h-3.5 w-3.5" /> Add page
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={pageCount <= 1}
-            onClick={onDeletePage}
-            className="h-9 gap-1.5 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Trash2 className="h-3.5 w-3.5" /> Remove page
-          </Button>
-        </div>
+        {!isCover && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={onAddPage} className="h-9 flex-1 gap-1.5 text-xs">
+              <Plus className="h-3.5 w-3.5" /> Add page
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={pageCount <= 1}
+              onClick={onDeletePage}
+              className="h-9 gap-1.5 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" /> Remove page
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

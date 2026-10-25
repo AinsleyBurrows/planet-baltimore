@@ -72,12 +72,25 @@ export const createPage = () => ({
   blocks: [createBlock('headline'), createBlock('subhead'), createBlock('body')],
 });
 
+/* A cover is laid out like a page, but the sheet is half a page tall */
+export const createCover = ({ title = '', issue_label = '', tagline = '' } = {}) => ({
+  id: uid(),
+  bg_color: '#ffffff',
+  blocks: [
+    { ...createBlock('caption'), text: issue_label || 'Issue 01' },
+    { ...createBlock('headline'), text: title || 'Your magazine name' },
+    { ...createBlock('subhead'), text: tagline || 'What this issue promises' },
+    { ...createBlock('image'), caption: 'Cover photo' },
+  ],
+});
+
 export const createMagazine = () => ({
   title: 'Untitled Magazine',
   issue_label: '',
   tagline: '',
   description: '',
   cover_image_url: '',
+  cover: createCover({ title: 'Untitled Magazine' }),
   pages: [createPage()],
 });
 

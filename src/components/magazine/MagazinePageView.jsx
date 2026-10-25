@@ -12,6 +12,8 @@ export default function MagazinePageView({
   magazineTitle,
   issueLabel,
   editable = false,
+  compact = false,
+  footerRight,
   selectedId,
   onSelect,
   onChange,
@@ -41,7 +43,9 @@ export default function MagazinePageView({
   return (
     <div
       ref={pageRef}
-      className="relative mx-auto flex min-h-[1080px] w-full max-w-[820px] flex-col border border-border/70 shadow-[0_18px_50px_-18px_rgba(0,0,0,0.4)] sm:min-h-[1800px]"
+      className={`relative mx-auto flex w-full max-w-[820px] flex-col border border-border/70 shadow-[0_18px_50px_-18px_rgba(0,0,0,0.4)] ${
+        compact ? 'min-h-[540px] sm:min-h-[900px]' : 'min-h-[1080px] sm:min-h-[1800px]'
+      }`}
       style={{ backgroundColor: page?.bg_color || '#ffffff' }}
     >
       <div className="flex-1 px-6 py-8 sm:px-12 sm:py-14">
@@ -98,9 +102,7 @@ export default function MagazinePageView({
           {magazineTitle}
           {issueLabel ? ` · ${issueLabel}` : ''}
         </span>
-        <span className="shrink-0">
-          {pageNumber} / {totalPages}
-        </span>
+        <span className="shrink-0">{footerRight || `${pageNumber} / ${totalPages}`}</span>
       </div>
     </div>
   );

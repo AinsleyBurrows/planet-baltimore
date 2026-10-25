@@ -12,6 +12,7 @@ export default function MagazineDetail() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
+  const [showCover, setShowCover] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -23,6 +24,7 @@ export default function MagazineDetail() {
         ]);
         if (!active) return;
         setMagazine(record);
+        setShowCover(!!record.cover?.blocks?.length);
         setUser(me);
       } finally {
         if (active) setLoading(false);
@@ -34,16 +36,31 @@ export default function MagazineDetail() {
   }, [id]);
 
   const total = magazine?.pages?.length || 0;
+  const hasCover = !!magazine?.cover?.blocks?.length;
 
   useEffect(() => {
     if (!total) return undefined;
     const onKeyDown = (event) => {
-      if (event.key === 'ArrowRight') setIndex((current) => Math.min(total - 1, current + 1));
-      if (event.key === 'ArrowLeft') setIndex((current) => Math.max(0, current - 1));
+      if (event.key === 'ArrowRight') {
+        if (showCover) {
+          setShowCover(false);
+          setIndex(0);
+        } else {
+          setIndex((current) => Math.min(total - 1, current + 1));
+        }
+      }
+      if (event.key === 'ArrowLeft') {
+        if (showCover) return;
+        if (index === 0 && hasCover) {
+          setShowCover(true);
+          return;
+        }
+        setIndex((current) => Math.max(0, current - 1));
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [total]);
+  }, [total, showCover, index, hasCover]);
 
   if (loading) {
     return (
@@ -68,6 +85,8 @@ export default function MagazineDetail() {
   }
 
   const page = magazine.pages?.[index];
+  const showingCover = showCover && hasCover;
+  const sheet = showingCover ? magazine.cover : page;
   const isOwner = !!user && magazine.owner_id === user.id;
 
   return (
@@ -101,16 +120,29 @@ export default function MagazineDetail() {
         <p className="mb-5 max-w-2xl font-serif text-lg italic text-muted-foreground">{magazine.tagline}</p>
       )}
 
-      {page ? (
+      {sheet ? (
         <>
           <MagazinePageView
-            page={page}
+            page={sheet}
             pageNumber={index + 1}
             totalPages={total}
             magazineTitle={magazine.title}
             issueLabel={magazine.issue_label}
+            compact={showingCover}
+            footerRight={showingCover ? 'Cover' : undefined}
           />
-          <MagazinePager index={index} total={total} onChange={setIndex} className="mt-7" />
+          <MagazinePager
+            index={index}
+            total={total}
+            cover={hasCover}
+            coverActive={showingCover}
+            onSelectCover={() => setShowCover(true)}
+            onChange={(next) => {
+              setShowCover(false);
+              setIndex(next);
+            }}
+            className="mt-7"
+          />
         </>
       ) : (
         <p className="py-20 text-center text-sm text-muted-foreground">This magazine has no pages yet.</p>
