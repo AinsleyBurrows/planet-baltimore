@@ -4,11 +4,15 @@
   "properties": {
     "artist_id": {
       "type": "string",
-      "description": "Reference to ArtistPage (optional for org shops)"
+      "description": "Reference to ArtistPage (optional for org stores)"
     },
     "org_id": {
       "type": "string",
       "description": "Reference to ArtsOrganization (for museum / org shops)"
+    },
+    "business_id": {
+      "type": "string",
+      "description": "Reference to BusinessPage \u2014 items sold from a business storefront"
     },
     "title": {
       "type": "string",

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart, Plus, Rss, BookOpen, Bookmark, CalendarDays, Zap, Star } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Phone, Clock, CheckCircle, Share2, Users, Navigation, Utensils, Pencil, Camera, MessageSquare, ShoppingCart, Briefcase, Music, HeartPulse, Palette, HandHeart, Plus, Rss, BookOpen, Bookmark, CalendarDays, Zap, Star, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,6 +14,7 @@ import FollowButton from '@/components/shared/FollowButton';
 import CommentSection from '@/components/shared/CommentSection';
 import RestaurantHub from '@/components/business/RestaurantHub';
 import RetailHub from '@/components/business/RetailHub';
+import BusinessShopTab from '@/components/business/BusinessShopTab';
 import ServiceHub from '@/components/business/ServiceHub';
 import EntertainmentHub from '@/components/business/EntertainmentHub';
 import HealthHub from '@/components/business/HealthHub';
@@ -263,7 +264,7 @@ export default function BusinessDetail() {
             {hasCategoryHub && (
               <TabsTrigger value="hub" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm whitespace-nowrap">
                 {isRestaurant && <><Utensils className="w-3.5 h-3.5" /> Menu</>}
-                {isRetail && <><ShoppingCart className="w-3.5 h-3.5" /> Shop</>}
+                {isRetail && <><ShoppingCart className="w-3.5 h-3.5" /> Storefront</>}
                 {isService && <><Briefcase className="w-3.5 h-3.5" /> Services</>}
                 {isEntertainment && <>Hub</>}
                 {isHealth && <><HeartPulse className="w-3.5 h-3.5" /> Health</>}
@@ -271,6 +272,9 @@ export default function BusinessDetail() {
                 {isNonprofit && <><HandHeart className="w-3.5 h-3.5" /> Mission</>}
               </TabsTrigger>
             )}
+            <TabsTrigger value="shop" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
+              <ShoppingBag className="w-3.5 h-3.5" /> Shop
+            </TabsTrigger>
             <TabsTrigger value="posts" className="rounded-lg whitespace-nowrap flex items-center gap-1.5 text-xs sm:text-sm">
               <Rss className="w-3.5 h-3.5" /> Feed
             </TabsTrigger>
@@ -308,6 +312,15 @@ export default function BusinessDetail() {
             {isNonprofit && <NonprofitHub business={business} isOwner={isOwner} user={user} events={events} />}
           </TabsContent>
         )}
+
+        <TabsContent value="shop" className="mt-4">
+          <BusinessShopTab
+            business={business}
+            isOwner={isOwner}
+            isPlatformAdmin={isPlatformAdmin}
+            user={user}
+          />
+        </TabsContent>
 
         <TabsContent value="posts" className="mt-4 space-y-4">
           {isOwner && (
