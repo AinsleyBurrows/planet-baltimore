@@ -24,7 +24,7 @@ export default function MagazinePageView({
 }) {
   const pageRef = useRef(null);
   const blocks = page?.blocks || [];
-  const { draggingId, startDrag } = useBlockDrag({ pageRef, blocks, onChange });
+  const { draggingId, dropTop, startDrag } = useBlockDrag({ pageRef, blocks, onChange });
 
   /* Text laid over the cover photo leaves the column; everything else reads
      down the sheet in order. */
@@ -68,20 +68,24 @@ export default function MagazinePageView({
     const position = blocks.findIndex((item) => item.id === block.id);
 
     return (
-      <div key={block.id} data-block-id={block.id} className="group relative">
+      <div
+        key={block.id}
+        data-block-id={block.id}
+        className={`group relative ${draggingId === block.id ? 'opacity-60' : ''}`}
+      >
         {editable && (
           <button
             type="button"
             aria-label="Drag to move this element"
             title="Drag to move this element"
             onPointerDown={(event) => startDrag(event, block)}
-            className={`absolute -left-6 top-1 z-10 flex h-6 w-6 cursor-grab touch-none items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-opacity active:cursor-grabbing ${
-              selectedId === block.id
-                ? 'opacity-100'
-                : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100'
+            className={`absolute -left-3 -top-1 z-10 flex h-7 w-7 cursor-grab touch-none items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-all active:cursor-grabbing ${
+              selectedId === block.id || draggingId === block.id
+                ? 'opacity-100 ring-2 ring-accent/40'
+                : 'opacity-60 group-hover:opacity-100'
             }`}
           >
-            <GripVertical className="h-3.5 w-3.5" />
+            <GripVertical className="h-4 w-4" />
           </button>
         )}
         {block.type === 'image' ? (
@@ -165,6 +169,18 @@ export default function MagazinePageView({
       style={{ backgroundColor: page?.bg_color || '#ffffff' }}
     >
       {overlayGroups.filter((group) => group.layer === 'behind').map(renderGroup)}
+
+      {/* The rule marks the gap the element will drop into */}
+      {draggingId && dropTop != null && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-5 z-30 flex items-center gap-1 sm:inset-x-10"
+          style={{ top: dropTop }}
+        >
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+          <span className="h-0.5 flex-1 rounded-full bg-accent" />
+        </div>
+      )}
 
       <div className="flex-1 px-6 py-8 sm:px-12 sm:py-14">
         {flowBlocks.map((block, index) => renderBlock(block, index === dropCapIndex))}

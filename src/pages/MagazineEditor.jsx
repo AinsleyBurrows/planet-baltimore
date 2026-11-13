@@ -199,7 +199,7 @@ export default function MagazineEditor() {
               {pages.length} {pages.length === 1 ? 'page' : 'pages'} ·{' '}
               {preview
                 ? 'Reader preview — this is what your readers see'
-                : 'Drag a photo to move it and the words flow around it'}
+                : 'Drag the handle beside any element to move it — down the page, or out to the side to wrap the words around it'}
             </p>
           </div>
         </div>

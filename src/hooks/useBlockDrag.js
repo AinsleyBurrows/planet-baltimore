@@ -1,37 +1,95 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { overlayKey } from '@/lib/magazineLayout';
 
 /**
  * Drag behaviour for magazine elements.
  *
- * Dragging sideways decides which side of the sheet the element wraps on
- * (left / right / full width). Dragging up and down moves the element through
- * the text, and the words re-flow around it as you go.
+ * Every element on the sheet moves the same way: pick it up by its handle (or
+ * grab a photo or advert by its body) and drag.
  *
- * Positions are measured once when the drag starts, so the page never jitters
- * while the text re-wraps underneath the pointer.
+ * · Dragging up and down carries the element through the page, and the text
+ *   re-flows around it as it goes — a thin rule marks where it will land.
+ * · Dragging sideways narrows the element into a column and wraps the text
+ *   beside it on the left or the right; back through the middle and it takes
+ *   the full measure again.
+ * · Text laid over a cover photo moves up and down between the top, middle and
+ *   foot of the sheet.
+ *
+ * The first significant movement picks the gesture: mostly sideways means the
+ * editor is choosing a side, mostly up and down means reordering, so a vertical
+ * drag never narrows an element by accident.
  */
+
+const LEAD = 8; // movement before the gesture is decided, in px
+const SIDE = 0.34; // the outer third of the sheet wraps an element to that side
+
+const measure = (pageEl, blocks) => {
+  const pageRect = pageEl.getBoundingClientRect();
+  const byId = new Map(blocks.map((block) => [block.id, block]));
+
+  return Array.from(pageEl.querySelectorAll('[data-block-id]'))
+    .map((node) => {
+      const id = node.getAttribute('data-block-id');
+      const rect = node.getBoundingClientRect();
+      return {
+        id,
+        overlay: !!byId.get(id)?.overlay,
+        top: rect.top - pageRect.top,
+        top_viewport: rect.top,
+        mid: rect.top + rect.height / 2,
+        bottom: rect.top + rect.height - pageRect.top,
+      };
+    })
+    .filter((item) => !item.overlay);
+};
+
 export default function useBlockDrag({ pageRef, blocks, onChange }) {
   const [draggingId, setDraggingId] = useState(null);
-  const rectsRef = useRef([]);
+  const [dropTop, setDropTop] = useState(null);
+  const grab = useRef({ x: 0, y: 0 });
+  const axis = useRef(null);
   const latest = useRef({ blocks, onChange });
 
   useEffect(() => {
     latest.current = { blocks, onChange };
   });
 
-  const startDrag = useCallback(
-    (event, block) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const nodes = pageRef.current?.querySelectorAll('[data-block-id]') || [];
-      rectsRef.current = Array.from(nodes).map((node) => {
-        const rect = node.getBoundingClientRect();
-        return { id: node.getAttribute('data-block-id'), mid: rect.top + rect.height / 2 };
-      });
-      setDraggingId(block.id);
-    },
-    [pageRef],
-  );
+  const startDrag = useCallback((event, block) => {
+    event.preventDefault();
+    event.stopPropagation();
+    grab.current = { x: event.clientX, y: event.clientY };
+    axis.current = null;
+    setDraggingId(block.id);
+  }, []);
+
+  const stop = () => {
+    setDraggingId(null);
+    setDropTop(null);
+    axis.current = null;
+  };
+
+  const moveOverlay = (event, pageEl, current, change, moving) => {
+    const pageRect = pageEl.getBoundingClientRect();
+    const frac = (event.clientY - pageRect.top) / pageRect.height;
+    const anchor = frac < 0.34 ? 'top' : frac < 0.67 ? 'middle' : 'bottom';
+    const layer = moving.overlay_layer || 'front';
+    const key = `${anchor}|${layer}`;
+
+    const rest = current.filter((block) => block.id !== moving.id);
+    const next = [...rest];
+    const slot = rest.filter((block) => block.overlay && overlayKey(block) === key);
+
+    if (slot.length) {
+      const lastIndex = next.findIndex((block) => block.id === slot[slot.length - 1].id);
+      next.splice(lastIndex + 1, 0, { ...moving, overlay_anchor: anchor });
+    } else {
+      next.push({ ...moving, overlay_anchor: anchor });
+    }
+
+    const unchanged =
+      moving.overlay_anchor === anchor && next.map((block) => block.id).join('|') === current.map((block) => block.id).join('|');
+    if (!unchanged) change(next);
+  };
 
   useEffect(() => {
     if (!draggingId) return undefined;
@@ -39,33 +97,46 @@ export default function useBlockDrag({ pageRef, blocks, onChange }) {
     const handleMove = (event) => {
       const pageEl = pageRef.current;
       if (!pageEl) return;
-      const rect = pageEl.getBoundingClientRect();
-      const across = (event.clientX - rect.left) / rect.width;
+
+      const dx = event.clientX - grab.current.x;
+      const dy = event.clientY - grab.current.y;
+      if (!axis.current && Math.abs(dx) + Math.abs(dy) > LEAD) {
+        axis.current = Math.abs(dx) > Math.abs(dy) ? 'across' : 'down';
+      }
 
       const { blocks: current, onChange: change } = latest.current;
       const from = current.findIndex((block) => block.id === draggingId);
       if (from < 0) return;
       const moving = current[from];
-      const overlaid = !!moving.overlay;
 
-      /* Only elements sharing the dragged element's layer are neighbours, so a
-         cover line never jumps into the column and vice versa. */
-      const isOverlaid = (id) => !!current.find((block) => block.id === id)?.overlay;
-      const others = rectsRef.current.filter((item) => item.id !== draggingId && isOverlaid(item.id) === overlaid);
+      if (moving.overlay) {
+        setDropTop(null);
+        moveOverlay(event, pageEl, current, change, moving);
+        return;
+      }
+
+      const others = measure(pageEl, current).filter((item) => item.id !== draggingId);
+      const pageRect = pageEl.getBoundingClientRect();
+      const across = (event.clientX - pageRect.left) / pageRect.width;
+
+      /* The rule shows the gap the element will drop into. */
       const followedBy = others.find((item) => event.clientY < item.mid);
+      setDropTop(followedBy ? followedBy.top : others.length ? others[others.length - 1].bottom : 24);
 
-      const float = overlaid ? moving.float : across < 0.34 ? 'left' : across > 0.66 ? 'right' : 'full';
-      /* A side wrap needs a side-sized box, so widen down to a column when a
-         full-width element is dragged out to the left or right. */
-      const width = overlaid
-        ? moving.width
-        : (float === 'left' || float === 'right') && (moving.width || 100) >= 90
-          ? 45
-          : moving.width;
+      let float = moving.float || 'full';
+      if (axis.current === 'across') {
+        float = across < SIDE ? 'left' : across > 1 - SIDE ? 'right' : 'full';
+      }
+
+      let width = moving.width;
+      if (float === 'left' || float === 'right') {
+        /* A column needs a column's measure. */
+        if (!width || width >= 90) width = 45;
+      } else if ((moving.float === 'left' || moving.float === 'right') && float === 'full') {
+        width = 100;
+      }
 
       const rest = current.filter((block) => block.id !== draggingId);
-      /* Land where the dragged element is, measured against the block it is now
-         sitting above rather than against the element's own index. */
       const target = followedBy ? rest.findIndex((block) => block.id === followedBy.id) : rest.length;
       const next = [...rest];
       next.splice(target < 0 ? rest.length : target, 0, { ...moving, float, width });
@@ -75,7 +146,6 @@ export default function useBlockDrag({ pageRef, blocks, onChange }) {
       change(next);
     };
 
-    const stop = () => setDraggingId(null);
     window.addEventListener('pointermove', handleMove);
     window.addEventListener('pointerup', stop);
     window.addEventListener('pointercancel', stop);
@@ -86,5 +156,5 @@ export default function useBlockDrag({ pageRef, blocks, onChange }) {
     };
   }, [draggingId, pageRef]);
 
-  return { draggingId, startDrag };
+  return { draggingId, dropTop, startDrag };
 }
