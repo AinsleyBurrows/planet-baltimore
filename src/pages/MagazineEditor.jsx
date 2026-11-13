@@ -7,6 +7,7 @@ import MagazinePageView from '@/components/magazine/MagazinePageView';
 import MagazinePager from '@/components/magazine/MagazinePager';
 import MagazinePageTools from '@/components/magazine/MagazinePageTools';
 import MagazineSettingsPanel from '@/components/magazine/MagazineSettingsPanel';
+import MagazineUploadedCover from '@/components/magazine/MagazineUploadedCover';
 import {
   createBlock,
   createCover,
@@ -88,10 +89,22 @@ export default function MagazineEditor() {
   /* Lay the cover out from a chosen style, keeping the photo and the wording
      already on it. */
   const applyCoverStyle = (styleId) => {
-    updateMagazine({ cover: buildCoverStyle(styleId, coverContent(magazine)) });
+    updateMagazine({ cover: buildCoverStyle(styleId, coverContent(magazine)), cover_image_url: '' });
     setCoverMode(true);
     setSelectedId(null);
   };
+
+  /* An uploaded cover is the cover: it replaces the designed sheet wherever the
+     magazine is read, and clearing it brings the design back. */
+  const uploadedCover = magazine?.cover_image_url || '';
+
+  const uploadCover = (url) => {
+    updateMagazine({ cover_image_url: url });
+    setCoverMode(true);
+    setSelectedId(null);
+  };
+
+  const removeCover = () => updateMagazine({ cover_image_url: '' });
 
   const addBlock = (type) => {
     updateCurrent({ blocks: [...(currentPage.blocks || []), createBlock(type)] });
@@ -221,19 +234,23 @@ export default function MagazineEditor() {
 
       <div className={`grid gap-6 ${preview ? '' : 'lg:grid-cols-[minmax(0,1fr)_340px]'}`}>
         <main className="min-w-0">
-          <MagazinePageView
-            page={currentPage}
-            pageNumber={index + 1}
-            totalPages={pages.length}
-            magazineTitle={magazine.title}
-            issueLabel={magazine.issue_label}
-            editable={!preview}
-            compact={editingCover}
-            footerRight={editingCover ? 'Cover' : undefined}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            onChange={(blocks) => updateCurrent({ blocks })}
-          />
+          {editingCover && uploadedCover ? (
+            <MagazineUploadedCover url={uploadedCover} title={magazine.title} />
+          ) : (
+            <MagazinePageView
+              page={currentPage}
+              pageNumber={index + 1}
+              totalPages={pages.length}
+              magazineTitle={magazine.title}
+              issueLabel={magazine.issue_label}
+              editable={!preview}
+              compact={editingCover}
+              footerRight={editingCover ? 'Cover' : undefined}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onChange={(blocks) => updateCurrent({ blocks })}
+            />
+          )}
           <MagazinePager
             index={index}
             total={pages.length}
@@ -264,6 +281,9 @@ export default function MagazineEditor() {
               onAddPage={addPage}
               onDeletePage={deletePage}
               onCoverStyle={applyCoverStyle}
+              coverUrl={uploadedCover}
+              onCoverUpload={uploadCover}
+              onCoverRemove={removeCover}
             />
             <MagazineSettingsPanel
               magazine={magazine}

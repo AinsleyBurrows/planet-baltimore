@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import MagazinePageView from '@/components/magazine/MagazinePageView';
 import MagazinePager from '@/components/magazine/MagazinePager';
+import MagazineUploadedCover from '@/components/magazine/MagazineUploadedCover';
 
 export default function MagazineDetail() {
   const { id } = useParams();
@@ -24,7 +25,7 @@ export default function MagazineDetail() {
         ]);
         if (!active) return;
         setMagazine(record);
-        setShowCover(!!record.cover?.blocks?.length);
+        setShowCover(!!record.cover?.blocks?.length || !!record.cover_image_url);
         setUser(me);
       } finally {
         if (active) setLoading(false);
@@ -36,7 +37,7 @@ export default function MagazineDetail() {
   }, [id]);
 
   const total = magazine?.pages?.length || 0;
-  const hasCover = !!magazine?.cover?.blocks?.length;
+  const hasCover = !!magazine?.cover?.blocks?.length || !!magazine?.cover_image_url;
 
   useEffect(() => {
     if (!total) return undefined;
@@ -86,6 +87,8 @@ export default function MagazineDetail() {
 
   const page = magazine.pages?.[index];
   const showingCover = showCover && hasCover;
+  const uploadedCover = magazine.cover_image_url || '';
+  const uploadedSheet = showingCover && !!uploadedCover;
   const sheet = showingCover ? magazine.cover : page;
   const isOwner = !!user && magazine.owner_id === user.id;
 
@@ -120,17 +123,21 @@ export default function MagazineDetail() {
         <p className="mb-5 max-w-2xl font-serif text-lg italic text-muted-foreground">{magazine.tagline}</p>
       )}
 
-      {sheet ? (
+      {uploadedSheet || sheet ? (
         <>
-          <MagazinePageView
-            page={sheet}
-            pageNumber={index + 1}
-            totalPages={total}
-            magazineTitle={magazine.title}
-            issueLabel={magazine.issue_label}
-            compact={showingCover}
-            footerRight={showingCover ? 'Cover' : undefined}
-          />
+          {uploadedSheet ? (
+            <MagazineUploadedCover url={uploadedCover} title={magazine.title} />
+          ) : (
+            <MagazinePageView
+              page={sheet}
+              pageNumber={index + 1}
+              totalPages={total}
+              magazineTitle={magazine.title}
+              issueLabel={magazine.issue_label}
+              compact={showingCover}
+              footerRight={showingCover ? 'Cover' : undefined}
+            />
+          )}
           <MagazinePager
             index={index}
             total={total}
