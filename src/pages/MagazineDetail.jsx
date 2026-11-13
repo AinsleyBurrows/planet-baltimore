@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import MagazinePageView from '@/components/magazine/MagazinePageView';
 import MagazinePager from '@/components/magazine/MagazinePager';
 import MagazineUploadedCover from '@/components/magazine/MagazineUploadedCover';
+import NewIssueButton from '@/components/magazine/NewIssueButton';
 
 export default function MagazineDetail() {
   const { id } = useParams();
@@ -117,11 +118,14 @@ export default function MagazineDetail() {
             </Button>
           </Link>
           {isOwner && (
-            <Link to={`/magazines/${magazine.id}/edit`}>
-              <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg text-xs">
-                <Pencil className="h-3.5 w-3.5" /> Edit layout
-              </Button>
-            </Link>
+            <>
+              <NewIssueButton magazine={magazine} user={user} />
+              <Link to={`/magazines/${magazine.id}/edit`}>
+                <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg text-xs">
+                  <Pencil className="h-3.5 w-3.5" /> Edit layout
+                </Button>
+              </Link>
+            </>
           )}
         </div>
       </div>
