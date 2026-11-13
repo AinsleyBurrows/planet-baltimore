@@ -58,6 +58,7 @@ const CreateStory                 = lazy(() => import('@/pages/CreateStory'));
 const Magazines                   = lazy(() => import('@/pages/Magazines'));
 const MagazineDetail              = lazy(() => import('@/pages/MagazineDetail'));
 const MagazineEditor              = lazy(() => import('@/pages/MagazineEditor'));
+const MagazineReader              = lazy(() => import('@/pages/MagazineReader'));
 const EventDetail                 = lazy(() => import('@/pages/EventDetail'));
 const BannerPreview               = lazy(() => import('@/pages/BannerPreview'));
 const Videos                      = lazy(() => import('@/pages/Videos'));
@@ -152,6 +153,7 @@ const AuthenticatedApp = () => {
           <Route path="/create-story" element={<CreateStory />} />
           <Route path="/magazines" element={<Magazines />} />
           <Route path="/magazines/new" element={<MagazineEditor />} />
+          <Route path="/magazines/:id/read" element={<MagazineReader />} />
           <Route path="/magazines/:id" element={<MagazineDetail />} />
           <Route path="/magazines/:id/edit" element={<MagazineEditor />} />
           <Route path="/events/:id" element={<EventDetail />} />

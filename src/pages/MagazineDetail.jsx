@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ChevronLeft, Loader2, Pencil } from 'lucide-react';
+import { BookOpen, ChevronLeft, Loader2, Pencil } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import MagazinePageView from '@/components/magazine/MagazinePageView';
@@ -110,13 +110,20 @@ export default function MagazineDetail() {
             </p>
           </div>
         </div>
-        {isOwner && (
-          <Link to={`/magazines/${magazine.id}/edit`}>
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg text-xs">
-              <Pencil className="h-3.5 w-3.5" /> Edit layout
+        <div className="flex items-center gap-2">
+          <Link to={`/magazines/${magazine.id}/read`}>
+            <Button size="sm" className="h-9 gap-1.5 rounded-lg bg-primary text-xs text-primary-foreground hover:bg-primary/90">
+              <BookOpen className="h-3.5 w-3.5" /> Read magazine
             </Button>
           </Link>
-        )}
+          {isOwner && (
+            <Link to={`/magazines/${magazine.id}/edit`}>
+              <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg text-xs">
+                <Pencil className="h-3.5 w-3.5" /> Edit layout
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       {magazine.tagline && (
