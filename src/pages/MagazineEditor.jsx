@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, Eye, Loader2, Pencil, Save } from 'lucide-react';
+import { ChevronLeft, Eye, Globe, Loader2, Pencil, Save } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import MagazinePageView from '@/components/magazine/MagazinePageView';
@@ -27,7 +27,7 @@ export default function MagazineEditor() {
   const [coverMode, setCoverMode] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [preview, setPreview] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [savingStatus, setSavingStatus] = useState(null);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -42,6 +42,7 @@ export default function MagazineEditor() {
           if (!active) return;
           setMagazine({
             ...record,
+            status: record.status || 'published',
             cover:
               record.cover?.blocks?.length
                 ? record.cover
@@ -55,6 +56,7 @@ export default function MagazineEditor() {
         } else {
           setMagazine({
             ...createMagazine(),
+            status: 'draft',
             owner_id: user.id,
             owner_name: user.full_name,
             owner_avatar: user.avatar_url,
@@ -79,6 +81,8 @@ export default function MagazineEditor() {
   const cover = magazine?.cover;
   const editingCover = coverMode && !!cover;
   const currentPage = editingCover ? cover : pages[index] || pages[0];
+
+  const isDraft = (magazine?.status || 'draft') === 'draft';
 
   const updateMagazine = (updates) => setMagazine((current) => ({ ...current, ...updates }));
   const updatePage = (updates) =>
@@ -127,10 +131,13 @@ export default function MagazineEditor() {
     setSelectedId(null);
   };
 
-  const save = async () => {
-    setSaving(true);
+  /* A draft is saved work in progress only its owner can open; publishing makes
+     it part of the magazine list. */
+  const save = async (status = magazine.status || 'draft') => {
+    setSavingStatus(status);
     try {
       const payload = {
+        status,
         title: magazine.title?.trim() || 'Untitled Magazine',
         issue_label: magazine.issue_label || '',
         tagline: magazine.tagline || '',
@@ -141,6 +148,7 @@ export default function MagazineEditor() {
       };
       if (magazine.id) {
         await base44.entities.Magazine.update(magazine.id, payload);
+        setMagazine((current) => ({ ...current, status }));
         setSaved(true);
       } else {
         const created = await base44.entities.Magazine.create({
@@ -152,7 +160,7 @@ export default function MagazineEditor() {
         navigate(`/magazines/${created.id}/edit`, { replace: true });
       }
     } finally {
-      setSaving(false);
+      setSavingStatus(null);
     }
   };
 
@@ -196,10 +204,11 @@ export default function MagazineEditor() {
           <div className="min-w-0">
             <h1 className="truncate font-serif text-xl font-bold sm:text-2xl">{magazine.title || 'Untitled Magazine'}</h1>
             <p className="truncate text-xs text-muted-foreground">
-              {pages.length} {pages.length === 1 ? 'page' : 'pages'} ·{' '}
+              {isDraft ? 'Draft — only you can open it' : 'Published'} · {pages.length}{' '}
+              {pages.length === 1 ? 'page' : 'pages'} ·{' '}
               {preview
                 ? 'Reader preview — this is what your readers see'
-                : 'Drag the handle beside any element to move it — down the page, or out to the side to wrap the words around it'}
+                : 'Drag the handle beside any element to move it'}
             </p>
           </div>
         </div>
@@ -221,14 +230,47 @@ export default function MagazineEditor() {
               </>
             )}
           </Button>
-          <Button
-            size="sm"
-            onClick={save}
-            disabled={saving}
-            className="h-9 gap-1.5 rounded-lg bg-accent text-xs text-accent-foreground hover:bg-accent/90"
-          >
-            {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save
-          </Button>
+          {isDraft ? (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => save('draft')}
+                disabled={!!savingStatus}
+                className="h-9 gap-1.5 rounded-lg text-xs"
+              >
+                {savingStatus === 'draft' ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Save className="h-3.5 w-3.5" />
+                )}
+                Save draft
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => save('published')}
+                disabled={!!savingStatus}
+                className="h-9 gap-1.5 rounded-lg bg-accent text-xs text-accent-foreground hover:bg-accent/90"
+              >
+                {savingStatus === 'published' ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Globe className="h-3.5 w-3.5" />
+                )}
+                Publish
+              </Button>
+            </>
+          ) : (
+            <Button
+              size="sm"
+              onClick={() => save('published')}
+              disabled={!!savingStatus}
+              className="h-9 gap-1.5 rounded-lg bg-accent text-xs text-accent-foreground hover:bg-accent/90"
+            >
+              {savingStatus ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Update
+              issue
+            </Button>
+          )}
         </div>
       </div>
 

@@ -86,6 +86,24 @@ export default function MagazineDetail() {
     );
   }
 
+  const isDraft = magazine.status === 'draft';
+
+  if (isDraft && magazine.owner_id !== user?.id && user?.role !== 'admin') {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <h1 className="font-serif text-xl font-bold">This issue is still a draft</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {magazine.owner_name || 'Its editor'} is still working on it. It will appear here once it is published.
+        </p>
+        <Link to="/magazines">
+          <Button className="mt-5 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90">
+            Back to magazines
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
   const page = magazine.pages?.[index];
   const showingCover = showCover && hasCover;
   const uploadedCover = magazine.cover_image_url || '';
@@ -103,7 +121,14 @@ export default function MagazineDetail() {
             </Button>
           </Link>
           <div className="min-w-0">
-            <h1 className="truncate font-serif text-2xl font-bold">{magazine.title}</h1>
+            <div className="flex min-w-0 items-center gap-2">
+              <h1 className="truncate font-serif text-2xl font-bold">{magazine.title}</h1>
+              {isDraft && (
+                <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-800">
+                  Draft
+                </span>
+              )}
+            </div>
             <p className="truncate text-xs text-muted-foreground">
               {magazine.issue_label ? `${magazine.issue_label} · ` : ''}
               {total} {total === 1 ? 'page' : 'pages'}

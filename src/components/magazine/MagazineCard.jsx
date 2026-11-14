@@ -27,7 +27,12 @@ export default function MagazineCard({ magazine }) {
         )}
       </div>
       <div className="p-4">
-        <div className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        <div className="mb-1 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          {magazine.status === 'draft' && (
+            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-amber-800">
+              Draft
+            </span>
+          )}
           {magazine.issue_label && <span>{magazine.issue_label}</span>}
           <span>·</span>
           <span>

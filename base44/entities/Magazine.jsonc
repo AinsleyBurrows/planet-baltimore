@@ -18,6 +18,19 @@
       "type": "string",
       "description": "About this magazine"
     },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ],
+      "default": "published",
+      "description": "Drafts are work in progress: only the owner (and admins) can open them, and they stay out of the magazine list until published"
+    },
     "cover_image_url": {
       "type": "string"
     },

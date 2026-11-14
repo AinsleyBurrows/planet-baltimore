@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { useAuth } from '@/lib/AuthContext';
 import ReaderTopBar from '@/components/magazine/reader/ReaderTopBar';
 import ReaderSpread from '@/components/magazine/reader/ReaderSpread';
 import ReaderThumbnails from '@/components/magazine/reader/ReaderThumbnails';
@@ -11,6 +12,7 @@ const firstImage = (page) => page?.blocks?.find((block) => block.type === 'image
 export default function MagazineReader() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [magazine, setMagazine] = useState(null);
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0);
@@ -78,11 +80,18 @@ export default function MagazineReader() {
     );
   }
 
-  if (!magazine || !steps.length) {
+  const draftBlocked =
+    magazine?.status === 'draft' && magazine.owner_id !== user?.id && user?.role !== 'admin';
+
+  if (!magazine || draftBlocked || !steps.length) {
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-neutral-950 px-6 text-center">
         <p className="font-serif text-xl text-white">
-          {magazine ? 'This issue has no pages yet.' : 'Magazine not found'}
+          {!magazine
+            ? 'Magazine not found'
+            : draftBlocked
+              ? 'This issue is still a draft.'
+              : 'This issue has no pages yet.'}
         </p>
         <button
           type="button"
